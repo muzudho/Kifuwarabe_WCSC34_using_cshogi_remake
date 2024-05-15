@@ -615,7 +615,15 @@ class EvaluationKkTable():
 
         # 相対SQ    =  移動先マス番号    - 移動元マス番号
         relative_sq = move_obj.dst_sq - src_sq
-        relative_index = EvaluationKkTable._relative_sq_to_move_index[relative_sq]
+
+        try:
+            relative_index = EvaluationKkTable._relative_sq_to_move_index[relative_sq]
+
+        except KeyError as ex:
+            # move_obj.as_usi:5i4h / relative_sq:22 move_obj.dst_sq:66 src_sq:44
+            # relative_sq:22 move_obj.dst_sq:66 src_sq:44
+            print(f"move_obj.as_usi:{move_obj.as_usi} / relative_sq:{relative_sq} move_obj.dst_sq:{move_obj.dst_sq} src_sq:{src_sq}")
+            raise
 
 
         # 0～647 =  0～80  *                                                 8 +           0～7
@@ -956,7 +964,8 @@ class Move():
         #
         # 移動先のマス番号を序数で
         #
-        dst_sq = (dst_rank - 1) * 9 + (dst_file - 1)
+        # 0～80 = (1～9     - 1) * 9 + (1～9      - 1)
+        dst_sq  = (dst_file - 1) * 9 + (dst_rank - 1)
 
         #
         # 成ったか？
