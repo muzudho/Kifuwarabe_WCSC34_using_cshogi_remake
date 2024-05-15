@@ -1,4 +1,4 @@
-# python v_3_0.py
+# python v_4_0.py
 import cshogi
 import datetime
 import random
@@ -78,7 +78,7 @@ class Kifuwarabe():
 
         # エンジン名は別ファイルから読込。pythonファイルはよく差し替えるのでデータは外に出したい
         try:
-            file_name = "v_3_0_engine_name.txt"
+            file_name = "v_4_0_engine_name.txt"
             with open(file_name, 'r', encoding="utf-8") as f:
                 engine_name = f.read().strip()
 
@@ -231,21 +231,74 @@ class Lottery():
                 legal_moves,
                 board)
 
-        list_of_friend_moves_u = [
-            k_moves_u,
-            p_moves_u,
+        # 評価値テーブルを参照し、各指し手にポリシー値を付ける
+        k_move_u_and_policy_dictionary, p_move_u_and_policy_dictionary = EvaluationFacade.put_policy_to_move_u(
+                k_moves_u=k_moves_u,
+                p_moves_u=p_moves_u)
+
+        list_of_friend_move_u_and_policy_dictionary = [
+            k_move_u_and_policy_dictionary,
+            p_move_u_and_policy_dictionary,
         ]
 
-        # TODO ほんとはここで、各指し手にポリシー値を付けたい
-
-        # とりあえず、全部ベストムーブということにする
+        # 一番高い評価値を探す。評価値は（改造して範囲がよく変わるのではっきりしないが）適当に小さな値を設定しておく
+        # 指し手は１個以上あるとする
         best_moves_u = []
-        for friend_moves_u in list_of_friend_moves_u:
-            for friend_move_u in friend_moves_u:
-                best_moves_u.append(friend_move_u)
+        best_policy = -10000
+        for friend_move_u_and_policy_dictionary in list_of_friend_move_u_and_policy_dictionary:
+            for friend_move_u, policy in friend_move_u_and_policy_dictionary.items():
+                if best_policy == policy:
+                    best_moves_u.append(friend_move_u)
+
+                elif best_policy < policy:
+                    best_policy = policy
+                    best_moves_u = [friend_move_u]
 
         # 候補手の中からランダムに選ぶ。USIの指し手の記法で返却
         return random.choice(best_moves_u)
+
+
+########################################
+# 評価値付け階層
+########################################
+
+class EvaluationFacade():
+    """評価値のファサード"""
+
+
+    @staticmethod
+    def put_policy_to_move_u(
+            k_moves_u,
+            p_moves_u):
+        """指し手のUSI符号に対し、ポリシー値を付加した辞書を作成
+
+        Parameters
+        ----------
+        k_moves_u : iterable
+            自玉の指し手の収集
+        p_moves_u : iterable
+            自玉を除く自軍の指し手の収集
+
+        Returns
+        -------
+            - 自玉の指し手のポリシー値付き辞書
+            - 自玉を除く自軍の指し手のポリシー値付き辞書
+        """
+
+        # 指し手に評価値を付ける
+        k_move_u_and_policy_dictionary = {}
+        p_move_u_and_policy_dictionary = {}
+
+        # TODO 評価値テーブルを参照したい
+
+        # とりあえず 0, 1 を入れる
+        for k_move_u in k_moves_u:
+            k_move_u_and_policy_dictionary[k_move_u] = random.randint(0,1)
+
+        for p_move_u in p_moves_u:
+            p_move_u_and_policy_dictionary[p_move_u] = random.randint(0,1)
+
+        return (k_move_u_and_policy_dictionary, p_move_u_and_policy_dictionary)
 
 
 ########################################
@@ -256,6 +309,7 @@ class MoveListHelper():
     """指し手のリストのヘルパー"""
 
 
+    @staticmethod
     def create_k_and_p_legal_moves(
             legal_moves,
             board):
