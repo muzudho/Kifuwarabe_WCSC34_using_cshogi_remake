@@ -6,15 +6,19 @@ import random
 
 
 ########################################
+# ファイル・スコープ変数
+########################################
+
+engine_version_str = "v_6_0"
+"""将棋エンジン・バージョン文字列。ファイル名などに使用"""
+
+
+########################################
 # USI ループ階層
 ########################################
 
 class Kifuwarabe():
     """きふわらべ"""
-
-    _version_str = "v_6_0"
-    """バージョン文字列。ファイル名などに使用"""
-
 
     def __init__(self):
         """初期化"""
@@ -24,12 +28,6 @@ class Kifuwarabe():
 
         # ＫＫ評価値テーブル
         self._evaluation_kk_table_obj = EvaluationKkTable()
-
-
-    @property
-    def version_str(self):
-        """バージョン文字列。ファイル名などに使用"""
-        return self._version_str
 
 
     def usi_loop(self):
@@ -91,7 +89,7 @@ class Kifuwarabe():
 
         # エンジン名は別ファイルから読込。pythonファイルはよく差し替えるのでデータは外に出したい
         try:
-            file_name = f"{Kifuwarabe.version_str}_engine_name.txt"
+            file_name = f"{engine_version_str}_engine_name.txt"
             with open(file_name, 'r', encoding="utf-8") as f:
                 engine_name = f.read().strip()
 
@@ -113,6 +111,11 @@ class Kifuwarabe():
 
         # ＫＫ評価値テーブル
         self._evaluation_kk_table_obj.load_on_usinewgame()
+
+        if self._evaluation_kk_table_obj.mm_table_obj.is_file_modified:
+            self._evaluation_kk_table_obj.save_evaluation_table_file()
+        else:
+            print(f"[{datetime.datetime.now()}] kk file not changed", flush=True)
 
         print(f"[{datetime.datetime.now()}] usinewgame end", flush=True)
 
@@ -363,8 +366,8 @@ class EvaluationFacade():
             # TODO ＫＫ評価値テーブルを参照したい
             for l_move_u in l_move_u_set:
                 index_of_kk = EvaluationKkTable.get_index_of_kk_table(
-                        k_move_obj=Move.as_usi(k_move_u),
-                        l_move_obj=Move.as_usi(l_move_u))
+                        k_move_obj=Move.from_usi(k_move_u),
+                        l_move_obj=Move.from_usi(l_move_u))
                 policy = random.randint(0,1)
                 k_move_u_and_policy_dictionary[k_move_u] += policy
 
@@ -389,7 +392,7 @@ class EvaluationFacade():
         return (k_move_u_and_policy_dictionary, p_move_u_and_policy_dictionary)
 
 
-    def create_random_evaluation_raw_table(
+    def create_random_evaluation_table_as_array(
             a_move_size,
             b_move_size):
         """ランダム値の入った評価値テーブルの配列を新規作成する
@@ -405,24 +408,25 @@ class EvaluationFacade():
         # ダミーデータを入れる。１分ほどかかる
         print(f"[{datetime.datetime.now()}] make random evaluation table in memory... (a_move_size:{a_move_size} b_move_size:{b_move_size})", flush=True)
 
-        new_raw_table = []
+        new_table_as_array = []
 
         for _index in range(0, a_move_size * b_move_size):
             # 値は 0, 1 の２値
-            new_raw_table.append(random.randint(0,1))
+            new_table_as_array.append(random.randint(0,1))
 
-        print(f"[{datetime.datetime.now()}] random evaluation table maked in memory. (size:{len(new_raw_table)})", flush=True)
-        return new_raw_table
+        print(f"[{datetime.datetime.now()}] random evaluation table maked in memory. (size:{len(new_table_as_array)})", flush=True)
+        return new_table_as_array
 
 
-    def read_evalution_table_file(
+    @staticmethod
+    def read_evaluation_table_as_array_from_file(
             file_name):
         """評価値テーブル・ファイルの読込"""
 
         # ロードする。数分ほどかかる
         print(f"[{datetime.datetime.now()}] read {file_name} file ...", flush=True)
 
-        raw_table = []
+        table_as_array = []
 
         try:
             with open(file_name, 'rb') as f:
@@ -433,24 +437,68 @@ class EvaluationFacade():
                     one_byte_num = int.from_bytes(one_byte_binary, signed=False)
 
                     # 大きな桁から、リストに追加していきます
-                    raw_table.append(one_byte_num//128 % 2)
-                    raw_table.append(one_byte_num// 64 % 2)
-                    raw_table.append(one_byte_num// 32 % 2)
-                    raw_table.append(one_byte_num// 16 % 2)
-                    raw_table.append(one_byte_num//  8 % 2)
-                    raw_table.append(one_byte_num//  4 % 2)
-                    raw_table.append(one_byte_num//  2 % 2)
-                    raw_table.append(one_byte_num//      2)
+                    table_as_array.append(one_byte_num//128 % 2)
+                    table_as_array.append(one_byte_num// 64 % 2)
+                    table_as_array.append(one_byte_num// 32 % 2)
+                    table_as_array.append(one_byte_num// 16 % 2)
+                    table_as_array.append(one_byte_num//  8 % 2)
+                    table_as_array.append(one_byte_num//  4 % 2)
+                    table_as_array.append(one_byte_num//  2 % 2)
+                    table_as_array.append(one_byte_num//      2)
 
                     one_byte_binary = f.read(1)
 
-            print(f"[{datetime.datetime.now()}] '{file_name}' file loaded. evaluation table size: {len(raw_table)}", flush=True)
+            print(f"[{datetime.datetime.now()}] '{file_name}' file loaded. evaluation table size: {len(table_as_array)}", flush=True)
 
         except FileNotFoundError as ex:
             print(f"[evaluation table / load from file] [{file_name}] file error. {ex}")
             raise
 
-        return raw_table
+        return table_as_array
+
+
+    @staticmethod
+    def save_evaluation_table_file(
+            file_name,
+            table_as_array):
+        """ファイルへ保存します"""
+
+        print(f"[{datetime.datetime.now()}] save {file_name} file ...", flush=True)
+
+        # バイナリ・ファイルに出力する
+        with open(file_name, 'wb') as f:
+
+            length = 0
+            sum = 0
+
+            for bit in table_as_array:
+                if bit==0:
+                    # byte型配列に変換して書き込む
+                    # 1 byte の数 0
+                    sum *= 2
+                    sum += 0
+                    length += 1
+                else:
+                    # 1 byte の数 1
+                    sum *= 2
+                    sum += 1
+                    length += 1
+
+                if 8 <= length:
+                    # 整数型を、１バイトのバイナリーに変更
+                    f.write(sum.to_bytes(1))
+                    sum = 0
+                    length = 0
+
+            # 末端にはみ出た１バイト
+            if 0 < length and length < 8:
+                while length < 8:
+                    sum *= 2
+                    length += 1
+
+                f.write(sum.to_bytes(1))
+
+        print(f"[{datetime.datetime.now()}] {file_name} file saved", flush=True)
 
 
 class EvaluationKkTable():
@@ -583,7 +631,6 @@ class EvaluationKkTable():
         return self._mm_table_obj
 
 
-    @staticmethod
     def load_on_usinewgame(
             self):
         """ＫＫ評価値テーブル読込
@@ -593,22 +640,22 @@ class EvaluationKkTable():
         - テーブル
         - バージョンアップしたので保存要求の有無
         """
-        file_name=f'n1_eval_kk_{Kifuwarabe.version_str}.bin'
+        file_name=f'n1_eval_kk_{engine_version_str}.bin'
 
         print(f"[{datetime.datetime.now()}] {file_name} file exists check ...", flush=True)
         is_file_exists = os.path.isfile(file_name)
 
         if is_file_exists:
             # 読込
-            raw_table = EvaluationFacade.read_evaluation_table_file(
+            table_as_array = EvaluationFacade.read_evaluation_table_as_array_from_file(
                     file_name=file_name)
         else:
-            raw_table = None
+            table_as_array = None
 
 
         # ファイルが存在しないとき
-        if raw_table is None:
-            raw_table = EvaluationFacade.create_random_evaluation_raw_table(
+        if table_as_array is None:
+            table_as_array = EvaluationFacade.create_random_evaluation_table_as_array(
                     a_move_size=EvaluationKkTable.get_king_move_number(),
                     b_move_size=EvaluationKkTable.get_king_move_number())
             is_file_modified = True     # 新規作成だから
@@ -619,8 +666,18 @@ class EvaluationKkTable():
 
         self._mm_table_obj = EvalutionMmTable(
                 file_name=file_name,
-                raw_mm_table=raw_table,
+                table_as_array=table_as_array,
                 is_file_modified=is_file_modified)
+
+
+    def save_evaluation_table_file(
+            self):
+        """ファイルへの保存"""
+
+        # 保存するかどうかは先に判定しておくこと
+        EvaluationFacade.save_evaluation_table_file(
+                file_name=self.mm_table_obj.file_name,
+                table_as_array=self.mm_table_obj.table_as_array)
 
 
 ########################################
@@ -634,7 +691,7 @@ class EvalutionMmTable():
     def __init__(
             self,
             file_name,
-            raw_table,
+            table_as_array,
             is_file_modified):
         """初期化
 
@@ -642,14 +699,14 @@ class EvalutionMmTable():
         ----------
         file_name : str
             ファイル名
-        raw_table : []
+        table_as_array : []
             評価値テーブルの配列
         is_file_modified : bool
             このテーブルが変更されて、保存されていなければ真
         """
 
         self._file_name = file_name
-        self._raw_table = raw_table
+        self._table_as_array = table_as_array
         self._is_file_modified = is_file_modified
 
 
@@ -660,9 +717,9 @@ class EvalutionMmTable():
 
 
     @property
-    def raw_table(self):
+    def table_as_array(self):
         """評価値テーブルの配列"""
-        return self._raw_table
+        return self._table_as_array
 
 
     @property
