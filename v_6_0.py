@@ -510,7 +510,7 @@ class EvaluationKkTable():
         -9: 1,
         -8: 2,
         -1: 3,
-        2: 4,
+        1: 4,
         8: 5,
         9: 6,
         10: 7,
@@ -575,7 +575,7 @@ class EvaluationKkTable():
         | +9 | You| -9 |
         |    |    |    |
         +----+----+----+
-        |+10 | +2 | -8 |
+        |+10 | +1 | -8 |
         |    |    |    |
         +----+----+----+
 
@@ -620,8 +620,7 @@ class EvaluationKkTable():
             relative_index = EvaluationKkTable._relative_sq_to_move_index[relative_sq]
 
         except KeyError as ex:
-            # move_obj.as_usi:5i4h / relative_sq:22 move_obj.dst_sq:66 src_sq:44
-            # relative_sq:22 move_obj.dst_sq:66 src_sq:44
+            # move_obj.as_usi:5a5b / relative_sq:1 move_obj.dst_sq:37 src_sq:36
             print(f"move_obj.as_usi:{move_obj.as_usi} / relative_sq:{relative_sq} move_obj.dst_sq:{move_obj.dst_sq} src_sq:{src_sq}")
             raise
 
