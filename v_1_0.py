@@ -143,18 +143,6 @@ class Kifuwarabe():
             print(f'bestmove win', flush=True)
             return
 
-        # 一手詰めを詰める
-        #if not self._board.is_check():
-        #    """自玉に王手がかかっていない時で"""
-        #
-        #    if (matemove := self._board.mate_move_in_1ply()):
-        #        """一手詰めの指し手があれば、それを取得"""
-        #
-        #        best_move = cshogi.move_to_usi(matemove)
-        #        print('info score mate 1 pv {}'.format(best_move), flush=True)
-        #        print(f'bestmove {best_move}', flush=True)
-        #        return
-
         # １手指す（投了のケースは対応済みなので、ここで対応しなくていい）
         best_move = cshogi.move_to_usi(random.choice(list(self._board.legal_moves)))
 
