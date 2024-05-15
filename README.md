@@ -1,0 +1,2 @@
+# Kifuwarabe_WCSC34_using_cshogi_remake
+WCSC34 のきふわらべの作り直し
