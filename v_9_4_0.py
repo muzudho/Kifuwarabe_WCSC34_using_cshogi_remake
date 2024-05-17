@@ -460,11 +460,21 @@ class Kifuwarabe():
         """
         move_u = cmd[1]
 
-        # TODO 指定の手が、自玉か、自玉以外の自分の駒かを判定
-
         k_sq = BoardHelper.get_king_square(self._board)
 
-        pass
+        move_obj = Move.from_usi(move_u)
+
+        # 自玉の指し手か？
+        if MoveHelper.is_king(k_sq, move_obj):
+
+            # TODO 応手のリストを作りたい
+
+            relation_dic = self._evaluation_kk_table_obj.create_relation_exists_dictionary_by_k_move_and_l_moves(
+                    k_move_obj=move_obj,
+                    l_move_obj_list=None)
+
+        else:
+            pass
 
     def weaken(self, cmd):
         """指定の指し手のポリシー値を、最弱のポリシー値を持つ指し手に分ける
