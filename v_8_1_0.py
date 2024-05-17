@@ -1,4 +1,4 @@
-# python v_8_0.py
+# python v_8_1_0.py
 import cshogi
 import os
 import datetime
@@ -9,7 +9,7 @@ import random
 # ファイル・スコープ変数
 ########################################
 
-engine_version_str = "v_8_0"
+engine_version_str = "v_8_1_0"
 """将棋エンジン・バージョン文字列。ファイル名などに使用"""
 
 
@@ -215,22 +215,22 @@ class Kifuwarabe():
             # 負け
             if cmd[1] == 'lose':
                 # ［対局結果］　常に記憶する
-                self._game_result_file.save_lose(self._my_turn)
+                self._game_result_file.save_lose(self._my_turn, self._board)
 
             # 勝ち
             elif cmd[1] == 'win':
                 # ［対局結果］　常に記憶する
-                self._game_result_file.save_win(self._my_turn)
+                self._game_result_file.save_win(self._my_turn, self._board)
 
             # 持将棋
             elif cmd[1] == 'draw':
                 # ［対局結果］　常に記憶する
-                self._game_result_file.save_draw(self._my_turn)
+                self._game_result_file.save_draw(self._my_turn, self._board)
 
             # その他
             else:
                 # ［対局結果］　常に記憶する
-                self._game_result_file.save_otherwise(cmd[1], self._my_turn)
+                self._game_result_file.save_otherwise(cmd[1], self._my_turn, self._board)
 
 
     def do(self, cmd):
@@ -772,7 +772,7 @@ class GameResultFile():
             pass
 
 
-    def read(self):
+    def read_lines(self):
         """結果の読込"""
         try:
             print(f"[{datetime.datetime.now()}] {self.file_name} file read ...", flush=True)
@@ -780,18 +780,27 @@ class GameResultFile():
             with open(self.file_name, 'r', encoding="utf-8") as f:
                 text = f.read()
 
-            text = text.strip()
+            # 改行で分割
+            lines = text.splitlines()
             print(f"[{datetime.datetime.now()}] {self.file_name} file read", flush=True)
 
-            return text
+            return lines
 
-        # ファイルの読込に失敗したら、空文字を返す
+        # ファイルの読込に失敗
         except:
-            return ""
+            return []
 
 
-    def save_lose(self, my_turn):
-        """負け"""
+    def save_lose(self, my_turn, board):
+        """負け
+
+        Parameters
+        ----------
+        my_turn : Turn
+            自分の手番
+        board : Board
+            将棋盤
+        """
 
         turn_text = Turn.to_string(my_turn)
         print(f"あ～あ、 {turn_text} 番で負けたぜ（＞＿＜）", flush=True)
@@ -799,13 +808,22 @@ class GameResultFile():
         # ファイルに出力する
         print(f"[{datetime.datetime.now()}] {self.file_name} file save ...", flush=True)
         with open(self.file_name, 'w', encoding="utf-8") as f:
-            f.write(f"lose {turn_text}")
+            f.write(f"""lose {turn_text}
+sfen {board.sfen()}""")
 
         print(f"[{datetime.datetime.now()}] {self.file_name} file saved", flush=True)
 
 
-    def save_win(self, my_turn):
-        """勝ち"""
+    def save_win(self, my_turn, board):
+        """勝ち
+
+        Parameters
+        ----------
+        my_turn : Turn
+            自分の手番
+        board : Board
+            将棋盤
+        """
 
         turn_text = Turn.to_string(my_turn)
         print(f"やったぜ {turn_text} 番で勝ったぜ（＾ｑ＾）", flush=True)
@@ -813,13 +831,22 @@ class GameResultFile():
         # ファイルに出力する
         print(f"[{datetime.datetime.now()}] {self.file_name} file save ...", flush=True)
         with open(self.file_name, 'w', encoding="utf-8") as f:
-            f.write(f"win {turn_text}")
+            f.write(f"""win {turn_text}
+sfen {board.sfen()}""")
 
         print(f"[{datetime.datetime.now()}] {self.file_name} file saved", flush=True)
 
 
-    def save_draw(self, my_turn):
-        """持将棋"""
+    def save_draw(self, my_turn, board):
+        """持将棋
+
+        Parameters
+        ----------
+        my_turn : Turn
+            自分の手番
+        board : Board
+            将棋盤
+        """
 
         turn_text = Turn.to_string(my_turn)
         print(f"持将棋か～（ー＿ー） turn: {turn_text}", flush=True)
@@ -827,13 +854,24 @@ class GameResultFile():
         # ファイルに出力する
         print(f"[{datetime.datetime.now()}] {self.file_name} file save ...", flush=True)
         with open(self.file_name, 'w', encoding="utf-8") as f:
-            f.write(f"draw {turn_text}")
+            f.write(f"""draw {turn_text}
+sfen {board.sfen()}""")
 
         print(f"[{datetime.datetime.now()}] {self.file_name} file saved", flush=True)
 
 
-    def save_otherwise(self, result_text, my_turn):
-        """予期しない結果"""
+    def save_otherwise(self, result_text, my_turn, board):
+        """予期しない結果
+
+        Parameters
+        ----------
+        result_text : str
+            結果文字列
+        my_turn : Turn
+            自分の手番
+        board : Board
+            将棋盤
+        """
 
         turn_text = Turn.to_string(my_turn)
         print(f"なんだろな（・＿・）？　'{result_text}', turn: '{turn_text}'", flush=True)
@@ -841,7 +879,8 @@ class GameResultFile():
         # ファイルに出力する
         print(f"[{datetime.datetime.now()}] {self.file_name} file save ...", flush=True)
         with open(self.file_name, 'w', encoding="utf-8") as f:
-            f.write(f"{result_text} {turn_text}")
+            f.write(f"""{result_text} {turn_text}
+sfen {board.sfen()}""")
 
         print(f"[{datetime.datetime.now()}] {self.file_name} file saved", flush=True)
 
