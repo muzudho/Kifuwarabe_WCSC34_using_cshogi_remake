@@ -727,7 +727,7 @@ class EvaluationFacade():
                 policy_bit = kifuwarabe.evaluation_kk_table_obj.get_bit_by_indexes(
                         k_move_obj=Move.from_usi(k_move_u),
                         l_move_obj=Move.from_usi(l_move_u))
-                print(f"kk policy_bit:{policy_bit}")
+                #print(f"kk policy_bit:{policy_bit}")
                 k_move_u_and_policy_dictionary[k_move_u] += policy_bit
 
             # TODO ＫＰ評価値テーブルを参照したい
@@ -755,15 +755,15 @@ class EvaluationFacade():
         l_size = len(l_move_u_set)
         q_size = len(q_move_u_set)
         opponent_size = l_size + q_size
-        print(f"l_size:{l_size}  q_size:{q_size}  opponent_size:{opponent_size}")
+        #print(f"l_size:{l_size}  q_size:{q_size}  opponent_size:{opponent_size}")
 
         for move_u, policy in k_move_u_and_policy_dictionary.items():
             k_move_u_and_policy_dictionary[move_u] = policy * 1000 // opponent_size
-            print(f"{k_move_u_and_policy_dictionary[move_u]}  =  old:{policy}  opponent_size:{opponent_size}")
+            #print(f"{k_move_u_and_policy_dictionary[move_u]}  =  old:{policy}  opponent_size:{opponent_size}")
 
         for move_u, policy in p_move_u_and_policy_dictionary.items():
             p_move_u_and_policy_dictionary[move_u] = policy * 1000 // opponent_size
-            print(f"{p_move_u_and_policy_dictionary[move_u]}  =  old:{opponent_size}  p_size:{opponent_size}")
+            #print(f"{p_move_u_and_policy_dictionary[move_u]}  =  old:{opponent_size}  p_size:{opponent_size}")
 
         return (k_move_u_and_policy_dictionary, p_move_u_and_policy_dictionary)
 
