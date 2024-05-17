@@ -1,4 +1,4 @@
-# python v_9_1_0.py
+# python v_9_4_0.py
 import cshogi
 import os
 import datetime
@@ -9,7 +9,7 @@ import random
 # 設定
 ########################################
 
-engine_version_str = "v_9_1_0"
+engine_version_str = "v_9_4_0"
 """将棋エンジン・バージョン文字列。ファイル名などに使用"""
 
 
@@ -117,6 +117,11 @@ class Kifuwarabe():
             #       code: strongest
             elif cmd[0] == 'strongest':
                 self.strongest()
+
+            # 指定の手の評価値テーブルの関係を全て表示する
+            #       code: relation 7g7f
+            elif cmd[0] == 'relation':
+                self.relation(cmd)
 
             # 指定の指し手Ａのポリシー値を１つ、指定の指し手Ｂのポリシー値に移す
             #       code: weaken 6g6f 7g7f
@@ -510,6 +515,19 @@ class Kifuwarabe():
             print(f'  P {move_u:5} : {policy:4}', flush=True)
 
 
+    def relation(self, cmd):
+        """指定の手の評価値テーブルの関係を全て表示する
+        code: relation 7g7f
+
+        Parameters
+        ----------
+        cmd : str[]
+            コマンドのトークン配列
+        """
+        move_u = cmd[1]
+
+        pass
+
     def weaken(self, cmd):
         """指定の指し手のポリシー値を、最弱のポリシー値を持つ指し手に分ける
         code: weaken 6g6f 7g7f
@@ -713,7 +731,7 @@ class EvaluationFacade():
             legal_moves,
             board,
             kifuwarabe):
-        """くじを引く
+        """指し手と、ポリシー値の紐づいた辞書を作成する
 
         Parameters
         ----------

@@ -313,7 +313,7 @@ class Kifuwarabe():
         #
         # 自玉の指し手と、自玉を除く自軍の指し手を分けて取得
         #
-        list_of_friend_move_u_and_policy_dictionary = Lottery.create_list_of_friend_move_u_and_policy_dictionary(
+        list_of_friend_move_u_and_policy_dictionary = EvaluationFacade.create_list_of_friend_move_u_and_policy_dictionary(
                 legal_moves=list(self._board.legal_moves),
                 board=self._board,
                 kifuwarabe=self)
@@ -385,86 +385,6 @@ class Lottery():
 
 
     @staticmethod
-    def create_list_of_friend_move_u_and_policy_dictionary(
-            legal_moves,
-            board,
-            kifuwarabe):
-        """くじを引く
-
-        Parameters
-        ----------
-        legal_moves : list<int>
-            合法手のリスト : cshogi の指し手整数
-        board : Board
-            局面
-        kifuwarabe : Kifuwarabe
-            評価値テーブルを持っている
-        """
-
-        # 自玉の指し手の集合と、自玉を除く自軍の指し手の集合
-        k_moves_u, p_moves_u = MoveListHelper.create_k_and_p_legal_moves(
-                legal_moves,
-                board)
-
-        list_of_friend_moves_u = [
-            k_moves_u,
-            p_moves_u,
-        ]
-
-        #
-        # 相手が指せる手の集合
-        # -----------------
-        #
-        #   ヌルムーブをしたいが、 `board.push_pass()` が機能しなかったので、合法手を全部指してみることにする
-        #
-
-        # 敵玉（Lord）の指し手の集合
-        l_move_u_set = set()
-        # 敵玉を除く敵軍の指し手の集合（Quaffer；ゴクゴク飲む人。Pの次の文字Qを頭文字にした単語）
-        q_move_u_set = set()
-
-        for friend_moves_u in list_of_friend_moves_u:
-            for friend_move_u in friend_moves_u:
-                board.push_usi(friend_move_u)
-
-                # 敵玉（L; Lord）の位置を調べる
-                l_sq = board.king_square(board.turn)
-
-                for opponent_move_id in board.legal_moves:
-                    opponent_move_u = cshogi.move_to_usi(opponent_move_id)
-
-                    opponent_move_obj = Move.from_usi(opponent_move_u)
-                    src_sq_or_none = opponent_move_obj.src_sq_or_none
-
-                    # 敵玉の指し手
-                    if src_sq_or_none is not None and src_sq_or_none == l_sq:
-                        l_move_u_set.add(opponent_move_u)
-                    # 敵玉を除く敵軍の指し手
-                    else:
-                        q_move_u_set.add(opponent_move_u)
-
-                board.pop()
-
-        #
-        # 評価値テーブルを参照し、各指し手にポリシー値を付ける
-        # ---------------------------------------------
-        #
-        k_move_u_and_policy_dictionary, p_move_u_and_policy_dictionary = EvaluationFacade.put_policy_to_move_u(
-                k_moves_u=k_moves_u,
-                p_moves_u=p_moves_u,
-                l_move_u_set=l_move_u_set,
-                q_move_u_set=q_move_u_set,
-                kifuwarabe=kifuwarabe)
-
-        list_of_friend_move_u_and_policy_dictionary = [
-            k_move_u_and_policy_dictionary,
-            p_move_u_and_policy_dictionary,
-        ]
-
-        return list_of_friend_move_u_and_policy_dictionary
-
-
-    @staticmethod
     def choice_best(
             legal_moves,
             board,
@@ -481,7 +401,7 @@ class Lottery():
             評価値テーブルを持っている
         """
 
-        list_of_friend_move_u_and_policy_dictionary = Lottery.create_list_of_friend_move_u_and_policy_dictionary(
+        list_of_friend_move_u_and_policy_dictionary = EvaluationFacade.create_list_of_friend_move_u_and_policy_dictionary(
                 legal_moves=legal_moves,
                 board=board,
                 kifuwarabe=kifuwarabe)
@@ -599,6 +519,86 @@ class EvaluationFacade():
 
         print(f"[{datetime.datetime.now()}] random evaluation table maked in memory. (size:{len(new_table_as_array)})", flush=True)
         return new_table_as_array
+
+
+    @staticmethod
+    def create_list_of_friend_move_u_and_policy_dictionary(
+            legal_moves,
+            board,
+            kifuwarabe):
+        """くじを引く
+
+        Parameters
+        ----------
+        legal_moves : list<int>
+            合法手のリスト : cshogi の指し手整数
+        board : Board
+            局面
+        kifuwarabe : Kifuwarabe
+            評価値テーブルを持っている
+        """
+
+        # 自玉の指し手の集合と、自玉を除く自軍の指し手の集合
+        k_moves_u, p_moves_u = MoveListHelper.create_k_and_p_legal_moves(
+                legal_moves,
+                board)
+
+        list_of_friend_moves_u = [
+            k_moves_u,
+            p_moves_u,
+        ]
+
+        #
+        # 相手が指せる手の集合
+        # -----------------
+        #
+        #   ヌルムーブをしたいが、 `board.push_pass()` が機能しなかったので、合法手を全部指してみることにする
+        #
+
+        # 敵玉（Lord）の指し手の集合
+        l_move_u_set = set()
+        # 敵玉を除く敵軍の指し手の集合（Quaffer；ゴクゴク飲む人。Pの次の文字Qを頭文字にした単語）
+        q_move_u_set = set()
+
+        for friend_moves_u in list_of_friend_moves_u:
+            for friend_move_u in friend_moves_u:
+                board.push_usi(friend_move_u)
+
+                # 敵玉（L; Lord）の位置を調べる
+                l_sq = board.king_square(board.turn)
+
+                for opponent_move_id in board.legal_moves:
+                    opponent_move_u = cshogi.move_to_usi(opponent_move_id)
+
+                    opponent_move_obj = Move.from_usi(opponent_move_u)
+                    src_sq_or_none = opponent_move_obj.src_sq_or_none
+
+                    # 敵玉の指し手
+                    if src_sq_or_none is not None and src_sq_or_none == l_sq:
+                        l_move_u_set.add(opponent_move_u)
+                    # 敵玉を除く敵軍の指し手
+                    else:
+                        q_move_u_set.add(opponent_move_u)
+
+                board.pop()
+
+        #
+        # 評価値テーブルを参照し、各指し手にポリシー値を付ける
+        # ---------------------------------------------
+        #
+        k_move_u_and_policy_dictionary, p_move_u_and_policy_dictionary = EvaluationFacade.put_policy_to_move_u(
+                k_moves_u=k_moves_u,
+                p_moves_u=p_moves_u,
+                l_move_u_set=l_move_u_set,
+                q_move_u_set=q_move_u_set,
+                kifuwarabe=kifuwarabe)
+
+        list_of_friend_move_u_and_policy_dictionary = [
+            k_move_u_and_policy_dictionary,
+            p_move_u_and_policy_dictionary,
+        ]
+
+        return list_of_friend_move_u_and_policy_dictionary
 
 
     @staticmethod
