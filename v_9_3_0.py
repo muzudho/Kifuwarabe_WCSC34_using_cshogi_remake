@@ -1087,12 +1087,12 @@ class EvaluationKkTable():
                     l_move_obj=l_move_obj))
 
 
-    def set_bit_by_indexes(
+    def set_bit_by_kl_moves(
             self,
             k_move_obj,
             l_move_obj,
             bit):
-        """２つのインデックスを受け取って、ビット値を設定します
+        """自玉の着手と敵玉の応手を受け取って、関係の有無を設定します
 
         Parameters
         ----------
