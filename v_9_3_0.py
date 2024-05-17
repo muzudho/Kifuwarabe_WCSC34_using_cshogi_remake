@@ -277,76 +277,6 @@ class Kifuwarabe():
         self._board.pop()
 
 
-    def get_moves(
-            self,
-            weakest0_strongest1):
-        """最強手または最弱手の取得"""
-        #
-        # USIプロトコルでの符号表記と、ポリシー値の辞書に変換
-        # --------------------------------------------
-        #
-        #   自玉の指し手と、自玉を除く自軍の指し手を分けて取得
-        #   ポリシー値は千分率の４桁の整数
-        #
-        list_of_friend_move_u_and_policy_dictionary = EvaluationFacade.create_list_of_friend_move_u_and_policy_dictionary(
-                legal_moves=list(self._board.legal_moves),
-                board=self._board,
-                kifuwarabe=self)
-
-        k_move_u_and_policy_dictionary = list_of_friend_move_u_and_policy_dictionary[0]
-        p_move_u_and_policy_dictionary = list_of_friend_move_u_and_policy_dictionary[1]
-
-        if weakest0_strongest1 == 1:
-            best_k_policy = -1000
-            best_p_policy = -1000
-
-        else:
-            best_k_policy = 1000
-            best_p_policy = 1000
-
-        best_k_move_dictionary = {}
-        best_p_move_dictionary = {}
-
-        #
-        # キングから
-        # ---------
-        #
-
-        for move_u, policy in k_move_u_and_policy_dictionary.items():
-
-            # tie
-            if best_k_policy == policy:
-                best_k_move_dictionary[move_u] = policy
-
-            # update
-            elif (weakest0_strongest1 == 1 and best_k_policy < policy) or (weakest0_strongest1 == 0 and policy < best_k_policy):
-                best_k_policy = policy
-                best_k_move_dictionary = {move_u:policy}
-
-        #
-        # 次にピースズ
-        # -----------
-        #
-
-        for move_u, policy in p_move_u_and_policy_dictionary.items():
-
-            # tie
-            if best_p_policy == policy:
-                best_p_move_dictionary[move_u] = policy
-
-            # update
-            elif (weakest0_strongest1 == 1 and best_p_policy < policy) or (weakest0_strongest1 == 0 and policy < best_p_policy):
-                best_p_policy = policy
-                best_p_move_dictionary = {move_u:policy}
-
-        #
-        # ベスト
-        # ------
-        #
-
-        return (best_k_move_dictionary, best_p_move_dictionary)
-
-
     def get_weakest_moves(self):
         """最弱手の取得"""
         return self.get_moves(
@@ -1372,6 +1302,92 @@ class EvalutionMmTable():
             raise ValueError(f"bit must be 0 or 1. bit:{bit}")
 
         self._table_as_array[index] = bit
+
+
+class MoveAndPolicyHelper():
+    """TODO 評価値付きの指し手のリストのヘルパー"""
+
+
+    @staticmethod
+    def get_moves(
+            weakest0_strongest1,
+            board,
+            kifuwarabe):
+        """最強手または最弱手の取得
+
+        Parameters
+        ----------
+        weakest0_strongest1 : int
+            0なら最弱手、1なら最強手を取得
+        board : Board
+            局面
+        kifuwarabe : Kifuwarabe
+            きふわらべ
+        """
+        #
+        # USIプロトコルでの符号表記と、ポリシー値の辞書に変換
+        # --------------------------------------------
+        #
+        #   自玉の指し手と、自玉を除く自軍の指し手を分けて取得
+        #   ポリシー値は千分率の４桁の整数
+        #
+        list_of_friend_move_u_and_policy_dictionary = EvaluationFacade.create_list_of_friend_move_u_and_policy_dictionary(
+                legal_moves=list(board.legal_moves),
+                board=board,
+                kifuwarabe=kifuwarabe)
+
+        k_move_u_and_policy_dictionary = list_of_friend_move_u_and_policy_dictionary[0]
+        p_move_u_and_policy_dictionary = list_of_friend_move_u_and_policy_dictionary[1]
+
+        if weakest0_strongest1 == 1:
+            best_k_policy = -1000
+            best_p_policy = -1000
+
+        else:
+            best_k_policy = 1000
+            best_p_policy = 1000
+
+        best_k_move_dictionary = {}
+        best_p_move_dictionary = {}
+
+        #
+        # キングから
+        # ---------
+        #
+
+        for move_u, policy in k_move_u_and_policy_dictionary.items():
+
+            # tie
+            if best_k_policy == policy:
+                best_k_move_dictionary[move_u] = policy
+
+            # update
+            elif (weakest0_strongest1 == 1 and best_k_policy < policy) or (weakest0_strongest1 == 0 and policy < best_k_policy):
+                best_k_policy = policy
+                best_k_move_dictionary = {move_u:policy}
+
+        #
+        # 次にピースズ
+        # -----------
+        #
+
+        for move_u, policy in p_move_u_and_policy_dictionary.items():
+
+            # tie
+            if best_p_policy == policy:
+                best_p_move_dictionary[move_u] = policy
+
+            # update
+            elif (weakest0_strongest1 == 1 and best_p_policy < policy) or (weakest0_strongest1 == 0 and policy < best_p_policy):
+                best_p_policy = policy
+                best_p_move_dictionary = {move_u:policy}
+
+        #
+        # ベスト
+        # ------
+        #
+
+        return (best_k_move_dictionary, best_p_move_dictionary)
 
 
 class MoveListHelper():
