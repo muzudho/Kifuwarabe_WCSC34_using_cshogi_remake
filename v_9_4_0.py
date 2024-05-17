@@ -378,7 +378,7 @@ class Kifuwarabe():
 
         print('くじ一覧（自玉の合法手）：')
         for move_u, policy in k_move_u_and_policy_dictionary.items():
-            print(f'  ({number:3}) K:{move_u:5}  policy:{policy:4}')
+            print(f'  ({number:3}) K:{move_u:5} *****  policy:{policy:4}')
 
             # update
             if best_policy < policy:
@@ -398,7 +398,7 @@ class Kifuwarabe():
 
         print('くじ一覧（自玉以外の自軍の合法手）：')
         for move_u, policy in p_move_u_and_policy_dictionary.items():
-            print(f'  ({number:3}) P:{move_u:5}  policy:{policy:4}')
+            print(f'  ({number:3}) P:{move_u:5} *****  policy:{policy:4}')
 
             # update
             if best_policy < policy:
@@ -420,7 +420,7 @@ class Kifuwarabe():
 
         print(f'ベスト一覧：')
         for move_u, policy in best_move_dictionary.items():
-            print(f'  {move_u:5} : {policy:4}')
+            print(f'  {move_u:5} ***** : {policy:4}')
 
 
     def weakest(self):
@@ -429,11 +429,11 @@ class Kifuwarabe():
 
         print(f'最弱手一覧（Ｋ）：', flush=True)
         for move_u, policy in k_move_u_and_policy_dictionary.items():
-            print(f'  K {move_u:5} : {policy:4}', flush=True)
+            print(f'  K {move_u:5} ***** : {policy:4}', flush=True)
 
         print(f'最弱手一覧（Ｐ）：', flush=True)
         for move_u, policy in p_move_u_and_policy_dictionary.items():
-            print(f'  P {move_u:5} : {policy:3}', flush=True)
+            print(f'  P {move_u:5} ***** : {policy:3}', flush=True)
 
 
     def strongest(self):
@@ -442,11 +442,11 @@ class Kifuwarabe():
 
         print(f'最強手一覧（Ｋ）：', flush=True)
         for move_u, policy in k_move_u_and_policy_dictionary.items():
-            print(f'  K {move_u:5} : {policy:4}', flush=True)
+            print(f'  K {move_u:5} ***** : {policy:4}', flush=True)
 
         print(f'最強手一覧（Ｐ）：', flush=True)
         for move_u, policy in p_move_u_and_policy_dictionary.items():
-            print(f'  P {move_u:5} : {policy:4}', flush=True)
+            print(f'  P {move_u:5} ***** : {policy:4}', flush=True)
 
 
     def relation(self, cmd):
@@ -476,19 +476,25 @@ class Kifuwarabe():
                     board=self._board,
                     move_obj=move_obj)
 
+            counter_move_size = len(l_move_u_set) + len(q_move_u_set)
+
             # 自玉の着手と、敵玉の応手の関係から辞書を作成
             kl_relation_dic = self._evaluation_kk_table_obj.create_relation_exists_dictionary_by_k_move_and_l_moves(
                     k_move_obj=move_obj,
                     l_move_u_set=l_move_u_set)
 
+            # TODO 自玉の着手と、敵軍の玉以外の応手の関係から辞書を作成
+
             # 表示
-            for kl_index, policy in kl_relation_dic.items():
+            for kl_index, relation_number in kl_relation_dic.items():
                 k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
                         kl_index=kl_index)
 
-                print(f"KL[{k_move_obj.as_usi:5} {l_move_obj.as_usi:5}] : {policy}")
+                policy_permille = PolicyHelper.get_permille_from_relation_number(
+                        relation_number=relation_number,
+                        counter_moves_size=counter_move_size)
 
-            # TODO 自玉の着手と、敵軍の玉以外の応手の関係から辞書を作成
+                print(f"KL[{k_move_obj.as_usi:5} {l_move_obj.as_usi:5}] : {policy_permille:4}‰  relation_number:{relation_number}")
 
         else:
             pass
@@ -651,16 +657,18 @@ class EvaluationFacade():
 
         l_size = len(l_move_u_set)
         q_size = len(q_move_u_set)
-        opponent_size = l_size + q_size
+        counter_moves_size = l_size + q_size
         #print(f"l_size:{l_size}  q_size:{q_size}  opponent_size:{opponent_size}")
 
-        for move_u, policy in k_move_u_and_policy_dictionary.items():
-            k_move_u_and_policy_dictionary[move_u] = policy * 1000 // opponent_size
-            #print(f"{k_move_u_and_policy_dictionary[move_u]}  =  old:{policy}  opponent_size:{opponent_size}")
+        for move_u, relation_number in k_move_u_and_policy_dictionary.items():
+            k_move_u_and_policy_dictionary[move_u] = PolicyHelper.get_permille_from_relation_number(
+                    relation_number=relation_number,
+                    counter_moves_size=counter_moves_size)
 
-        for move_u, policy in p_move_u_and_policy_dictionary.items():
-            p_move_u_and_policy_dictionary[move_u] = policy * 1000 // opponent_size
-            #print(f"{p_move_u_and_policy_dictionary[move_u]}  =  old:{opponent_size}  p_size:{opponent_size}")
+        for move_u, relation_number in p_move_u_and_policy_dictionary.items():
+            p_move_u_and_policy_dictionary[move_u] = PolicyHelper.get_permille_from_relation_number(
+                    relation_number=relation_number,
+                    counter_moves_size=counter_moves_size)
 
         return (k_move_u_and_policy_dictionary, p_move_u_and_policy_dictionary)
 
@@ -1479,6 +1487,30 @@ class EvalutionMmTable():
             raise ValueError(f"bit must be 0 or 1. bit:{bit}")
 
         self._table_as_array[index] = bit
+
+
+class PolicyHelper():
+    """ポリシー値のヘルパー"""
+
+
+    def get_permille_from_relation_number(
+            relation_number,
+            counter_moves_size):
+        """着手と応手の関連を、千分率の整数のポリシー値に変換
+
+        Parameters
+        ----------
+        relation_number : int
+            着手と応手の関連の数
+        counter_moves_size : int
+            着手に対する応手の数
+
+        Returns
+        -------
+        - policy_permille : int
+            千分率の整数のポリシー値
+        """
+        return relation_number * 1000 // counter_moves_size
 
 
 class BoardHelper():
