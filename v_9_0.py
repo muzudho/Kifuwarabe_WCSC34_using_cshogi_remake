@@ -1136,17 +1136,32 @@ class MoveListHelper():
 
             # 指し手の移動元を取得
             move_obj = Move.from_usi(move_u)
-            src_sq_or_none = move_obj.src_sq_or_none
 
             # 自玉の指し手か？
-            #print(f"［自玉の指し手か？］ move_as_usi: {move_as_usi}, src_sq_or_none: {src_sq_or_none}, k_sq: {k_sq}, board.turn: {board.turn}")
-            if src_sq_or_none == k_sq:
+            if MoveHelper.is_king(k_sq, move_obj):
                 k_moves_u.append(move_u)
 
             else:
                 p_moves_u.append(move_u)
 
         return (k_moves_u, p_moves_u)
+
+
+class MoveHelper():
+    """指し手ヘルパー"""
+
+
+    @staticmethod
+    def is_king(
+            k_sq,
+            move_obj):
+        """自玉か？"""
+
+        src_sq_or_none = move_obj.src_sq_or_none
+
+        # 自玉の指し手か？
+        #print(f"［自玉の指し手か？］ move_as_usi: {move_as_usi}, src_sq_or_none: {src_sq_or_none}, k_sq: {k_sq}, board.turn: {board.turn}")
+        return src_sq_or_none == k_sq
 
 
 class Move():
