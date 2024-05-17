@@ -1405,8 +1405,61 @@ class BoardHelper():
         ----------
         board : Board
             局面
+
+        Returns
+        -------
+        k_sq : int
+            自玉のマス番号
         """
         return board.king_square(board.turn)
+
+
+    def create_counter_moves(
+            board,
+            move_obj):
+        """応手の一覧を作成
+
+        Parameters
+        ----------
+        board : Board
+            局面
+        move_obj : Move
+            着手
+        """
+        #
+        # 相手が指せる手の集合
+        # -----------------
+        #
+        #   ヌルムーブをしたいが、 `board.push_pass()` が機能しなかったので、合法手を全部指してみることにする
+        #
+
+        # 敵玉（Lord）の指し手の集合
+        l_move_u_set = set()
+        # 敵玉を除く敵軍の指し手の集合（Quaffer；ゴクゴク飲む人。Pの次の文字Qを頭文字にした単語）
+        q_move_u_set = set()
+
+        # １手指す
+        board.push_usi(move_obj.as_usi)
+
+        # 敵玉（L; Lord）の位置を調べる
+        l_sq = BoardHelper.get_king_square(board)
+
+        for counter_move_id in board.legal_moves:
+            counter_move_u = cshogi.move_to_usi(counter_move_id)
+
+            counter_move_obj = Move.from_usi(counter_move_u)
+
+            # 敵玉の指し手か？
+            if MoveHelper.is_king(l_sq, counter_move_obj):
+                l_move_u_set.add(counter_move_u)
+            # 敵玉を除く敵軍の指し手
+            else:
+                q_move_u_set.add(counter_move_u)
+
+        # １手戻す
+        board.pop()
+
+        return (l_move_u_set, q_move_u_set)
 
 
 class MoveAndPolicyHelper():
