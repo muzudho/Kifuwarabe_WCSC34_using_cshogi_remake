@@ -656,7 +656,7 @@ class EvaluationFacade():
             # ＫＫ評価値テーブルを参照
             for l_move_u in l_move_u_set:
                 # FIXME bit 値で２以上が返ってくる
-                policy_bit = kifuwarabe.evaluation_kk_table_obj.get_bit_by_kl_moves(
+                policy_bit = kifuwarabe.evaluation_kk_table_obj.get_relation_esixts_by_kl_moves(
                         k_move_obj=Move.from_usi(k_move_u),
                         l_move_obj=Move.from_usi(l_move_u))
                 #print(f"kk policy_bit:{policy_bit}")
@@ -1081,7 +1081,7 @@ class EvaluationKkTable():
                 table_as_array=self.mm_table_obj.table_as_array)
 
 
-    def get_bit_by_kl_moves(
+    def get_relation_esixts_by_kl_moves(
             self,
             k_move_obj,
             l_move_obj):
@@ -1099,13 +1099,32 @@ class EvaluationKkTable():
         bit : int
             0 or 1
         """
-        return self._mm_table_obj.get_bit_by_index(
+        return self.get_relation_esixts_by_index(
                 index=EvaluationKkTable.get_index_of_kk_table(
                     k_move_obj=k_move_obj,
                     l_move_obj=l_move_obj))
 
 
-    def set_bit_by_kl_moves(
+    def get_relation_esixts_by_index(
+            self,
+            index):
+        """配列のインデックスを受け取って、関係の有無を返します
+
+        Parameters
+        ----------
+        index : int
+            配列のインデックス
+
+        Returns
+        -------
+        bit : int
+            0 or 1
+        """
+        return self._mm_table_obj.get_bit_by_index(
+                index=index)
+
+
+    def set_relation_esixts_by_kl_moves(
             self,
             k_move_obj,
             l_move_obj,
@@ -1128,11 +1147,11 @@ class EvaluationKkTable():
                 bit=bit)
 
 
-    def create_relations_by_move(
+    def create_relation_exists_dictionary_by_k_move_and_l_moves(
             self,
             k_move_obj,
             l_move_obj_list):
-        """指し手と、その応手のリストを受け取ると、全結合の関係の bit を返します
+        """自玉の指し手と、敵玉の応手のリストを受け取ると、すべての関係の有無を辞書に入れて返します
         ＫＫ評価値テーブル用
 
         Parameters
@@ -1155,13 +1174,12 @@ class EvaluationKkTable():
                 k_move_obj=k_move_obj,
                 l_move_obj=l_move_obj)
 
-            relation_bit = EvaluationKkTable.get_bit_by_kl_moves(
-                k_move_obj=k_move_obj,
-                l_move_obj=l_move_obj)
+            relation_bit = self.get_relation_esixts_by_index(
+                kl_index = kl_index)
 
+            relations[kl_index] = relation_bit
 
-
-        pass
+        return relations
 
 
 ########################################

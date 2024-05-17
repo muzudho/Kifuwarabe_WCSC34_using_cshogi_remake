@@ -379,7 +379,7 @@ class EvaluationFacade():
 
             # ＫＫ評価値テーブルを参照
             for l_move_u in l_move_u_set:
-                policy_bit = kifuwarabe.evaluation_kk_table_obj.get_bit_by_kl_moves(
+                policy_bit = kifuwarabe.evaluation_kk_table_obj.get_relation_esixts_by_kl_moves(
                         k_move_obj=Move.from_usi(k_move_u),
                         l_move_obj=Move.from_usi(l_move_u))
                 k_move_u_and_policy_dictionary[k_move_u] += policy_bit
@@ -700,7 +700,7 @@ class EvaluationKkTable():
                 table_as_array=self.mm_table_obj.table_as_array)
 
 
-    def get_bit_by_kl_moves(
+    def get_relation_esixts_by_kl_moves(
             self,
             k_move_obj,
             l_move_obj):
