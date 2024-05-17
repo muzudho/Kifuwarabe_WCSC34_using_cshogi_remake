@@ -556,7 +556,7 @@ class EvaluationFacade():
 
             # TODO ＫＰ評価値テーブルを参照したい
             for q_move_u in q_move_u_set:
-                policy = random.randint(0,1)
+                policy = 0 # random.randint(0,1)
                 k_move_u_and_policy_dictionary[k_move_u] += policy
 
         for p_move_u in p_moves_u:
@@ -564,12 +564,12 @@ class EvaluationFacade():
 
             # TODO ＰＫ評価値テーブルを参照したい
             for l_move_u in l_move_u_set:
-                policy = random.randint(0,1)
+                policy = 0 # random.randint(0,1)
                 p_move_u_and_policy_dictionary[p_move_u] += policy
 
             # TODO ＰＰ評価値テーブルを参照したい
             for q_move_u in q_move_u_set:
-                policy = random.randint(0,1)
+                policy = 0 # random.randint(0,1)
                 p_move_u_and_policy_dictionary[p_move_u] += policy
 
         return (k_move_u_and_policy_dictionary, p_move_u_and_policy_dictionary)
