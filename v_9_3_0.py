@@ -1191,7 +1191,7 @@ sfen {board.sfen()}""")
 
 
 ########################################
-# データ構造階層
+# データ構造関連
 ########################################
 
 class EvalutionMmTable():
@@ -1304,6 +1304,21 @@ class EvalutionMmTable():
         self._table_as_array[index] = bit
 
 
+class BoardHelper():
+    """局面のヘルパー"""
+
+
+    def get_king_square(board):
+        """自玉のマス番号
+
+        Parameters
+        ----------
+        board : Board
+            局面
+        """
+        return board.king_square(board.turn)
+
+
 class MoveAndPolicyHelper():
     """TODO 評価値付きの指し手のリストのヘルパー"""
 
@@ -1413,8 +1428,7 @@ class MoveListHelper():
         - 自軍の玉以外の合法手のリスト : USI符号表記
         """
 
-        # 自玉のマス番号
-        k_sq = board.king_square(board.turn)
+        k_sq = BoardHelper.get_king_square(board)
 
         # USIプロトコルでの符号表記に変換
         k_moves_u = []
