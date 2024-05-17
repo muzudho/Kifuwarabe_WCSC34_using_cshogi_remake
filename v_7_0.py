@@ -776,8 +776,41 @@ class EvalutionMmTable():
         ----------
         index : int
             配列のインデックス
+
+        Returns
+        -------
+        bit : int
+            0 or 1
         """
-        return self._table_as_array[index]
+
+        # ビット・インデックスを、バイトとビットに変換
+        byte_index = index // 8
+        bit_index = index % 8
+
+        byte_value = self._table_as_array[byte_index]
+
+        # ビットはめんどくさい。ビッグエンディアン
+        if bit_index == 0:
+            bit_value = byte_value // 128 % 2
+        elif bit_index == 1:
+            bit_value = byte_value // 64 % 2
+        elif bit_index == 2:
+            bit_value = byte_value // 32 % 2
+        elif bit_index == 3:
+            bit_value = byte_value // 16 % 2
+        elif bit_index == 4:
+            bit_value = byte_value // 8 % 2
+        elif bit_index == 5:
+            bit_value = byte_value // 4 % 2
+        elif bit_index == 6:
+            bit_value = byte_value // 2 % 2
+        else:
+            bit_value = byte_value % 2
+
+        if bit_value < 0 or 1 < bit_value:
+            raise ValueError(f"bit must be 0 or 1. bit:{bit_value}")
+
+        return bit_value
 
 class MoveListHelper():
     """指し手のリストのヘルパー"""
