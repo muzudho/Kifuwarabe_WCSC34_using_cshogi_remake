@@ -483,7 +483,10 @@ class Kifuwarabe():
 
             # 表示
             for kl_index, policy in kl_relation_dic.items():
-                print(f"KL[{kl_index}] : {policy}")
+                k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
+                        kl_index=kl_index)
+
+                print(f"KL[{k_move_obj.as_usi:5} {l_move_obj.as_usi:5}] : {policy}")
 
             # TODO 自玉の着手と、敵軍の玉以外の応手の関係から辞書を作成
 
@@ -866,6 +869,19 @@ class EvaluationKkTable():
     """相対SQを、玉の指し手のインデックスへ変換"""
 
 
+    _relative_index_to_relative_sq = {
+        0: -10,
+        1: -9,
+        2: -8,
+        3: -1,
+        4: 1,
+        5: 8,
+        6: 9,
+        7: 10,
+    }
+    """玉の指し手のインデックスを相対SQへ変換"""
+
+
     @staticmethod
     def get_king_direction_max_number():
         """玉の移動方向の最大数
@@ -1134,6 +1150,71 @@ class EvaluationKkTable():
             relations[kl_index] = relation_bit
 
         return relations
+
+
+    @staticmethod
+    def destructure_k_index(
+            k_index):
+        """Ｋインデックス分解
+
+        Parameter
+        ---------
+        k_index : int
+            玉の指し手のインデックス
+
+        Returns
+        -------
+        - move_obj : Move
+            指し手
+        """
+        rest = k_index
+
+        king_direction_max_number = EvaluationKkTable.get_king_direction_max_number()
+
+        relative_index = rest % king_direction_max_number
+        rest //= king_direction_max_number
+
+        src_sq = rest
+
+        relative_sq = EvaluationKkTable._relative_index_to_relative_sq[relative_index]
+        dst_sq = src_sq + relative_sq
+
+        return Move.from_src_dst_pro(
+                src_sq=src_sq,
+                dst_sq=dst_sq,
+                promoted=False)
+
+
+
+
+    @staticmethod
+    def destructure_kl_index(
+            kl_index):
+        """ＫＬインデックス分解
+
+        Parameter
+        ---------
+        kl_index : int
+            自玉と敵玉の関係の通しインデックス
+
+        Returns
+        -------
+        - k_move_obj : Move
+            自玉の着手
+        - l_move_obj : Move
+            敵玉の応手
+        """
+        king_move_number = EvaluationKkTable.get_king_move_number()
+
+        l_index = kl_index % king_move_number
+        k_index = kl_index // king_move_number
+
+        l_move = EvaluationKkTable.destructure_k_index(
+            k_index=l_index)
+        k_move = EvaluationKkTable.destructure_k_index(
+            k_index=k_index)
+
+        return (k_move, l_move)
 
 
 ########################################
