@@ -458,6 +458,10 @@ class Kifuwarabe():
         cmd : str[]
             コマンドのトークン配列
         """
+        if len(cmd) < 2:
+            print(f"relation command must be move. ex: `relation 7g7f` token number:{len(cmd)}")
+            return
+
         move_u = cmd[1]
 
         k_sq = BoardHelper.get_king_square(self._board)
@@ -467,11 +471,21 @@ class Kifuwarabe():
         # 自玉の指し手か？
         if MoveHelper.is_king(k_sq, move_obj):
 
-            # TODO 応手のリストを作りたい
+            # 応手の一覧を作成
+            l_move_u_set, q_move_u_set = BoardHelper.create_counter_move_u_set(
+                    board=self._board,
+                    move_obj=move_obj)
 
-            relation_dic = self._evaluation_kk_table_obj.create_relation_exists_dictionary_by_k_move_and_l_moves(
+            # 自玉の着手と、敵玉の応手の関係から辞書を作成
+            kl_relation_dic = self._evaluation_kk_table_obj.create_relation_exists_dictionary_by_k_move_and_l_moves(
                     k_move_obj=move_obj,
-                    l_move_obj_list=None)
+                    l_move_u_set=l_move_u_set)
+
+            # 表示
+            for kl_index, policy in kl_relation_dic.items():
+                print(f"KL[{kl_index}] : {policy}")
+
+            # TODO 自玉の着手と、敵軍の玉以外の応手の関係から辞書を作成
 
         else:
             pass
@@ -719,25 +733,17 @@ class EvaluationFacade():
 
         for friend_moves_u in list_of_friend_moves_u:
             for friend_move_u in friend_moves_u:
-                board.push_usi(friend_move_u)
 
-                # 敵玉（L; Lord）の位置を調べる
-                l_sq = board.king_square(board.turn)
+                move_obj = Move.from_usi(friend_move_u)
 
-                for opponent_move_id in board.legal_moves:
-                    opponent_move_u = cshogi.move_to_usi(opponent_move_id)
+                # 応手の一覧を作成
+                temp_l_move_u_set, temp_q_move_u_set = BoardHelper.create_counter_move_u_set(
+                        board=board,
+                        move_obj=move_obj)
 
-                    opponent_move_obj = Move.from_usi(opponent_move_u)
-                    src_sq_or_none = opponent_move_obj.src_sq_or_none
-
-                    # 敵玉の指し手
-                    if src_sq_or_none is not None and src_sq_or_none == l_sq:
-                        l_move_u_set.add(opponent_move_u)
-                    # 敵玉を除く敵軍の指し手
-                    else:
-                        q_move_u_set.add(opponent_move_u)
-
-                board.pop()
+                # 和集合を作成
+                l_move_u_set = l_move_u_set.union(temp_l_move_u_set)
+                q_move_u_set = q_move_u_set.union(temp_q_move_u_set)
 
         #
         # 評価値テーブルを参照し、各指し手にポリシー値を付ける
@@ -1048,14 +1054,14 @@ class EvaluationKkTable():
             0 or 1
         """
         return self.get_relation_esixts_by_index(
-                index=EvaluationKkTable.get_index_of_kk_table(
+                kl_index=EvaluationKkTable.get_index_of_kk_table(
                     k_move_obj=k_move_obj,
                     l_move_obj=l_move_obj))
 
 
     def get_relation_esixts_by_index(
             self,
-            index):
+            kl_index):
         """配列のインデックスを受け取って、関係の有無を返します
 
         Parameters
@@ -1069,7 +1075,7 @@ class EvaluationKkTable():
             0 or 1
         """
         return self._mm_table_obj.get_bit_by_index(
-                index=index)
+                index=kl_index)
 
 
     def set_relation_esixts_by_kl_moves(
@@ -1098,7 +1104,7 @@ class EvaluationKkTable():
     def create_relation_exists_dictionary_by_k_move_and_l_moves(
             self,
             k_move_obj,
-            l_move_obj_list):
+            l_move_u_set):
         """自玉の指し手と、敵玉の応手のリストを受け取ると、すべての関係の有無を辞書に入れて返します
         ＫＫ評価値テーブル用
 
@@ -1106,7 +1112,7 @@ class EvaluationKkTable():
         ----------
         k_move_obj : Move
             自玉の着手
-        l_move_obj_list : List<Move>
+        l_move_u_set : List<str>
             敵玉の応手のリスト
 
         Returns
@@ -1117,13 +1123,13 @@ class EvaluationKkTable():
 
         relations = {}
 
-        for l_move_obj in l_move_obj_list:
+        for l_move_u in l_move_u_set:
             kl_index = EvaluationKkTable.get_index_of_kk_table(
                 k_move_obj=k_move_obj,
-                l_move_obj=l_move_obj)
+                l_move_obj=Move.from_usi(l_move_u))
 
             relation_bit = self.get_relation_esixts_by_index(
-                kl_index = kl_index)
+                    kl_index=kl_index)
 
             relations[kl_index] = relation_bit
 
@@ -1398,6 +1404,7 @@ class BoardHelper():
     """局面のヘルパー"""
 
 
+    @staticmethod
     def get_king_square(board):
         """自玉のマス番号
 
@@ -1414,7 +1421,8 @@ class BoardHelper():
         return board.king_square(board.turn)
 
 
-    def create_counter_moves(
+    @staticmethod
+    def create_counter_move_u_set(
             board,
             move_obj):
         """応手の一覧を作成

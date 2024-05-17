@@ -309,6 +309,7 @@ class BoardHelper():
     """局面のヘルパー"""
 
 
+    @staticmethod
     def get_king_square(board):
         """自玉のマス番号
 
