@@ -124,8 +124,9 @@ class Kifuwarabe():
             elif cmd[0] == 'relation':
                 self.relation(cmd)
 
-            # 指定の指し手Ａのポリシー値を１つ、指定の指し手Ｂのポリシー値に移す
-            #       code: weaken 6g6f 7g7f
+            # 指定の着手の評価値テーブルについて、関連がある箇所を（適当に選んで）、それを関連が無いようにする。
+            # これによって、その着手のポリシー値は下がる
+            #       code: weaken 5i5h
             elif cmd[0] == 'weaken':
                 self.weaken(cmd)
 
@@ -564,8 +565,9 @@ class Kifuwarabe():
 
 
     def weaken(self, cmd):
-        """指定の指し手のポリシー値を、最弱のポリシー値を持つ指し手に分ける
-        code: weaken 6g6f 7g7f
+        """指定の着手の評価値テーブルについて、関連がある箇所を（適当に選んで）、それを関連が無いようにする。
+        これによって、その着手のポリシー値は下がる
+        code: weaken 5i5h
 
         Parameters
         ----------
@@ -573,8 +575,8 @@ class Kifuwarabe():
             コマンドのトークン配列
         """
 
-        if len(cmd) < 3:
-            print(f"weaken command must be 2 moves. ex: `weaken 6g6f 7g7f` token number:{len(cmd)}")
+        if len(cmd) < 2:
+            print(f"weaken command must be 1 move. ex: `weaken 5i5h` token number:{len(cmd)}")
             return
 
         # 投了局面時
@@ -613,7 +615,10 @@ class Kifuwarabe():
                 move_obj=weaken_move_obj)
 
         # 弱めたい着手は、玉の指し手か？
-        if MoveHelper.is_king(k_sq, weaken_move_obj):
+        is_weaken_king_move = MoveHelper.is_king(k_sq, weaken_move_obj)
+        print(f"is_weaken_king_move:{is_weaken_king_move}")
+
+        if is_weaken_king_move:
             #
             # ＫＬ，ＫＱ
             #
@@ -645,6 +650,19 @@ class Kifuwarabe():
                     pq_move_u_set=weaken_q_move_u_set,
                     kifuwarabe=self,)
 
+        # 現在の関係の一覧
+        for fo_index, relation_bit in weaken_kl_index_and_relation_bit_dictionary.items():
+            print(f"KL:{fo_index:6}  relation_bit:{relation_bit}")
+
+        for fo_index, relation_bit in weaken_kq_index_and_relation_bit_dictionary.items():
+            print(f"KQ:{fo_index:6}  relation_bit:{relation_bit}")
+
+        for fo_index, relation_bit in weaken_pl_index_and_relation_bit_dictionary.items():
+            print(f"PL:{fo_index:6}  relation_bit:{relation_bit}")
+
+        for fo_index, relation_bit in weaken_pq_index_and_relation_bit_dictionary.items():
+            print(f"PQ:{fo_index:6}  relation_bit:{relation_bit}")
+
         # 関係をポリシー値に変換
         (weaken_k_move_u_and_l_and_policy_dictionary,
          weaken_k_move_u_and_q_and_policy_dictionary,
@@ -656,16 +674,16 @@ class Kifuwarabe():
                 pq_index_and_relation_bit_dictionary=weaken_pq_index_and_relation_bit_dictionary)
 
         for move_u, policy in weaken_k_move_u_and_l_and_policy_dictionary.items():
-            print(f"K:{move_u:5}  L:*****  policy:{policy}")
+            print(f"K:{move_u:5}  L:*****  policy:{policy:4}‰")
 
         for move_u, policy in weaken_k_move_u_and_q_and_policy_dictionary.items():
-            print(f"K:{move_u:5}  Q:*****  policy:{policy}")
+            print(f"K:{move_u:5}  Q:*****  policy:{policy:4}‰")
 
         for move_u, policy in weaken_p_move_u_and_l_and_policy_dictionary.items():
-            print(f"K:{move_u:5}  L:*****  policy:{policy}")
+            print(f"K:{move_u:5}  L:*****  policy:{policy:4}‰")
 
         for move_u, policy in weaken_p_move_u_and_q_and_policy_dictionary.items():
-            print(f"K:{move_u:5}  Q:*****  policy:{policy}")
+            print(f"K:{move_u:5}  Q:*****  policy:{policy:4}‰")
 
         # ポリシー毎に指し手をまとめ直す
         (weaken_kl_policy_to_f_move_u_set_dictionary,
@@ -710,58 +728,6 @@ class Kifuwarabe():
 
         for policy in weaken_kl_policy_list_asc:
             print(f"KL asc policy:{policy}")
-
-        # 強めたい着手
-        strengthen_move_u = cmd[2]
-        strengthen_move_obj = Move.from_usi(strengthen_move_u)
-
-        # 強めたい着手に対する応手の一覧を取得
-        strengthen_l_move_u_set, strengthen_q_move_u_set = BoardHelper.create_counter_move_u_set(
-                board=self._board,
-                move_obj=strengthen_move_obj)
-
-        # 強めたい着手は、玉の指し手か？
-        if MoveHelper.is_king(k_sq, strengthen_move_obj):
-            #
-            # ＫＬ，ＫＱ
-            #
-            (strengthen_kl_index_and_relation_bit_dictionary,
-             strengthen_kq_index_and_relation_bit_dictionary,
-             strengthen_pl_index_and_relation_bit_dictionary,
-             strengthen_pq_index_and_relation_bit_dictionary) = EvaluationFacade.select_mm_index_and_relation_bit(
-                    k_moves_u=[strengthen_move_u],
-                    kl_move_u_set=strengthen_l_move_u_set,
-                    kq_move_u_set=strengthen_q_move_u_set,
-                    p_moves_u=[],
-                    pl_move_u_set=set(),
-                    pq_move_u_set=set(),
-                    kifuwarabe=self,)
-
-        else:
-            #
-            # ＰＬ，ＰＱ
-            #
-            (strengthen_kl_index_and_relation_bit_dictionary,
-             strengthen_kq_index_and_relation_bit_dictionary,
-             strengthen_pl_index_and_relation_bit_dictionary,
-             strengthen_pq_index_and_relation_bit_dictionary) = EvaluationFacade.select_mm_index_and_relation_bit(
-                    k_moves_u=[],
-                    kl_move_u_set=set(),
-                    kq_move_u_set=set(),
-                    p_moves_u=[strengthen_move_u],
-                    pl_move_u_set=strengthen_l_move_u_set,
-                    pq_move_u_set=strengthen_q_move_u_set,
-                    kifuwarabe=self,)
-
-        # 関係をポリシー値に変換
-        (strengthen_k_move_u_and_l_and_policy_dictionary,
-         strengthen_k_move_u_and_q_and_policy_dictionary,
-         strengthen_p_move_u_and_l_and_policy_dictionary,
-         strengthen_p_move_u_and_q_and_policy_dictionary) = EvaluationFacade.select_move_u_and_policy_permille_group_by_move_u(
-                kl_index_and_relation_bit_dictionary=strengthen_kl_index_and_relation_bit_dictionary,
-                kq_index_and_relation_bit_dictionary=strengthen_kq_index_and_relation_bit_dictionary,
-                pl_index_and_relation_bit_dictionary=strengthen_pl_index_and_relation_bit_dictionary,
-                pq_index_and_relation_bit_dictionary=strengthen_pq_index_and_relation_bit_dictionary)
 
         # TODO 弱めたい関係を１個選ぶ
         # TODO 強めたい関係を１個選ぶ
