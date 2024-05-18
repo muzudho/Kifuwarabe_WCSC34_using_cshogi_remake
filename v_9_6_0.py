@@ -56,7 +56,8 @@ class Kifuwarabe():
         while True:
 
             # 入力
-            cmd = input().split(' ', 1)
+            #cmd = input().split(' ', 1)
+            cmd = input().split(' ')
 
             # USIエンジン握手
             if cmd[0] == 'usi':
@@ -931,6 +932,8 @@ class EvaluationFacade():
                     relation_number=relation_number,
                     counter_moves_size=len(kl_index_and_relation_bit_dictionary))
 
+            print(f"K:{k_move_obj.as_usi:5}  policy:{kl_move_u_and_policy_dictionary[k_move_obj.as_usi]:4}‰  kl_index:{kl_index}")
+
         # TODO ＫＱ
         #for kq_index, relation_number in kq_index_and_relation_bit_dictionary.items():
         #    kq_move_u_and_policy_dictionary[kq_index] = PolicyHelper.get_permille_from_relation_number(
@@ -1003,7 +1006,14 @@ class EvaluationFacade():
 
         Returns
         -------
-        - ポリシー値は千分率の４桁の整数
+        - kl_move_u_and_policy_dictionary : Dictionary<str, int>
+            自玉の着手と、敵玉の応手の、関係のポリシー値。ポリシー値は千分率の４桁の整数
+        - kq_move_u_and_policy_dictionary,
+            自玉の着手と、敵兵の応手の、関係のポリシー値。ポリシー値は千分率の４桁の整数
+        - pl_move_u_and_policy_dictionary,
+            自兵の着手と、敵玉の応手の、関係のポリシー値。ポリシー値は千分率の４桁の整数
+        - pq_move_u_and_policy_dictionary
+            自兵の着手と、敵兵の応手の、関係のポリシー値。ポリシー値は千分率の４桁の整数
         """
 
         # 自玉の着手の集合と、自軍の玉以外の着手の集合
@@ -1027,18 +1037,18 @@ class EvaluationFacade():
         # 自軍の玉以外の着手に対する、敵軍の玉以外の応手の集合（Quaffer；ゴクゴク飲む人。Pの次の文字Qを頭文字にした単語）
         pq_move_u_set = set()
 
+        # Ｋに対する、応手の一覧を作成
         for move_u in k_moves_u:
             move_obj = Move.from_usi(move_u)
 
-            # 応手の一覧を作成
             kl_move_u_set, kq_move_u_set = BoardHelper.create_counter_move_u_set(
                     board=board,
                     move_obj=move_obj)
 
+        # Ｐに対する、応手の一覧を作成
         for move_u in p_moves_u:
             move_obj = Move.from_usi(move_u)
 
-            # 応手の一覧を作成
             pl_move_u_set, pq_move_u_set = BoardHelper.create_counter_move_u_set(
                     board=board,
                     move_obj=move_obj)
@@ -1048,9 +1058,9 @@ class EvaluationFacade():
         # -----------------------
         #
         (kl_index_and_relation_bit_dictionary,
-        kq_index_and_relation_bit_dictionary,
-        pl_index_and_relation_bit_dictionary,
-        pq_index_and_relation_bit_dictionary) = EvaluationFacade.query_mm_move_u_and_relation_bit(
+         kq_index_and_relation_bit_dictionary,
+         pl_index_and_relation_bit_dictionary,
+         pq_index_and_relation_bit_dictionary) = EvaluationFacade.query_mm_move_u_and_relation_bit(
                 k_moves_u=k_moves_u,
                 kl_move_u_set=kl_move_u_set,
                 kq_move_u_set=kq_move_u_set,
