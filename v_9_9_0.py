@@ -34,8 +34,8 @@ class Kifuwarabe():
         # 盤
         self._board = cshogi.Board()
 
-        # ＫＫ評価値テーブル
-        self._evaluation_kk_table_obj = EvaluationKkTable()
+        # ＫＬ評価値テーブル
+        self._evaluation_kl_table_obj = EvaluationKkTable()
 
         # 自分の手番
         self._my_turn = None
@@ -45,9 +45,9 @@ class Kifuwarabe():
 
 
     @property
-    def evaluation_kk_table_obj(self):
-        """ＫＫ評価値テーブル"""
-        return self._evaluation_kk_table_obj
+    def evaluation_kl_table_obj(self):
+        """ＫＬ評価値テーブル"""
+        return self._evaluation_kl_table_obj
 
 
     def usi_loop(self):
@@ -162,11 +162,11 @@ class Kifuwarabe():
     def usinewgame(self):
         """新しい対局"""
 
-        # ＫＫ評価値テーブル
-        self._evaluation_kk_table_obj.load_on_usinewgame()
+        # ＫＬ評価値テーブル
+        self._evaluation_kl_table_obj.load_on_usinewgame()
 
-        if self._evaluation_kk_table_obj.mm_table_obj.is_file_modified:
-            self._evaluation_kk_table_obj.save_evaluation_table_file()
+        if self._evaluation_kl_table_obj.mm_table_obj.is_file_modified:
+            self._evaluation_kl_table_obj.save_evaluation_table_file()
         else:
             print(f"[{datetime.datetime.now()}] kk file not changed", flush=True)
 
@@ -660,7 +660,7 @@ class Kifuwarabe():
 
                         print(f"kl_index:{kl_index}  K:{move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  remove relation")
 
-                        self._evaluation_kk_table_obj.set_relation_esixts_by_kl_moves(
+                        self._evaluation_kl_table_obj.set_relation_esixts_by_kl_moves(
                                 k_move_obj=k_move_obj,
                                 l_move_obj=l_move_obj,
                                 bit=0)
@@ -992,7 +992,7 @@ class EvaluationFacade():
                     k_move_obj=k_move_obj,
                     l_move_obj=l_move_obj)
 
-                relation_bit = kifuwarabe.evaluation_kk_table_obj.get_relation_esixts_by_index(
+                relation_bit = kifuwarabe.evaluation_kl_table_obj.get_relation_esixts_by_index(
                         kl_index=kl_index)
 
                 kl_index_and_relation_bit_dictionary[kl_index] = relation_bit
@@ -1489,12 +1489,9 @@ class EvaluationFacade():
                 board=board,
                 move_obj=move_obj)
 
-        # 応手の数
-        counter_move_size = len(l_move_u_set) + len(q_move_u_set)
-
         if is_king_move:
             # 自玉の着手と、敵玉の応手の一覧から、ＫＬテーブルのインデックスと、関係の有無を格納した辞書を作成
-            fl_index_to_relation_exists_dic = kifuwarabe.evaluation_kk_table_obj.select_kl_index_and_relation_exists(
+            fl_index_to_relation_exists_dic = kifuwarabe.evaluation_kl_table_obj.select_kl_index_and_relation_exists(
                     k_move_obj=move_obj,
                     l_move_u_set=l_move_u_set)
 
@@ -2090,27 +2087,36 @@ class EvalutionMmTable():
         """
 
         # ビット・インデックスを、バイトとビットに変換
-        byte_index = index // 8
         bit_index = index % 8
+        byte_index = index // 8
 
         byte_value = self._table_as_array[byte_index]
 
         # ビットはめんどくさい。ビッグエンディアン
+        # TODO 論理シフト演算子を使えばいいのでは？ Pythonのシフト演算子ワケワカラン
         if bit_index == 0:
+            # 1xxx xxxx
             bit_value = byte_value // 128 % 2
         elif bit_index == 1:
+            # x1xx xxxx
             bit_value = byte_value // 64 % 2
         elif bit_index == 2:
+            # xx1x xxxx
             bit_value = byte_value // 32 % 2
         elif bit_index == 3:
+            # xxx1 xxxx
             bit_value = byte_value // 16 % 2
         elif bit_index == 4:
+            # xxxx 1xxx
             bit_value = byte_value // 8 % 2
         elif bit_index == 5:
+            # xxxx x1xx
             bit_value = byte_value // 4 % 2
         elif bit_index == 6:
+            # xxxx xx1x
             bit_value = byte_value // 2 % 2
         else:
+            # xxxx xxx1
             bit_value = byte_value % 2
 
         if bit_value < 0 or 1 < bit_value:
@@ -2136,9 +2142,70 @@ class EvalutionMmTable():
         if bit < 0 or 1 < bit:
             raise ValueError(f"bit must be 0 or 1. bit:{bit}")
 
-        print(f"[EvalutionMmTable > set_bit_by_index]  index:{index}  old bit:{self._table_as_array[index]}")
-        self._table_as_array[index] = bit
-        print(f"[EvalutionMmTable > set_bit_by_index]  index:{index}  new bit:{self._table_as_array[index]}")
+        # ビット・インデックスを、バイトとビットに変換
+        bit_index = index % 8
+        byte_index = index // 8
+
+        byte_value = self._table_as_array[byte_index]
+
+        print(f"[EvalutionMmTable > set_bit_by_index]  byte_index:{byte_index}  bit_index:{bit_index}  old byte_value:0x{self._table_as_array[byte_index]:b}")
+
+        # ビットはめんどくさい。ビッグエンディアン
+        if bit == 1:
+            # TODO 論理シフト演算子を使えばいいのでは？ Pythonのシフト演算子ワケワカラン
+            if bit_index == 0:
+                # 1xxx xxxx
+                self._table_as_array[byte_index] = byte_value | 128
+            elif bit_index == 1:
+                # x1xx xxxx
+                self._table_as_array[byte_index] = byte_value | 64
+            elif bit_index == 2:
+                # xx1x xxxx
+                self._table_as_array[byte_index] = byte_value | 32
+            elif bit_index == 3:
+                # xxx1 xxxx
+                self._table_as_array[byte_index] = byte_value | 16
+            elif bit_index == 4:
+                # xxxx 1xxx
+                self._table_as_array[byte_index] = byte_value | 8
+            elif bit_index == 5:
+                # xxxx x1xx
+                self._table_as_array[byte_index] = byte_value | 4
+            elif bit_index == 6:
+                # xxxx xx1x
+                self._table_as_array[byte_index] = byte_value | 2
+            else:
+                # xxxx xxx1
+                self._table_as_array[byte_index] = byte_value | 1
+
+        else:
+            # TODO 論理シフト演算子を使えばいいのでは？ Pythonのシフト演算子ワケワカラン
+            if bit_index == 0:
+                # 0xxx xxxx
+                self._table_as_array[byte_index] = byte_value & (255 - 128)
+            elif bit_index == 1:
+                # x0xx xxxx
+                self._table_as_array[byte_index] = byte_value & (255 - 64)
+            elif bit_index == 2:
+                # xx0x xxxx
+                self._table_as_array[byte_index] = byte_value & (255 - 32)
+            elif bit_index == 3:
+                # xxx0 xxxx
+                self._table_as_array[byte_index] = byte_value & (255 - 16)
+            elif bit_index == 4:
+                # xxxx 0xxx
+                self._table_as_array[byte_index] = byte_value & (255 - 8)
+            elif bit_index == 5:
+                # xxxx x0xx
+                self._table_as_array[byte_index] = byte_value & (255 - 4)
+            elif bit_index == 6:
+                # xxxx xx0x
+                self._table_as_array[byte_index] = byte_value & (255 - 2)
+            else:
+                # xxxx xxx0
+                self._table_as_array[byte_index] = byte_value & (255 - 1)
+
+        print(f"[EvalutionMmTable > set_bit_by_index]  byte_index:{byte_index}  bit_index:{bit_index}  new byte_value:0x{self._table_as_array[byte_index]:b}")
 
 
 class PolicyHelper():
