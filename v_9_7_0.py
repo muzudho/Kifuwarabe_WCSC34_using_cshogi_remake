@@ -533,32 +533,33 @@ class Kifuwarabe():
         move_obj = Move.from_usi(move_u)
 
         # 自玉の指し手か？
-        if MoveHelper.is_king(k_sq, move_obj):
+        is_king_move = MoveHelper.is_king(k_sq, move_obj)
 
-            # 応手の一覧を作成
-            l_move_u_set, q_move_u_set = BoardHelper.create_counter_move_u_set(
-                    board=self._board,
-                    move_obj=move_obj)
+        # 応手の一覧を作成
+        l_move_u_set, q_move_u_set = BoardHelper.create_counter_move_u_set(
+                board=self._board,
+                move_obj=move_obj)
 
-            counter_move_size = len(l_move_u_set) + len(q_move_u_set)
+        counter_move_size = len(l_move_u_set) + len(q_move_u_set)
 
-            # 自玉の着手と、敵玉の応手の関係から辞書を作成
-            kl_relation_dic = self._evaluation_kk_table_obj.create_relation_exists_dictionary_by_k_move_and_l_moves(
+        if is_king_move:
+            # 自玉の着手と、敵玉の応手の一覧から、ＫＬテーブルのインデックスと、関係の有無を格納した辞書を作成
+            kl_index_to_relation_exists_dic = self._evaluation_kk_table_obj.select_kl_index_and_relation_exists(
                     k_move_obj=move_obj,
                     l_move_u_set=l_move_u_set)
 
             # TODO 自玉の着手と、敵軍の玉以外の応手の関係から辞書を作成
 
             # 表示
-            for kl_index, relation_number in kl_relation_dic.items():
+            for kl_index, relation_exists in kl_index_to_relation_exists_dic.items():
                 k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
                         kl_index=kl_index)
 
                 policy_permille = PolicyHelper.get_permille_from_relation_number(
-                        relation_number=relation_number,
-                        counter_moves_size=counter_move_size)
+                        relation_number=relation_exists, # 0 か 1
+                        counter_move_size=counter_move_size)
 
-                print(f"KL[{k_move_obj.as_usi:5} {l_move_obj.as_usi:5}] : {policy_permille:4}‰  relation_number:{relation_number}")
+                print(f"KL[{k_move_obj.as_usi:5} {l_move_obj.as_usi:5}] : {policy_permille:4}‰  relation_exists:{relation_exists} / counter_move_size:{counter_move_size}")
 
         else:
             pass
@@ -978,7 +979,7 @@ class EvaluationFacade():
         for k_move_u, relation_number in k_move_u_and_l_to_relation_number_dictionary.items():
             k_move_u_and_l_to_policy_dictionary[k_move_u] = PolicyHelper.get_permille_from_relation_number(
                     relation_number=relation_number,
-                    counter_moves_size=len(k_move_u_and_l_to_relation_number_dictionary))
+                    counter_move_size=len(k_move_u_and_l_to_relation_number_dictionary))
 
             print(f"K:{k_move_u:5}  L:*****  sum(k policy):{k_move_u_and_l_to_policy_dictionary[k_move_u]:4}‰")
 
@@ -1607,7 +1608,8 @@ class EvaluationKkTable():
                 bit=bit)
 
 
-    def create_relation_exists_dictionary_by_k_move_and_l_moves(
+    # create_relation_exists_dictionary_by_k_move_and_l_moves
+    def select_kl_index_and_relation_exists(
             self,
             k_move_obj,
             l_move_u_set):
@@ -1623,8 +1625,9 @@ class EvaluationKkTable():
 
         Returns
         -------
-        - relations : Dictionary<int, bit>
-            キーはＫＫ評価値テーブルのインデックス
+        - relations : Dictionary<int, int>
+            キー：　ＫＫ評価値テーブルのインデックス
+            値　：　関係の有無
         """
 
         relations = {}
@@ -1977,14 +1980,14 @@ class PolicyHelper():
 
     def get_permille_from_relation_number(
             relation_number,
-            counter_moves_size):
+            counter_move_size):
         """着手と応手の関連を、千分率の整数のポリシー値に変換
 
         Parameters
         ----------
         relation_number : int
             着手と応手の関連の数
-        counter_moves_size : int
+        counter_move_size : int
             着手に対する応手の数
 
         Returns
@@ -1992,7 +1995,7 @@ class PolicyHelper():
         - policy_permille : int
             千分率の整数のポリシー値
         """
-        return relation_number * 1000 // counter_moves_size
+        return relation_number * 1000 // counter_move_size
 
 
 class BoardHelper():
