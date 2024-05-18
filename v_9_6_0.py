@@ -461,7 +461,7 @@ class Kifuwarabe():
 
         print(f'ベスト一覧：')
         for move_u, policy in best_move_dictionary.items():
-            print(f'  {move_u:5} ***** : {policy:4}')
+            print(f'  M:{move_u:5}  N:*****  policy:{policy:4}‰')
 
 
     def weakest(self):
@@ -627,7 +627,7 @@ class Kifuwarabe():
             (weaken_kl_index_and_relation_bit_dictionary,
              weaken_kq_index_and_relation_bit_dictionary,
              weaken_pl_index_and_relation_bit_dictionary,
-             weaken_pq_index_and_relation_bit_dictionary) = EvaluationFacade.query_mm_move_u_and_relation_bit(
+             weaken_pq_index_and_relation_bit_dictionary) = EvaluationFacade.select_mm_index_and_relation_bit(
                     k_moves_u=[weaken_move_u],
                     kl_move_u_set=weaken_l_move_u_set,
                     kq_move_u_set=weaken_q_move_u_set,
@@ -643,7 +643,7 @@ class Kifuwarabe():
             (weaken_kl_index_and_relation_bit_dictionary,
              weaken_kq_index_and_relation_bit_dictionary,
              weaken_pl_index_and_relation_bit_dictionary,
-             weaken_pq_index_and_relation_bit_dictionary) = EvaluationFacade.query_mm_move_u_and_relation_bit(
+             weaken_pq_index_and_relation_bit_dictionary) = EvaluationFacade.select_mm_index_and_relation_bit(
                     k_moves_u=[],
                     kl_move_u_set=set(),
                     kq_move_u_set=set(),
@@ -653,16 +653,16 @@ class Kifuwarabe():
                     kifuwarabe=self,)
 
         # 関係をポリシー値に変換
-        (weaken_kl_move_u_and_policy_dictionary,
-         weaken_kq_move_u_and_policy_dictionary,
-         weaken_pl_move_u_and_policy_dictionary,
-         weaken_pq_move_u_and_policy_dictionary) = EvaluationFacade.map_relation_bit_to_policy_permille(
+        (weaken_k_move_u_and_l_and_policy_dictionary,
+         weaken_k_move_u_and_q_and_policy_dictionary,
+         weaken_p_move_u_and_l_and_policy_dictionary,
+         weaken_p_move_u_and_q_and_policy_dictionary) = EvaluationFacade.select_move_u_and_policy_permille_group_by_move_u(
                 kl_index_and_relation_bit_dictionary=weaken_kl_index_and_relation_bit_dictionary,
                 kq_index_and_relation_bit_dictionary=weaken_kq_index_and_relation_bit_dictionary,
                 pl_index_and_relation_bit_dictionary=weaken_pl_index_and_relation_bit_dictionary,
                 pq_index_and_relation_bit_dictionary=weaken_pq_index_and_relation_bit_dictionary)
 
-        # ＫＬ、ＫＱ、ＰＬ、ＰＱの優先順位を下げて、ポリシー順に並べなおしたい
+        # TODO ＫＬ、ＫＱ、ＰＬ、ＰＱの優先順位を下げて、ポリシー順に並べなおしたい
 
         # 強めたい着手
         strengthen_move_u = cmd[2]
@@ -681,7 +681,7 @@ class Kifuwarabe():
             (strengthen_kl_index_and_relation_bit_dictionary,
              strengthen_kq_index_and_relation_bit_dictionary,
              strengthen_pl_index_and_relation_bit_dictionary,
-             strengthen_pq_index_and_relation_bit_dictionary) = EvaluationFacade.query_mm_move_u_and_relation_bit(
+             strengthen_pq_index_and_relation_bit_dictionary) = EvaluationFacade.select_mm_index_and_relation_bit(
                     k_moves_u=[strengthen_move_u],
                     kl_move_u_set=strengthen_l_move_u_set,
                     kq_move_u_set=strengthen_q_move_u_set,
@@ -697,7 +697,7 @@ class Kifuwarabe():
             (strengthen_kl_index_and_relation_bit_dictionary,
              strengthen_kq_index_and_relation_bit_dictionary,
              strengthen_pl_index_and_relation_bit_dictionary,
-             strengthen_pq_index_and_relation_bit_dictionary) = EvaluationFacade.query_mm_move_u_and_relation_bit(
+             strengthen_pq_index_and_relation_bit_dictionary) = EvaluationFacade.select_mm_index_and_relation_bit(
                     k_moves_u=[],
                     kl_move_u_set=set(),
                     kq_move_u_set=set(),
@@ -705,6 +705,16 @@ class Kifuwarabe():
                     pl_move_u_set=strengthen_l_move_u_set,
                     pq_move_u_set=strengthen_q_move_u_set,
                     kifuwarabe=self,)
+
+        # 関係をポリシー値に変換
+        (strengthen_k_move_u_and_l_and_policy_dictionary,
+         strengthen_k_move_u_and_q_and_policy_dictionary,
+         strengthen_p_move_u_and_l_and_policy_dictionary,
+         strengthen_p_move_u_and_q_and_policy_dictionary) = EvaluationFacade.select_move_u_and_policy_permille_group_by_move_u(
+                kl_index_and_relation_bit_dictionary=strengthen_kl_index_and_relation_bit_dictionary,
+                kq_index_and_relation_bit_dictionary=strengthen_kq_index_and_relation_bit_dictionary,
+                pl_index_and_relation_bit_dictionary=strengthen_pl_index_and_relation_bit_dictionary,
+                pq_index_and_relation_bit_dictionary=strengthen_pq_index_and_relation_bit_dictionary)
 
         # TODO 弱めたい関係を１個選ぶ
         # TODO 強めたい関係を１個選ぶ
@@ -777,8 +787,9 @@ class EvaluationFacade():
     """評価値のファサード"""
 
 
+    #query_mm_move_u_and_relation_bit
     @staticmethod
-    def query_mm_move_u_and_relation_bit(
+    def select_mm_index_and_relation_bit(
             k_moves_u,
             kl_move_u_set,
             kq_move_u_set,
@@ -807,13 +818,13 @@ class EvaluationFacade():
 
         Returns
         -------
-        kl_move_u_and_relation_number_dictionary - Dictionary<str, int>
+        kl_index_and_relation_number_dictionary - Dictionary<int, int>
             - 自玉の着手に対する、敵玉の応手の数
-        kq_move_u_and_relation_number_dictionary - Dictionary<str, int>
+        kq_index_and_relation_number_dictionary - Dictionary<int, int>
             - 自玉の着手に対する、敵兵の応手の数
-        pl_move_u_and_relation_number_dictionary - Dictionary<str, int>
+        pl_index_and_relation_number_dictionary - Dictionary<int, int>
             - 自兵の着手に対する、敵玉の応手の数
-        pq_move_u_and_relation_number_dictionary - Dictionary<str, int>
+        pq_index_and_relation_number_dictionary - Dictionary<int, int>
             - 自兵の着手に対する、敵兵の応手の数
         """
         # 指し手と、ビット値を紐づける
@@ -884,82 +895,163 @@ class EvaluationFacade():
 
     #put_policy_permille_to_move_u
     #merge_policy_permille
+    #map_relation_bit_to_policy_permille
     @staticmethod
-    def map_relation_bit_to_policy_permille(
+    def select_move_u_and_policy_permille_group_by_move_u(
             kl_index_and_relation_bit_dictionary,
             kq_index_and_relation_bit_dictionary,
             pl_index_and_relation_bit_dictionary,
             pq_index_and_relation_bit_dictionary):
-        """スケールを揃えて、千分率に変換する
+        """ＭＮ関係を、Ｍ毎にまとめ直して、関係の有無は件数に変換し、スケールを千分率に揃える
 
         Parameters
         ----------
-        kl_move_u_and_relation_number_dictionary - Dictionary<str, int>
+        kl_index_and_relation_bit_dictionary - Dictionary<int, int>
             - 自玉の着手に対する、敵玉の応手の数
-        kq_move_u_and_relation_number_dictionary - Dictionary<str, int>
+        kq_index_and_relation_bit_dictionary - Dictionary<int, int>
             - 自玉の着手に対する、敵兵の応手の数
-        pl_move_u_and_relation_number_dictionary - Dictionary<str, int>
+        pl_index_and_relation_bit_dictionary - Dictionary<int, int>
             - 自兵の着手に対する、敵玉の応手の数
-        pq_move_u_and_relation_number_dictionary - Dictionary<str, int>
+        pq_index_and_relation_bit_dictionary - Dictionary<int, int>
             - 自兵の着手に対する、敵兵の応手の数
 
         Returns
         -------
-        kl_move_u_and_policy_dictionary - Dictionary<str, int>
+        k_move_u_and_l_and_policy_dictionary - Dictionary<str, int>
             - 自玉の着手に対する、敵玉の応手のポリシー値付き辞書。ポリシー値は千分率の４桁の整数
-        kq_move_u_and_policy_dictionary - Dictionary<str, int>
+        k_move_u_and_q_and_policy_dictionary - Dictionary<str, int>
             - 自玉の着手に対する、敵兵の応手のポリシー値付き辞書。ポリシー値は千分率の４桁の整数
-        pl_move_u_and_policy_dictionary - Dictionary<str, int>
+        p_move_u_and_l_and_policy_dictionary - Dictionary<str, int>
             - 自兵の着手に対する、敵玉の応手のポリシー値付き辞書。ポリシー値は千分率の４桁の整数
-        pq_move_u_and_policy_dictionary - Dictionary<str, int>
+        p_move_u_and_q_and_policy_dictionary - Dictionary<str, int>
             - 自兵の着手に対する、敵兵の応手のポリシー値付き辞書。ポリシー値は千分率の４桁の整数
         """
 
-        kl_move_u_and_policy_dictionary = {}
-        kq_move_u_and_policy_dictionary = {}
-        pl_move_u_and_policy_dictionary = {}
-        pq_move_u_and_policy_dictionary = {}
+        (k_move_u_and_l_and_relation_number_dictionary,
+         k_move_u_and_q_and_relation_number_dictionary,
+         p_move_u_and_l_and_relation_number_dictionary,
+         p_move_u_and_q_and_relation_number_dictionary) = EvaluationFacade.select_move_u_and_relation_number_group_by_move_u(
+                kl_index_and_relation_bit_dictionary,
+                kq_index_and_relation_bit_dictionary,
+                pl_index_and_relation_bit_dictionary,
+                pq_index_and_relation_bit_dictionary)
+
+        k_move_u_and_l_and_relation_number_dictionary = {}
+        k_move_u_and_q_and_relation_number_dictionary = {}
+        p_move_u_and_l_and_relation_number_dictionary = {}
+        p_move_u_and_q_and_relation_number_dictionary = {}
+
+        k_move_u_and_l_and_policy_dictionary = {}
+        k_move_u_and_q_and_policy_dictionary = {}
+        p_move_u_and_l_and_policy_dictionary = {}
+        p_move_u_and_q_and_policy_dictionary = {}
 
         #
         # Ｋ
         #
 
         # ＫＬ
-        for kl_index, relation_number in kl_index_and_relation_bit_dictionary.items():
+        for kl_index, relation_bit in kl_index_and_relation_bit_dictionary.items():
             k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(kl_index)
 
-            kl_move_u_and_policy_dictionary[k_move_obj.as_usi] = PolicyHelper.get_permille_from_relation_number(
+            if k_move_obj.as_usi in k_move_u_and_l_and_relation_number_dictionary.keys():
+                k_move_u_and_l_and_relation_number_dictionary[k_move_obj.as_usi] += relation_bit
+
+            else:
+                k_move_u_and_l_and_relation_number_dictionary[k_move_obj.as_usi] = relation_bit
+
+        for k_move_u, relation_number in k_move_u_and_l_and_relation_number_dictionary.items():
+            print(f"K:{k_move_u:5}  L:*****  relation_number:{relation_number:3}  /  size:{len(kl_index_and_relation_bit_dictionary)}")
+
+        for k_move_u, relation_number in k_move_u_and_l_and_relation_number_dictionary.items():
+            k_move_u_and_l_and_policy_dictionary[k_move_u] = PolicyHelper.get_permille_from_relation_number(
                     relation_number=relation_number,
                     counter_moves_size=len(kl_index_and_relation_bit_dictionary))
 
-            print(f"K:{k_move_obj.as_usi:5}  policy:{kl_move_u_and_policy_dictionary[k_move_obj.as_usi]:4}‰  kl_index:{kl_index}")
+            print(f"K:{k_move_u:5}  L:*****  sum(k policy):{k_move_u_and_l_and_policy_dictionary[k_move_u]:4}‰")
 
         # TODO ＫＱ
-        #for kq_index, relation_number in kq_index_and_relation_bit_dictionary.items():
-        #    kq_move_u_and_policy_dictionary[kq_index] = PolicyHelper.get_permille_from_relation_number(
-        #            relation_number=relation_number,
-        #            counter_moves_size=len(kq_index_and_relation_bit_dictionary))
 
         #
         # Ｐ
         #
 
         # TODO ＰＬ
-        #for pl_index, relation_number in pl_index_and_relation_bit_dictionary.items():
-        #    pl_move_u_and_policy_dictionary[pl_index] = PolicyHelper.get_permille_from_relation_number(
-        #            relation_number=relation_number,
-        #            counter_moves_size=len(pl_index_and_relation_bit_dictionary))
 
         # TODO ＰＱ
-        #for pq_index, relation_number in pq_index_and_relation_bit_dictionary.items():
-        #    pq_move_u_and_policy_dictionary[pq_index] = PolicyHelper.get_permille_from_relation_number(
-        #            relation_number=relation_number,
-        #            counter_moves_size=len(pq_index_and_relation_bit_dictionary))
 
-        return (kl_move_u_and_policy_dictionary,
-                kq_move_u_and_policy_dictionary,
-                pl_move_u_and_policy_dictionary,
-                pq_move_u_and_policy_dictionary)
+        return (k_move_u_and_l_and_policy_dictionary,
+                k_move_u_and_q_and_policy_dictionary,
+                p_move_u_and_l_and_policy_dictionary,
+                p_move_u_and_q_and_policy_dictionary)
+
+
+    @staticmethod
+    def select_move_u_and_relation_number_group_by_move_u(
+            kl_index_and_relation_bit_dictionary,
+            kq_index_and_relation_bit_dictionary,
+            pl_index_and_relation_bit_dictionary,
+            pq_index_and_relation_bit_dictionary):
+        """ＭＮ関係を、Ｍ毎にまとめ直して、関係の有無は件数に変換します
+
+        Parameters
+        ----------
+        kl_index_and_relation_bit_dictionary - Dictionary<int, int>
+            - 自玉の着手に対する、敵玉の応手の数
+        kq_index_and_relation_bit_dictionary - Dictionary<int, int>
+            - 自玉の着手に対する、敵兵の応手の数
+        pl_index_and_relation_bit_dictionary - Dictionary<int, int>
+            - 自兵の着手に対する、敵玉の応手の数
+        pq_index_and_relation_bit_dictionary - Dictionary<int, int>
+            - 自兵の着手に対する、敵兵の応手の数
+
+        Returns
+        -------
+        k_move_u_and_l_and_relation_number_dictionary - Dictionary<str, int>
+            - 自玉の着手に対する、敵玉の応手の数
+        k_move_u_and_q_and_relation_number_dictionary - Dictionary<str, int>
+            - 自玉の着手に対する、敵兵の応手の数
+        p_move_u_and_l_and_relation_number_dictionary - Dictionary<str, int>
+            - 自兵の着手に対する、敵玉の応手の数
+        p_move_u_and_q_and_relation_number_dictionary - Dictionary<str, int>
+            - 自兵の着手に対する、敵兵の応手の数
+        """
+
+        k_move_u_and_l_and_relation_number_dictionary = {}
+        k_move_u_and_q_and_relation_number_dictionary = {}
+        p_move_u_and_l_and_relation_number_dictionary = {}
+        p_move_u_and_q_and_relation_number_dictionary = {}
+
+        #
+        # Ｋ
+        #
+
+        # ＫＬ
+        for kl_index, relation_bit in kl_index_and_relation_bit_dictionary.items():
+            k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(kl_index)
+
+            if k_move_obj.as_usi in k_move_u_and_l_and_relation_number_dictionary.keys():
+                k_move_u_and_l_and_relation_number_dictionary[k_move_obj.as_usi] += relation_bit
+
+            else:
+                k_move_u_and_l_and_relation_number_dictionary[k_move_obj.as_usi] = relation_bit
+
+            print(f"kl_index:{kl_index}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_bit:{relation_bit}  sum(k relation):{k_move_u_and_l_and_relation_number_dictionary[k_move_obj.as_usi]}")
+
+        # TODO ＫＱ
+
+        #
+        # Ｐ
+        #
+
+        # TODO ＰＬ
+
+        # TODO ＰＱ
+
+        return (k_move_u_and_l_and_relation_number_dictionary,
+                k_move_u_and_q_and_relation_number_dictionary,
+                p_move_u_and_l_and_relation_number_dictionary,
+                p_move_u_and_q_and_relation_number_dictionary)
 
 
     def create_random_evaluation_table_as_array(
@@ -1060,7 +1152,7 @@ class EvaluationFacade():
         (kl_index_and_relation_bit_dictionary,
          kq_index_and_relation_bit_dictionary,
          pl_index_and_relation_bit_dictionary,
-         pq_index_and_relation_bit_dictionary) = EvaluationFacade.query_mm_move_u_and_relation_bit(
+         pq_index_and_relation_bit_dictionary) = EvaluationFacade.select_mm_index_and_relation_bit(
                 k_moves_u=k_moves_u,
                 kl_move_u_set=kl_move_u_set,
                 kq_move_u_set=kq_move_u_set,
@@ -1078,7 +1170,7 @@ class EvaluationFacade():
         (kl_move_u_and_policy_dictionary,
          kq_move_u_and_policy_dictionary,
          pl_move_u_and_policy_dictionary,
-         pq_move_u_and_policy_dictionary) = EvaluationFacade.map_relation_bit_to_policy_permille(
+         pq_move_u_and_policy_dictionary) = EvaluationFacade.select_move_u_and_policy_permille_group_by_move_u(
                 kl_index_and_relation_bit_dictionary=kl_index_and_relation_bit_dictionary,
                 kq_index_and_relation_bit_dictionary=kq_index_and_relation_bit_dictionary,
                 pl_index_and_relation_bit_dictionary=pl_index_and_relation_bit_dictionary,
