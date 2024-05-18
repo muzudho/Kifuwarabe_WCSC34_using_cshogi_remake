@@ -626,7 +626,7 @@ class Kifuwarabe():
                         kl_index=kl_index)
 
                 # 表示
-                print(f"K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                print(f"kl_index:{kl_index}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
                 if relation_exists == 1:
                     exists_number += 1
@@ -658,7 +658,7 @@ class Kifuwarabe():
                 if k_move_obj.as_usi == move_u:
                     if relation_exists == 1:
 
-                        print(f"K:{move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  remove relation")
+                        print(f"kl_index:{kl_index}  K:{move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  remove relation")
 
                         self._evaluation_kk_table_obj.set_relation_esixts_by_kl_moves(
                                 k_move_obj=k_move_obj,
@@ -2136,7 +2136,9 @@ class EvalutionMmTable():
         if bit < 0 or 1 < bit:
             raise ValueError(f"bit must be 0 or 1. bit:{bit}")
 
+        print(f"[EvalutionMmTable > set_bit_by_index]  index:{index}  old bit:{self._table_as_array[index]}")
         self._table_as_array[index] = bit
+        print(f"[EvalutionMmTable > set_bit_by_index]  index:{index}  new bit:{self._table_as_array[index]}")
 
 
 class PolicyHelper():
