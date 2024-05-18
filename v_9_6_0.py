@@ -452,16 +452,16 @@ class Kifuwarabe():
 
             number += 1
 
+        # TODO ポリシー順に並べたい。 Order by policy
+
         #
         # ベスト
         # ------
         #
 
-        # FIXME Ｋ と Ｐ では、数のスケールが違うのでは？（合法手の数が違う）　百分率に変換するか？
-
         print(f'ベスト一覧：')
         for move_u, policy in best_move_dictionary.items():
-            print(f'  M:{move_u:5}  N:*****  policy:{policy:4}‰')
+            print(f'  F:{move_u:5}  O:*****  policy:{policy:4}‰')
 
 
     def weakest(self):
