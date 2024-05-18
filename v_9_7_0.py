@@ -668,42 +668,48 @@ class Kifuwarabe():
             print(f"K:{move_u:5}  Q:*****  policy:{policy}")
 
         # ポリシー毎に指し手をまとめ直す
-        (kl_policy_to_f_move_u_set_dictionary,
-         kq_policy_to_f_move_u_set_dictionary,
-         pl_policy_to_f_move_u_set_dictionary,
-         pq_policy_to_f_move_u_set_dictionary) = EvaluationFacade.select_policy_to_f_move_u_set_group_by_policy(
+        (weaken_kl_policy_to_f_move_u_set_dictionary,
+         weaken_kq_policy_to_f_move_u_set_dictionary,
+         weaken_pl_policy_to_f_move_u_set_dictionary,
+         weaken_pq_policy_to_f_move_u_set_dictionary) = EvaluationFacade.select_policy_to_f_move_u_set_group_by_policy(
                 weaken_k_move_u_and_l_and_policy_dictionary,
                 weaken_k_move_u_and_q_and_policy_dictionary,
                 weaken_p_move_u_and_l_and_policy_dictionary,
                 weaken_p_move_u_and_q_and_policy_dictionary)
 
-        for policy, move_u_set in kl_policy_to_f_move_u_set_dictionary.items():
+        for policy, move_u_set in weaken_kl_policy_to_f_move_u_set_dictionary.items():
             print(f"KL policy:{policy}  --->", end='')
             for move_u in move_u_set:
                 print(f"  {move_u:5}", end='')
 
             print('', flush=True)
 
-        for policy, move_u_set in kq_policy_to_f_move_u_set_dictionary.items():
+        for policy, move_u_set in weaken_kq_policy_to_f_move_u_set_dictionary.items():
             print(f"KQ policy:{policy}  --->", end='')
             for move_u in move_u_set:
                 print(f"  {move_u:5}", end='')
 
             print('', flush=True)
 
-        for policy, move_u_set in pl_policy_to_f_move_u_set_dictionary.items():
+        for policy, move_u_set in weaken_pl_policy_to_f_move_u_set_dictionary.items():
             print(f"PL policy:{policy}  --->", end='')
             for move_u in move_u_set:
                 print(f"  {move_u:5}", end='')
 
             print('', flush=True)
 
-        for policy, move_u_set in pq_policy_to_f_move_u_set_dictionary.items():
+        for policy, move_u_set in weaken_pq_policy_to_f_move_u_set_dictionary.items():
             print(f"PQ policy:{policy}  --->", end='')
             for move_u in move_u_set:
                 print(f"  {move_u:5}", end='')
 
             print('', flush=True)
+
+        # ポリシー値を小さい順に並べた配列を作ります
+        weaken_kl_policy_list_asc = sorted(weaken_kl_policy_to_f_move_u_set_dictionary.keys())
+
+        for policy in weaken_kl_policy_list_asc:
+            print(f"KL asc policy:{policy}")
 
         # 強めたい着手
         strengthen_move_u = cmd[2]
