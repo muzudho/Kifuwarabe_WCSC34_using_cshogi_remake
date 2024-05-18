@@ -650,7 +650,6 @@ class Kifuwarabe():
                     pq_move_u_set=weaken_q_move_u_set,
                     kifuwarabe=self,)
 
-        # 現在の関係の一覧
         for fo_index, relation_bit in weaken_kl_index_and_relation_bit_dictionary.items():
             print(f"KL:{fo_index:6}  relation_bit:{relation_bit}")
 
@@ -672,6 +671,19 @@ class Kifuwarabe():
                 weaken_kq_index_and_relation_bit_dictionary,
                 weaken_pl_index_and_relation_bit_dictionary,
                 weaken_pq_index_and_relation_bit_dictionary)
+
+        for move_u, relation_number in k_move_u_and_l_to_relation_number_dictionary.items():
+            print(f"KL F:{move_u:5}  O:*****  relation_number:{relation_number}")
+
+        for move_u, relation_number in k_move_u_and_q_to_relation_number_dictionary.items():
+            print(f"KQ F:{move_u:5}  O:*****  relation_number:{relation_number}")
+
+        for move_u, relation_number in p_move_u_and_l_to_relation_number_dictionary.items():
+            print(f"PL F:{move_u:5}  O:*****  relation_number:{relation_number}")
+
+        for move_u, relation_number in p_move_u_and_q_to_relation_number_dictionary.items():
+            print(f"PQ F:{move_u:5}  O:*****  relation_number:{relation_number}")
+
 
         # 関係をポリシー値に変換
         (weaken_k_move_u_and_l_and_policy_dictionary,
