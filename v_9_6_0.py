@@ -357,8 +357,10 @@ class Kifuwarabe():
         #   自玉の指し手と、自玉を除く自軍の指し手を分けて取得
         #   ポリシー値は千分率の４桁の整数
         #
-        (k_move_u_and_policy_dictionary,
-         p_move_u_and_policy_dictionary) = EvaluationFacade.create_list_of_friend_move_u_and_policy_dictionary(
+        (kl_move_u_and_policy_dictionary,
+         kq_move_u_and_policy_dictionary,
+         pl_move_u_and_policy_dictionary,
+         pq_move_u_and_policy_dictionary) = EvaluationFacade.create_list_of_friend_move_u_and_policy_dictionary(
                 legal_moves=list(self._board.legal_moves),
                 board=self._board,
                 kifuwarabe=self)
@@ -374,9 +376,9 @@ class Kifuwarabe():
         # ----
         #
 
-        print('自玉の着手の評価一覧（Ｋ）：')
-        for move_u, policy in k_move_u_and_policy_dictionary.items():
-            print(f'  ({number:3}) K:{move_u:5} *****  policy:{policy:4}‰')
+        print('自玉の着手と、敵玉の応手の評価一覧（ＫＬ）：')
+        for move_u, policy in kl_move_u_and_policy_dictionary.items():
+            print(f'  ({number:3}) K:{move_u:5} L:*****  policy:{policy:4}‰')
 
             # update
             if best_policy < policy:
@@ -390,13 +392,53 @@ class Kifuwarabe():
             number += 1
 
         #
-        # 次にピースズ
-        # -----------
+        # ＫＱ
+        # ----
         #
 
-        print('自兵の着手の評価一覧（Ｐ）：')
-        for move_u, policy in p_move_u_and_policy_dictionary.items():
-            print(f'  ({number:3}) P:{move_u:5} *****  policy:{policy:4}')
+        print('自玉の着手と、敵兵の応手の評価一覧（ＫＱ）：')
+        for move_u, policy in kq_move_u_and_policy_dictionary.items():
+            print(f'  ({number:3}) K:{move_u:5} Q:*****  policy:{policy:4}‰')
+
+            # update
+            if best_policy < policy:
+                best_policy = policy
+                best_move_dictionary = {move_u:policy}
+
+            # tie
+            elif best_policy == policy:
+                best_move_dictionary[move_u] = policy
+
+            number += 1
+
+        #
+        # ＰＬ
+        # ----
+        #
+
+        print('自兵の着手と、敵玉の応手の評価一覧（ＰＬ）：')
+        for move_u, policy in pl_move_u_and_policy_dictionary.items():
+            print(f'  ({number:3}) P:{move_u:5} L:*****  policy:{policy:4}')
+
+            # update
+            if best_policy < policy:
+                best_policy = policy
+                best_move_dictionary = {move_u:policy}
+
+            # tie
+            elif best_policy == policy:
+                best_move_dictionary[move_u] = policy
+
+            number += 1
+
+        #
+        # ＰＱ
+        # ----
+        #
+
+        print('自兵の着手と、敵兵の応手の評価一覧（ＰＱ）：')
+        for move_u, policy in pq_move_u_and_policy_dictionary.items():
+            print(f'  ({number:3}) P:{move_u:5} Q:*****  policy:{policy:4}')
 
             # update
             if best_policy < policy:
@@ -423,28 +465,50 @@ class Kifuwarabe():
 
     def weakest(self):
         """現局面の最弱手を返す"""
-        k_move_u_and_policy_dictionary , p_move_u_and_policy_dictionary = self.get_weakest_moves()
+        (kl_move_u_and_policy_dictionary,
+         kq_move_u_and_policy_dictionary,
+         pl_move_u_and_policy_dictionary,
+         pq_move_u_and_policy_dictionary) = self.get_weakest_moves()
 
-        print(f'最弱手一覧（Ｋ）：', flush=True)
-        for move_u, policy in k_move_u_and_policy_dictionary.items():
-            print(f'  K {move_u:5} ***** : {policy:4}', flush=True)
+        print(f'最弱手一覧（ＫＬ）：', flush=True)
+        for move_u, policy in kl_move_u_and_policy_dictionary.items():
+            print(f'  K:{move_u:5} L:***** : {policy:4}', flush=True)
 
-        print(f'最弱手一覧（Ｐ）：', flush=True)
-        for move_u, policy in p_move_u_and_policy_dictionary.items():
-            print(f'  P {move_u:5} ***** : {policy:3}', flush=True)
+        print(f'最弱手一覧（ＫＱ）：', flush=True)
+        for move_u, policy in kq_move_u_and_policy_dictionary.items():
+            print(f'  K:{move_u:5} Q:***** : {policy:4}', flush=True)
+
+        print(f'最弱手一覧（ＰＬ）：', flush=True)
+        for move_u, policy in pl_move_u_and_policy_dictionary.items():
+            print(f'  P:{move_u:5} L:***** : {policy:3}', flush=True)
+
+        print(f'最弱手一覧（ＰＱ）：', flush=True)
+        for move_u, policy in pq_move_u_and_policy_dictionary.items():
+            print(f'  P:{move_u:5} Q:***** : {policy:3}', flush=True)
 
 
     def strongest(self):
         """現局面の最強手を返す"""
-        k_move_u_and_policy_dictionary , p_move_u_and_policy_dictionary = self.get_strongest_moves()
+        (kl_move_u_and_policy_dictionary,
+         kq_move_u_and_policy_dictionary,
+         pl_move_u_and_policy_dictionary,
+         pq_move_u_and_policy_dictionary) = self.get_strongest_moves()
 
-        print(f'最強手一覧（Ｋ）：', flush=True)
-        for move_u, policy in k_move_u_and_policy_dictionary.items():
-            print(f'  K {move_u:5} ***** : {policy:4}', flush=True)
+        print(f'最強手一覧（ＫＬ）：', flush=True)
+        for move_u, policy in kl_move_u_and_policy_dictionary.items():
+            print(f'  K:{move_u:5} L:***** : {policy:4}', flush=True)
 
-        print(f'最強手一覧（Ｐ）：', flush=True)
-        for move_u, policy in p_move_u_and_policy_dictionary.items():
-            print(f'  P {move_u:5} ***** : {policy:4}', flush=True)
+        print(f'最強手一覧（ＫＱ）：', flush=True)
+        for move_u, policy in kq_move_u_and_policy_dictionary.items():
+            print(f'  K:{move_u:5} Q:***** : {policy:4}', flush=True)
+
+        print(f'最強手一覧（ＰＬ）：', flush=True)
+        for move_u, policy in pl_move_u_and_policy_dictionary.items():
+            print(f'  P:{move_u:5} L:***** : {policy:4}', flush=True)
+
+        print(f'最強手一覧（ＰＱ）：', flush=True)
+        for move_u, policy in pq_move_u_and_policy_dictionary.items():
+            print(f'  P:{move_u:5} Q:***** : {policy:4}', flush=True)
 
 
     def relation(self, cmd):
@@ -546,6 +610,14 @@ class Kifuwarabe():
                 board=self._board,
                 move_obj=weaken_move_obj)
 
+        def group_by_policy(
+                kl_index_and_relation_bit_dictionary,
+                kq_index_and_relation_bit_dictionary,
+                pl_index_and_relation_bit_dictionary,
+                pq_index_and_relation_bit_dictionary):
+            """ＫＬ、ＫＱ、ＰＬ、ＰＱの優先順位を下げて、ポリシー毎にまとめ直す"""
+            pass
+
         # 弱めたい着手は、玉の指し手か？
         if MoveHelper.is_king(k_sq, weaken_move_obj):
             #
@@ -578,6 +650,18 @@ class Kifuwarabe():
                     pl_move_u_set=weaken_l_move_u_set,
                     pq_move_u_set=weaken_q_move_u_set,
                     kifuwarabe=self,)
+
+        # 関係をポリシー値に変換
+        (weaken_kl_move_u_and_policy_dictionary,
+         weaken_kq_move_u_and_policy_dictionary,
+         weaken_pl_move_u_and_policy_dictionary,
+         weaken_pq_move_u_and_policy_dictionary) = EvaluationFacade.map_relation_bit_to_policy_permille(
+                kl_index_and_relation_bit_dictionary=weaken_kl_index_and_relation_bit_dictionary,
+                kq_index_and_relation_bit_dictionary=weaken_kq_index_and_relation_bit_dictionary,
+                pl_index_and_relation_bit_dictionary=weaken_pl_index_and_relation_bit_dictionary,
+                pq_index_and_relation_bit_dictionary=weaken_pq_index_and_relation_bit_dictionary)
+
+        # ＫＬ、ＫＱ、ＰＬ、ＰＱの優先順位を下げて、ポリシー順に並べなおしたい
 
         # 強めたい着手
         strengthen_move_u = cmd[2]
@@ -652,15 +736,19 @@ class Lottery():
         """
 
         # ポリシー値は千分率の４桁の整数
-        (k_move_u_and_policy_dictionary,
-         p_move_u_and_policy_dictionary) = EvaluationFacade.create_list_of_friend_move_u_and_policy_dictionary(
+        (kl_move_u_and_policy_dictionary,
+         kq_move_u_and_policy_dictionary,
+         pl_move_u_and_policy_dictionary,
+         pq_move_u_and_policy_dictionary) = EvaluationFacade.create_list_of_friend_move_u_and_policy_dictionary(
                 legal_moves=legal_moves,
                 board=board,
                 kifuwarabe=kifuwarabe)
 
         list_of_friend_move_u_and_policy_dictionary = [
-            k_move_u_and_policy_dictionary,
-            p_move_u_and_policy_dictionary,
+            kl_move_u_and_policy_dictionary,
+            kq_move_u_and_policy_dictionary,
+            pl_move_u_and_policy_dictionary,
+            pq_move_u_and_policy_dictionary,
         ]
 
         # 一番高いポリシー値を探す。
@@ -794,8 +882,9 @@ class EvaluationFacade():
 
 
     #put_policy_permille_to_move_u
+    #merge_policy_permille
     @staticmethod
-    def merge_policy_permille(
+    def map_relation_bit_to_policy_permille(
             kl_index_and_relation_bit_dictionary,
             kq_index_and_relation_bit_dictionary,
             pl_index_and_relation_bit_dictionary,
@@ -812,19 +901,23 @@ class EvaluationFacade():
             - 自兵の着手に対する、敵玉の応手の数
         pq_move_u_and_relation_number_dictionary - Dictionary<str, int>
             - 自兵の着手に対する、敵兵の応手の数
-        kifuwarabe : Kifuwarabe
-            評価値テーブルを持っている
 
         Returns
         -------
-        k_move_u_and_policy_dictionary - Dictionary<str, int>
-            - 自玉の着手のポリシー値付き辞書。ポリシー値は千分率の４桁の整数
-        p_move_u_and_policy_dictionary - Dictionary<str, int>
-            - 自兵の着手のポリシー値付き辞書。ポリシー値は千分率の４桁の整数
+        kl_move_u_and_policy_dictionary - Dictionary<str, int>
+            - 自玉の着手に対する、敵玉の応手のポリシー値付き辞書。ポリシー値は千分率の４桁の整数
+        kq_move_u_and_policy_dictionary - Dictionary<str, int>
+            - 自玉の着手に対する、敵兵の応手のポリシー値付き辞書。ポリシー値は千分率の４桁の整数
+        pl_move_u_and_policy_dictionary - Dictionary<str, int>
+            - 自兵の着手に対する、敵玉の応手のポリシー値付き辞書。ポリシー値は千分率の４桁の整数
+        pq_move_u_and_policy_dictionary - Dictionary<str, int>
+            - 自兵の着手に対する、敵兵の応手のポリシー値付き辞書。ポリシー値は千分率の４桁の整数
         """
 
-        k_move_u_and_policy_dictionary = {}
-        p_move_u_and_policy_dictionary = {}
+        kl_move_u_and_policy_dictionary = {}
+        kq_move_u_and_policy_dictionary = {}
+        pl_move_u_and_policy_dictionary = {}
+        pq_move_u_and_policy_dictionary = {}
 
         #
         # Ｋ
@@ -834,13 +927,13 @@ class EvaluationFacade():
         for kl_index, relation_number in kl_index_and_relation_bit_dictionary.items():
             k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(kl_index)
 
-            k_move_u_and_policy_dictionary[k_move_obj.as_usi] = PolicyHelper.get_permille_from_relation_number(
+            kl_move_u_and_policy_dictionary[k_move_obj.as_usi] = PolicyHelper.get_permille_from_relation_number(
                     relation_number=relation_number,
                     counter_moves_size=len(kl_index_and_relation_bit_dictionary))
 
         # TODO ＫＱ
         #for kq_index, relation_number in kq_index_and_relation_bit_dictionary.items():
-        #    k_move_u_and_policy_dictionary[kq_index] = PolicyHelper.get_permille_from_relation_number(
+        #    kq_move_u_and_policy_dictionary[kq_index] = PolicyHelper.get_permille_from_relation_number(
         #            relation_number=relation_number,
         #            counter_moves_size=len(kq_index_and_relation_bit_dictionary))
 
@@ -850,18 +943,20 @@ class EvaluationFacade():
 
         # TODO ＰＬ
         #for pl_index, relation_number in pl_index_and_relation_bit_dictionary.items():
-        #    p_move_u_and_policy_dictionary[pl_index] = PolicyHelper.get_permille_from_relation_number(
+        #    pl_move_u_and_policy_dictionary[pl_index] = PolicyHelper.get_permille_from_relation_number(
         #            relation_number=relation_number,
         #            counter_moves_size=len(pl_index_and_relation_bit_dictionary))
 
         # TODO ＰＱ
         #for pq_index, relation_number in pq_index_and_relation_bit_dictionary.items():
-        #    p_move_u_and_policy_dictionary[pq_index] = PolicyHelper.get_permille_from_relation_number(
+        #    pq_move_u_and_policy_dictionary[pq_index] = PolicyHelper.get_permille_from_relation_number(
         #            relation_number=relation_number,
         #            counter_moves_size=len(pq_index_and_relation_bit_dictionary))
 
-        return (k_move_u_and_policy_dictionary,
-                p_move_u_and_policy_dictionary)
+        return (kl_move_u_and_policy_dictionary,
+                kq_move_u_and_policy_dictionary,
+                pl_move_u_and_policy_dictionary,
+                pq_move_u_and_policy_dictionary)
 
 
     def create_random_evaluation_table_as_array(
@@ -970,15 +1065,19 @@ class EvaluationFacade():
         #
         #   ポリシー値は千分率の４桁の整数
         #
-        (k_move_u_and_policy_dictionary,
-         p_move_u_and_policy_dictionary) = EvaluationFacade.merge_policy_permille(
+        (kl_move_u_and_policy_dictionary,
+         kq_move_u_and_policy_dictionary,
+         pl_move_u_and_policy_dictionary,
+         pq_move_u_and_policy_dictionary) = EvaluationFacade.map_relation_bit_to_policy_permille(
                 kl_index_and_relation_bit_dictionary=kl_index_and_relation_bit_dictionary,
                 kq_index_and_relation_bit_dictionary=kq_index_and_relation_bit_dictionary,
                 pl_index_and_relation_bit_dictionary=pl_index_and_relation_bit_dictionary,
                 pq_index_and_relation_bit_dictionary=pq_index_and_relation_bit_dictionary)
 
-        return (k_move_u_and_policy_dictionary,
-                p_move_u_and_policy_dictionary)
+        return (kl_move_u_and_policy_dictionary,
+                kq_move_u_and_policy_dictionary,
+                pl_move_u_and_policy_dictionary,
+                pq_move_u_and_policy_dictionary)
 
 
     @staticmethod
@@ -1814,63 +1913,104 @@ class MoveAndPolicyHelper():
         #   自玉の指し手と、自玉を除く自軍の指し手を分けて取得
         #   ポリシー値は千分率の４桁の整数
         #
-        list_of_friend_move_u_and_policy_dictionary = EvaluationFacade.create_list_of_friend_move_u_and_policy_dictionary(
+        (kl_move_u_and_policy_dictionary,
+         kq_move_u_and_policy_dictionary,
+         pl_move_u_and_policy_dictionary,
+         pq_move_u_and_policy_dictionary) = EvaluationFacade.create_list_of_friend_move_u_and_policy_dictionary(
                 legal_moves=list(board.legal_moves),
                 board=board,
                 kifuwarabe=kifuwarabe)
 
-        k_move_u_and_policy_dictionary = list_of_friend_move_u_and_policy_dictionary[0]
-        p_move_u_and_policy_dictionary = list_of_friend_move_u_and_policy_dictionary[1]
-
         if weakest0_strongest1 == 1:
-            best_k_policy = -1000
-            best_p_policy = -1000
+            best_kl_policy = -1000
+            best_kq_policy = -1000
+            best_pl_policy = -1000
+            best_pq_policy = -1000
 
         else:
-            best_k_policy = 1000
-            best_p_policy = 1000
+            best_kl_policy = 1000
+            best_kq_policy = 1000
+            best_pl_policy = 1000
+            best_pq_policy = 1000
 
-        best_k_move_dictionary = {}
-        best_p_move_dictionary = {}
+        best_kl_move_dictionary = {}
+        best_kq_move_dictionary = {}
+        best_pl_move_dictionary = {}
+        best_pq_move_dictionary = {}
 
         #
-        # キングから
-        # ---------
+        # ＫＬ
+        # ----
         #
 
-        for move_u, policy in k_move_u_and_policy_dictionary.items():
+        for move_u, policy in kl_move_u_and_policy_dictionary.items():
 
             # tie
-            if best_k_policy == policy:
-                best_k_move_dictionary[move_u] = policy
+            if best_kl_policy == policy:
+                best_kl_move_dictionary[move_u] = policy
 
             # update
-            elif (weakest0_strongest1 == 1 and best_k_policy < policy) or (weakest0_strongest1 == 0 and policy < best_k_policy):
-                best_k_policy = policy
-                best_k_move_dictionary = {move_u:policy}
+            elif (weakest0_strongest1 == 1 and best_kl_policy < policy) or (weakest0_strongest1 == 0 and policy < best_kl_policy):
+                best_kl_policy = policy
+                best_kl_move_dictionary = {move_u:policy}
 
         #
-        # 次にピースズ
-        # -----------
+        # ＫＱ
+        # ----
         #
 
-        for move_u, policy in p_move_u_and_policy_dictionary.items():
+        for move_u, policy in kq_move_u_and_policy_dictionary.items():
 
             # tie
-            if best_p_policy == policy:
-                best_p_move_dictionary[move_u] = policy
+            if best_kq_policy == policy:
+                best_kq_move_dictionary[move_u] = policy
 
             # update
-            elif (weakest0_strongest1 == 1 and best_p_policy < policy) or (weakest0_strongest1 == 0 and policy < best_p_policy):
-                best_p_policy = policy
-                best_p_move_dictionary = {move_u:policy}
+            elif (weakest0_strongest1 == 1 and best_kq_policy < policy) or (weakest0_strongest1 == 0 and policy < best_kq_policy):
+                best_kq_policy = policy
+                best_kq_move_dictionary = {move_u:policy}
+
+        #
+        # ＰＬ
+        # ----
+        #
+
+        for move_u, policy in pl_move_u_and_policy_dictionary.items():
+
+            # tie
+            if best_pl_policy == policy:
+                best_pl_move_dictionary[move_u] = policy
+
+            # update
+            elif (weakest0_strongest1 == 1 and best_pl_policy < policy) or (weakest0_strongest1 == 0 and policy < best_pl_policy):
+                best_pl_policy = policy
+                best_pl_move_dictionary = {move_u:policy}
+
+        #
+        # ＰＱ
+        # ----
+        #
+
+        for move_u, policy in pq_move_u_and_policy_dictionary.items():
+
+            # tie
+            if best_pq_policy == policy:
+                best_pq_move_dictionary[move_u] = policy
+
+            # update
+            elif (weakest0_strongest1 == 1 and best_pq_policy < policy) or (weakest0_strongest1 == 0 and policy < best_pq_policy):
+                best_pq_policy = policy
+                best_pq_move_dictionary = {move_u:policy}
 
         #
         # ベスト
         # ------
         #
 
-        return (best_k_move_dictionary, best_p_move_dictionary)
+        return (best_kl_move_dictionary,
+                best_kq_move_dictionary,
+                best_pl_move_dictionary,
+                best_pq_move_dictionary)
 
 
 class MoveListHelper():
