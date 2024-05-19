@@ -492,7 +492,7 @@ class Kifuwarabe():
 
         print(f'ベスト一覧：')
         for move_u, policy in best_move_dictionary.items():
-            print(f'  F:{move_u:5}  O:*****  policy:{policy:4}‰')
+            print(f'  turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  policy:{policy:4}‰')
 
 
     def weakest(self):
@@ -579,7 +579,7 @@ class Kifuwarabe():
                 k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
                         kl_index=kl_index)
 
-                print(f"K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                print(f"  turn:{Turn.to_string(self._board.turn)}  kl_index:{kl_index}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
         else:
             # TODO 表示
@@ -758,7 +758,7 @@ class Kifuwarabe():
                         kl_index=kl_index)
 
                 # 表示
-                print(f"kl_index:{kl_index}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                print(f"  kl_index:{kl_index}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
                 if relation_exists == 1:
                     exists_number += 1
@@ -775,7 +775,7 @@ class Kifuwarabe():
             difference = expected_exists_number - exists_number
 
             # 表示
-            print(f"K:{move_obj.as_usi:5}  L:*****  exists_number:{exists_number} / total:{total}  expected_exists_number:{expected_exists_number}  difference:{difference}")
+            print(f"  K:{move_obj.as_usi:5}  L:*****  exists_number:{exists_number} / total:{total}  expected_exists_number:{expected_exists_number}  difference:{difference}")
 
             rest = difference
 
@@ -790,7 +790,7 @@ class Kifuwarabe():
                 if k_move_obj.as_usi == move_u:
                     if relation_exists == 0:
 
-                        print(f"turn:{Turn.to_string(self._board.turn)}  kl_index:{kl_index}  K:{move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
+                        print(f"  turn:{Turn.to_string(self._board.turn)}  kl_index:{kl_index}  K:{move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
 
                         self._evaluation_kl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kl_moves(
                                 k_move_obj=k_move_obj,
@@ -2355,7 +2355,7 @@ class EvalutionMmTable():
         figure = 8 - bit_index
 
         # format `:08b` - 0 supply, 8 figures, binary
-        print(f"[evalution mm table > set_bit_by_index]  byte_index:{byte_index}  bit_index:{bit_index}  figure:{figure}  bit:{bit}  old byte_value:0x{self._table_as_array[byte_index]:08b}")
+        print(f"[evalution mm table > set_bit_by_index]  index:{index}  byte_index:{byte_index}  bit_index:{bit_index}  figure:{figure}  bit:{bit}  old byte_value:0x{self._table_as_array[byte_index]:08b}")
 
         # ビットはめんどくさい。ビッグエンディアン
         if bit == 1:
@@ -2367,7 +2367,7 @@ class EvalutionMmTable():
             self._table_as_array[byte_index] = byte_value & (0b1111_1111 - (0b1 << figure))
 
         # format `:08b` - 0 supply, 8 figures, binary
-        print(f"[evalution mm table > set_bit_by_index]  byte_index:{byte_index}  bit_index:{bit_index}  figure:{figure}  bit:{bit}  new byte_value:0x{self._table_as_array[byte_index]:08b}")
+        print(f"[evalution mm table > set_bit_by_index]  index:{index}  byte_index:{byte_index}  bit_index:{bit_index}  figure:{figure}  bit:{bit}  new byte_value:0x{self._table_as_array[byte_index]:08b}")
 
 
 class PolicyHelper():
