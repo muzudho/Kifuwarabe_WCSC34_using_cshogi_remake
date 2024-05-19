@@ -1545,41 +1545,70 @@ class EvaluationFacade():
             - 自兵の着手に対する、敵兵の応手の数
         """
 
-        k_move_u_and_l_and_relation_number_dictionary = {}
-        k_move_u_and_q_and_relation_number_dictionary = {}
-        p_move_u_and_l_and_relation_number_dictionary = {}
-        p_move_u_and_q_and_relation_number_dictionary = {}
+        def select_f_move_u_and_o_and_relation_number(
+                fo_index_and_relation_bit_dictionary,
+                label_f,
+                label_o):
 
-        #
-        # Ｋ
-        #
+            f_move_u_and_o_and_relation_number_dictionary = {}
+
+            kind = f"{label_f}{label_o}"
+
+            for fo_index, relation_bit in fo_index_and_relation_bit_dictionary.items():
+
+                if kind == 'KL':
+                    f_move_obj, o_move_obj = EvaluationKkTable.destructure_kl_index(fo_index)
+                # TODO ＫＱ
+                elif kind == 'KQ':
+                    continue
+                # TODO ＰＬ
+                elif kind == 'PL':
+                    continue
+                # TODO ＰＱ
+                elif kind == 'PQ':
+                    continue
+                else:
+                    raise ValueError(f"unexpected kind:{kind}")
+
+                if f_move_obj.as_usi in f_move_u_and_o_and_relation_number_dictionary.keys():
+                    f_move_u_and_o_and_relation_number_dictionary[f_move_obj.as_usi] += relation_bit
+
+                else:
+                    f_move_u_and_o_and_relation_number_dictionary[f_move_obj.as_usi] = relation_bit
+
+                print(f"{label_f.lower()}{label_o.lower()}_index:{fo_index}  {label_f}:{f_move_obj.as_usi:5}  {label_o}:{o_move_obj.as_usi:5}  relation_bit:{relation_bit}  sum(f relation):{f_move_u_and_o_and_relation_number_dictionary[f_move_obj.as_usi]}")
+
+            return f_move_u_and_o_and_relation_number_dictionary
 
         # ＫＬ
-        for kl_index, relation_bit in kl_index_and_relation_bit_dictionary.items():
-            k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(kl_index)
-
-            if k_move_obj.as_usi in k_move_u_and_l_and_relation_number_dictionary.keys():
-                k_move_u_and_l_and_relation_number_dictionary[k_move_obj.as_usi] += relation_bit
-
-            else:
-                k_move_u_and_l_and_relation_number_dictionary[k_move_obj.as_usi] = relation_bit
-
-            print(f"kl_index:{kl_index}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_bit:{relation_bit}  sum(k relation):{k_move_u_and_l_and_relation_number_dictionary[k_move_obj.as_usi]}")
+        k_move_u_and_l_and_relation_number_dictionary = select_f_move_u_and_o_and_relation_number(
+                fo_index_and_relation_bit_dictionary=kl_index_and_relation_bit_dictionary,
+                label_f='K',
+                label_o='L')
 
         # TODO ＫＱ
-
-        #
-        # Ｐ
-        #
+        k_move_u_and_q_and_relation_number_dictionary = select_f_move_u_and_o_and_relation_number(
+                fo_index_and_relation_bit_dictionary=kq_index_and_relation_bit_dictionary,
+                label_f='K',
+                label_o='Q')
 
         # TODO ＰＬ
+        p_move_u_and_l_and_relation_number_dictionary = select_f_move_u_and_o_and_relation_number(
+                fo_index_and_relation_bit_dictionary=pl_index_and_relation_bit_dictionary,
+                label_f='P',
+                label_o='L')
 
         # TODO ＰＱ
+        p_move_u_and_q_and_relation_number_dictionary = select_f_move_u_and_o_and_relation_number(
+                fo_index_and_relation_bit_dictionary=pq_index_and_relation_bit_dictionary,
+                label_f='P',
+                label_o='Q')
 
         return (k_move_u_and_l_and_relation_number_dictionary,
                 k_move_u_and_q_and_relation_number_dictionary,
                 p_move_u_and_l_and_relation_number_dictionary,
                 p_move_u_and_q_and_relation_number_dictionary)
+
 
     @staticmethod
     def select_policy_to_f_move_u_set_group_by_policy(
@@ -1588,6 +1617,7 @@ class EvaluationFacade():
             p_move_u_and_l_and_policy_dictionary,
             p_move_u_and_q_and_policy_dictionary):
         """ポリシー毎に指し手をまとめ直す"""
+        
         kl_policy_to_f_move_u_set_dictionary = {}
         kq_policy_to_f_move_u_set_dictionary = {}
         pl_policy_to_f_move_u_set_dictionary = {}
