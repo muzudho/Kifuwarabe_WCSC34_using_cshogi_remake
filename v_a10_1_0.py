@@ -2284,34 +2284,24 @@ class EvalutionMmTable():
         bit_index = index % 8
         byte_index = index // 8
 
+        # bit_index == 0 のとき、右から８桁目を指す（ビッグエンディアン）
+        #
+        #   1xxx xxxx
+        #
+        # bit_index == 7 のとき、右から１桁目を指す
+        #
+        #   xxxx xxx1
+        #
+        # そこで、 (8 - bit_index) 桁目を指す
+        #
+        figure = 8 - bit_index
+
         byte_value = self._table_as_array[byte_index]
 
-        # ビットはめんどくさい。ビッグエンディアン
-        # TODO 論理シフト演算子を使えばいいのでは？ Pythonのシフト演算子ワケワカラン
-        if bit_index == 0:
-            # 1xxx xxxx
-            bit_value = byte_value // 128 % 2
-        elif bit_index == 1:
-            # x1xx xxxx
-            bit_value = byte_value // 64 % 2
-        elif bit_index == 2:
-            # xx1x xxxx
-            bit_value = byte_value // 32 % 2
-        elif bit_index == 3:
-            # xxx1 xxxx
-            bit_value = byte_value // 16 % 2
-        elif bit_index == 4:
-            # xxxx 1xxx
-            bit_value = byte_value // 8 % 2
-        elif bit_index == 5:
-            # xxxx x1xx
-            bit_value = byte_value // 4 % 2
-        elif bit_index == 6:
-            # xxxx xx1x
-            bit_value = byte_value // 2 % 2
-        else:
-            # xxxx xxx1
-            bit_value = byte_value % 2
+        bit_value = byte_value // (0b1 << figure) % 2
+
+        # format `:08b` - 0 supply, 8 figures, binary
+        print(f"[evalution mm table > get_bit_by_index]  index:{index}  byte_index:{byte_index}  bit_index:{bit_index}  figure:{figure}  byte_value:0x{self._table_as_array[byte_index]:08b}  bit_value:{bit_value}")
 
         if bit_value < 0 or 1 < bit_value:
             raise ValueError(f"bit must be 0 or 1. bit:{bit_value}")
@@ -2342,7 +2332,7 @@ class EvalutionMmTable():
 
         byte_value = self._table_as_array[byte_index]
 
-        # bit_index == 0 のとき、右から８桁目を指す
+        # bit_index == 0 のとき、右から８桁目を指す（ビッグエンディアン）
         #
         #   1xxx xxxx
         #
