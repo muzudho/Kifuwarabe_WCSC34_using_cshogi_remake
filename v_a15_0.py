@@ -1713,10 +1713,17 @@ class EvaluationFacade():
             自兵の着手と、敵兵の応手の、関係のポリシー値。ポリシー値は千分率の４桁の整数
         """
 
-        # 自玉の着手の集合と、自軍の玉以外の着手の集合
+        # 自玉の着手の集合と、自兵の着手の集合
         k_moves_u, p_moves_u = MoveListHelper.create_k_and_p_legal_moves(
                 legal_moves,
                 board)
+
+        print(f"  着手の一覧：")
+        for move_u in k_moves_u:
+            print(f"    K {move_u:5}")
+
+        for move_u in p_moves_u:
+            print(f"    P {move_u:5}")
 
         #
         # 相手が指せる手の集合
@@ -1772,6 +1779,8 @@ class EvaluationFacade():
 
         for move_u in q_move_u_for_p_set:
             print(f"    PL Q:{move_u}")
+
+        # FIXME 着手ごとに、応手は異なるのでは？
 
         #
         # 着手と応手の関係を全部取得
