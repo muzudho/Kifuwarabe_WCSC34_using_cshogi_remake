@@ -1720,17 +1720,27 @@ class EvaluationFacade():
         for move_u in k_moves_u:
             move_obj = Move.from_usi(move_u)
 
-            kl_move_u_set, kq_move_u_set = BoardHelper.create_counter_move_u_set(
+            (temp_kl_move_u_set,
+             temp_kq_move_u_set) = BoardHelper.create_counter_move_u_set(
                     board=board,
                     move_obj=move_obj)
+
+            # 和集合を作成
+            kl_move_u_set = kl_move_u_set.union(temp_kl_move_u_set)
+            kq_move_u_set = kq_move_u_set.union(temp_kq_move_u_set)
 
         # Ｐに対する、応手の一覧を作成
         for move_u in p_moves_u:
             move_obj = Move.from_usi(move_u)
 
-            pl_move_u_set, pq_move_u_set = BoardHelper.create_counter_move_u_set(
+            (temp_pl_move_u_set,
+             temp_pq_move_u_set) = BoardHelper.create_counter_move_u_set(
                     board=board,
                     move_obj=move_obj)
+
+            # 和集合を作成
+            pl_move_u_set = kl_move_u_set.union(temp_pl_move_u_set)
+            pq_move_u_set = kq_move_u_set.union(temp_pq_move_u_set)
 
         #
         # 着手と応手の関係を全部取得
