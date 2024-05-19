@@ -1617,49 +1617,48 @@ class EvaluationFacade():
             p_move_u_and_l_and_policy_dictionary,
             p_move_u_and_q_and_policy_dictionary):
         """ポリシー毎に指し手をまとめ直す"""
-        
-        kl_policy_to_f_move_u_set_dictionary = {}
-        kq_policy_to_f_move_u_set_dictionary = {}
-        pl_policy_to_f_move_u_set_dictionary = {}
-        pq_policy_to_f_move_u_set_dictionary = {}
+
+        def select_policy_and_f_move_u_set(
+                f_move_u_and_o_and_policy_dictionary,
+                label_f,
+                label_o):
+            policy_and_move_u_set_dictionary = {}
+
+            for move_u, policy in f_move_u_and_o_and_policy_dictionary.items():
+                if policy in policy_and_move_u_set_dictionary.keys():
+                    print(f"{label_f}{label_o}  policy:{policy}‰  add {label_f}:{move_u}")
+                    policy_and_move_u_set_dictionary[policy].add(move_u)
+
+                else:
+                    print(f"{label_f}{label_o}  policy:{policy}‰  new {label_f}:{move_u}")
+                    policy_and_move_u_set_dictionary[policy] = set()
+                    policy_and_move_u_set_dictionary[policy].add(move_u)
+
+            return policy_and_move_u_set_dictionary
 
         # ＫＬ
-        for move_u, policy in k_move_u_and_l_and_policy_dictionary.items():
-            if policy in kl_policy_to_f_move_u_set_dictionary.keys():
-                print(f"KL  policy:{policy}‰  add K:{move_u}")
-                kl_policy_to_f_move_u_set_dictionary[policy].add(move_u)
-
-            else:
-                print(f"KL  policy:{policy}‰  new K:{move_u}")
-                kl_policy_to_f_move_u_set_dictionary[policy] = set()
-                kl_policy_to_f_move_u_set_dictionary[policy].add(move_u)
+        kl_policy_to_f_move_u_set_dictionary = select_policy_and_f_move_u_set(
+                f_move_u_and_o_and_policy_dictionary=k_move_u_and_l_and_policy_dictionary,
+                label_f='K',
+                label_o='L')
 
         # ＫＱ
-        for move_u, policy in k_move_u_and_q_and_policy_dictionary.items():
-            if policy in kq_policy_to_f_move_u_set_dictionary.keys():
-                kq_policy_to_f_move_u_set_dictionary[policy].add(move_u)
-
-            else:
-                kq_policy_to_f_move_u_set_dictionary[policy] = set()
-                kq_policy_to_f_move_u_set_dictionary[policy].add(move_u)
+        kq_policy_to_f_move_u_set_dictionary = select_policy_and_f_move_u_set(
+                f_move_u_and_o_and_policy_dictionary=k_move_u_and_q_and_policy_dictionary,
+                label_f='K',
+                label_o='Q')
 
         # ＰＬ
-        for move_u, policy in p_move_u_and_l_and_policy_dictionary.items():
-            if policy in pl_policy_to_f_move_u_set_dictionary.keys():
-                pl_policy_to_f_move_u_set_dictionary[policy].add(move_u)
-
-            else:
-                pl_policy_to_f_move_u_set_dictionary[policy] = set()
-                pl_policy_to_f_move_u_set_dictionary[policy].add(move_u)
+        pl_policy_to_f_move_u_set_dictionary = p_move_u_and_l_and_policy_dictionary(
+                f_move_u_and_o_and_policy_dictionary=k_move_u_and_q_and_policy_dictionary,
+                label_f='P',
+                label_o='L')
 
         # ＰＱ
-        for move_u, policy in p_move_u_and_q_and_policy_dictionary.items():
-            if policy in pq_policy_to_f_move_u_set_dictionary.keys():
-                pq_policy_to_f_move_u_set_dictionary[policy].add(move_u)
-
-            else:
-                pq_policy_to_f_move_u_set_dictionary[policy] = set()
-                pq_policy_to_f_move_u_set_dictionary[policy].add(move_u)
+        pq_policy_to_f_move_u_set_dictionary = p_move_u_and_l_and_policy_dictionary(
+                f_move_u_and_o_and_policy_dictionary=p_move_u_and_q_and_policy_dictionary,
+                label_f='P',
+                label_o='Q')
 
         return (kl_policy_to_f_move_u_set_dictionary,
                 kq_policy_to_f_move_u_set_dictionary,
