@@ -1,4 +1,6 @@
 import cshogi
+import os
+import datetime
 
 
 class Turn():
@@ -517,133 +519,6 @@ class MoveListHelper():
         return (k_moves_u, p_moves_u)
 
 
-class MoveAndPolicyHelper():
-    """評価値付きの指し手のリストのヘルパー"""
-
-
-    @staticmethod
-    def get_moves(
-            weakest0_strongest1,
-            board,
-            kifuwarabe):
-        """最強手または最弱手の取得
-
-        Parameters
-        ----------
-        weakest0_strongest1 : int
-            0なら最弱手、1なら最強手を取得
-        board : Board
-            局面
-        kifuwarabe : Kifuwarabe
-            きふわらべ
-        """
-        #
-        # USIプロトコルでの符号表記と、ポリシー値の辞書に変換
-        # --------------------------------------------
-        #
-        #   自玉の指し手と、自玉を除く自軍の指し手を分けて取得
-        #   ポリシー値は千分率の４桁の整数
-        #
-        (kl_move_u_and_policy_dictionary,
-         kq_move_u_and_policy_dictionary,
-         pl_move_u_and_policy_dictionary,
-         pq_move_u_and_policy_dictionary) = EvaluationFacade.create_list_of_friend_move_u_and_policy_dictionary(
-                legal_moves=list(board.legal_moves),
-                board=board,
-                kifuwarabe=kifuwarabe)
-
-        if weakest0_strongest1 == 1:
-            best_kl_policy = -1000
-            best_kq_policy = -1000
-            best_pl_policy = -1000
-            best_pq_policy = -1000
-
-        else:
-            best_kl_policy = 1000
-            best_kq_policy = 1000
-            best_pl_policy = 1000
-            best_pq_policy = 1000
-
-        best_kl_move_dictionary = {}
-        best_kq_move_dictionary = {}
-        best_pl_move_dictionary = {}
-        best_pq_move_dictionary = {}
-
-        #
-        # ＫＬ
-        # ----
-        #
-
-        for move_u, policy in kl_move_u_and_policy_dictionary.items():
-
-            # tie
-            if best_kl_policy == policy:
-                best_kl_move_dictionary[move_u] = policy
-
-            # update
-            elif (weakest0_strongest1 == 1 and best_kl_policy < policy) or (weakest0_strongest1 == 0 and policy < best_kl_policy):
-                best_kl_policy = policy
-                best_kl_move_dictionary = {move_u:policy}
-
-        #
-        # ＫＱ
-        # ----
-        #
-
-        for move_u, policy in kq_move_u_and_policy_dictionary.items():
-
-            # tie
-            if best_kq_policy == policy:
-                best_kq_move_dictionary[move_u] = policy
-
-            # update
-            elif (weakest0_strongest1 == 1 and best_kq_policy < policy) or (weakest0_strongest1 == 0 and policy < best_kq_policy):
-                best_kq_policy = policy
-                best_kq_move_dictionary = {move_u:policy}
-
-        #
-        # ＰＬ
-        # ----
-        #
-
-        for move_u, policy in pl_move_u_and_policy_dictionary.items():
-
-            # tie
-            if best_pl_policy == policy:
-                best_pl_move_dictionary[move_u] = policy
-
-            # update
-            elif (weakest0_strongest1 == 1 and best_pl_policy < policy) or (weakest0_strongest1 == 0 and policy < best_pl_policy):
-                best_pl_policy = policy
-                best_pl_move_dictionary = {move_u:policy}
-
-        #
-        # ＰＱ
-        # ----
-        #
-
-        for move_u, policy in pq_move_u_and_policy_dictionary.items():
-
-            # tie
-            if best_pq_policy == policy:
-                best_pq_move_dictionary[move_u] = policy
-
-            # update
-            elif (weakest0_strongest1 == 1 and best_pq_policy < policy) or (weakest0_strongest1 == 0 and policy < best_pq_policy):
-                best_pq_policy = policy
-                best_pq_move_dictionary = {move_u:policy}
-
-        #
-        # ベスト
-        # ------
-        #
-
-        return (best_kl_move_dictionary,
-                best_kq_move_dictionary,
-                best_pl_move_dictionary,
-                best_pq_move_dictionary)
-
-
 class PolicyHelper():
     """ポリシー値のヘルパー"""
 
@@ -666,3 +541,305 @@ class PolicyHelper():
             千分率の整数のポリシー値
         """
         return relation_number * 1000 // counter_move_size
+
+
+########################################
+# データ構造関連
+########################################
+
+class EvalutionMmTable():
+    """評価値ＭＭテーブル"""
+
+
+    def __init__(
+            self,
+            file_name,
+            table_as_array,
+            is_file_modified):
+        """初期化
+
+        Parameters
+        ----------
+        file_name : str
+            ファイル名
+        table_as_array : []
+            評価値テーブルの配列
+        is_file_modified : bool
+            このテーブルが変更されて、保存されていなければ真
+        """
+
+        self._file_name = file_name
+        self._table_as_array = table_as_array
+        self._is_file_modified = is_file_modified
+
+
+    @property
+    def file_name(self):
+        """ファイル名"""
+        return self._file_name
+
+
+    @property
+    def table_as_array(self):
+        """評価値テーブルの配列"""
+        return self._table_as_array
+
+
+    @property
+    def is_file_modified(self):
+        """このテーブルが変更されて、保存されていなければ真"""
+        return self._is_file_modified
+
+
+    def get_bit_by_index(
+            self,
+            index):
+        """インデックスを受け取ってビット値を返します
+
+        Parameters
+        ----------
+        index : int
+            配列のインデックス
+
+        Returns
+        -------
+        bit : int
+            0 or 1
+        """
+
+        # ビット・インデックスを、バイトとビットに変換
+        bit_index = index % 8
+        byte_index = index // 8
+
+        # bit_index == 0 のとき、右から８桁目を指す（ビッグエンディアン）
+        #
+        #   1xxx xxxx
+        #
+        # bit_index == 7 のとき、右から１桁目を指す
+        #
+        #   xxxx xxx1
+        #
+        # そこで、 (8 - bit_index) 桁目を指す
+        #
+        figure = 8 - bit_index
+
+        byte_value = self._table_as_array[byte_index]
+
+        bit_value = byte_value // (0b1 << figure) % 2
+
+        # format `:08b` - 0 supply, 8 figures, binary
+        print(f"[evalution mm table > get_bit_by_index]  index:{index}  byte_index:{byte_index}  bit_index:{bit_index}  figure:{figure}  byte_value:0x{self._table_as_array[byte_index]:08b}  bit_value:{bit_value}")
+
+        if bit_value < 0 or 1 < bit_value:
+            raise ValueError(f"bit must be 0 or 1. bit:{bit_value}")
+
+        return bit_value
+
+
+    def set_bit_by_index(
+            self,
+            index,
+            bit):
+        """インデックスを受け取ってビット値を設定します
+
+        Parameters
+        ----------
+        index : int
+            配列のインデックス
+        bit : int
+            0 か 1
+        """
+
+        if bit < 0 or 1 < bit:
+            raise ValueError(f"bit must be 0 or 1. bit:{bit}")
+
+        # ビット・インデックスを、バイトとビットに変換
+        bit_index = index % 8
+        byte_index = index // 8
+
+        byte_value = self._table_as_array[byte_index]
+
+        # bit_index == 0 のとき、右から８桁目を指す（ビッグエンディアン）
+        #
+        #   1xxx xxxx
+        #
+        # bit_index == 7 のとき、右から１桁目を指す
+        #
+        #   xxxx xxx1
+        #
+        # そこで、 (8 - bit_index) 桁目を指す
+        #
+        figure = 8 - bit_index
+
+        # format `:08b` - 0 supply, 8 figures, binary
+        print(f"[evalution mm table > set_bit_by_index]  index:{index}  byte_index:{byte_index}  bit_index:{bit_index}  figure:{figure}  bit:{bit}  old byte_value:0x{self._table_as_array[byte_index]:08b}")
+
+        # ビットはめんどくさい。ビッグエンディアン
+        if bit == 1:
+            # 指定の桁を 1 で上書きする
+            self._table_as_array[byte_index] = byte_value | (0b1 << figure)
+
+        else:
+            # 指定の桁を 0 で上書きする
+            self._table_as_array[byte_index] = byte_value & (0b1111_1111 - (0b1 << figure))
+
+        # format `:08b` - 0 supply, 8 figures, binary
+        print(f"[evalution mm table > set_bit_by_index]  index:{index}  byte_index:{byte_index}  bit_index:{bit_index}  figure:{figure}  bit:{bit}  new byte_value:0x{self._table_as_array[byte_index]:08b}")
+
+
+########################################
+# ファイル関連
+########################################
+
+class GameResultFile():
+    """対局結果ファイル"""
+
+
+    def __init__(
+            self,
+            engine_version_str):
+        """初期化
+
+        Parameters
+        ----------
+        engine_version_str : str
+            将棋エンジンのバージョン
+        """
+        self._file_name = f'n1_game_result_{engine_version_str}.txt'
+
+
+    @property
+    def file_name(self):
+        """ファイル名"""
+        return self._file_name
+
+
+    def exists(self):
+        """ファイルの存在確認"""
+        return os.path.isfile(self.file_name)
+
+
+    def delete(self):
+        """ファイルの削除"""
+
+        try:
+            print(f"[{datetime.datetime.now()}] {self.file_name} file delete...", flush=True)
+            os.remove(self.file_name)
+            print(f"[{datetime.datetime.now()}] {self.file_name} file deleted", flush=True)
+
+        except FileNotFoundError:
+            # ファイルが無いのなら、削除に失敗しても問題ない
+            pass
+
+
+    def read_lines(self):
+        """結果の読込"""
+        try:
+            print(f"[{datetime.datetime.now()}] {self.file_name} file read ...", flush=True)
+
+            with open(self.file_name, 'r', encoding="utf-8") as f:
+                text = f.read()
+
+            # 改行で分割
+            lines = text.splitlines()
+            print(f"[{datetime.datetime.now()}] {self.file_name} file read", flush=True)
+
+            return lines
+
+        # ファイルの読込に失敗
+        except:
+            return []
+
+
+    def save_lose(self, my_turn, board):
+        """負け
+
+        Parameters
+        ----------
+        my_turn : Turn
+            自分の手番
+        board : Board
+            将棋盤
+        """
+
+        turn_text = Turn.to_string(my_turn)
+        print(f"あ～あ、 {turn_text} 番で負けたぜ（＞＿＜）", flush=True)
+
+        # ファイルに出力する
+        print(f"[{datetime.datetime.now()}] {self.file_name} file save ...", flush=True)
+        with open(self.file_name, 'w', encoding="utf-8") as f:
+            f.write(f"""lose {turn_text}
+sfen {board.sfen()}""")
+
+        print(f"[{datetime.datetime.now()}] {self.file_name} file saved", flush=True)
+
+
+    def save_win(self, my_turn, board):
+        """勝ち
+
+        Parameters
+        ----------
+        my_turn : Turn
+            自分の手番
+        board : Board
+            将棋盤
+        """
+
+        turn_text = Turn.to_string(my_turn)
+        print(f"やったぜ {turn_text} 番で勝ったぜ（＾ｑ＾）", flush=True)
+
+        # ファイルに出力する
+        print(f"[{datetime.datetime.now()}] {self.file_name} file save ...", flush=True)
+        with open(self.file_name, 'w', encoding="utf-8") as f:
+            f.write(f"""win {turn_text}
+sfen {board.sfen()}""")
+
+        print(f"[{datetime.datetime.now()}] {self.file_name} file saved", flush=True)
+
+
+    def save_draw(self, my_turn, board):
+        """持将棋
+
+        Parameters
+        ----------
+        my_turn : Turn
+            自分の手番
+        board : Board
+            将棋盤
+        """
+
+        turn_text = Turn.to_string(my_turn)
+        print(f"持将棋か～（ー＿ー） turn: {turn_text}", flush=True)
+
+        # ファイルに出力する
+        print(f"[{datetime.datetime.now()}] {self.file_name} file save ...", flush=True)
+        with open(self.file_name, 'w', encoding="utf-8") as f:
+            f.write(f"""draw {turn_text}
+sfen {board.sfen()}""")
+
+        print(f"[{datetime.datetime.now()}] {self.file_name} file saved", flush=True)
+
+
+    def save_otherwise(self, result_text, my_turn, board):
+        """予期しない結果
+
+        Parameters
+        ----------
+        result_text : str
+            結果文字列
+        my_turn : Turn
+            自分の手番
+        board : Board
+            将棋盤
+        """
+
+        turn_text = Turn.to_string(my_turn)
+        print(f"なんだろな（・＿・）？　'{result_text}', turn: '{turn_text}'", flush=True)
+
+        # ファイルに出力する
+        print(f"[{datetime.datetime.now()}] {self.file_name} file save ...", flush=True)
+        with open(self.file_name, 'w', encoding="utf-8") as f:
+            f.write(f"""{result_text} {turn_text}
+sfen {board.sfen()}""")
+
+        print(f"[{datetime.datetime.now()}] {self.file_name} file saved", flush=True)
