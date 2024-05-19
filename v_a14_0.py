@@ -402,7 +402,7 @@ class Kifuwarabe():
                 kifuwarabe=self)
 
         #
-        # ベター着手一覧
+        # グッド着手一覧
         # -------------
         #
         (good_move_u_set,
@@ -1003,7 +1003,10 @@ class Lottery():
             評価値テーブルを持っている
         """
 
-        # ポリシー値は千分率の４桁の整数
+        # 合法手を、着手と応手に紐づくポリシー値を格納した辞書に変換します
+        #
+        #   ポリシー値は千分率の４桁の整数
+        #
         (kl_move_u_and_policy_dictionary,
          kq_move_u_and_policy_dictionary,
          pl_move_u_and_policy_dictionary,
@@ -1011,6 +1014,38 @@ class Lottery():
                 legal_moves=legal_moves,
                 board=board,
                 kifuwarabe=kifuwarabe)
+
+        # ポリシー値は　分母の異なる集団の　投票数なので、
+        # 絶対値に意味はなく、
+        # 賛同か否定か（0.5 より高いか、低いか）ぐらいの判断にしか使えないと思うので、
+        # そのようにします
+
+        #
+        # グッド着手一覧
+        # -------------
+        #
+        (good_move_u_set,
+         bad_move_u_set) = MoveAndPolicyHelper.select_good_f_move_u_set(
+                kl_move_u_and_policy_dictionary,
+                kq_move_u_and_policy_dictionary,
+                pl_move_u_and_policy_dictionary,
+                pq_move_u_and_policy_dictionary)
+
+        # 候補手の中からランダムに選ぶ。USIの指し手の記法で返却
+        move_u_list = list(good_move_u_set)
+        if len(move_u_list) < 1:
+            # 何も指さないよりはマシ
+            move_u_list = list(bad_move_u_set)
+
+        return random.choice(move_u_list)
+
+
+    def get_best_move(
+            kl_move_u_and_policy_dictionary,
+            kq_move_u_and_policy_dictionary,
+            pl_move_u_and_policy_dictionary,
+            pq_move_u_and_policy_dictionary):
+        """ポリシー値が最高のものをどれか１つ選ぶ"""
 
         list_of_friend_move_u_and_policy_dictionary = [
             kl_move_u_and_policy_dictionary,
