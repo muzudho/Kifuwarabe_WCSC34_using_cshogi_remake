@@ -320,7 +320,7 @@ class Kifuwarabe():
 
     def get_weakest_moves(self):
         """最弱手の取得"""
-        return MoveAndPolicyHelper.get_moves(
+        return MoveAndPolicyHelper.get_best_moves(
                 weakest0_strongest1 = 0,
                 board=self._board,
                 kifuwarabe=self)
@@ -328,7 +328,7 @@ class Kifuwarabe():
 
     def get_strongest_moves(self):
         """最強手の取得"""
-        return MoveAndPolicyHelper.get_moves(
+        return MoveAndPolicyHelper.get_best_moves(
                 weakest0_strongest1 = 1,
                 board=self._board,
                 kifuwarabe=self)
@@ -396,7 +396,7 @@ class Kifuwarabe():
         (kl_move_u_and_policy_dictionary,
          kq_move_u_and_policy_dictionary,
          pl_move_u_and_policy_dictionary,
-         pq_move_u_and_policy_dictionary) = EvaluationFacade.create_list_of_friend_move_u_and_policy_dictionary(
+         pq_move_u_and_policy_dictionary) = EvaluationFacade.select_fo_move_u_and_policy_dictionary(
                 legal_moves=list(self._board.legal_moves),
                 board=self._board,
                 kifuwarabe=self)
@@ -404,8 +404,8 @@ class Kifuwarabe():
         # 表示
         number = 1
 
-        best_policy = -1000
-        best_move_dictionary = {}
+        # ポリシー値が 0.5 以上の指し手
+        better_move_u_set = set()
 
         #
         # ＫＬ
@@ -416,14 +416,8 @@ class Kifuwarabe():
         for move_u, policy in kl_move_u_and_policy_dictionary.items():
             print(f'    ({number:3}) K:{move_u:5} L:*****  policy:{policy:4}‰')
 
-            # update
-            if best_policy < policy:
-                best_policy = policy
-                best_move_dictionary = {move_u:policy}
-
-            # tie
-            elif best_policy == policy:
-                best_move_dictionary[move_u] = policy
+            if 500 <= policy:
+                better_move_u_set.add(move_u)
 
             number += 1
 
@@ -436,14 +430,8 @@ class Kifuwarabe():
         for move_u, policy in kq_move_u_and_policy_dictionary.items():
             print(f'    ({number:3}) K:{move_u:5} Q:*****  policy:{policy:4}‰')
 
-            # update
-            if best_policy < policy:
-                best_policy = policy
-                best_move_dictionary = {move_u:policy}
-
-            # tie
-            elif best_policy == policy:
-                best_move_dictionary[move_u] = policy
+            if 500 <= policy:
+                better_move_u_set.add(move_u)
 
             number += 1
 
@@ -456,14 +444,8 @@ class Kifuwarabe():
         for move_u, policy in pl_move_u_and_policy_dictionary.items():
             print(f'    ({number:3}) P:{move_u:5} L:*****  policy:{policy:4}')
 
-            # update
-            if best_policy < policy:
-                best_policy = policy
-                best_move_dictionary = {move_u:policy}
-
-            # tie
-            elif best_policy == policy:
-                best_move_dictionary[move_u] = policy
+            if 500 <= policy:
+                better_move_u_set.add(move_u)
 
             number += 1
 
@@ -476,27 +458,19 @@ class Kifuwarabe():
         for move_u, policy in pq_move_u_and_policy_dictionary.items():
             print(f'    ({number:3}) P:{move_u:5} Q:*****  policy:{policy:4}')
 
-            # update
-            if best_policy < policy:
-                best_policy = policy
-                best_move_dictionary = {move_u:policy}
-
-            # tie
-            elif best_policy == policy:
-                best_move_dictionary[move_u] = policy
+            if 500 <= policy:
+                better_move_u_set.add(move_u)
 
             number += 1
 
-        # TODO ポリシー順に並べたい。 Order by policy
-
         #
-        # ベスト
-        # ------
+        # ベター着手一覧
+        # -------------
         #
 
-        print(f'  ベスト一覧：')
-        for move_u, policy in best_move_dictionary.items():
-            print(f'    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  policy:{policy:4}‰')
+        print(f'  ベター着手一覧：')
+        for move_u in better_move_u_set:
+            print(f'    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  better')
 
 
     def weakest(self):
@@ -1085,7 +1059,7 @@ class Lottery():
         (kl_move_u_and_policy_dictionary,
          kq_move_u_and_policy_dictionary,
          pl_move_u_and_policy_dictionary,
-         pq_move_u_and_policy_dictionary) = EvaluationFacade.create_list_of_friend_move_u_and_policy_dictionary(
+         pq_move_u_and_policy_dictionary) = EvaluationFacade.select_fo_move_u_and_policy_dictionary(
                 legal_moves=legal_moves,
                 board=board,
                 kifuwarabe=kifuwarabe)
@@ -1118,8 +1092,9 @@ class MoveAndPolicyHelper():
     """評価値付きの指し手のリストのヘルパー"""
 
 
+    #get_moves
     @staticmethod
-    def get_moves(
+    def get_best_moves(
             weakest0_strongest1,
             board,
             kifuwarabe):
@@ -1144,7 +1119,7 @@ class MoveAndPolicyHelper():
         (kl_move_u_and_policy_dictionary,
          kq_move_u_and_policy_dictionary,
          pl_move_u_and_policy_dictionary,
-         pq_move_u_and_policy_dictionary) = EvaluationFacade.create_list_of_friend_move_u_and_policy_dictionary(
+         pq_move_u_and_policy_dictionary) = EvaluationFacade.select_fo_move_u_and_policy_dictionary(
                 legal_moves=list(board.legal_moves),
                 board=board,
                 kifuwarabe=kifuwarabe)
@@ -1551,8 +1526,9 @@ class EvaluationFacade():
                 pq_policy_to_f_move_u_set_dictionary)
 
 
+    #create_list_of_friend_move_u_and_policy_dictionary
     @staticmethod
-    def create_list_of_friend_move_u_and_policy_dictionary(
+    def select_fo_move_u_and_policy_dictionary(
             legal_moves,
             board,
             kifuwarabe):
