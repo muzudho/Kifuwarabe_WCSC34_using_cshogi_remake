@@ -1726,39 +1726,52 @@ class EvaluationFacade():
         #
 
         # 自玉の着手に対する、敵玉（Lord）の応手の集合
-        kl_move_u_set = set()
+        l_move_u_for_k_set = set()
         # 自玉の着手に対する、敵軍の玉以外の応手の集合（Quaffer；ゴクゴク飲む人。Pの次の文字Qを頭文字にした単語）
-        kq_move_u_set = set()
+        q_move_u_for_k_set = set()
         # 自軍の玉以外の着手に対する、敵玉（Lord）の応手の集合
-        pl_move_u_set = set()
+        l_move_u_for_p_set = set()
         # 自軍の玉以外の着手に対する、敵軍の玉以外の応手の集合（Quaffer；ゴクゴク飲む人。Pの次の文字Qを頭文字にした単語）
-        pq_move_u_set = set()
+        q_move_u_for_p_set = set()
 
         # Ｋに対する、応手の一覧を作成
         for move_u in k_moves_u:
             move_obj = Move.from_usi(move_u)
 
-            (temp_kl_move_u_set,
-             temp_kq_move_u_set) = BoardHelper.create_counter_move_u_set(
+            (temp_l_move_u_for_k_set,
+             temp_q_move_u_for_k_set) = BoardHelper.create_counter_move_u_set(
                     board=board,
                     move_obj=move_obj)
 
             # 和集合を作成
-            kl_move_u_set = kl_move_u_set.union(temp_kl_move_u_set)
-            kq_move_u_set = kq_move_u_set.union(temp_kq_move_u_set)
+            l_move_u_for_k_set = l_move_u_for_k_set.union(temp_l_move_u_for_k_set)
+            q_move_u_for_k_set = q_move_u_for_k_set.union(temp_q_move_u_for_k_set)
 
         # Ｐに対する、応手の一覧を作成
         for move_u in p_moves_u:
             move_obj = Move.from_usi(move_u)
 
-            (temp_pl_move_u_set,
-             temp_pq_move_u_set) = BoardHelper.create_counter_move_u_set(
+            (temp_l_move_u_for_p_set,
+             temp_q_move_u_for_p_set) = BoardHelper.create_counter_move_u_set(
                     board=board,
                     move_obj=move_obj)
 
             # 和集合を作成
-            pl_move_u_set = pl_move_u_set.union(temp_pl_move_u_set)
-            pq_move_u_set = pq_move_u_set.union(temp_pq_move_u_set)
+            l_move_u_for_p_set = l_move_u_for_p_set.union(temp_l_move_u_for_p_set)
+            q_move_u_for_p_set = q_move_u_for_p_set.union(temp_q_move_u_for_p_set)
+
+        print(f"  応手の一覧：")
+        for move_u in l_move_u_for_k_set:
+            print(f"    KL L:{move_u}")
+
+        for move_u in q_move_u_for_k_set:
+            print(f"    KL Q:{move_u}")
+
+        for move_u in l_move_u_for_p_set:
+            print(f"    PL L:{move_u}")
+
+        for move_u in q_move_u_for_p_set:
+            print(f"    PL Q:{move_u}")
 
         #
         # 着手と応手の関係を全部取得
@@ -1769,28 +1782,29 @@ class EvaluationFacade():
          pl_index_and_relation_bit_dictionary,
          pq_index_and_relation_bit_dictionary) = EvaluationFacade.select_mm_index_and_relation_bit(
                 k_moves_u=k_moves_u,
-                l_move_u_for_k_set=kl_move_u_set,
-                q_move_u_for_k_set=kq_move_u_set,
+                l_move_u_for_k_set=l_move_u_for_k_set,
+                q_move_u_for_k_set=q_move_u_for_k_set,
                 p_moves_u=p_moves_u,
-                l_move_u_for_p_set=pl_move_u_set,
-                q_move_u_for_p_set=pq_move_u_set,
+                l_move_u_for_p_set=l_move_u_for_p_set,
+                q_move_u_for_p_set=q_move_u_for_p_set,
                 turn=board.turn,
                 kifuwarabe=kifuwarabe)
 
+        print(f"  関係の一覧：")
         for fo_index, relation_bit in kl_index_and_relation_bit_dictionary.items():
             (k_move_obj,
              l_move_obj) = EvaluationKkTable.destructure_kl_index(
                 kl_index=fo_index)
-            print(f"  KL kl_index:{fo_index:6}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_bit:{relation_bit}")
+            print(f"    KL kl_index:{fo_index:6}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_bit:{relation_bit}")
 
         for fo_index, relation_bit in kq_index_and_relation_bit_dictionary.items():
-            print(f"  KQ kq_index:{fo_index:6}  relation_bit:{relation_bit}")
+            print(f"    KQ kq_index:{fo_index:6}  relation_bit:{relation_bit}")
 
         for fo_index, relation_bit in pl_index_and_relation_bit_dictionary.items():
-            print(f"  PL pl_index:{fo_index:6}  relation_bit:{relation_bit}")
+            print(f"    PL pl_index:{fo_index:6}  relation_bit:{relation_bit}")
 
         for fo_index, relation_bit in pq_index_and_relation_bit_dictionary.items():
-            print(f"  PQ pq_index:{fo_index:6}  relation_bit:{relation_bit}")
+            print(f"    PQ pq_index:{fo_index:6}  relation_bit:{relation_bit}")
 
         # 関係のキーをインデックスから着手へ変換
         (k_move_u_and_l_to_relation_number_dictionary,
