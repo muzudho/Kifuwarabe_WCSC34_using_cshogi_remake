@@ -1293,11 +1293,11 @@ class EvaluationFacade():
     @staticmethod
     def select_mm_index_and_relation_bit(
             k_moves_u,
-            kl_move_u_set,
-            kq_move_u_set,
+            l_move_u_for_k_set,
+            q_move_u_for_k_set,
             p_moves_u,
-            pl_move_u_set,
-            pq_move_u_set,
+            l_move_u_for_p_set,
+            q_move_u_for_p_set,
             turn,
             kifuwarabe):
         """着手と応手の関係を４つの辞書として取得
@@ -1306,15 +1306,15 @@ class EvaluationFacade():
         ----------
         k_moves_u : iterable
             自玉の着手の収集
-        kl_moves_u_set : iterable
+        l_move_u_for_k_set : iterable
             自玉の着手に対する、敵玉の応手の収集
-        kq_moves_u_set : iterable
+        q_move_u_for_k_set : iterable
             自玉の着手に対する、敵兵の応手の収集
         p_moves_u : iterable
             自兵の着手の収集
-        pl_moves_u_set : iterable
+        l_move_u_for_p_set : iterable
             自兵の着手に対する、敵玉の応手の収集
-        pq_moves_u_set : iterable
+        q_move_u_for_p_set : iterable
             自兵の着手に対する、敵兵の応手の収集
         turn : int
             手番
@@ -1338,59 +1338,91 @@ class EvaluationFacade():
         pl_index_and_relation_bit_dictionary = {}
         pq_index_and_relation_bit_dictionary = {}
 
+        def select_fo_index_and_relation_bit(
+                kind,
+                f_move_obj,
+                o_move_u_for_f_set):
+            """指定の着手と、指定の応手のセットに対して、
+
+            Parameters
+            ----------
+            kind : str
+                'KL', 'KQ', 'PL', 'PQ' のいずれか
+            f_move_obj : Move
+                指定の着手
+            o_move_u_for_f_set : set<str>
+                指定の応手のセット
+            """
+            fo_index_and_relation_bit_dictionary = {}
+
+            for o_move_u in o_move_u_for_f_set:
+                o_move_obj = Move.from_usi(o_move_u)
+
+                if kind == 'KL':
+                    fo_index = EvaluationKkTable.get_index_of_kk_table(
+                        k_move_obj=f_move_obj,
+                        l_move_obj=o_move_obj)
+                # FIXME ＫＱ
+                elif kind == 'KQ':
+                    pass
+                # FIXME ＰＬ
+                elif kind == 'PL':
+                    pass
+                # FIXME ＰＱ
+                elif kind == 'PQ':
+                    pass
+                else:
+                    raise ValueError(f"unexpected kind:{kind}")
+
+                if kind == 'KL':
+                    relation_bit = kifuwarabe.evaluation_kl_table_obj_array[Turn.to_index(turn)].get_relation_esixts_by_index(
+                            kl_index=fo_index)
+                # FIXME ＫＱ
+                elif kind == 'KQ':
+                    continue
+                # FIXME ＰＬ
+                elif kind == 'PL':
+                    continue
+                # FIXME ＰＱ
+                elif kind == 'PQ':
+                    continue
+                else:
+                    raise ValueError(f"unexpected kind:{kind}")
+
+                fo_index_and_relation_bit_dictionary[fo_index] = relation_bit
+
+            return fo_index_and_relation_bit_dictionary
+
         # ポリシー値を累計していく
         for k_move_u in k_moves_u:
             k_move_obj = Move.from_usi(k_move_u)
 
-            #
             # ＫＬ
-            #
-            for l_move_u in kl_move_u_set:
-                l_move_obj = Move.from_usi(l_move_u)
+            kl_index_and_relation_bit_dictionary = select_fo_index_and_relation_bit(
+                    kind='KL',
+                    f_move_obj=k_move_obj,
+                    o_move_u_for_f_set=l_move_u_for_k_set)
 
-                kl_index = EvaluationKkTable.get_index_of_kk_table(
-                    k_move_obj=k_move_obj,
-                    l_move_obj=l_move_obj)
-
-                relation_bit = kifuwarabe.evaluation_kl_table_obj_array[Turn.to_index(turn)].get_relation_esixts_by_index(
-                        kl_index=kl_index)
-
-                kl_index_and_relation_bit_dictionary[kl_index] = relation_bit
-
-            #
             # ＫＱ
-            #
-            #   TODO ＫＰ評価値テーブルを参照したい
-            #
-            #kq_move_u_and_policy_dictionary[k_move_u] = 0
-            #
-            #for q_move_u in kq_move_u_set:
-            #    relation_bit = 0 # random.randint(0,1)
-            #    kq_move_u_and_relation_bit_dictionary[k_move_u] += relation_bit
+            kq_index_and_relation_bit_dictionary = select_fo_index_and_relation_bit(
+                    kind='KQ',
+                    f_move_obj=k_move_obj,
+                    o_move_u_for_f_set=q_move_u_for_k_set)
 
-        #for p_move_u in p_moves_u:
+        for p_move_u in p_moves_u:
+            p_move_obj = Move.from_usi(p_move_u)
 
-            #
             # ＰＬ
-            #
-            #   TODO ＰＫ評価値テーブルを参照したい
-            #
-            #pl_move_u_and_policy_dictionary[p_move_u] = 0
-            #
-            #for l_move_u in pl_move_u_set:
-            #    relation_bit = 0 # random.randint(0,1)
-            #    pl_move_u_and_relation_bit_dictionary[p_move_u] += relation_bit
+            pl_index_and_relation_bit_dictionary = select_fo_index_and_relation_bit(
+                    kind='PL',
+                    f_move_obj=p_move_obj,
+                    o_move_u_for_f_set=l_move_u_for_p_set)
 
-            #
             # ＰＱ
-            #
-            #   TODO ＰＰ評価値テーブルを参照したい
-            #
-            #pq_move_u_and_relation_bit_dictionary[p_move_u] = 0
-            #
-            #for q_move_u in pq_move_u_set:
-            #    relation_bit = 0 # random.randint(0,1)
-            #    pq_move_u_and_relation_bit_dictionary[p_move_u] += relation_bit
+            pq_index_and_relation_bit_dictionary = select_fo_index_and_relation_bit(
+                    kind='PQ',
+                    f_move_obj=p_move_obj,
+                    o_move_u_for_f_set=q_move_u_for_p_set)
 
         return (kl_index_and_relation_bit_dictionary,
                 kq_index_and_relation_bit_dictionary,
