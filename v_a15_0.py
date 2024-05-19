@@ -485,8 +485,10 @@ class Kifuwarabe():
         move_u = cmd[1]
 
         # 着手と応手をキー、関係の有無を値とする辞書を作成します
-        (fl_index_to_relation_exists_dictionary,
-         fq_index_to_relation_exists_dictionary) = EvaluationFacade.select_fl_index_to_relation_exists(
+        (kl_index_to_relation_exists_dictionary,
+         kq_index_to_relation_exists_dictionary,
+         pl_index_to_relation_exists_dictionary,
+         pq_index_to_relation_exists_dictionary) = EvaluationFacade.select_fo_index_to_relation_exists(
                 move_obj=Move.from_usi(move_u),
                 board=self._board,
                 kifuwarabe=self)
@@ -498,17 +500,21 @@ class Kifuwarabe():
         # 自玉の指し手か？
         is_king_move = MoveHelper.is_king(k_sq, move_obj)
 
+        # 表示
         if is_king_move:
 
-            # 表示
-            for kl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
+            # ＫＬ
+            for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
                 k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
                         kl_index=kl_index)
 
                 print(f"  turn:{Turn.to_string(self._board.turn)}  kl_index:{kl_index}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
+            # TODO ＫＱ
+
         else:
-            # TODO 表示
+            # TODO ＰＬ
+            # TODO ＰＱ
             pass
 
 
@@ -554,8 +560,10 @@ class Kifuwarabe():
         move_u = cmd[1]
 
         # 着手と応手をキー、関係の有無を値とする辞書を作成します
-        (fl_index_to_relation_exists_dictionary,
-         fq_index_to_relation_exists_dictionary) = EvaluationFacade.select_fl_index_to_relation_exists(
+        (kl_index_to_relation_exists_dictionary,
+         kq_index_to_relation_exists_dictionary,
+         pl_index_to_relation_exists_dictionary,
+         pq_index_to_relation_exists_dictionary) = EvaluationFacade.select_fo_index_to_relation_exists(
                 move_obj=Move.from_usi(move_u),
                 board=self._board,
                 kifuwarabe=self)
@@ -569,10 +577,11 @@ class Kifuwarabe():
 
         if is_king_move:
 
+            # ＫＬ
             exists_number = 0
-            total = len(fl_index_to_relation_exists_dictionary)
+            total = len(kl_index_to_relation_exists_dictionary)
 
-            for kl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
+            for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
                 k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
                         kl_index=kl_index)
 
@@ -595,7 +604,7 @@ class Kifuwarabe():
             rest = difference
 
             # 関係を difference 個削除
-            for kl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
+            for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
                 if rest < 1:
                     break
 
@@ -614,8 +623,11 @@ class Kifuwarabe():
 
                         rest -= 1
 
+            # TODO ＫＱ
+
         else:
-            # TODO 表示
+            # TODO ＰＬ
+            # TODO ＰＱ
             pass
 
 
@@ -661,8 +673,10 @@ class Kifuwarabe():
         move_u = cmd[1]
 
         # 着手と応手をキー、関係の有無を値とする辞書を作成します
-        (fl_index_to_relation_exists_dictionary,
-         fq_index_to_relation_exists_dictionary) = EvaluationFacade.select_fl_index_to_relation_exists(
+        (kl_index_to_relation_exists_dictionary,
+         kq_index_to_relation_exists_dictionary,
+         pl_index_to_relation_exists_dictionary,
+         pq_index_to_relation_exists_dictionary) = EvaluationFacade.select_fo_index_to_relation_exists(
                 move_obj=Move.from_usi(move_u),
                 board=self._board,
                 kifuwarabe=self)
@@ -676,10 +690,11 @@ class Kifuwarabe():
 
         if is_king_move:
 
+            # ＫＬ
             exists_number = 0
-            total = len(fl_index_to_relation_exists_dictionary)
+            total = len(kl_index_to_relation_exists_dictionary)
 
-            for kl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
+            for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
                 k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
                         kl_index=kl_index)
 
@@ -706,7 +721,7 @@ class Kifuwarabe():
             rest = difference
 
             # 関係を difference 個追加
-            for kl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
+            for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
                 if rest < 1:
                     break
 
@@ -725,8 +740,11 @@ class Kifuwarabe():
 
                         rest -= 1
 
+            # TODO ＫＱ
+
         else:
-            # TODO 表示
+            # TODO ＰＬ
+            # TODO ＰＱ
             pass
 
 
@@ -1790,7 +1808,8 @@ class EvaluationFacade():
                 pq_move_u_and_policy_dictionary)
 
 
-    def select_fl_index_to_relation_exists(
+    #select_fl_index_to_relation_exists
+    def select_fo_index_to_relation_exists(
             move_obj,
             board,
             kifuwarabe):
@@ -1807,14 +1826,20 @@ class EvaluationFacade():
 
         Returns
         -------
-        fl_index_to_relation_exists_dic
-            自軍の着手と、敵玉の応手の関係の有無を格納した辞書
-        fq_index_to_relation_exists_dic
-            自軍の着手と、敵兵の応手の関係の有無を格納した辞書
+        kl_index_to_relation_exists_dic
+            自玉の着手と、敵玉の応手の関係の有無を格納した辞書
+        kq_index_to_relation_exists_dic
+            自玉の着手と、敵兵の応手の関係の有無を格納した辞書
+        pl_index_to_relation_exists_dic
+            自兵の着手と、敵玉の応手の関係の有無を格納した辞書
+        pq_index_to_relation_exists_dic
+            自兵の着手と、敵兵の応手の関係の有無を格納した辞書
         """
 
-        fl_index_to_relation_exists_dic = {}
-        fq_index_to_relation_exists_dic = {}
+        kl_index_to_relation_exists_dic = {}
+        kq_index_to_relation_exists_dic = {}
+        pl_index_to_relation_exists_dic = {}
+        pq_index_to_relation_exists_dic = {}
 
         # 自玉のマス番号
         k_sq = BoardHelper.get_king_square(board)
@@ -1829,7 +1854,7 @@ class EvaluationFacade():
 
         if is_king_move:
             # 自玉の着手と、敵玉の応手の一覧から、ＫＬテーブルのインデックスと、関係の有無を格納した辞書を作成
-            fl_index_to_relation_exists_dic = kifuwarabe.evaluation_kl_table_obj_array[Turn.to_index(board.turn)].select_kl_index_and_relation_exists(
+            kl_index_to_relation_exists_dic = kifuwarabe.evaluation_kl_table_obj_array[Turn.to_index(board.turn)].select_kl_index_and_relation_exists(
                     k_move_obj=move_obj,
                     l_move_u_set=l_move_u_set)
 
@@ -1840,7 +1865,10 @@ class EvaluationFacade():
             # TODO 自兵の着手と、敵兵の応手の一覧から、ＰＰテーブルのインデックスと、関係の有無を格納した辞書を作成
             pass
 
-        return (fl_index_to_relation_exists_dic, fq_index_to_relation_exists_dic)
+        return (kl_index_to_relation_exists_dic,
+                kq_index_to_relation_exists_dic,
+                pl_index_to_relation_exists_dic,
+                pq_index_to_relation_exists_dic)
 
 
 ########################################
