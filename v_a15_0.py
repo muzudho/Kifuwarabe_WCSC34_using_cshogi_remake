@@ -891,16 +891,16 @@ class Kifuwarabe():
                     kifuwarabe=self,)
 
         for fo_index, relation_bit in weaken_kl_index_and_relation_bit_dictionary.items():
-            print(f"KL:{fo_index:6}  relation_bit:{relation_bit}")
+            print(f"  KL:{fo_index:6}  relation_bit:{relation_bit}")
 
         for fo_index, relation_bit in weaken_kq_index_and_relation_bit_dictionary.items():
-            print(f"KQ:{fo_index:6}  relation_bit:{relation_bit}")
+            print(f"  KQ:{fo_index:6}  relation_bit:{relation_bit}")
 
         for fo_index, relation_bit in weaken_pl_index_and_relation_bit_dictionary.items():
-            print(f"PL:{fo_index:6}  relation_bit:{relation_bit}")
+            print(f"  PL:{fo_index:6}  relation_bit:{relation_bit}")
 
         for fo_index, relation_bit in weaken_pq_index_and_relation_bit_dictionary.items():
-            print(f"PQ:{fo_index:6}  relation_bit:{relation_bit}")
+            print(f"  PQ:{fo_index:6}  relation_bit:{relation_bit}")
 
         # 関係のキーをインデックスから着手へ変換
         (k_move_u_and_l_to_relation_number_dictionary,
@@ -1757,8 +1757,8 @@ class EvaluationFacade():
                     move_obj=move_obj)
 
             # 和集合を作成
-            pl_move_u_set = kl_move_u_set.union(temp_pl_move_u_set)
-            pq_move_u_set = kq_move_u_set.union(temp_pq_move_u_set)
+            pl_move_u_set = pl_move_u_set.union(temp_pl_move_u_set)
+            pq_move_u_set = pq_move_u_set.union(temp_pq_move_u_set)
 
         #
         # 着手と応手の関係を全部取得
@@ -1776,6 +1776,21 @@ class EvaluationFacade():
                 q_move_u_for_p_set=pq_move_u_set,
                 turn=board.turn,
                 kifuwarabe=kifuwarabe)
+
+        for fo_index, relation_bit in kl_index_and_relation_bit_dictionary.items():
+            (k_move_obj,
+             l_move_obj) = EvaluationKkTable.destructure_kl_index(
+                kl_index=fo_index)
+            print(f"  KL kl_index:{fo_index:6}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_bit:{relation_bit}")
+
+        for fo_index, relation_bit in kq_index_and_relation_bit_dictionary.items():
+            print(f"  KQ kq_index:{fo_index:6}  relation_bit:{relation_bit}")
+
+        for fo_index, relation_bit in pl_index_and_relation_bit_dictionary.items():
+            print(f"  PL pl_index:{fo_index:6}  relation_bit:{relation_bit}")
+
+        for fo_index, relation_bit in pq_index_and_relation_bit_dictionary.items():
+            print(f"  PQ pq_index:{fo_index:6}  relation_bit:{relation_bit}")
 
         # 関係のキーをインデックスから着手へ変換
         (k_move_u_and_l_to_relation_number_dictionary,
