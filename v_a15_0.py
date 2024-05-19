@@ -865,11 +865,11 @@ class Kifuwarabe():
              weaken_pl_index_and_relation_bit_dictionary,
              weaken_pq_index_and_relation_bit_dictionary) = EvaluationFacade.select_mm_index_and_relation_bit(
                     k_moves_u=[weaken_move_u],
-                    kl_move_u_set=weaken_l_move_u_set,
-                    kq_move_u_set=weaken_q_move_u_set,
+                    l_move_u_for_k_set=weaken_l_move_u_set,
+                    q_move_u_for_k_set=weaken_q_move_u_set,
                     p_moves_u=[],
-                    pl_move_u_set=set(),
-                    pq_move_u_set=set(),
+                    l_move_u_for_p_set=set(),
+                    q_move_u_for_p_set=set(),
                     turn=self._board.turn,
                     kifuwarabe=self,)
 
@@ -882,11 +882,11 @@ class Kifuwarabe():
              weaken_pl_index_and_relation_bit_dictionary,
              weaken_pq_index_and_relation_bit_dictionary) = EvaluationFacade.select_mm_index_and_relation_bit(
                     k_moves_u=[],
-                    kl_move_u_set=set(),
-                    kq_move_u_set=set(),
+                    l_move_u_for_k_set=set(),
+                    q_move_u_for_k_set=set(),
                     p_moves_u=[weaken_move_u],
-                    pl_move_u_set=weaken_l_move_u_set,
-                    pq_move_u_set=weaken_q_move_u_set,
+                    l_move_u_for_p_set=weaken_l_move_u_set,
+                    q_move_u_for_p_set=weaken_q_move_u_set,
                     turn=self._board.turn,
                     kifuwarabe=self,)
 
@@ -1769,11 +1769,11 @@ class EvaluationFacade():
          pl_index_and_relation_bit_dictionary,
          pq_index_and_relation_bit_dictionary) = EvaluationFacade.select_mm_index_and_relation_bit(
                 k_moves_u=k_moves_u,
-                kl_move_u_set=kl_move_u_set,
-                kq_move_u_set=kq_move_u_set,
+                l_move_u_for_k_set=kl_move_u_set,
+                q_move_u_for_k_set=kq_move_u_set,
                 p_moves_u=p_moves_u,
-                pl_move_u_set=pl_move_u_set,
-                pq_move_u_set=pq_move_u_set,
+                l_move_u_for_p_set=pl_move_u_set,
+                q_move_u_for_p_set=pq_move_u_set,
                 turn=board.turn,
                 kifuwarabe=kifuwarabe)
 
