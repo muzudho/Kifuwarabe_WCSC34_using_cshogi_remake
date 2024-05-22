@@ -237,6 +237,12 @@ class Kifuwarabe():
     def go(self):
         """思考開始～最善手返却"""
 
+        # 自分の手番と、局面の手番が一致なら自分のターン
+        if self._board.turn == self._my_turn:
+            print(f"[kifuwarabe > go] my turn.  board.turn:{Turn.to_string(self._board.turn)}  my turn:{Turn.to_string(self._my_turn)}")
+        else:
+            print(f"[kifuwarabe > go] opponent turn.  board.turn:{Turn.to_string(self._board.turn)}  my turn:{Turn.to_string(self._my_turn)}")
+
         if self._board.is_game_over():
             """投了局面時"""
 
@@ -338,6 +344,12 @@ class Kifuwarabe():
         """現局面のポリシー値を確認する
             code: policy
         """
+
+        # 自分の手番と、局面の手番が一致なら自分のターン
+        if self._board.turn == self._my_turn:
+            print(f"[kifuwarabe > policy] my turn.  board.turn:{Turn.to_string(self._board.turn)}  my turn:{Turn.to_string(self._my_turn)}")
+        else:
+            print(f"[kifuwarabe > policy] opponent turn.  board.turn:{Turn.to_string(self._board.turn)}  my turn:{Turn.to_string(self._my_turn)}")
 
         print(f"""\
   先手玉の位置：　{self._board.king_square(cshogi.BLACK)}
