@@ -2,8 +2,8 @@
 import cshogi
 import datetime
 import random
-from v_a15_0_lib import Turn, Move, MoveHelper, BoardHelper, MoveListHelper, PolicyHelper, GameResultFile
-from v_a15_0_eval_kk import EvaluationKkTable
+from v_a16_0_lib import Turn, Move, MoveHelper, BoardHelper, MoveListHelper, PolicyHelper, GameResultFile
+from v_a16_0_eval_kk import EvaluationKkTable
 
 
 ########################################
@@ -401,16 +401,21 @@ class Kifuwarabe():
                 board=self._board,
                 kifuwarabe=self)
 
+        (k_move_u_to_policy_dictionary,
+         p_move_u_to_policy_dictionary) = MoveAndPolicyHelper.seleft_f_move_u_add_l_and_q(
+                kl_move_u_and_policy_dictionary=kl_move_u_and_policy_dictionary,
+                kq_move_u_and_policy_dictionary=kq_move_u_and_policy_dictionary,
+                pl_move_u_and_policy_dictionary=pl_move_u_and_policy_dictionary,
+                pq_move_u_and_policy_dictionary=pq_move_u_and_policy_dictionary)
+
         #
         # グッド着手一覧
         # -------------
         #
         (good_move_u_set,
          bad_move_u_set) = MoveAndPolicyHelper.select_good_f_move_u_set(
-                kl_move_u_and_policy_dictionary,
-                kq_move_u_and_policy_dictionary,
-                pl_move_u_and_policy_dictionary,
-                pq_move_u_and_policy_dictionary)
+                k_move_u_to_policy_dictionary=k_move_u_to_policy_dictionary,
+                p_move_u_to_policy_dictionary=p_move_u_to_policy_dictionary)
 
         print(f'  グッド着手一覧：')
         for move_u in good_move_u_set:
@@ -1033,6 +1038,13 @@ class Lottery():
                 board=board,
                 kifuwarabe=kifuwarabe)
 
+        (k_move_u_to_policy_dictionary,
+         p_move_u_to_policy_dictionary) = MoveAndPolicyHelper.seleft_f_move_u_add_l_and_q(
+                kl_move_u_and_policy_dictionary=kl_move_u_and_policy_dictionary,
+                kq_move_u_and_policy_dictionary=kq_move_u_and_policy_dictionary,
+                pl_move_u_and_policy_dictionary=pl_move_u_and_policy_dictionary,
+                pq_move_u_and_policy_dictionary=pq_move_u_and_policy_dictionary)
+
         # ポリシー値は　分母の異なる集団の　投票数なので、
         # 絶対値に意味はなく、
         # 賛同か否定か（0.5 より高いか、低いか）ぐらいの判断にしか使えないと思うので、
@@ -1044,10 +1056,8 @@ class Lottery():
         #
         (good_move_u_set,
          bad_move_u_set) = MoveAndPolicyHelper.select_good_f_move_u_set(
-                kl_move_u_and_policy_dictionary,
-                kq_move_u_and_policy_dictionary,
-                pl_move_u_and_policy_dictionary,
-                pq_move_u_and_policy_dictionary)
+                k_move_u_to_policy_dictionary=k_move_u_to_policy_dictionary,
+                p_move_u_to_policy_dictionary=p_move_u_to_policy_dictionary)
 
         # 候補手の中からランダムに選ぶ。USIの指し手の記法で返却
         move_u_list = list(good_move_u_set)
@@ -1217,11 +1227,49 @@ class MoveAndPolicyHelper():
                 best_pq_move_dictionary)
 
 
-    def select_good_f_move_u_set(
+    def seleft_f_move_u_add_l_and_q(
             kl_move_u_and_policy_dictionary,
             kq_move_u_and_policy_dictionary,
             pl_move_u_and_policy_dictionary,
             pq_move_u_and_policy_dictionary):
+        """ＫＬとＫＱをマージしてＫにし、ＰＬとＰＱをマージしてＰにする"""
+
+        k_move_u_to_policy_dictionary = {}
+        p_move_u_to_policy_dictionary = {}
+
+        #
+        # Ｋ
+        #
+
+        for move_u, policy in kl_move_u_and_policy_dictionary.items():
+            k_move_u_to_policy_dictionary[move_u] = policy
+
+        for move_u, policy in kq_move_u_and_policy_dictionary.items():
+            if move_u in k_move_u_to_policy_dictionary.keys():
+                k_move_u_to_policy_dictionary[move_u] = (k_move_u_to_policy_dictionary[move_u] + policy) // 2
+            else:
+                k_move_u_to_policy_dictionary[move_u] = policy
+
+        #
+        # Ｐ
+        #
+
+        for move_u, policy in pl_move_u_and_policy_dictionary.items():
+            p_move_u_to_policy_dictionary[move_u] = policy
+
+        for move_u, policy in pq_move_u_and_policy_dictionary.items():
+            if move_u in p_move_u_to_policy_dictionary.keys():
+                p_move_u_to_policy_dictionary[move_u] = (p_move_u_to_policy_dictionary[move_u] + policy) // 2
+            else:
+                p_move_u_to_policy_dictionary[move_u] = policy
+
+        return (k_move_u_to_policy_dictionary,
+                p_move_u_to_policy_dictionary)
+
+
+    def select_good_f_move_u_set(
+            k_move_u_to_policy_dictionary,
+            p_move_u_to_policy_dictionary):
         """ポリシー値が 0.5 以上の着手と、それ以外の着手の２つのリストを返します"""
 
         number = 1
@@ -1233,12 +1281,11 @@ class MoveAndPolicyHelper():
         bad_move_u_set = set()
 
         #
-        # ＫＬ
-        # ----
+        # Ｋ
         #
 
-        print('  自玉の着手と、敵玉の応手の評価一覧（ＫＬ）：')
-        for move_u, policy in kl_move_u_and_policy_dictionary.items():
+        print('  自玉の着手のポリシー値一覧（Ｋ）：')
+        for move_u, policy in k_move_u_to_policy_dictionary.items():
             print(f'    ({number:3}) K:{move_u:5} L:*****  policy:{policy:4}‰')
 
             if 500 <= policy:
@@ -1249,45 +1296,12 @@ class MoveAndPolicyHelper():
             number += 1
 
         #
-        # ＫＱ
-        # ----
+        # Ｐ
         #
 
-        print('  自玉の着手と、敵兵の応手の評価一覧（ＫＱ）：')
-        for move_u, policy in kq_move_u_and_policy_dictionary.items():
-            print(f'    ({number:3}) K:{move_u:5} Q:*****  policy:{policy:4}‰')
-
-            if 500 <= policy:
-                good_move_u_set.add(move_u)
-            else:
-                bad_move_u_set.add(move_u)
-
-            number += 1
-
-        #
-        # ＰＬ
-        # ----
-        #
-
-        print('  自兵の着手と、敵玉の応手の評価一覧（ＰＬ）：')
-        for move_u, policy in pl_move_u_and_policy_dictionary.items():
+        print('  自兵の着手のポリシー値一覧（Ｐ）：')
+        for move_u, policy in p_move_u_to_policy_dictionary.items():
             print(f'    ({number:3}) P:{move_u:5} L:*****  policy:{policy:4}')
-
-            if 500 <= policy:
-                good_move_u_set.add(move_u)
-            else:
-                bad_move_u_set.add(move_u)
-
-            number += 1
-
-        #
-        # ＰＱ
-        # ----
-        #
-
-        print('  自兵の着手と、敵兵の応手の評価一覧（ＰＱ）：')
-        for move_u, policy in pq_move_u_and_policy_dictionary.items():
-            print(f'    ({number:3}) P:{move_u:5} Q:*****  policy:{policy:4}')
 
             if 500 <= policy:
                 good_move_u_set.add(move_u)
