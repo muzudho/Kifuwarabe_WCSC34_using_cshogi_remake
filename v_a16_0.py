@@ -64,40 +64,53 @@ class Kifuwarabe():
 
         while True:
 
+            #
             # 入力
-            #cmd = input().split(' ', 1)
-            cmd = input().split(' ')
+            #
+            #   全部バラバラにすると position コマンドとか解析しにくいので、コマンド名とそれ以外で分ける
+            #
+            head_tail = input().split(' ', 1)
+            print(f"head_tail:`{head_tail}`")
+
+            if len(head_tail) == 1:
+                head = head_tail[0]
+                tail = ''
+            else:
+                head = head_tail[0]
+                tail = head_tail[1]
 
             # USIエンジン握手
-            if cmd[0] == 'usi':
+            if head == 'usi':
                 self.usi()
 
             # 対局準備
-            elif cmd[0] == 'isready':
+            elif head == 'isready':
                 self.isready()
 
             # 新しい対局
-            elif cmd[0] == 'usinewgame':
+            elif head == 'usinewgame':
                 self.usinewgame()
 
             # 局面データ解析
-            elif cmd[0] == 'position':
-                self.position(cmd)
+            elif head == 'position':
+                self.position(
+                        cmd_tail=tail)
 
             # 思考開始～最善手返却
-            elif cmd[0] == 'go':
+            elif head == 'go':
                 self.go()
 
             # 中断
-            elif cmd[0] == 'stop':
+            elif head == 'stop':
                 self.stop()
 
             # 対局終了
-            elif cmd[0] == 'gameover':
-                self.gameover(cmd)
+            elif head == 'gameover':
+                self.gameover(
+                        cmd_tail=tail)
 
             # アプリケーション終了
-            elif cmd[0] == 'quit':
+            elif head == 'quit':
                 break
 
             # 以下、独自拡張
@@ -105,60 +118,65 @@ class Kifuwarabe():
             # 一手指す
             # example: ７六歩
             #       code: do 7g7f
-            elif cmd[0] == 'do':
-                self.do(cmd)
+            elif head == 'do':
+                self.do(
+                        cmd_tail=tail)
 
             # 一手戻す
             #       code: undo
-            elif cmd[0] == 'undo':
+            elif head == 'undo':
                 self.undo()
 
             # 現局面のポリシー値を確認する
             #       code: policy
-            elif cmd[0] == 'policy':
+            elif head == 'policy':
                 self.policy()
 
             # 現局面の最弱手を確認する
             #       code: weakest
-            elif cmd[0] == 'weakest':
+            elif head == 'weakest':
                 self.weakest()
 
             # 現局面の最強手を確認する
             #       code: strongest
-            elif cmd[0] == 'strongest':
+            elif head == 'strongest':
                 self.strongest()
 
             # 指定の手の評価値テーブルの関係を全て表示する
             #       code: relation 7g7f
-            elif cmd[0] == 'relation':
-                self.relation(cmd)
+            elif head == 'relation':
+                self.relation(
+                        cmd_tail=tail)
 
             # 指定の着手の評価値テーブルについて、関連がある箇所を（適当に選んで）、それを関連が無いようにする。
             # これによって、その着手のポリシー値は下がる
             #       code: weaken 5i5h
-            elif cmd[0] == 'weaken':
-                self.weaken(cmd)
+            elif head == 'weaken':
+                self.weaken(
+                        cmd_tail=tail)
 
             # 指定の着手の評価値テーブルについて、関連がある箇所を（適当に選んで）、それを関連が有るようにする。
             # これによって、その着手のポリシー値は上がる
             #       code: strengthen 5i5h
-            elif cmd[0] == 'strengthen':
-                self.strengthen(cmd)
+            elif head == 'strengthen':
+                self.strengthen(
+                        cmd_tail=tail)
 
             # プレイアウト
             #       code: playout
-            elif cmd[0] == 'playout':
+            elif head == 'playout':
                 self.playout()
 
             # 局面表示
             #       code: board
-            elif cmd[0] == 'board':
+            elif head == 'board':
                 self.print_board()
 
             # 作りかけ
             #       code: wip 5i5h
-            elif cmd[0] == 'wip':
-                self.wip(cmd)
+            elif head == 'wip':
+                self.wip(
+                        cmd_tail=tail)
 
 
     def usi(self):
@@ -205,12 +223,27 @@ class Kifuwarabe():
                 engine_version_str=engine_version_str)
 
 
-    def position(self, cmd):
-        """局面データ解析"""
-        pos = cmd[1].split('moves')
-        sfen_text = pos[0].strip()
-        # 区切りは半角空白１文字とします
-        moves_text_as_usi = (pos[1].split(' ') if len(pos) > 1 else [])
+    def position(self, cmd_tail):
+        """局面データ解析
+
+        Parameters
+        ----------
+        cmd_tail : str
+            コマンドの名前以外
+        """
+
+        board_and_moves = cmd_tail.split('moves')
+        board_str = board_and_moves[0].strip()
+
+        # `moves` で分割できたなら
+        if len(board_and_moves) > 1:
+            moves_str = board_and_moves[1].strip()
+            print(f"[kifuwarabe > position] moves:`{moves_str}`")
+
+            # 区切りは半角空白１文字とします
+            moves_text_as_usi = moves_str.split(' ')
+        else:
+            moves_text_as_usi = []
 
         print(f"[kifuwarabe > position] move size:{len(moves_text_as_usi)}")
 
@@ -219,12 +252,12 @@ class Kifuwarabe():
         #
 
         # 平手初期局面を設定
-        if sfen_text == 'startpos':
+        if board_str == 'startpos':
             self._board.reset()
 
         # 指定局面を設定
-        elif sfen_text[:5] == 'sfen ':
-            self._board.set_sfen(sfen_text[5:])
+        elif board_str[:5] == 'sfen ':
+            self._board.set_sfen(board_str[5:])
 
         #
         # 棋譜再生
@@ -288,37 +321,55 @@ class Kifuwarabe():
         print('bestmove resign', flush=True)
 
 
-    def gameover(self, cmd):
-        """対局終了"""
+    def gameover(self, cmd_tail):
+        """対局終了
 
-        if 2 <= len(cmd):
-            # 負け
-            if cmd[1] == 'lose':
-                # ［対局結果］　常に記憶する
-                self._game_result_file.save_lose(self._my_turn, self._board)
+        Parameters
+        ----------
+        cmd_tail : str
+            コマンドの名前以外
+        """
 
-            # 勝ち
-            elif cmd[1] == 'win':
-                # ［対局結果］　常に記憶する
-                self._game_result_file.save_win(self._my_turn, self._board)
+        if cmd_tail.strip() == '':
+            print(f"`do` command must be result.  ex:`gameover lose`  cmd_tail:`{cmd_tail}`")
+            return
 
-            # 持将棋
-            elif cmd[1] == 'draw':
-                # ［対局結果］　常に記憶する
-                self._game_result_file.save_draw(self._my_turn, self._board)
+        # 負け
+        if cmd_tail == 'lose':
+            # ［対局結果］　常に記憶する
+            self._game_result_file.save_lose(self._my_turn, self._board)
 
-            # その他
-            else:
-                # ［対局結果］　常に記憶する
-                self._game_result_file.save_otherwise(cmd[1], self._my_turn, self._board)
+        # 勝ち
+        elif cmd_tail == 'win':
+            # ［対局結果］　常に記憶する
+            self._game_result_file.save_win(self._my_turn, self._board)
+
+        # 持将棋
+        elif cmd_tail == 'draw':
+            # ［対局結果］　常に記憶する
+            self._game_result_file.save_draw(self._my_turn, self._board)
+
+        # その他
+        else:
+            # ［対局結果］　常に記憶する
+            self._game_result_file.save_otherwise(cmd_tail, self._my_turn, self._board)
 
 
-    def do(self, cmd):
+    def do(self, cmd_tail):
         """一手指す
         example: ７六歩
             code: do 7g7f
+
+        Parameters
+        ----------
+        cmd_tail : str
+            コマンドの名前以外
         """
-        self._board.push_usi(cmd[1])
+        if cmd_tail.strip() == '':
+            print(f"`do` command must be move.  ex:`do 7g7f`  cmd_tail:`{cmd_tail}`")
+            return
+
+        self._board.push_usi(cmd_tail)
 
 
     def undo(self):
@@ -491,20 +542,20 @@ class Kifuwarabe():
             print(f'  P:{move_u:5} Q:***** : {policy:4}', flush=True)
 
 
-    def relation(self, cmd):
+    def relation(self, cmd_tail):
         """指定の手の評価値テーブルの関係を全て表示する
         code: relation 7g7f
 
         Parameters
         ----------
-        cmd : str[]
-            コマンドのトークン配列
+        cmd_tail : str
+            コマンドの名前以外
         """
-        if len(cmd) < 2:
-            print(f"relation command must be move. ex: `relation 7g7f` token number:{len(cmd)}")
+        if cmd_tail.strip() == '':
+            print(f"relation command must be move.  ex:`relation 7g7f`  cmd_tail:`{cmd_tail}`")
             return
 
-        move_u = cmd[1]
+        move_u = cmd_tail
 
         # 着手と応手をキー、関係の有無を値とする辞書を作成します
         (kl_index_to_relation_exists_dictionary,
@@ -540,19 +591,19 @@ class Kifuwarabe():
             pass
 
 
-    def weaken(self, cmd):
+    def weaken(self, cmd_tail):
         """指定の着手の評価値テーブルについて、関連がある箇所を（適当に選んで）、それを関連が無いようにする。
         これによって、その着手のポリシー値は下がる
         code: weaken 5i5h
 
         Parameters
         ----------
-        cmd : str[]
-            コマンドのトークン配列
+        cmd_tail : str
+            コマンドの名前以外
         """
 
-        if len(cmd) < 2:
-            print(f"weaken command must be 1 move. ex: `weaken 5i5h` token number:{len(cmd)}")
+        if cmd_tail.strip() == '':
+            print(f"weaken command must be 1 move.  ex:`weaken 5i5h`  cmd_tail:`{cmd_tail}`")
             return
 
         # 投了局面時
@@ -579,7 +630,7 @@ class Kifuwarabe():
                 return
 
 
-        move_u = cmd[1]
+        move_u = cmd_tail
 
         # 着手と応手をキー、関係の有無を値とする辞書を作成します
         (kl_index_to_relation_exists_dictionary,
@@ -653,19 +704,19 @@ class Kifuwarabe():
             pass
 
 
-    def strengthen(self, cmd):
+    def strengthen(self, cmd_tail):
         """指定の着手の評価値テーブルについて、関連がある箇所を（適当に選んで）、それを関連が有るようにする。
         これによって、その着手のポリシー値は上がる
         code: strengthen 5i5h
 
         Parameters
         ----------
-        cmd : str[]
-            コマンドのトークン配列
+        cmd_tail : str
+            コマンドの名前以外
         """
 
-        if len(cmd) < 2:
-            print(f"strengthen command must be 1 move. ex: `strengthen 5i5h` token number:{len(cmd)}")
+        if cmd_tail.strip() == '':
+            print(f"strengthen command must be 1 move.  ex:`strengthen 5i5h`  cmd_tail:`{cmd_tail}`")
             return
 
         # 投了局面時
@@ -692,7 +743,7 @@ class Kifuwarabe():
                 return
 
 
-        move_u = cmd[1]
+        move_u = cmd_tail
 
         # 着手と応手をキー、関係の有無を値とする辞書を作成します
         (kl_index_to_relation_exists_dictionary,
@@ -822,7 +873,7 @@ class Kifuwarabe():
         print(self._board)
 
 
-    def wip(self, cmd):
+    def wip(self, cmd_tail):
         """作りかけ
 
         指定の着手の評価値テーブルについて、関連がある箇所を（適当に選んで）、それを関連が無いようにする。
@@ -831,12 +882,12 @@ class Kifuwarabe():
 
         Parameters
         ----------
-        cmd : str[]
-            コマンドのトークン配列
+        cmd_tail : str
+            コマンドの名前以外
         """
 
-        if len(cmd) < 2:
-            print(f"weaken command must be 1 move. ex: `weaken 5i5h` token number:{len(cmd)}")
+        if cmd_tail.strip() == '':
+            print(f"weaken command must be 1 move.  ex:`wip 5i5h`.  cmd_tail:`{cmd_tail}`")
             return
 
         # 投了局面時
@@ -866,7 +917,7 @@ class Kifuwarabe():
         k_sq = BoardHelper.get_king_square(self._board)
 
         # 弱めたい着手
-        weaken_move_u = cmd[1]
+        weaken_move_u = cmd_tail
         weaken_move_obj = Move.from_usi(weaken_move_u)
 
         # 弱めたい着手に対する応手の一覧を取得
