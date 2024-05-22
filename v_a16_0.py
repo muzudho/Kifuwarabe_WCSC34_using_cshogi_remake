@@ -212,6 +212,8 @@ class Kifuwarabe():
         # 区切りは半角空白１文字とします
         moves_text_as_usi = (pos[1].split(' ') if len(pos) > 1 else [])
 
+        print(f"[kifuwarabe > position] move size:{len(moves_text_as_usi)}")
+
         #
         # 盤面解析
         #
@@ -229,6 +231,7 @@ class Kifuwarabe():
         #
         for move_as_usi in moves_text_as_usi:
             self._board.push_usi(move_as_usi)
+            print(f"[kifuwarabe > position] done  M:{move_as_usi:5}  board turn:{Turn.to_string(self._board.turn)}")
 
         # 現局面の手番を、自分の手番とする
         self._my_turn = self._board.turn
