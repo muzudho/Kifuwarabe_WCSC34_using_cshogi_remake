@@ -232,6 +232,7 @@ class Kifuwarabe():
 
         # 現局面の手番を、自分の手番とする
         self._my_turn = self._board.turn
+        print(f"[kifuwarabe > position] my turn is {Turn.to_string(self._my_turn)}")
 
 
     def go(self):
