@@ -863,7 +863,7 @@ class Kifuwarabe():
             (weaken_kl_index_and_relation_bit_dictionary,
              weaken_kq_index_and_relation_bit_dictionary,
              weaken_pl_index_and_relation_bit_dictionary,
-             weaken_pq_index_and_relation_bit_dictionary) = EvaluationFacade.select_mm_index_and_relation_bit(
+             weaken_pq_index_and_relation_bit_dictionary) = EvaluationFacade.select_fo_index_and_relation_bit(
                     k_moves_u=[weaken_move_u],
                     l_move_u_for_k_set=weaken_l_move_u_set,
                     q_move_u_for_k_set=weaken_q_move_u_set,
@@ -880,7 +880,7 @@ class Kifuwarabe():
             (weaken_kl_index_and_relation_bit_dictionary,
              weaken_kq_index_and_relation_bit_dictionary,
              weaken_pl_index_and_relation_bit_dictionary,
-             weaken_pq_index_and_relation_bit_dictionary) = EvaluationFacade.select_mm_index_and_relation_bit(
+             weaken_pq_index_and_relation_bit_dictionary) = EvaluationFacade.select_fo_index_and_relation_bit(
                     k_moves_u=[],
                     l_move_u_for_k_set=set(),
                     q_move_u_for_k_set=set(),
@@ -1308,8 +1308,9 @@ class EvaluationFacade():
 
 
     #query_mm_move_u_and_relation_bit
+    #select_mm_index_and_relation_bit
     @staticmethod
-    def select_mm_index_and_relation_bit(
+    def select_fo_index_and_relation_bit(
             k_moves_u,
             l_move_u_for_k_set,
             q_move_u_for_k_set,
@@ -1319,6 +1320,18 @@ class EvaluationFacade():
             turn,
             kifuwarabe):
         """着手と応手の関係を４つの辞書として取得
+
+        第１階層の根と、第２階層の着手の葉と、第３階層の応手の葉から成る、ツリー構造になっているだろうから、
+        それを、以下の４つの辞書に分ける
+
+        （１）第２階層が自玉の着手、第３階層が敵玉の応手
+        （２）第２階層が自玉の着手、第３階層が敵兵の応手
+        （３）第２階層が自兵の着手、第３階層が敵玉の応手
+        （４）第２階層が自兵の着手、第３階層が敵兵の応手
+
+        ここで、第２階層の着手と、第３階層の着手の２つを合わせて１つのインデックスを作り、それをキーとする。
+        値は、関係の有無を無いとき 0、有るときを 1 としたリレーション・ビットとする
+
 
         Parameters
         ----------
@@ -1350,11 +1363,6 @@ class EvaluationFacade():
         pq_index_and_relation_number_dictionary - Dictionary<int, int>
             - 自兵の着手に対する、敵兵の応手の数
         """
-        # 指し手と、ビット値を紐づける
-        kl_index_and_relation_bit_dictionary = {}
-        kq_index_and_relation_bit_dictionary = {}
-        pl_index_and_relation_bit_dictionary = {}
-        pq_index_and_relation_bit_dictionary = {}
 
         def select_fo_index_and_relation_bit(
                 kind,
@@ -1376,6 +1384,10 @@ class EvaluationFacade():
             for o_move_u in o_move_u_for_f_set:
                 o_move_obj = Move.from_usi(o_move_u)
 
+                #
+                # キー。fo_index
+                #
+
                 if kind == 'KL':
                     fo_index = EvaluationKkTable.get_index_of_kk_table(
                         k_move_obj=f_move_obj,
@@ -1391,6 +1403,10 @@ class EvaluationFacade():
                     pass
                 else:
                     raise ValueError(f"unexpected kind:{kind}")
+
+                #
+                # 値。relation bit
+                #
 
                 if kind == 'KL':
                     relation_bit = kifuwarabe.evaluation_kl_table_obj_array[Turn.to_index(turn)].get_relation_esixts_by_index(
@@ -1411,36 +1427,51 @@ class EvaluationFacade():
 
             return fo_index_and_relation_bit_dictionary
 
+        # 指し手と、ビット値を紐づける
+        kl_index_and_relation_bit_dictionary = {}
+        kq_index_and_relation_bit_dictionary = {}
+        pl_index_and_relation_bit_dictionary = {}
+        pq_index_and_relation_bit_dictionary = {}
+
         # ポリシー値を累計していく
         for k_move_u in k_moves_u:
             k_move_obj = Move.from_usi(k_move_u)
 
             # ＫＬ
-            kl_index_and_relation_bit_dictionary = select_fo_index_and_relation_bit(
+            temp_dictionary = select_fo_index_and_relation_bit(
                     kind='KL',
                     f_move_obj=k_move_obj,
                     o_move_u_for_f_set=l_move_u_for_k_set)
 
+            # 和集合
+            kl_index_and_relation_bit_dictionary = kl_index_and_relation_bit_dictionary | temp_dictionary
+
             # ＫＱ
-            kq_index_and_relation_bit_dictionary = select_fo_index_and_relation_bit(
+            temp_dictionary = select_fo_index_and_relation_bit(
                     kind='KQ',
                     f_move_obj=k_move_obj,
                     o_move_u_for_f_set=q_move_u_for_k_set)
+
+            kq_index_and_relation_bit_dictionary = kq_index_and_relation_bit_dictionary | temp_dictionary
 
         for p_move_u in p_moves_u:
             p_move_obj = Move.from_usi(p_move_u)
 
             # ＰＬ
-            pl_index_and_relation_bit_dictionary = select_fo_index_and_relation_bit(
+            temp_dictionary = select_fo_index_and_relation_bit(
                     kind='PL',
                     f_move_obj=p_move_obj,
                     o_move_u_for_f_set=l_move_u_for_p_set)
 
+            pl_index_and_relation_bit_dictionary = pl_index_and_relation_bit_dictionary | temp_dictionary
+
             # ＰＱ
-            pq_index_and_relation_bit_dictionary = select_fo_index_and_relation_bit(
+            temp_dictionary = select_fo_index_and_relation_bit(
                     kind='PQ',
                     f_move_obj=p_move_obj,
                     o_move_u_for_f_set=q_move_u_for_p_set)
+
+            pq_index_and_relation_bit_dictionary = pq_index_and_relation_bit_dictionary | temp_dictionary
 
         return (kl_index_and_relation_bit_dictionary,
                 kq_index_and_relation_bit_dictionary,
@@ -1690,7 +1721,8 @@ class EvaluationFacade():
             legal_moves,
             board,
             kifuwarabe):
-        """自玉の着手と、ポリシー値の紐づいた辞書を作成する
+        """自玉の着手の一覧が渡されるので、
+        各着手についてポリシー値が紐づいた辞書を作成する
 
         Parameters
         ----------
@@ -1713,15 +1745,16 @@ class EvaluationFacade():
             自兵の着手と、敵兵の応手の、関係のポリシー値。ポリシー値は千分率の４桁の整数
         """
 
-        # 自玉の着手の集合と、自兵の着手の集合
+        # 自軍の着手の集合を、自玉の着手の集合と、自兵の着手の集合に分ける
         k_moves_u, p_moves_u = MoveListHelper.create_k_and_p_legal_moves(
                 legal_moves,
                 board)
 
-        print(f"  着手の一覧：")
+        print(f"  自玉の着手の一覧：")
         for move_u in k_moves_u:
             print(f"    K {move_u:5}")
 
+        print(f"  自兵の着手の一覧：")
         for move_u in p_moves_u:
             print(f"    P {move_u:5}")
 
@@ -1741,7 +1774,7 @@ class EvaluationFacade():
         # 自軍の玉以外の着手に対する、敵軍の玉以外の応手の集合（Quaffer；ゴクゴク飲む人。Pの次の文字Qを頭文字にした単語）
         q_move_u_for_p_set = set()
 
-        # Ｋに対する、応手の一覧を作成
+        # 自玉に対する、敵玉の応手の一覧と、敵兵の応手の一覧を作成
         for move_u in k_moves_u:
             move_obj = Move.from_usi(move_u)
 
@@ -1754,7 +1787,7 @@ class EvaluationFacade():
             l_move_u_for_k_set = l_move_u_for_k_set.union(temp_l_move_u_for_k_set)
             q_move_u_for_k_set = q_move_u_for_k_set.union(temp_q_move_u_for_k_set)
 
-        # Ｐに対する、応手の一覧を作成
+        # 自兵に対する、敵玉の応手の一覧と、敵兵の応手の一覧を作成
         for move_u in p_moves_u:
             move_obj = Move.from_usi(move_u)
 
@@ -1767,29 +1800,33 @@ class EvaluationFacade():
             l_move_u_for_p_set = l_move_u_for_p_set.union(temp_l_move_u_for_p_set)
             q_move_u_for_p_set = q_move_u_for_p_set.union(temp_q_move_u_for_p_set)
 
-        print(f"  応手の一覧：")
+        print(f"  自玉に対する、敵玉の応手の一覧：")
         for move_u in l_move_u_for_k_set:
             print(f"    KL L:{move_u}")
 
+        print(f"  自玉に対する、敵兵の応手の一覧：")
         for move_u in q_move_u_for_k_set:
             print(f"    KL Q:{move_u}")
 
+        print(f"  自兵に対する、敵玉の応手の一覧：")
         for move_u in l_move_u_for_p_set:
             print(f"    PL L:{move_u}")
 
+        print(f"  自兵に対する、敵兵の応手の一覧：")
         for move_u in q_move_u_for_p_set:
             print(f"    PL Q:{move_u}")
-
-        # FIXME 着手ごとに、応手は異なるのでは？
 
         #
         # 着手と応手の関係を全部取得
         # -----------------------
         #
+        #   辞書。
+        #   キーは、着手と応手の２つの通しインデックス。値は　関係が無ければ０，あれば１
+        #
         (kl_index_and_relation_bit_dictionary,
          kq_index_and_relation_bit_dictionary,
          pl_index_and_relation_bit_dictionary,
-         pq_index_and_relation_bit_dictionary) = EvaluationFacade.select_mm_index_and_relation_bit(
+         pq_index_and_relation_bit_dictionary) = EvaluationFacade.select_fo_index_and_relation_bit(
                 k_moves_u=k_moves_u,
                 l_move_u_for_k_set=l_move_u_for_k_set,
                 q_move_u_for_k_set=q_move_u_for_k_set,
@@ -1799,19 +1836,22 @@ class EvaluationFacade():
                 turn=board.turn,
                 kifuwarabe=kifuwarabe)
 
-        print(f"  関係の一覧：")
+        print(f"  自玉の着手と、敵玉の応手の、関係の一覧：")
         for fo_index, relation_bit in kl_index_and_relation_bit_dictionary.items():
             (k_move_obj,
              l_move_obj) = EvaluationKkTable.destructure_kl_index(
                 kl_index=fo_index)
             print(f"    KL kl_index:{fo_index:6}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_bit:{relation_bit}")
 
+        print(f"  自玉の着手と、敵兵の応手の、関係の一覧：")
         for fo_index, relation_bit in kq_index_and_relation_bit_dictionary.items():
             print(f"    KQ kq_index:{fo_index:6}  relation_bit:{relation_bit}")
 
+        print(f"  自兵の着手と、敵玉の応手の、関係の一覧：")
         for fo_index, relation_bit in pl_index_and_relation_bit_dictionary.items():
             print(f"    PL pl_index:{fo_index:6}  relation_bit:{relation_bit}")
 
+        print(f"  自兵の着手と、敵兵の応手の、関係の一覧：")
         for fo_index, relation_bit in pq_index_and_relation_bit_dictionary.items():
             print(f"    PQ pq_index:{fo_index:6}  relation_bit:{relation_bit}")
 
