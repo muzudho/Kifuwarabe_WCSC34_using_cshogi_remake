@@ -1912,6 +1912,28 @@ class EvaluationFacade():
         for f_move_u, policy in p_move_u_for_q_and_policy_dictionary.items():
             print(f"    PQ P:{f_move_u:5}  Q:*****  policy:{policy:3}")
 
+        #
+        # FIXME （まだ評価値テーブルができていないので）ダミー値の挿入
+        #
+
+        print(f"  ＫＱ　ダミーの自玉の着手を挿入（キー：ダミーの着手，　値：ポリシー値５００‰）：")
+        for move_u in k_moves_u:
+            print(f"    add K:{move_u:5}  Q:*****  policy: 500‰")
+            k_move_u_for_q_and_policy_dictionary[move_u] = 500
+
+        print(f"  ＰＬ　ダミーの自兵の着手を挿入（キー：ダミーの着手，　値：ポリシー値５００‰）：")
+        for move_u in p_moves_u:
+            print(f"    add P:{move_u:5}  L:*****  policy: 500‰")
+            p_move_u_for_l_and_policy_dictionary[move_u] = 500
+
+        print(f"  ＰＱ　ダミーの自兵の着手を挿入（キー：ダミーの着手，　値：ポリシー値５００‰）：")
+        for move_u in p_moves_u:
+            print(f"    add P:{move_u:5}  Q:*****  policy: 500‰")
+            p_move_u_for_q_and_policy_dictionary[move_u] = 500
+
+        # FIXME 同じ 5i4h でも、ＫＬとＫＱの２つあるといった状況になっているが、これでいいか？
+        # TODO このあと、 good と bad に分けるときマージするか？
+
         return (k_move_u_for_l_and_policy_dictionary,
                 k_move_u_for_q_and_policy_dictionary,
                 p_move_u_for_l_and_policy_dictionary,
