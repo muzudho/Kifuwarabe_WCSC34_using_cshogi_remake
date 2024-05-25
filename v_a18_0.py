@@ -166,7 +166,13 @@ class Kifuwarabe():
             # プレイアウト
             #       code: playout
             elif head == 'playout':
-                self.playout()
+                result_str = self.playout()
+                print(f"""\
+[playout] result:`{result_str}`
+  move_number:{self._board.move_number} / max_move_number:{max_move_number}
+  sfen {self._board.sfen()}
+""",
+                        flush=True)
 
             # 局面表示
             #       code: board
@@ -871,28 +877,22 @@ class Kifuwarabe():
 
     def playout(self):
         """プレイアウト
-        投了局面になるまで、適当に指します
+        現局面から、投了局面になるまで、適当に指します
         """
 
         while True:
 
+            # 手数上限
             if max_move_number <= self._board.move_number:
-                print(f'# [playout > max move] move_number:{self._board.move_number} / max_move_number:{max_move_number} sfen {self._board.sfen()}', flush=True)
-                return
+                return 'max_move'
 
+            # 投了局面時
             if self._board.is_game_over():
-                """投了局面時"""
+                return 'resign'
 
-                # 投了
-                print(f'# [playout > resign] sfen {self._board.sfen()}', flush=True)
-                return
-
+            # 入玉勝利宣言局面時
             if self._board.is_nyugyoku():
-                """入玉宣言局面時"""
-
-                # 勝利宣言
-                print(f'# [playout > nyugyoku win] sfen {self._board.sfen()}', flush=True)
-                return
+                return 'nyugyoku_win'
 
             # 一手詰めを詰める
             if not self._board.is_check():
@@ -906,9 +906,7 @@ class Kifuwarabe():
 
                     # 一手指す
                     self._board.push_usi(best_move_u)
-
-                    print(f'# [playout > checkmate] sfen {self._board.sfen()}', flush=True)
-                    return
+                    return 'checkmate'
 
             # くじを引く（投了のケースは対応済みなので、ここで対応しなくていい）
             best_move_str = Lottery.choice_best(
