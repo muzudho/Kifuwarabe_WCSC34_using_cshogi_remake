@@ -985,7 +985,7 @@ class Kifuwarabe():
                 # 自分の負け
                 if self._my_turn == self._board.turn:
                     # 一手詰めの局面から負けたのなら、すごく悪い手だ。この手の評価を下げる
-                    print(f'[learn] waken {move_u:5}')
+                    print(f'        waken {move_u:5}')
                     self.weaken(move_u)
 
                 else:
@@ -995,7 +995,7 @@ class Kifuwarabe():
             elif result_str == 'nyugyoku_win':
                 if move_number_difference != 0:
                     # 一手詰めの局面から、一手以上かけて入玉勝ち宣言してるようなら、すごく悪い手だ。この手の評価を下げる
-                    print(f'[learn] waken {move_u:5}')
+                    print(f'        waken {move_u:5}')
                     self.weaken(move_u)
 
             # プレイアウトしてるなら、sfen を使って元の局面に戻す
@@ -1017,11 +1017,13 @@ class Kifuwarabe():
                 # 自分の勝ち。かかった手数１手
                 if self._my_turn != self._board.turn and move_number_at_end - self._board.move_number == 1:
                     # 一手詰めの局面で、一手で詰めたのなら、すごく良い手だ。この手の評価を上げる
-                    print(f'[learn] strengthen {move_u:5}')
+                    print(f'        strengthen {move_u:5}')
                     self.strengthen(move_u)
 
             # プレイアウトしてるなら、sfen を使って元の局面に戻す
             self._board.set_sfen(end_position_sfen)
+
+        print("[learn] finished")
 
 
     def print_board(self):
