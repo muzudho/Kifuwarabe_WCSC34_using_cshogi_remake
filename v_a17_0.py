@@ -593,8 +593,8 @@ class Kifuwarabe():
 
 
     def weaken(self, cmd_tail):
-        """指定の着手の評価値テーブルについて、関連がある箇所を（適当に選んで）、それを関連が無いようにする。
-        これによって、その着手のポリシー値は下がる
+        """評価値テーブルの調整。
+        指定の着手のポリシー値が 0.5 未満になるよう価値値テーブルを調整する。
         code: weaken 5i5h
 
         Parameters
@@ -673,7 +673,7 @@ class Kifuwarabe():
             # ＫＬの関係が有りのものの数
             number_of_connection = get_number_of_connection()
 
-            # ＫＬの関係の有りのものの数が５割未満の内、最大の関係有の数
+            # ＫＬの関係の有りのものの数が５割未満の内、最大の整数
             #
             #   総数が０なら、答えは０
             #   総数が１なら、答えは０
@@ -683,7 +683,7 @@ class Kifuwarabe():
             #   総数が５なら、答えは２
             #
             # (1)   単純に　total // 2 - 1 とすると、total が３のときに答えが０になってしまう。
-            #       そこで総数は四捨五入しておく
+            #       そこで総数の半分は四捨五入しておく
             # (2)   総数が０のとき、答えはー１になってしまうので、最低の値は０にしておく
             #
             # (1)
@@ -694,12 +694,12 @@ class Kifuwarabe():
 
             # この着手に対する応手の関係を減らしたい
             #
-            #   とりあえず、関係があるものが半分未満になるようにする
+            #   差を埋めればよい
             #
             difference = number_of_connection - max_number_of_less_than_50_percent
 
             # デバッグ表示
-            print(f"K:{move_obj.as_usi:5}  L:*****  number_of_connection:{number_of_connection} / total:{total}  max_number_of_less_than_50_percent:{max_number_of_less_than_50_percent}  difference:{difference}")
+            print(f"  K:{move_obj.as_usi:5}  L:*****  number_of_connection:{number_of_connection} / total:{total}  max_number_of_less_than_50_percent:{max_number_of_less_than_50_percent}  difference:{difference}")
 
             # 関係を difference 個削除
             rest = difference
@@ -713,7 +713,7 @@ class Kifuwarabe():
                 if k_move_obj.as_usi == move_u:
                     if relation_exists == 1:
 
-                        print(f"turn:{Turn.to_string(self._board.turn)}  kl_index:{kl_index}  K:{move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  remove relation")
+                        print(f"  turn:{Turn.to_string(self._board.turn)}  kl_index:{kl_index}  K:{move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  remove relation")
 
                         self._evaluation_kl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kl_moves(
                                 k_move_obj=k_move_obj,
@@ -731,8 +731,8 @@ class Kifuwarabe():
 
 
     def strengthen(self, cmd_tail):
-        """指定の着手の評価値テーブルについて、関連がある箇所を（適当に選んで）、それを関連が有るようにする。
-        これによって、その着手のポリシー値は上がる
+        """評価値テーブルの調整。
+        指定の着手のポリシー値が 0.5 以上になるよう評価値テーブルを調整する。
         code: strengthen 5i5h
 
         Parameters
@@ -765,7 +765,7 @@ class Kifuwarabe():
             if (matemove := self._board.mate_move_in_1ply()):
 
                 best_move = cshogi.move_to_usi(matemove)
-                print(f'# failed to waken (mate {best_move})', flush=True)
+                print(f'# failed to strengthen (mate {best_move})', flush=True)
                 return
 
 
@@ -789,37 +789,54 @@ class Kifuwarabe():
 
         if is_king_move:
 
-            # ＫＬ
-            exists_number = 0
+            # ＫＬの関係数
             total = len(kl_index_to_relation_exists_dictionary)
 
-            for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
-                k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
-                        kl_index=kl_index)
+            def get_number_of_connection():
+                """ＫＬの関係が有りのものの数"""
+                number_of_connection = 0
 
-                # 表示
-                print(f"  kl_index:{kl_index}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
+                    k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
+                            kl_index=kl_index)
 
-                if relation_exists == 1:
-                    exists_number += 1
+                    # 表示
+                    print(f"  kl_index:{kl_index}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+
+                    if relation_exists == 1:
+                        number_of_connection += 1
+
+                return number_of_connection
+
+            # ＫＬの関係が有りのものの数
+            number_of_connection = get_number_of_connection()
+
+            # ＫＬの関係の有りのものの数が５割以上の内、最小の整数
+            #
+            #   総数が０なら、答えは０
+            #   総数が１なら、答えは１
+            #   総数が２なら、答えは１
+            #   総数が３なら、答えは２
+            #   総数が４なら、答えは２
+            #   総数が５なら、答えは３
+            #
+            # (1)   単純に　total // 2 とすると、total が３のときに答えが１になってしまう。
+            #       そこで総数の半分は四捨五入しておく
+            #
+            # (1)
+            max_number_of_less_than_50_percent = Decimal(str(total / 2)).quantize(Decimal('0'), rounding=ROUND_HALF_UP)
 
             # この着手に対する応手の関係を増やしたい
             #
-            #   とりあえず、増やせるなら、１増やす
+            #   差を埋めればよい
             #
-            if exists_number < total:
-                expected_exists_number = exists_number + 1
-            else:
-                expected_exists_number = exists_number
+            difference = max_number_of_less_than_50_percent - number_of_connection
 
-            difference = expected_exists_number - exists_number
-
-            # 表示
-            print(f"  K:{move_obj.as_usi:5}  L:*****  exists_number:{exists_number} / total:{total}  expected_exists_number:{expected_exists_number}  difference:{difference}")
-
-            rest = difference
+            # デバッグ表示
+            print(f"  K:{move_obj.as_usi:5}  L:*****  number_of_connection:{number_of_connection} / total:{total}  max_number_of_less_than_50_percent:{max_number_of_less_than_50_percent}  difference:{difference}")
 
             # 関係を difference 個追加
+            rest = difference
             for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
                 if rest < 1:
                     break
