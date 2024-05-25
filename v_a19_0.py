@@ -949,10 +949,47 @@ class Kifuwarabe():
         `playout` してから `learn ` する想定です
         """
 
-        # 棋譜の初手から学ぶことはできません
-        if self._board.move_number < 2:
-            print(f'[{datetime.datetime.now()}] [learn] You cannot learn from the first move of the game record.')
-            return
+        # 終局図の sfen を取得
+        end_position_sfen = self._board.sfen()
+        if is_debug:
+            print(f"[{datetime.datetime.now()}] [learn] end_position_sfen:`{end_position_sfen}`")
+
+        # 本譜の指し手を覚えておく
+        principal_history = self._board.history
+        for move_id in principal_history:
+            if is_debug:
+                print(f"[{datetime.datetime.now()}] [learn] move_id:{move_id}")
+
+        # （あとで元の position の内部状態に戻すために）初期局面まで巻き戻し、初期局面を覚えておく
+        while 1 < self._board.move_number:
+            # １手戻す
+            #if is_debug:
+            #    print(f"[{datetime.datetime.now()}] [learn] undo to init  board.move_number:{self._board.move_number}")
+            
+            self._board.pop()
+
+        # （あとで元の position の内部状態に戻すために）初期局面を覚えておく
+        init_position_sfen = self._board.sfen()
+        if is_debug:
+            print(f"[{datetime.datetime.now()}] [learn] init_position_sfen:`{init_position_sfen}`   board.move_number:{self._board.move_number}")
+
+
+        def restore_end_position():
+            """終局図の内部データに戻す"""
+            if is_debug:
+                print(f"[{datetime.datetime.now()}] [learn] restore_end_position start...")
+            # 初期局面
+            self._board.set_sfen(init_position_sfen)
+
+            # 棋譜再生
+            for move_id in principal_history:
+                self._board.push(move_id)
+
+            if is_debug:
+                print(f"[{datetime.datetime.now()}] [learn] restore_end_position end.")
+
+        # 終局図の内部データに戻す
+        restore_end_position()
 
         # 終局局面の手数
         move_number_at_end = self._board.move_number
@@ -964,19 +1001,21 @@ class Kifuwarabe():
         # -------
         #
 
-        # １手戻す（一手詰めの局面に戻るはず）
-        self._board.pop()
+        # 棋譜の初手から学ぶことはできません
+        if self._board.move_number < 2:
+            print(f'[{datetime.datetime.now()}] [learn > 詰める方] You cannot learn from the first move of the game record.')
+            return
 
+        # １手戻す（一手詰めの局面に戻るはず）
         if is_debug:
-            print(f"[{datetime.datetime.now()}] [learn > 詰める方]")
+            print(f"[{datetime.datetime.now()}] [learn > 詰める方] undo board.move_number:{self._board.move_number}")
+
+        self._board.pop()
 
         # 終局局面までの手数
         move_number_to_end = move_number_at_end - self._board.move_number
         if is_debug:
             print(f"[{datetime.datetime.now()}] [learn > 詰める方] move_number_to_end:{move_number_to_end} = move_number_at_end:{move_number_at_end} - board.move_number:{self._board.move_number}")
-
-        # 一手詰めの局面の sfen を取得
-        end_position_sfen = self._board.sfen()
 
         # - アンドゥした局面は、投了局面ではないはず
         # - 入玉宣言局面は、とりあえず考慮から外す
@@ -1029,8 +1068,8 @@ class Kifuwarabe():
                     # 一手詰めの局面から、一手以上かけて手数の上限に達しているようなら、すごく悪い手だ。この手の評価を下げる
                     is_weak_move = True
 
-            # プレイアウトしてるなら、sfen を使って元の局面に戻す
-            self._board.set_sfen(end_position_sfen)
+            # 終局図の内部データに戻す
+            restore_end_position()
 
             # 元の局面に戻してから weaken する
             if is_weak_move:
@@ -1064,8 +1103,8 @@ class Kifuwarabe():
                     # 一手詰めの局面で、一手で詰めたのなら、すごく良い手だ。この手の評価を上げる
                     is_strong_move = True
 
-            # プレイアウトしてるなら、sfen を使って元の局面に戻す
-            self._board.set_sfen(end_position_sfen)
+            # 終局図の内部データに戻す
+            restore_end_position()
 
             # 元の局面に戻してから strengthen する
             if is_strong_move:
@@ -1096,9 +1135,6 @@ class Kifuwarabe():
         move_number_to_end = move_number_at_end - self._board.move_number
         if is_debug:
             print(f"[{datetime.datetime.now()}] [learn > 逃げる方] move_number_to_end:{move_number_to_end} = move_number_at_end:{move_number_at_end} - board.move_number:{self._board.move_number}")
-
-        # 一手詰めの１つ前の局面の sfen を取得
-        end_position_sfen = self._board.sfen()
 
         #
         # グッドな着手、バッドな着手一覧
@@ -1132,8 +1168,9 @@ class Kifuwarabe():
                     # 次に一手詰めが掛けられる局面で、やはり一手詰めで負けたのなら、やはり悪い手だ。この手の評価を下げる
                     is_weak_move = True
 
-            # プレイアウトしてるなら、sfen を使って元の局面に戻す
-            self._board.set_sfen(end_position_sfen)
+            # 終局図の内部データに戻す
+            restore_end_position()
+            self._board.pop()
 
             # 元の局面に戻してから strengthen する
             if is_weak_move:
@@ -1181,8 +1218,9 @@ class Kifuwarabe():
                 # 相手がわざと負けようとしたのかもしれない。無視しておく
                 pass
 
-            # プレイアウトしてるなら、sfen を使って元の局面に戻す
-            self._board.set_sfen(end_position_sfen)
+            # 終局図の内部データに戻す
+            restore_end_position()
+            self._board.pop()
 
             # 元の局面に戻してから strengthen する
             if is_strong_move:
