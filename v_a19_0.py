@@ -1114,6 +1114,8 @@ class Kifuwarabe():
 
             # プレイアウトする
             result_str = self.playout()
+            if is_debug:
+                print(f'[{datetime.datetime.now()}] [learn > 詰める方]      result:`{result_str}`')
 
             # どちらかが投了した
             if result_str == 'resign':
@@ -1179,6 +1181,8 @@ class Kifuwarabe():
 
             # プレイアウトする
             result_str = self.playout()
+            if is_debug:
+                print(f'[{datetime.datetime.now()}] [learn > 逃げる方]      result:`{result_str}`')
 
             # どちらかが投了した
             if result_str == 'resign':
