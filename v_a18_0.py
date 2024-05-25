@@ -894,19 +894,20 @@ class Kifuwarabe():
             if self._board.is_nyugyoku():
                 return 'nyugyoku_win'
 
-            # 一手詰めを詰める
-            if not self._board.is_check():
-                """自玉に王手がかかっていない時で"""
-
-                if (matemove := self._board.mate_move_in_1ply()):
-                    """一手詰めの指し手があれば、それを取得"""
-
-                    best_move_u = cshogi.move_to_usi(matemove)
-                    print('# info score mate 1 pv {}'.format(best_move_u), flush=True)
-
-                    # 一手指す
-                    self._board.push_usi(best_move_u)
-                    return 'checkmate'
+            # （評価値テーブルの内容だけで対局したい用途で使う想定なので）プレイアウト中は一手詰めルーチンを使わない
+            ## 一手詰めを詰める
+            #if not self._board.is_check():
+            #    """自玉に王手がかかっていない時で"""
+            #
+            #    if (matemove := self._board.mate_move_in_1ply()):
+            #        """一手詰めの指し手があれば、それを取得"""
+            #
+            #        best_move_u = cshogi.move_to_usi(matemove)
+            #        print('# info score mate 1 pv {}'.format(best_move_u), flush=True)
+            #
+            #        # 一手指す
+            #        self._board.push_usi(best_move_u)
+            #        return 'checkmate'
 
             # くじを引く（投了のケースは対応済みなので、ここで対応しなくていい）
             best_move_str = Lottery.choice_best(
