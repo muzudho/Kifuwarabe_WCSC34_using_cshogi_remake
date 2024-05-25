@@ -179,7 +179,8 @@ class Kifuwarabe():
 
             # 学習
             elif head == 'learn':
-                self.learn()
+                self.learn(
+                        is_debug=True)
 
             # 局面表示
             #       code: board
@@ -222,11 +223,9 @@ class Kifuwarabe():
 
 
     def save_eval_kl_table(self):
-        """ＫＬ評価値テーブル［0:先手, 1:後手］の保存"""
+        """（変更があれば）ＫＬ評価値テーブル［0:先手, 1:後手］の保存"""
         for turn in [cshogi.BLACK, cshogi.WHITE]:
             turn_index = Turn.to_index(turn)
-            self._evaluation_kl_table_obj_array[turn_index].load_on_usinewgame(
-                    turn=turn)
 
             if self._evaluation_kl_table_obj_array[turn_index].mm_table_obj.is_file_modified:
                 self._evaluation_kl_table_obj_array[turn_index].save_kk_evaluation_table_file()
@@ -237,7 +236,13 @@ class Kifuwarabe():
     def usinewgame(self):
         """新しい対局"""
 
-        # ＫＬ評価値テーブル［0:先手, 1:後手］の保存
+        # ＫＬ評価値テーブル［0:先手, 1:後手］の読込
+        for turn in [cshogi.BLACK, cshogi.WHITE]:
+            turn_index = Turn.to_index(turn)
+            self._evaluation_kl_table_obj_array[turn_index].load_on_usinewgame(
+                    turn=turn)
+
+        # （変更があれば）ＫＬ評価値テーブル［0:先手, 1:後手］の保存
         self.save_eval_kl_table()
 
         # 対局結果ファイル（デフォルト）
@@ -932,7 +937,9 @@ class Kifuwarabe():
             self._board.push_usi(best_move_str)
 
 
-    def learn(self):
+    def learn(
+            self,
+            is_debug=False):
         """学習
 
         `playout` してから `learn ` する想定です
@@ -940,21 +947,23 @@ class Kifuwarabe():
 
         # 棋譜の初手から学ぶことはできません
         if self._board.move_number < 2:
-            print(f'[learn] You cannot learn from the first move of the game record.')
+            print(f'[{datetime.datetime.now()}] [learn] You cannot learn from the first move of the game record.')
             return
 
         # 終局局面の手数
         move_number_at_end = self._board.move_number
-        print(f"move_number_at_end:{move_number_at_end}")
+        if is_debug:
+            print(f"[{datetime.datetime.now()}] move_number_at_end:{move_number_at_end}")
 
         # １手戻す（一手詰めの局面に戻るはず）
         self._board.pop()
 
         # 終局局面までの手数
         move_number_to_end = move_number_at_end - self._board.move_number
-        print(f"move_number_to_end:{move_number_to_end} = move_number_at_end:{move_number_at_end} - board.move_number:{self._board.move_number}")
+        if is_debug:
+            print(f"[{datetime.datetime.now()}] move_number_to_end:{move_number_to_end} = move_number_at_end:{move_number_at_end} - board.move_number:{self._board.move_number}")
 
-        # TODO 一手詰めの局面の sfen を取得
+        # 一手詰めの局面の sfen を取得
         end_position_sfen = self._board.sfen()
 
         # - アンドゥした局面は、投了局面ではないはず
@@ -971,9 +980,12 @@ class Kifuwarabe():
                 board=self._board,
                 kifuwarabe=self)
 
-        print(f'  現グッド着手一覧：')
+        if is_debug:
+            print(f'[{datetime.datetime.now()}]  現グッド着手一覧：')
+
         for move_u in good_move_u_set:
-            print(f'    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is good')
+            if is_debug:
+                print(f'[{datetime.datetime.now()}]    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is good')
 
             # （一手詰めの局面で）とりあえず一手指す
             self._board.push_usi(move_u)
@@ -981,14 +993,16 @@ class Kifuwarabe():
             # プレイアウトする
             result_str = self.playout()
             move_number_difference = self._board.move_number - move_number_at_end
-            print(f'      result:`{result_str}`  move_number_difference:{move_number_difference}')
+            if is_debug:
+                print(f'[{datetime.datetime.now()}]      result:`{result_str}`  move_number_difference:{move_number_difference}')
 
             # どちらかが投了した
             if result_str == 'resign':
                 # 自分の負け
                 if self._my_turn == self._board.turn:
                     # 一手詰めの局面から負けたのなら、すごく悪い手だ。この手の評価を下げる
-                    print(f'        waken {move_u:5}')
+                    if is_debug:
+                        print(f'[{datetime.datetime.now()}]        waken {move_u:5}')
                     self.weaken(move_u)
 
                 else:
@@ -998,16 +1012,20 @@ class Kifuwarabe():
             elif result_str == 'nyugyoku_win':
                 if move_number_difference != 0:
                     # 一手詰めの局面から、一手以上かけて入玉勝ち宣言してるようなら、すごく悪い手だ。この手の評価を下げる
-                    print(f'        waken {move_u:5}')
+                    if is_debug:
+                        print(f'[{datetime.datetime.now()}]        waken {move_u:5}')
                     self.weaken(move_u)
 
             # プレイアウトしてるなら、sfen を使って元の局面に戻す
             self._board.set_sfen(end_position_sfen)
 
 
-        print(f'  現バッド着手一覧：')
+        if is_debug:
+            print(f'[{datetime.datetime.now()}]  現バッド着手一覧：')
+
         for move_u in bad_move_u_set:
-            print(f'    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is bad')
+            if is_debug:
+                print(f'[{datetime.datetime.now()}]    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is bad')
 
             # （一手詰めの局面で）とりあえず一手指す
             self._board.push_usi(move_u)
@@ -1020,7 +1038,8 @@ class Kifuwarabe():
                 # 自分の勝ち。かかった手数１手
                 if self._my_turn != self._board.turn and move_number_at_end - self._board.move_number == 1:
                     # 一手詰めの局面で、一手で詰めたのなら、すごく良い手だ。この手の評価を上げる
-                    print(f'        strengthen {move_u:5}')
+                    if is_debug:
+                        print(f'[{datetime.datetime.now()}]        strengthen {move_u:5}')
                     self.strengthen(move_u)
 
             # プレイアウトしてるなら、sfen を使って元の局面に戻す
@@ -1029,7 +1048,7 @@ class Kifuwarabe():
         # ＫＬ評価値テーブル［0:先手, 1:後手］の保存
         self.save_eval_kl_table()
 
-        print("[learn] finished")
+        print(f"[{datetime.datetime.now()}] [learn] finished")
 
 
     def print_board(self):
