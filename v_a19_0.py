@@ -1003,25 +1003,22 @@ class Kifuwarabe():
                 # 自分の負け
                 if self._my_turn == self._board.turn:
                     # 一手詰めの局面から負けたのなら、すごく悪い手だ。この手の評価を下げる
-                    if is_debug:
-                        print(f'[{datetime.datetime.now()}]        waken {move_u:5}')
-
                     is_weak_move = True
 
             # どちらかが入玉勝ちした
             elif result_str == 'nyugyoku_win':
                 if move_number_difference != 0:
                     # 一手詰めの局面から、一手以上かけて入玉勝ち宣言してるようなら、すごく悪い手だ。この手の評価を下げる
-                    if is_debug:
-                        print(f'[{datetime.datetime.now()}]        waken {move_u:5}')
-
                     is_weak_move = True
 
             # プレイアウトしてるなら、sfen を使って元の局面に戻す
             self._board.set_sfen(end_position_sfen)
 
             # 元の局面に戻してから weaken する
-            if is_weak_move is not None:
+            if is_weak_move:
+                if is_debug:
+                    print(f'[{datetime.datetime.now()}]        waken {move_u:5}')
+
                 self.weaken(
                         cmd_tail=move_u,
                         is_debug=is_debug)
@@ -1047,9 +1044,6 @@ class Kifuwarabe():
                 # 自分の勝ち。かかった手数１手
                 if self._my_turn != self._board.turn and move_number_at_end - self._board.move_number == 1:
                     # 一手詰めの局面で、一手で詰めたのなら、すごく良い手だ。この手の評価を上げる
-                    if is_debug:
-                        print(f'[{datetime.datetime.now()}]        strengthen {move_u:5}')
-
                     is_strong_move = True
 
             # プレイアウトしてるなら、sfen を使って元の局面に戻す
@@ -1057,6 +1051,9 @@ class Kifuwarabe():
 
             # 元の局面に戻してから strengthen する
             if is_strong_move:
+                if is_debug:
+                    print(f'[{datetime.datetime.now()}]        strengthen {move_u:5}')
+
                 self.strengthen(
                         cmd_tail=move_u,
                         is_debug=is_debug)
