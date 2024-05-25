@@ -968,12 +968,12 @@ class Kifuwarabe():
         self._board.pop()
 
         if is_debug:
-            print(f"[{datetime.datetime.now()}] 詰める方")
+            print(f"[{datetime.datetime.now()}] [learn > 詰める方]")
 
         # 終局局面までの手数
         move_number_to_end = move_number_at_end - self._board.move_number
         if is_debug:
-            print(f"[{datetime.datetime.now()}] move_number_to_end:{move_number_to_end} = move_number_at_end:{move_number_at_end} - board.move_number:{self._board.move_number}")
+            print(f"[{datetime.datetime.now()}] [learn > 詰める方] move_number_to_end:{move_number_to_end} = move_number_at_end:{move_number_at_end} - board.move_number:{self._board.move_number}")
 
         # 一手詰めの局面の sfen を取得
         end_position_sfen = self._board.sfen()
@@ -993,13 +993,13 @@ class Kifuwarabe():
                 kifuwarabe=self)
 
         if is_debug:
-            print(f'[{datetime.datetime.now()}]  現グッド着手一覧：')
+            print(f'[{datetime.datetime.now()}] [learn > 詰める方]  現グッド着手一覧：')
 
         for move_u in good_move_u_set:
             is_weak_move = False
 
             if is_debug:
-                print(f'[{datetime.datetime.now()}]    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is good')
+                print(f'[{datetime.datetime.now()}] [learn > 詰める方]    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is good')
 
             # （一手詰めの局面で）とりあえず一手指す
             self._board.push_usi(move_u)
@@ -1008,7 +1008,7 @@ class Kifuwarabe():
             result_str = self.playout()
             move_number_difference = self._board.move_number - move_number_at_end
             if is_debug:
-                print(f'[{datetime.datetime.now()}]      result:`{result_str}`  move_number_difference:{move_number_difference}')
+                print(f'[{datetime.datetime.now()}] [learn > 詰める方]      result:`{result_str}`  move_number_difference:{move_number_difference}')
 
             # どちらかが投了した
             if result_str == 'resign':
@@ -1035,7 +1035,7 @@ class Kifuwarabe():
             # 元の局面に戻してから weaken する
             if is_weak_move:
                 if is_debug:
-                    print(f'[{datetime.datetime.now()}]        waken {move_u:5}')
+                    print(f'[{datetime.datetime.now()}] [learn > 詰める方]        waken {move_u:5}')
 
                 self.weaken(
                         cmd_tail=move_u,
@@ -1043,13 +1043,13 @@ class Kifuwarabe():
 
 
         if is_debug:
-            print(f'[{datetime.datetime.now()}]  現バッド着手一覧：')
+            print(f'[{datetime.datetime.now()}] [learn > 詰める方]  現バッド着手一覧：')
 
         for move_u in bad_move_u_set:
             is_strong_move = False
 
             if is_debug:
-                print(f'[{datetime.datetime.now()}]    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is bad')
+                print(f'[{datetime.datetime.now()}] [learn > 詰める方]    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is bad')
 
             # （一手詰めの局面で）とりあえず一手指す
             self._board.push_usi(move_u)
@@ -1070,7 +1070,7 @@ class Kifuwarabe():
             # 元の局面に戻してから strengthen する
             if is_strong_move:
                 if is_debug:
-                    print(f'[{datetime.datetime.now()}]        strengthen {move_u:5}')
+                    print(f'[{datetime.datetime.now()}] [learn > 詰める方]        strengthen {move_u:5}')
 
                 self.strengthen(
                         cmd_tail=move_u,
@@ -1081,16 +1081,21 @@ class Kifuwarabe():
         # -------
         #
 
+        # 棋譜の初手から学ぶことはできません
+        if self._board.move_number < 2:
+            print(f'[{datetime.datetime.now()}] [learn > 逃げる方] You cannot learn from the first move of the game record.')
+            return
+
         # １手戻す（このあと一手詰めされる側の局面に戻るはず）
         self._board.pop()
 
         if is_debug:
-            print(f"[{datetime.datetime.now()}] 逃げる方")
+            print(f"[{datetime.datetime.now()}] [learn > 逃げる方]")
 
         # 終局局面までの手数
         move_number_to_end = move_number_at_end - self._board.move_number
         if is_debug:
-            print(f"[{datetime.datetime.now()}] move_number_to_end:{move_number_to_end} = move_number_at_end:{move_number_at_end} - board.move_number:{self._board.move_number}")
+            print(f"[{datetime.datetime.now()}] [learn > 逃げる方] move_number_to_end:{move_number_to_end} = move_number_at_end:{move_number_at_end} - board.move_number:{self._board.move_number}")
 
         # 一手詰めの１つ前の局面の sfen を取得
         end_position_sfen = self._board.sfen()
@@ -1106,13 +1111,13 @@ class Kifuwarabe():
                 kifuwarabe=self)
 
         if is_debug:
-            print(f'[{datetime.datetime.now()}]  現グッド着手一覧：')
+            print(f'[{datetime.datetime.now()}] [learn > 逃げる方]  現グッド着手一覧：')
 
         for move_u in good_move_u_set:
             is_weak_move = False
 
             if is_debug:
-                print(f'[{datetime.datetime.now()}]    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is bad')
+                print(f'[{datetime.datetime.now()}] [learn > 逃げる方]    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is bad')
 
             # （一手詰めの局面で）とりあえず一手指す
             self._board.push_usi(move_u)
@@ -1133,7 +1138,7 @@ class Kifuwarabe():
             # 元の局面に戻してから strengthen する
             if is_weak_move:
                 if is_debug:
-                    print(f'[{datetime.datetime.now()}]        weaken {move_u:5}')
+                    print(f'[{datetime.datetime.now()}] [learn > 逃げる方]        weaken {move_u:5}')
 
                 self.weaken(
                         cmd_tail=move_u,
@@ -1141,13 +1146,13 @@ class Kifuwarabe():
 
 
         if is_debug:
-            print(f'[{datetime.datetime.now()}]  現バッド着手一覧：')
+            print(f'[{datetime.datetime.now()}] [learn > 逃げる方]  現バッド着手一覧：')
 
         for move_u in bad_move_u_set:
             is_strong_move = False
 
             if is_debug:
-                print(f'[{datetime.datetime.now()}]    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is good')
+                print(f'[{datetime.datetime.now()}] [learn > 逃げる方]    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is good')
 
             # （一手詰めの１つ前の局面で）とりあえず一手指す
             self._board.push_usi(move_u)
@@ -1156,7 +1161,7 @@ class Kifuwarabe():
             result_str = self.playout()
             move_number_difference = self._board.move_number - move_number_at_end
             if is_debug:
-                print(f'[{datetime.datetime.now()}]      result:`{result_str}`  move_number_difference:{move_number_difference}')
+                print(f'[{datetime.datetime.now()}] [learn > 逃げる方]      result:`{result_str}`  move_number_difference:{move_number_difference}')
 
             # どちらかが投了した
             if result_str == 'resign':
@@ -1182,7 +1187,7 @@ class Kifuwarabe():
             # 元の局面に戻してから strengthen する
             if is_strong_move:
                 if is_debug:
-                    print(f'[{datetime.datetime.now()}]        strengthen {move_u:5}')
+                    print(f'[{datetime.datetime.now()}] [learn > 逃げる方]        strengthen {move_u:5}')
 
                 self.strengthen(
                         cmd_tail=move_u,
