@@ -1,7 +1,7 @@
 import os
 import datetime
-from v_a16_0_lib import Turn, Move, EvalutionMmTable
-from v_a16_0_eval_lib import EvaluationLib
+from v_a17_0_lib import Turn, Move, EvalutionMmTable
+from v_a17_0_eval_lib import EvaluationLib
 
 
 class EvaluationKkTable():
