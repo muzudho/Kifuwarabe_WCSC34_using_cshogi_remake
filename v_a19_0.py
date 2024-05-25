@@ -984,6 +984,8 @@ class Kifuwarabe():
             print(f'[{datetime.datetime.now()}]  現グッド着手一覧：')
 
         for move_u in good_move_u_set:
+            is_weak_move = False
+
             if is_debug:
                 print(f'[{datetime.datetime.now()}]    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is good')
 
@@ -1003,10 +1005,8 @@ class Kifuwarabe():
                     # 一手詰めの局面から負けたのなら、すごく悪い手だ。この手の評価を下げる
                     if is_debug:
                         print(f'[{datetime.datetime.now()}]        waken {move_u:5}')
-                    self.weaken(move_u)
 
-                else:
-                    pass
+                    is_weak_move = True
 
             # どちらかが入玉勝ちした
             elif result_str == 'nyugyoku_win':
@@ -1014,16 +1014,25 @@ class Kifuwarabe():
                     # 一手詰めの局面から、一手以上かけて入玉勝ち宣言してるようなら、すごく悪い手だ。この手の評価を下げる
                     if is_debug:
                         print(f'[{datetime.datetime.now()}]        waken {move_u:5}')
-                    self.weaken(move_u)
+
+                    is_weak_move = True
 
             # プレイアウトしてるなら、sfen を使って元の局面に戻す
             self._board.set_sfen(end_position_sfen)
+
+            # 元の局面に戻してから weaken する
+            if is_weak_move is not None:
+                self.weaken(
+                        cmd_tail=move_u,
+                        is_debug=is_debug)
 
 
         if is_debug:
             print(f'[{datetime.datetime.now()}]  現バッド着手一覧：')
 
         for move_u in bad_move_u_set:
+            is_strong_move = False
+
             if is_debug:
                 print(f'[{datetime.datetime.now()}]    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is bad')
 
@@ -1040,10 +1049,17 @@ class Kifuwarabe():
                     # 一手詰めの局面で、一手で詰めたのなら、すごく良い手だ。この手の評価を上げる
                     if is_debug:
                         print(f'[{datetime.datetime.now()}]        strengthen {move_u:5}')
-                    self.strengthen(move_u)
+
+                    is_strong_move = True
 
             # プレイアウトしてるなら、sfen を使って元の局面に戻す
             self._board.set_sfen(end_position_sfen)
+
+            # 元の局面に戻してから strengthen する
+            if is_strong_move:
+                self.strengthen(
+                        cmd_tail=move_u,
+                        is_debug=is_debug)
 
         # ＫＬ評価値テーブル［0:先手, 1:後手］の保存
         self.save_eval_kl_table()
