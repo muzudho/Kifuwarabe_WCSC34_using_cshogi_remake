@@ -1395,7 +1395,8 @@ class MoveAndPolicyHelper():
     def select_good_f_move_u_set(
             k_move_u_to_policy_dictionary,
             p_move_u_to_policy_dictionary,
-            turn):
+            turn,
+            is_debug=False):
         """ポリシー値が 0.5 以上の着手と、それ以外の着手の２つのリストを返します
 
         Parameters
@@ -1420,9 +1421,12 @@ class MoveAndPolicyHelper():
         # Ｋ
         #
 
-        print('  自玉の着手のポリシー値一覧（Ｋ）：')
+        if is_debug:
+            print('  自玉の着手のポリシー値一覧（Ｋ）：')
+
         for move_u, policy in k_move_u_to_policy_dictionary.items():
-            print(f'    ({number:3})  turn:{Turn.to_string(turn)}  K:{move_u:5}  L:*****  policy:{policy:4}‰')
+            if is_debug:
+                print(f'    ({number:3})  turn:{Turn.to_string(turn)}  K:{move_u:5}  L:*****  policy:{policy:4}‰')
 
             if 500 <= policy:
                 good_move_u_set.add(move_u)
@@ -1435,9 +1439,12 @@ class MoveAndPolicyHelper():
         # Ｐ
         #
 
-        print('  自兵の着手のポリシー値一覧（Ｐ）：')
+        if is_debug:
+            print('  自兵の着手のポリシー値一覧（Ｐ）：')
+
         for move_u, policy in p_move_u_to_policy_dictionary.items():
-            print(f'    ({number:3})  turn:{Turn.to_string(turn)}  P:{move_u:5}  L:*****  policy:{policy:4}‰')
+            if is_debug:
+                print(f'    ({number:3})  turn:{Turn.to_string(turn)}  P:{move_u:5}  L:*****  policy:{policy:4}‰')
 
             if 500 <= policy:
                 good_move_u_set.add(move_u)
@@ -1637,7 +1644,8 @@ class EvaluationFacade():
             k_move_u_and_l_to_relation_number_dictionary,
             k_move_u_and_q_to_relation_number_dictionary,
             p_move_u_and_l_to_relation_number_dictionary,
-            p_move_u_and_q_to_relation_number_dictionary):
+            p_move_u_and_q_to_relation_number_dictionary,
+            is_debug=False):
         """ＭＮ関係を、Ｍ毎にまとめ直して、関係の有無は件数に変換し、スケールを千分率に揃える
 
         Parameters
@@ -1672,14 +1680,16 @@ class EvaluationFacade():
             counter_move_size = len(f_move_u_and_o_to_relation_number_dictionary)
 
             for move_u, relation_number in f_move_u_and_o_to_relation_number_dictionary.items():
-                print(f"{label_f}:{move_u:5}  {label_o}:*****  relation_number:{relation_number:3}  /  size:{counter_move_size}")
+                if is_debug:
+                    print(f"{label_f}:{move_u:5}  {label_o}:*****  relation_number:{relation_number:3}  /  size:{counter_move_size}")
 
             for move_u, relation_number in f_move_u_and_o_to_relation_number_dictionary.items():
                 f_move_u_and_o_to_policy_dictionary[move_u] = PolicyHelper.get_permille_from_relation_number(
                         relation_number=relation_number,
                         counter_move_size=counter_move_size)
 
-                print(f"{label_f}:{move_u:5}  {label_o}:*****  sum(f policy):{f_move_u_and_o_to_policy_dictionary[move_u]:4}‰")
+                if is_debug:
+                    print(f"{label_f}:{move_u:5}  {label_o}:*****  sum(f policy):{f_move_u_and_o_to_policy_dictionary[move_u]:4}‰")
 
             return f_move_u_and_o_to_policy_dictionary
 
@@ -1718,7 +1728,8 @@ class EvaluationFacade():
             kl_index_and_relation_bit_dictionary,
             kq_index_and_relation_bit_dictionary,
             pl_index_and_relation_bit_dictionary,
-            pq_index_and_relation_bit_dictionary):
+            pq_index_and_relation_bit_dictionary,
+            is_debug=False):
         """ＭＮ関係を、Ｍ毎にまとめ直して、関係の有無は件数に変換します
 
         Parameters
@@ -1775,7 +1786,8 @@ class EvaluationFacade():
                 else:
                     f_move_u_and_o_and_relation_number_dictionary[f_move_obj.as_usi] = relation_bit
 
-                print(f"{label_f.lower()}{label_o.lower()}_index:{fo_index}  {label_f}:{f_move_obj.as_usi:5}  {label_o}:{o_move_obj.as_usi:5}  relation_bit:{relation_bit}  sum(f relation):{f_move_u_and_o_and_relation_number_dictionary[f_move_obj.as_usi]}")
+                if is_debug:
+                    print(f"{label_f.lower()}{label_o.lower()}_index:{fo_index}  {label_f}:{f_move_obj.as_usi:5}  {label_o}:{o_move_obj.as_usi:5}  relation_bit:{relation_bit}  sum(f relation):{f_move_u_and_o_and_relation_number_dictionary[f_move_obj.as_usi]}")
 
             return f_move_u_and_o_and_relation_number_dictionary
 
@@ -1814,7 +1826,8 @@ class EvaluationFacade():
             k_move_u_and_l_and_policy_dictionary,
             k_move_u_and_q_and_policy_dictionary,
             p_move_u_and_l_and_policy_dictionary,
-            p_move_u_and_q_and_policy_dictionary):
+            p_move_u_and_q_and_policy_dictionary,
+            is_debug=False):
         """ポリシー毎に指し手をまとめ直す"""
 
         def select_policy_and_f_move_u_set(
@@ -1825,11 +1838,13 @@ class EvaluationFacade():
 
             for move_u, policy in f_move_u_and_o_and_policy_dictionary.items():
                 if policy in policy_and_move_u_set_dictionary.keys():
-                    print(f"{label_f}{label_o}  policy:{policy}‰  add {label_f}:{move_u}")
+                    if is_debug:
+                        print(f"{label_f}{label_o}  policy:{policy}‰  add {label_f}:{move_u}")
                     policy_and_move_u_set_dictionary[policy].add(move_u)
 
                 else:
-                    print(f"{label_f}{label_o}  policy:{policy}‰  new {label_f}:{move_u}")
+                    if is_debug:
+                        print(f"{label_f}{label_o}  policy:{policy}‰  new {label_f}:{move_u}")
                     policy_and_move_u_set_dictionary[policy] = set()
                     policy_and_move_u_set_dictionary[policy].add(move_u)
 
@@ -1870,7 +1885,8 @@ class EvaluationFacade():
     def select_fo_move_u_and_policy_dictionary(
             legal_moves,
             board,
-            kifuwarabe):
+            kifuwarabe,
+            is_debug=False):
         """自玉の着手の一覧が渡されるので、
         各着手についてポリシー値が紐づいた辞書を作成する
 
@@ -1900,13 +1916,14 @@ class EvaluationFacade():
                 legal_moves,
                 board)
 
-        print(f"  自玉の着手の一覧：")
-        for move_u in k_moves_u:
-            print(f"    turn:{Turn.to_string(board.turn)}  K:{move_u:5}")
+        if is_debug:
+            print(f"  自玉の着手の一覧：")
+            for move_u in k_moves_u:
+                print(f"    turn:{Turn.to_string(board.turn)}  K:{move_u:5}")
 
-        print(f"  自兵の着手の一覧：")
-        for move_u in p_moves_u:
-            print(f"    turn:{Turn.to_string(board.turn)}  P:{move_u:5}")
+            print(f"  自兵の着手の一覧：")
+            for move_u in p_moves_u:
+                print(f"    turn:{Turn.to_string(board.turn)}  P:{move_u:5}")
 
         #
         # 相手が指せる手の集合
@@ -1950,21 +1967,22 @@ class EvaluationFacade():
             l_move_u_for_p_set = l_move_u_for_p_set.union(temp_l_move_u_for_p_set)
             q_move_u_for_p_set = q_move_u_for_p_set.union(temp_q_move_u_for_p_set)
 
-        print(f"  自玉に対する、敵玉の応手の一覧：")
-        for move_u in l_move_u_for_k_set:
-            print(f"    KL  turn:{Turn.to_string(board.turn)}  K:*****  L:{move_u}")
+        if is_debug:
+            print(f"  自玉に対する、敵玉の応手の一覧：")
+            for move_u in l_move_u_for_k_set:
+                print(f"    KL  turn:{Turn.to_string(board.turn)}  K:*****  L:{move_u}")
 
-        print(f"  自玉に対する、敵兵の応手の一覧：")
-        for move_u in q_move_u_for_k_set:
-            print(f"    KL  turn:{Turn.to_string(board.turn)}  K:*****  Q:{move_u}")
+            print(f"  自玉に対する、敵兵の応手の一覧：")
+            for move_u in q_move_u_for_k_set:
+                print(f"    KL  turn:{Turn.to_string(board.turn)}  K:*****  Q:{move_u}")
 
-        print(f"  自兵に対する、敵玉の応手の一覧：")
-        for move_u in l_move_u_for_p_set:
-            print(f"    PL  turn:{Turn.to_string(board.turn)}  P:*****  L:{move_u}")
+            print(f"  自兵に対する、敵玉の応手の一覧：")
+            for move_u in l_move_u_for_p_set:
+                print(f"    PL  turn:{Turn.to_string(board.turn)}  P:*****  L:{move_u}")
 
-        print(f"  自兵に対する、敵兵の応手の一覧：")
-        for move_u in q_move_u_for_p_set:
-            print(f"    PL  turn:{Turn.to_string(board.turn)}  P:*****  Q:{move_u}")
+            print(f"  自兵に対する、敵兵の応手の一覧：")
+            for move_u in q_move_u_for_p_set:
+                print(f"    PL  turn:{Turn.to_string(board.turn)}  P:*****  Q:{move_u}")
 
         #
         # 着手と応手の関係を全部取得
@@ -1986,24 +2004,25 @@ class EvaluationFacade():
                 turn=board.turn,
                 kifuwarabe=kifuwarabe)
 
-        print(f"  自玉の着手と、敵玉の応手の、関係の一覧（キー：ｆｏ＿ｉｎｄｅｘ，　値：関係ビット）：")
-        for fo_index, relation_bit in kl_index_and_relation_bit_dictionary.items():
-            (k_move_obj,
-             l_move_obj) = EvaluationKkTable.destructure_kl_index(
-                kl_index=fo_index)
-            print(f"    KL  turn:{Turn.to_string(board.turn)}  kl_index:{fo_index:6}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_bit:{relation_bit}")
+        if is_debug:
+            print(f"  自玉の着手と、敵玉の応手の、関係の一覧（キー：ｆｏ＿ｉｎｄｅｘ，　値：関係ビット）：")
+            for fo_index, relation_bit in kl_index_and_relation_bit_dictionary.items():
+                (k_move_obj,
+                l_move_obj) = EvaluationKkTable.destructure_kl_index(
+                    kl_index=fo_index)
+                print(f"    KL  turn:{Turn.to_string(board.turn)}  kl_index:{fo_index:6}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_bit:{relation_bit}")
 
-        print(f"  自玉の着手と、敵兵の応手の、関係の一覧：")
-        for fo_index, relation_bit in kq_index_and_relation_bit_dictionary.items():
-            print(f"    KQ  turn:{Turn.to_string(board.turn)}  kq_index:{fo_index:6}  relation_bit:{relation_bit}")
+            print(f"  自玉の着手と、敵兵の応手の、関係の一覧：")
+            for fo_index, relation_bit in kq_index_and_relation_bit_dictionary.items():
+                print(f"    KQ  turn:{Turn.to_string(board.turn)}  kq_index:{fo_index:6}  relation_bit:{relation_bit}")
 
-        print(f"  自兵の着手と、敵玉の応手の、関係の一覧：")
-        for fo_index, relation_bit in pl_index_and_relation_bit_dictionary.items():
-            print(f"    PL  turn:{Turn.to_string(board.turn)}  pl_index:{fo_index:6}  relation_bit:{relation_bit}")
+            print(f"  自兵の着手と、敵玉の応手の、関係の一覧：")
+            for fo_index, relation_bit in pl_index_and_relation_bit_dictionary.items():
+                print(f"    PL  turn:{Turn.to_string(board.turn)}  pl_index:{fo_index:6}  relation_bit:{relation_bit}")
 
-        print(f"  自兵の着手と、敵兵の応手の、関係の一覧：")
-        for fo_index, relation_bit in pq_index_and_relation_bit_dictionary.items():
-            print(f"    PQ  turn:{Turn.to_string(board.turn)}  pq_index:{fo_index:6}  relation_bit:{relation_bit}")
+            print(f"  自兵の着手と、敵兵の応手の、関係の一覧：")
+            for fo_index, relation_bit in pq_index_and_relation_bit_dictionary.items():
+                print(f"    PQ  turn:{Turn.to_string(board.turn)}  pq_index:{fo_index:6}  relation_bit:{relation_bit}")
 
         # 関係のキーをインデックスから着手へ変換
         (k_move_u_and_l_to_relation_number_dictionary,
@@ -2015,21 +2034,22 @@ class EvaluationFacade():
                 pl_index_and_relation_bit_dictionary,
                 pq_index_and_relation_bit_dictionary)
 
-        print(f"  自玉の着手と、敵玉の応手の、関係の一覧（キー：着手，　値：関係数）：")
-        for f_move_u, relation_number in k_move_u_and_l_to_relation_number_dictionary.items():
-            print(f"    KL  turn:{Turn.to_string(board.turn)}  K:{f_move_u:5}  L:*****  relation_number:{relation_number:3}")
+        if is_debug:
+            print(f"  自玉の着手と、敵玉の応手の、関係の一覧（キー：着手，　値：関係数）：")
+            for f_move_u, relation_number in k_move_u_and_l_to_relation_number_dictionary.items():
+                print(f"    KL  turn:{Turn.to_string(board.turn)}  K:{f_move_u:5}  L:*****  relation_number:{relation_number:3}")
 
-        print(f"  自玉の着手と、敵兵の応手の、関係の一覧（キー：着手，　値：関係数）：")
-        for f_move_u, relation_number in k_move_u_and_q_to_relation_number_dictionary.items():
-            print(f"    KQ  turn:{Turn.to_string(board.turn)}  K:{f_move_u:5}  Q:*****  relation_number:{relation_number:3}")
+            print(f"  自玉の着手と、敵兵の応手の、関係の一覧（キー：着手，　値：関係数）：")
+            for f_move_u, relation_number in k_move_u_and_q_to_relation_number_dictionary.items():
+                print(f"    KQ  turn:{Turn.to_string(board.turn)}  K:{f_move_u:5}  Q:*****  relation_number:{relation_number:3}")
 
-        print(f"  自兵の着手と、敵玉の応手の、関係の一覧（キー：着手，　値：関係数）：")
-        for f_move_u, relation_number in p_move_u_and_l_to_relation_number_dictionary.items():
-            print(f"    PL  turn:{Turn.to_string(board.turn)}  P:{f_move_u:5}  L:*****  relation_number:{relation_number:3}")
+            print(f"  自兵の着手と、敵玉の応手の、関係の一覧（キー：着手，　値：関係数）：")
+            for f_move_u, relation_number in p_move_u_and_l_to_relation_number_dictionary.items():
+                print(f"    PL  turn:{Turn.to_string(board.turn)}  P:{f_move_u:5}  L:*****  relation_number:{relation_number:3}")
 
-        print(f"  自兵の着手と、敵兵の応手の、関係の一覧（キー：着手，　値：関係数）：")
-        for f_move_u, relation_number in p_move_u_and_q_to_relation_number_dictionary.items():
-            print(f"    PQ  turn:{Turn.to_string(board.turn)}  P:{f_move_u:5}  Q:*****  relation_number:{relation_number:3}")
+            print(f"  自兵の着手と、敵兵の応手の、関係の一覧（キー：着手，　値：関係数）：")
+            for f_move_u, relation_number in p_move_u_and_q_to_relation_number_dictionary.items():
+                print(f"    PQ  turn:{Turn.to_string(board.turn)}  P:{f_move_u:5}  Q:*****  relation_number:{relation_number:3}")
 
         #
         # 評価値テーブルを参照し、各指し手にポリシー値を付ける
@@ -2046,39 +2066,49 @@ class EvaluationFacade():
                 p_move_u_and_l_to_relation_number_dictionary=p_move_u_and_l_to_relation_number_dictionary,
                 p_move_u_and_q_to_relation_number_dictionary=p_move_u_and_q_to_relation_number_dictionary)
 
-        print(f"  自玉の着手と、敵玉の応手の、関係の一覧（キー：着手，　値：ポリシー値）：")
-        for f_move_u, policy in k_move_u_for_l_and_policy_dictionary.items():
-            print(f"    KL  turn:{Turn.to_string(board.turn)}  K:{f_move_u:5}  L:*****  policy:{policy:3}")
+        if is_debug:
+            print(f"  自玉の着手と、敵玉の応手の、関係の一覧（キー：着手，　値：ポリシー値）：")
+            for f_move_u, policy in k_move_u_for_l_and_policy_dictionary.items():
+                print(f"    KL  turn:{Turn.to_string(board.turn)}  K:{f_move_u:5}  L:*****  policy:{policy:3}")
 
-        print(f"  自玉の着手と、敵兵の応手の、関係の一覧（キー：着手，　値：ポリシー値）：")
-        for f_move_u, policy in k_move_u_for_q_and_policy_dictionary.items():
-            print(f"    KQ  turn:{Turn.to_string(board.turn)}  K:{f_move_u:5}  Q:*****  policy:{policy:3}")
+            print(f"  自玉の着手と、敵兵の応手の、関係の一覧（キー：着手，　値：ポリシー値）：")
+            for f_move_u, policy in k_move_u_for_q_and_policy_dictionary.items():
+                print(f"    KQ  turn:{Turn.to_string(board.turn)}  K:{f_move_u:5}  Q:*****  policy:{policy:3}")
 
-        print(f"  自兵の着手と、敵玉の応手の、関係の一覧（キー：着手，　値：ポリシー値）：")
-        for f_move_u, policy in p_move_u_for_l_and_policy_dictionary.items():
-            print(f"    PL  turn:{Turn.to_string(board.turn)}  P:{f_move_u:5}  L:*****  policy:{policy:3}")
+            print(f"  自兵の着手と、敵玉の応手の、関係の一覧（キー：着手，　値：ポリシー値）：")
+            for f_move_u, policy in p_move_u_for_l_and_policy_dictionary.items():
+                print(f"    PL  turn:{Turn.to_string(board.turn)}  P:{f_move_u:5}  L:*****  policy:{policy:3}")
 
-        print(f"  自兵の着手と、敵兵の応手の、関係の一覧（キー：着手，　値：ポリシー値）：")
-        for f_move_u, policy in p_move_u_for_q_and_policy_dictionary.items():
-            print(f"    PQ  turn:{Turn.to_string(board.turn)}  P:{f_move_u:5}  Q:*****  policy:{policy:3}")
+            print(f"  自兵の着手と、敵兵の応手の、関係の一覧（キー：着手，　値：ポリシー値）：")
+            for f_move_u, policy in p_move_u_for_q_and_policy_dictionary.items():
+                print(f"    PQ  turn:{Turn.to_string(board.turn)}  P:{f_move_u:5}  Q:*****  policy:{policy:3}")
 
         #
         # FIXME （まだ評価値テーブルができていないので）ダミー値の挿入
         #
 
-        print(f"  ＫＱ　ダミーの自玉の着手を挿入（キー：ダミーの着手，　値：ポリシー値５００‰）：")
+        if is_debug:
+            print(f"  ＫＱ　ダミーの自玉の着手を挿入（キー：ダミーの着手，　値：ポリシー値５００‰）：")
+
         for move_u in k_moves_u:
-            print(f"    add  turn:{Turn.to_string(board.turn)}  K:{move_u:5}  Q:*****  policy: 500‰")
+            if is_debug:
+                print(f"    add  turn:{Turn.to_string(board.turn)}  K:{move_u:5}  Q:*****  policy: 500‰")
             k_move_u_for_q_and_policy_dictionary[move_u] = 500
 
-        print(f"  ＰＬ　ダミーの自兵の着手を挿入（キー：ダミーの着手，　値：ポリシー値５００‰）：")
+        if is_debug:
+            print(f"  ＰＬ　ダミーの自兵の着手を挿入（キー：ダミーの着手，　値：ポリシー値５００‰）：")
+
         for move_u in p_moves_u:
-            print(f"    add  turn:{Turn.to_string(board.turn)}  P:{move_u:5}  L:*****  policy: 500‰")
+            if is_debug:
+                print(f"    add  turn:{Turn.to_string(board.turn)}  P:{move_u:5}  L:*****  policy: 500‰")
             p_move_u_for_l_and_policy_dictionary[move_u] = 500
 
-        print(f"  ＰＱ　ダミーの自兵の着手を挿入（キー：ダミーの着手，　値：ポリシー値５００‰）：")
+        if is_debug:
+            print(f"  ＰＱ　ダミーの自兵の着手を挿入（キー：ダミーの着手，　値：ポリシー値５００‰）：")
+
         for move_u in p_moves_u:
-            print(f"    add  turn:{Turn.to_string(board.turn)}  P:{move_u:5}  Q:*****  policy: 500‰")
+            if is_debug:
+                print(f"    add  turn:{Turn.to_string(board.turn)}  P:{move_u:5}  Q:*****  policy: 500‰")
             p_move_u_for_q_and_policy_dictionary[move_u] = 500
 
         # FIXME 同じ 5i4h でも、ＫＬとＫＱの２つあるといった状況になっているが、これでいいか？

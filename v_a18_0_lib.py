@@ -593,7 +593,8 @@ class EvalutionMmTable():
 
     def get_bit_by_index(
             self,
-            index):
+            index,
+            is_debug=False):
         """インデックスを受け取ってビット値を返します
 
         Parameters
@@ -627,8 +628,9 @@ class EvalutionMmTable():
 
         bit_value = byte_value // (0b1 << figure) % 2
 
-        # format `:08b` - 0 supply, 8 figures, binary
-        print(f"[evalution mm table > get_bit_by_index]  index:{index}  byte_index:{byte_index}  bit_index:{bit_index}  figure:{figure}  byte_value:0x{self._table_as_array[byte_index]:08b}  bit_value:{bit_value}")
+        if is_debug:
+            # format `:08b` - 0 supply, 8 figures, binary
+            print(f"[evalution mm table > get_bit_by_index]  index:{index}  byte_index:{byte_index}  bit_index:{bit_index}  figure:{figure}  byte_value:0x{self._table_as_array[byte_index]:08b}  bit_value:{bit_value}")
 
         if bit_value < 0 or 1 < bit_value:
             raise ValueError(f"bit must be 0 or 1. bit:{bit_value}")
@@ -639,7 +641,8 @@ class EvalutionMmTable():
     def set_bit_by_index(
             self,
             index,
-            bit):
+            bit,
+            is_debug=False):
         """インデックスを受け取ってビット値を設定します
 
         Parameters
@@ -671,8 +674,9 @@ class EvalutionMmTable():
         #
         figure = 8 - bit_index
 
-        # format `:08b` - 0 supply, 8 figures, binary
-        print(f"[evalution mm table > set_bit_by_index]  index:{index}  byte_index:{byte_index}  bit_index:{bit_index}  figure:{figure}  bit:{bit}  old byte_value:0x{self._table_as_array[byte_index]:08b}")
+        if is_debug:
+            # format `:08b` - 0 supply, 8 figures, binary
+            print(f"[evalution mm table > set_bit_by_index]  index:{index}  byte_index:{byte_index}  bit_index:{bit_index}  figure:{figure}  bit:{bit}  old byte_value:0x{self._table_as_array[byte_index]:08b}")
 
         # ビットはめんどくさい。ビッグエンディアン
         if bit == 1:
@@ -683,8 +687,9 @@ class EvalutionMmTable():
             # 指定の桁を 0 で上書きする
             self._table_as_array[byte_index] = byte_value & (0b1111_1111 - (0b1 << figure))
 
-        # format `:08b` - 0 supply, 8 figures, binary
-        print(f"[evalution mm table > set_bit_by_index]  index:{index}  byte_index:{byte_index}  bit_index:{bit_index}  figure:{figure}  bit:{bit}  new byte_value:0x{self._table_as_array[byte_index]:08b}")
+        if is_debug:
+            # format `:08b` - 0 supply, 8 figures, binary
+            print(f"[evalution mm table > set_bit_by_index]  index:{index}  byte_index:{byte_index}  bit_index:{bit_index}  figure:{figure}  bit:{bit}  new byte_value:0x{self._table_as_array[byte_index]:08b}")
 
 
 ########################################
