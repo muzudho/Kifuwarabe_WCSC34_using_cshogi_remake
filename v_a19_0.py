@@ -470,31 +470,14 @@ class Kifuwarabe():
                 return
 
         #
-        # USIプロトコルでの符号表記と、ポリシー値の辞書に変換
-        # --------------------------------------------
-        #
-        #   自玉の指し手と、自玉を除く自軍の指し手を分けて取得
-        #   ポリシー値は千分率の４桁の整数
-        #
-        (kl_move_u_and_policy_dictionary,
-         kq_move_u_and_policy_dictionary,
-         pl_move_u_and_policy_dictionary,
-         pq_move_u_and_policy_dictionary) = EvaluationFacade.select_fo_move_u_and_policy_dictionary(
-                legal_moves=list(self._board.legal_moves),
-                board=self._board,
-                kifuwarabe=self)
-
-        #
         # グッドな着手、バッドな着手一覧
         # --------------------------
         #
         (good_move_u_set,
          bad_move_u_set) = MoveAndPolicyHelper.select_good_f_move_u_set_power(
-                kl_move_u_and_policy_dictionary=kl_move_u_and_policy_dictionary,
-                kq_move_u_and_policy_dictionary=kq_move_u_and_policy_dictionary,
-                pl_move_u_and_policy_dictionary=pl_move_u_and_policy_dictionary,
-                pq_move_u_and_policy_dictionary=pq_move_u_and_policy_dictionary,
-                board=self._board)
+                legal_moves=list(self._board.legal_moves),
+                board=self._board,
+                kifuwarabe=self)
 
         print(f'  グッド着手一覧：')
         for move_u in good_move_u_set:
@@ -1167,29 +1150,15 @@ class Lottery():
             評価値テーブルを持っている
         """
 
-        # 合法手を、着手と応手に紐づくポリシー値を格納した辞書に変換します
-        #
-        #   ポリシー値は千分率の４桁の整数
-        #
-        (kl_move_u_and_policy_dictionary,
-         kq_move_u_and_policy_dictionary,
-         pl_move_u_and_policy_dictionary,
-         pq_move_u_and_policy_dictionary) = EvaluationFacade.select_fo_move_u_and_policy_dictionary(
-                legal_moves=legal_moves,
-                board=board,
-                kifuwarabe=kifuwarabe)
-
         #
         # グッドな着手、バッドな着手一覧
         # --------------------------
         #
         (good_move_u_set,
          bad_move_u_set) = MoveAndPolicyHelper.select_good_f_move_u_set_power(
-                kl_move_u_and_policy_dictionary=kl_move_u_and_policy_dictionary,
-                kq_move_u_and_policy_dictionary=kq_move_u_and_policy_dictionary,
-                pl_move_u_and_policy_dictionary=pl_move_u_and_policy_dictionary,
-                pq_move_u_and_policy_dictionary=pq_move_u_and_policy_dictionary,
-                board=board)
+                legal_moves=legal_moves,
+                board=board,
+                kifuwarabe=kifuwarabe)
 
         # 候補手の中からランダムに選ぶ。USIの指し手の記法で返却
         move_u_list = list(good_move_u_set)
@@ -1465,12 +1434,22 @@ class MoveAndPolicyHelper():
 
 
     def select_good_f_move_u_set_power(
-            kl_move_u_and_policy_dictionary,
-            kq_move_u_and_policy_dictionary,
-            pl_move_u_and_policy_dictionary,
-            pq_move_u_and_policy_dictionary,
+            legal_moves,
             board,
+            kifuwarabe,
             is_debug=False):
+
+        # 合法手を、着手と応手に紐づくポリシー値を格納した辞書に変換します
+        #
+        #   ポリシー値は千分率の４桁の整数
+        #
+        (kl_move_u_and_policy_dictionary,
+         kq_move_u_and_policy_dictionary,
+         pl_move_u_and_policy_dictionary,
+         pq_move_u_and_policy_dictionary) = EvaluationFacade.select_fo_move_u_and_policy_dictionary(
+                legal_moves=legal_moves,
+                board=board,
+                kifuwarabe=kifuwarabe)
 
         (k_move_u_to_policy_dictionary,
          p_move_u_to_policy_dictionary) = MoveAndPolicyHelper.seleft_f_move_u_add_l_and_q(
