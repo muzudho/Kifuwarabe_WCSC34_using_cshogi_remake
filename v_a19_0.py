@@ -615,31 +615,31 @@ class Kifuwarabe():
                 print(f"weaken command must be 1 move.  ex:`weaken 5i5h`  cmd_tail:`{cmd_tail}`")
             return
 
-        # 投了局面時
-        if self._board.is_game_over():
-            if is_debug:
-                print(f'# failed to weaken (game over)', flush=True)
-            return
+        ## 投了局面時
+        #if self._board.is_game_over():
+        #    if is_debug:
+        #        print(f'# failed to weaken (game over)', flush=True)
+        #    return
 
-        # 入玉宣言局面時
-        if self._board.is_nyugyoku():
-            if is_debug:
-                print(f'# failed to weaken (nyugyoku win)', flush=True)
-            return
+        ## 入玉宣言局面時
+        #if self._board.is_nyugyoku():
+        #    if is_debug:
+        #        print(f'# failed to weaken (nyugyoku win)', flush=True)
+        #    return
 
-        # 一手詰めを詰める
+        ## 一手詰めを詰める
+        ##
+        ##   自玉に王手がかかっていない時で
+        ##
+        #if not self._board.is_check():
         #
-        #   自玉に王手がかかっていない時で
+        #    # 一手詰めの指し手があれば、それを取得
+        #    if (matemove := self._board.mate_move_in_1ply()):
         #
-        if not self._board.is_check():
-
-            # 一手詰めの指し手があれば、それを取得
-            if (matemove := self._board.mate_move_in_1ply()):
-
-                best_move = cshogi.move_to_usi(matemove)
-                if is_debug:
-                    print(f'# failed to waken (mate {best_move})', flush=True)
-                return
+        #        best_move = cshogi.move_to_usi(matemove)
+        #        if is_debug:
+        #            print(f'# failed to waken (mate {best_move})', flush=True)
+        #        return
 
 
         move_u = cmd_tail
@@ -763,31 +763,31 @@ class Kifuwarabe():
                 print(f"strengthen command must be 1 move.  ex:`strengthen 5i5h`  cmd_tail:`{cmd_tail}`")
             return
 
-        # 投了局面時
-        if self._board.is_game_over():
-            if is_debug:
-                print(f'# failed to strengthen (game over)', flush=True)
-            return
+        ## 投了局面時
+        #if self._board.is_game_over():
+        #    if is_debug:
+        #        print(f'# failed to strengthen (game over)', flush=True)
+        #    return
 
-        # 入玉宣言局面時
-        if self._board.is_nyugyoku():
-            if is_debug:
-                print(f'# failed to strengthen (nyugyoku win)', flush=True)
-            return
+        ## 入玉宣言局面時
+        #if self._board.is_nyugyoku():
+        #    if is_debug:
+        #        print(f'# failed to strengthen (nyugyoku win)', flush=True)
+        #    return
 
-        # 一手詰めを詰める
+        ## 一手詰めを詰める
+        ##
+        ##   自玉に王手がかかっていない時で
+        ##
+        #if not self._board.is_check():
         #
-        #   自玉に王手がかかっていない時で
+        #    # 一手詰めの指し手があれば、それを取得
+        #    if (matemove := self._board.mate_move_in_1ply()):
         #
-        if not self._board.is_check():
-
-            # 一手詰めの指し手があれば、それを取得
-            if (matemove := self._board.mate_move_in_1ply()):
-
-                best_move = cshogi.move_to_usi(matemove)
-                if is_debug:
-                    print(f'# failed to strengthen (mate {best_move})', flush=True)
-                return
+        #        best_move = cshogi.move_to_usi(matemove)
+        #        if is_debug:
+        #            print(f'# failed to strengthen (mate {best_move})', flush=True)
+        #        return
 
 
         move_u = cmd_tail
