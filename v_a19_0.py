@@ -168,7 +168,8 @@ class Kifuwarabe():
             # プレイアウト
             #       code: playout
             elif head == 'playout':
-                result_str = self.playout()
+                result_str = self.playout(
+                        is_debug=True)
                 print(f"""\
 [playout] result:`{result_str}`
   move_number:{self._board.move_number} / max_move_number:{max_move_number}
@@ -879,10 +880,15 @@ class Kifuwarabe():
             pass
 
 
-    def playout(self):
+    def playout(
+            self,
+            is_debug=False):
         """プレイアウト
         現局面から、投了局面になるまで、適当に指します
         """
+
+        if is_debug:
+            print(f'[playout] start...')
 
         while True:
 
@@ -963,7 +969,7 @@ class Kifuwarabe():
                 board=self._board,
                 kifuwarabe=self)
 
-        print(f'  グッド着手一覧：')
+        print(f'  現グッド着手一覧：')
         for move_u in good_move_u_set:
             print(f'    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is good')
 
@@ -972,6 +978,8 @@ class Kifuwarabe():
 
             # プレイアウトする
             result_str = self.playout()
+            move_number_difference = self._board.move_number - move_number_at_end
+            print(f'      result:`{result_str}`  move_number_difference:{move_number_difference} = board.move_number:{self._board.move_number} - move_number_at_end:{move_number_at_end}')
 
             # どちらかが投了した
             if result_str == 'resign':
@@ -984,8 +992,11 @@ class Kifuwarabe():
                 else:
                     pass
 
+            # 一手指したのを戻す
+            self._board.pop()
 
-        print(f'  バッド着手一覧：')
+
+        print(f'  現バッド着手一覧：')
         for move_u in bad_move_u_set:
             print(f'    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is bad')
 
@@ -1002,6 +1013,9 @@ class Kifuwarabe():
                     # 一手詰めの局面で、一手で詰めたのなら、すごく良い手だ。この手の評価を上げる
                     print(f'[learn] strengthen {move_u:5}')
                     self.strengthen(move_u)
+
+            # 一手指したのを戻す
+            self._board.pop()
 
 
     def print_board(self):
