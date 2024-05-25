@@ -14,7 +14,7 @@ from v_a19_0_eval_kk import EvaluationKkTable
 engine_version_str = "v_a19_0"
 """将棋エンジン・バージョン文字列。ファイル名などに使用"""
 
-max_move_number = 2000
+max_move_number = 512
 """手数上限"""
 
 
@@ -1057,7 +1057,7 @@ class Kifuwarabe():
             is_weak_move = False
 
             if is_debug:
-                print(f'[{datetime.datetime.now()}] [learn > 詰める方]    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is good')
+                print(f'[{datetime.datetime.now()}] [learn > 詰める方]    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is good', flush=True)
 
             # （一手詰めの局面で）とりあえず一手指す
             self._board.push_usi(move_u)
@@ -1107,7 +1107,7 @@ class Kifuwarabe():
             is_strong_move = False
 
             if is_debug:
-                print(f'[{datetime.datetime.now()}] [learn > 詰める方]    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is bad')
+                print(f'[{datetime.datetime.now()}] [learn > 詰める方]    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is bad', flush=True)
 
             # （一手詰めの局面で）とりあえず一手指す
             self._board.push_usi(move_u)
@@ -1172,7 +1172,7 @@ class Kifuwarabe():
             is_weak_move = False
 
             if is_debug:
-                print(f'[{datetime.datetime.now()}] [learn > 逃げる方]    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is bad')
+                print(f'[{datetime.datetime.now()}] [learn > 逃げる方]    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is bad', flush=True)
 
             # （一手詰めの局面で）とりあえず一手指す
             self._board.push_usi(move_u)
@@ -1208,7 +1208,7 @@ class Kifuwarabe():
             is_strong_move = False
 
             if is_debug:
-                print(f'[{datetime.datetime.now()}] [learn > 逃げる方]    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is good')
+                print(f'[{datetime.datetime.now()}] [learn > 逃げる方]    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is good', flush=True)
 
             # （一手詰めの１つ前の局面で）とりあえず一手指す
             self._board.push_usi(move_u)
@@ -1259,7 +1259,7 @@ class Kifuwarabe():
         # ＫＬ評価値テーブル［0:先手, 1:後手］の保存
         self.save_eval_kl_table()
 
-        print(f"[{datetime.datetime.now()}] [learn] finished")
+        print(f"[{datetime.datetime.now()}] [learn] finished", flush=True)
 
 
     def print_board(self):
