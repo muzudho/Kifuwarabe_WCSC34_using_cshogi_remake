@@ -221,12 +221,8 @@ class Kifuwarabe():
         print('readyok', flush=True)
 
 
-    def usinewgame(self):
-        """新しい対局"""
-
-        #
-        # ＫＬ評価値テーブル　［0:先手, 1:後手］
-        #
+    def save_eval_kl_table(self):
+        """ＫＬ評価値テーブル［0:先手, 1:後手］の保存"""
         for turn in [cshogi.BLACK, cshogi.WHITE]:
             turn_index = Turn.to_index(turn)
             self._evaluation_kl_table_obj_array[turn_index].load_on_usinewgame(
@@ -236,6 +232,13 @@ class Kifuwarabe():
                 self._evaluation_kl_table_obj_array[turn_index].save_kk_evaluation_table_file()
             else:
                 print(f"[{datetime.datetime.now()}] kk file not changed.  turn_index:{turn_index}", flush=True)
+
+
+    def usinewgame(self):
+        """新しい対局"""
+
+        # ＫＬ評価値テーブル［0:先手, 1:後手］の保存
+        self.save_eval_kl_table()
 
         # 対局結果ファイル（デフォルト）
         self._game_result_file = GameResultFile(
@@ -1022,6 +1025,9 @@ class Kifuwarabe():
 
             # プレイアウトしてるなら、sfen を使って元の局面に戻す
             self._board.set_sfen(end_position_sfen)
+
+        # ＫＬ評価値テーブル［0:先手, 1:後手］の保存
+        self.save_eval_kl_table()
 
         print("[learn] finished")
 
