@@ -739,6 +739,10 @@ class Kifuwarabe():
             # TODO ＫＱ
 
         else:
+            # TODO 玉の指し手以外にも対応したら、このメッセージを消す
+            if is_debug:
+                print(f"[weaken] ignored. this is not king move")
+
             # TODO ＰＬ
             # TODO ＰＱ
             pass
@@ -955,8 +959,16 @@ class Kifuwarabe():
         if is_debug:
             print(f"[{datetime.datetime.now()}] move_number_at_end:{move_number_at_end}")
 
+        #
+        # 詰める方
+        # -------
+        #
+
         # １手戻す（一手詰めの局面に戻るはず）
         self._board.pop()
+
+        if is_debug:
+            print(f"[{datetime.datetime.now()}] 詰める方")
 
         # 終局局面までの手数
         move_number_to_end = move_number_at_end - self._board.move_number
@@ -1011,6 +1023,12 @@ class Kifuwarabe():
                     # 一手詰めの局面から、一手以上かけて入玉勝ち宣言してるようなら、すごく悪い手だ。この手の評価を下げる
                     is_weak_move = True
 
+            # 手数の上限に達した
+            elif result_str == 'max_move':
+                if move_number_difference != 0:
+                    # 一手詰めの局面から、一手以上かけて手数の上限に達しているようなら、すごく悪い手だ。この手の評価を下げる
+                    is_weak_move = True
+
             # プレイアウトしてるなら、sfen を使って元の局面に戻す
             self._board.set_sfen(end_position_sfen)
 
@@ -1057,6 +1075,124 @@ class Kifuwarabe():
                 self.strengthen(
                         cmd_tail=move_u,
                         is_debug=is_debug)
+
+        #
+        # 逃げる方
+        # -------
+        #
+
+        # １手戻す（このあと一手詰めされる側の局面に戻るはず）
+        self._board.pop()
+
+        if is_debug:
+            print(f"[{datetime.datetime.now()}] 逃げる方")
+
+        # 終局局面までの手数
+        move_number_to_end = move_number_at_end - self._board.move_number
+        if is_debug:
+            print(f"[{datetime.datetime.now()}] move_number_to_end:{move_number_to_end} = move_number_at_end:{move_number_at_end} - board.move_number:{self._board.move_number}")
+
+        # 一手詰めの１つ前の局面の sfen を取得
+        end_position_sfen = self._board.sfen()
+
+        #
+        # グッドな着手、バッドな着手一覧
+        # --------------------------
+        #
+        (good_move_u_set,
+         bad_move_u_set) = MoveAndPolicyHelper.select_good_f_move_u_set_power(
+                legal_moves=list(self._board.legal_moves),
+                board=self._board,
+                kifuwarabe=self)
+
+        if is_debug:
+            print(f'[{datetime.datetime.now()}]  現グッド着手一覧：')
+
+        for move_u in good_move_u_set:
+            is_weak_move = False
+
+            if is_debug:
+                print(f'[{datetime.datetime.now()}]    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is bad')
+
+            # （一手詰めの局面で）とりあえず一手指す
+            self._board.push_usi(move_u)
+
+            # プレイアウトする
+            result_str = self.playout()
+
+            # どちらかが投了した
+            if result_str == 'resign':
+                # 自分の負け。かかった手数２手。つまり一手詰め
+                if self._my_turn == self._board.turn and move_number_at_end - self._board.move_number == 2:
+                    # 次に一手詰めが掛けられる局面で、やはり一手詰めで負けたのなら、やはり悪い手だ。この手の評価を下げる
+                    is_weak_move = True
+
+            # プレイアウトしてるなら、sfen を使って元の局面に戻す
+            self._board.set_sfen(end_position_sfen)
+
+            # 元の局面に戻してから strengthen する
+            if is_weak_move:
+                if is_debug:
+                    print(f'[{datetime.datetime.now()}]        weaken {move_u:5}')
+
+                self.weaken(
+                        cmd_tail=move_u,
+                        is_debug=is_debug)
+
+
+        if is_debug:
+            print(f'[{datetime.datetime.now()}]  現バッド着手一覧：')
+
+        for move_u in bad_move_u_set:
+            is_strong_move = False
+
+            if is_debug:
+                print(f'[{datetime.datetime.now()}]    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is good')
+
+            # （一手詰めの１つ前の局面で）とりあえず一手指す
+            self._board.push_usi(move_u)
+
+            # プレイアウトする
+            result_str = self.playout()
+            move_number_difference = self._board.move_number - move_number_at_end
+            if is_debug:
+                print(f'[{datetime.datetime.now()}]      result:`{result_str}`  move_number_difference:{move_number_difference}')
+
+            # どちらかが投了した
+            if result_str == 'resign':
+                # 相手を一手詰め
+                if self._my_turn != self._board.turn and move_number_difference == 2:
+                    # 次に一手詰めの局面に掛けられるところを、その前に詰めたのだから、すごく良い手だ。この手の評価を上げる
+                    is_strong_move = True
+
+            # どちらかが入玉勝ちした
+            elif result_str == 'nyugyoku_win':
+                if move_number_difference != 2:
+                    # 次に一手詰めの局面に掛けられるところを、その前に入玉宣言勝ちしたのだから、すごく良い手だ。この手の評価を上げる
+                    is_strong_move = True
+
+            # 手数の上限に達した
+            elif result_str == 'max_move':
+                # 相手がわざと負けようとしたのかもしれない。無視しておく
+                pass
+
+            # プレイアウトしてるなら、sfen を使って元の局面に戻す
+            self._board.set_sfen(end_position_sfen)
+
+            # 元の局面に戻してから strengthen する
+            if is_strong_move:
+                if is_debug:
+                    print(f'[{datetime.datetime.now()}]        strengthen {move_u:5}')
+
+                self.strengthen(
+                        cmd_tail=move_u,
+                        is_debug=is_debug)
+
+
+        #
+        # おわり
+        # -----
+        #
 
         # ＫＬ評価値テーブル［0:先手, 1:後手］の保存
         self.save_eval_kl_table()
