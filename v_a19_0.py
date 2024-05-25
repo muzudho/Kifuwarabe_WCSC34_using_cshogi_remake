@@ -154,14 +154,16 @@ class Kifuwarabe():
             #       code: weaken 5i5h
             elif head == 'weaken':
                 self.weaken(
-                        cmd_tail=tail)
+                        cmd_tail=tail,
+                        is_debug=True)
 
             # 指定の着手の評価値テーブルについて、関連がある箇所を（適当に選んで）、それを関連が有るようにする。
             # これによって、その着手のポリシー値は上がる
             #       code: strengthen 5i5h
             elif head == 'strengthen':
                 self.strengthen(
-                        cmd_tail=tail)
+                        cmd_tail=tail,
+                        is_debug=True)
 
             # プレイアウト
             #       code: playout
@@ -585,7 +587,10 @@ class Kifuwarabe():
             pass
 
 
-    def weaken(self, cmd_tail):
+    def weaken(
+            self,
+            cmd_tail,
+            is_debug=False):
         """評価値テーブルの調整。
         指定の着手のポリシー値が 0.5 未満になるよう価値値テーブルを調整する。
         code: weaken 5i5h
@@ -597,17 +602,20 @@ class Kifuwarabe():
         """
 
         if cmd_tail.strip() == '':
-            print(f"weaken command must be 1 move.  ex:`weaken 5i5h`  cmd_tail:`{cmd_tail}`")
+            if is_debug:
+                print(f"weaken command must be 1 move.  ex:`weaken 5i5h`  cmd_tail:`{cmd_tail}`")
             return
 
         # 投了局面時
         if self._board.is_game_over():
-            print(f'# failed to weaken (game over)', flush=True)
+            if is_debug:
+                print(f'# failed to weaken (game over)', flush=True)
             return
 
         # 入玉宣言局面時
         if self._board.is_nyugyoku():
-            print(f'# failed to weaken (nyugyoku win)', flush=True)
+            if is_debug:
+                print(f'# failed to weaken (nyugyoku win)', flush=True)
             return
 
         # 一手詰めを詰める
@@ -620,7 +628,8 @@ class Kifuwarabe():
             if (matemove := self._board.mate_move_in_1ply()):
 
                 best_move = cshogi.move_to_usi(matemove)
-                print(f'# failed to waken (mate {best_move})', flush=True)
+                if is_debug:
+                    print(f'# failed to waken (mate {best_move})', flush=True)
                 return
 
 
@@ -655,8 +664,9 @@ class Kifuwarabe():
                     k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
                             kl_index=kl_index)
 
-                    # 表示
-                    print(f"kl_index:{kl_index}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                    if is_debug:
+                        # 表示
+                        print(f"kl_index:{kl_index}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
                     if relation_exists == 1:
                         number_of_connection += 1
@@ -691,8 +701,9 @@ class Kifuwarabe():
             #
             difference = number_of_connection - max_number_of_less_than_50_percent
 
-            # デバッグ表示
-            print(f"  K:{move_obj.as_usi:5}  L:*****  number_of_connection:{number_of_connection} / total:{total}  max_number_of_less_than_50_percent:{max_number_of_less_than_50_percent}  difference:{difference}")
+            if is_debug:
+                # デバッグ表示
+                print(f"  K:{move_obj.as_usi:5}  L:*****  number_of_connection:{number_of_connection} / total:{total}  max_number_of_less_than_50_percent:{max_number_of_less_than_50_percent}  difference:{difference}")
 
             # 関係を difference 個削除
             rest = difference
@@ -706,7 +717,8 @@ class Kifuwarabe():
                 if k_move_obj.as_usi == move_u:
                     if relation_exists == 1:
 
-                        print(f"  turn:{Turn.to_string(self._board.turn)}  kl_index:{kl_index}  K:{move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  remove relation")
+                        if is_debug:
+                            print(f"  turn:{Turn.to_string(self._board.turn)}  kl_index:{kl_index}  K:{move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  remove relation")
 
                         self._evaluation_kl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kl_moves(
                                 k_move_obj=k_move_obj,
@@ -723,7 +735,10 @@ class Kifuwarabe():
             pass
 
 
-    def strengthen(self, cmd_tail):
+    def strengthen(
+            self,
+            cmd_tail,
+            is_debug=False):
         """評価値テーブルの調整。
         指定の着手のポリシー値が 0.5 以上になるよう評価値テーブルを調整する。
         code: strengthen 5i5h
@@ -735,17 +750,20 @@ class Kifuwarabe():
         """
 
         if cmd_tail.strip() == '':
-            print(f"strengthen command must be 1 move.  ex:`strengthen 5i5h`  cmd_tail:`{cmd_tail}`")
+            if is_debug:
+                print(f"strengthen command must be 1 move.  ex:`strengthen 5i5h`  cmd_tail:`{cmd_tail}`")
             return
 
         # 投了局面時
         if self._board.is_game_over():
-            print(f'# failed to strengthen (game over)', flush=True)
+            if is_debug:
+                print(f'# failed to strengthen (game over)', flush=True)
             return
 
         # 入玉宣言局面時
         if self._board.is_nyugyoku():
-            print(f'# failed to strengthen (nyugyoku win)', flush=True)
+            if is_debug:
+                print(f'# failed to strengthen (nyugyoku win)', flush=True)
             return
 
         # 一手詰めを詰める
@@ -758,7 +776,8 @@ class Kifuwarabe():
             if (matemove := self._board.mate_move_in_1ply()):
 
                 best_move = cshogi.move_to_usi(matemove)
-                print(f'# failed to strengthen (mate {best_move})', flush=True)
+                if is_debug:
+                    print(f'# failed to strengthen (mate {best_move})', flush=True)
                 return
 
 
@@ -793,8 +812,9 @@ class Kifuwarabe():
                     k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
                             kl_index=kl_index)
 
-                    # 表示
-                    print(f"  kl_index:{kl_index}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                    if is_debug:
+                        # 表示
+                        print(f"  kl_index:{kl_index}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
                     if relation_exists == 1:
                         number_of_connection += 1
@@ -825,8 +845,9 @@ class Kifuwarabe():
             #
             difference = max_number_of_less_than_50_percent - number_of_connection
 
-            # デバッグ表示
-            print(f"  K:{move_obj.as_usi:5}  L:*****  number_of_connection:{number_of_connection} / total:{total}  max_number_of_less_than_50_percent:{max_number_of_less_than_50_percent}  difference:{difference}")
+            if is_debug:
+                # デバッグ表示
+                print(f"  K:{move_obj.as_usi:5}  L:*****  number_of_connection:{number_of_connection} / total:{total}  max_number_of_less_than_50_percent:{max_number_of_less_than_50_percent}  difference:{difference}")
 
             # 関係を difference 個追加
             rest = difference
@@ -840,7 +861,8 @@ class Kifuwarabe():
                 if k_move_obj.as_usi == move_u:
                     if relation_exists == 0:
 
-                        print(f"  turn:{Turn.to_string(self._board.turn)}  kl_index:{kl_index}  K:{move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
+                        if is_debug:
+                            print(f"  turn:{Turn.to_string(self._board.turn)}  kl_index:{kl_index}  K:{move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
 
                         self._evaluation_kl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kl_moves(
                                 k_move_obj=k_move_obj,
@@ -902,21 +924,84 @@ class Kifuwarabe():
 
 
     def learn(self):
-        """学習"""
+        """学習
+
+        `playout` してから `learn ` する想定です
+        """
+
+        # 棋譜の初手から学ぶことはできません
+        if self._board.move_number < 2:
+            print(f'[learn] You cannot learn from the first move of the game record.')
+            return
 
         # 終局局面の手数
         move_number_at_end = self._board.move_number
+        print(f"move_number_at_end:{move_number_at_end}")
 
-        # １手戻す
+        # １手戻す（一手詰めの局面に戻るはず）
         self._board.pop()
 
         # 終局局面までの手数
         move_number_to_end = move_number_at_end - self._board.move_number
         print(f"move_number_to_end:{move_number_to_end} = move_number_at_end:{move_number_at_end} - board.move_number:{self._board.move_number}")
 
-        # TODO グッドな手一覧
+        # TODO 一手詰めの局面の sfen を取得
+        #sfen = self._board.sfen()
+        #self._board.set_sfen(sfen)
 
-        # TODO バッドな手一覧
+        # - アンドゥした局面は、投了局面ではないはず
+        # - 入玉宣言局面は、とりあえず考慮から外す
+        # - 一手詰めはとりあえず、考慮から外す
+
+        #
+        # グッドな着手、バッドな着手一覧
+        # --------------------------
+        #
+        (good_move_u_set,
+         bad_move_u_set) = MoveAndPolicyHelper.select_good_f_move_u_set_power(
+                legal_moves=list(self._board.legal_moves),
+                board=self._board,
+                kifuwarabe=self)
+
+        print(f'  グッド着手一覧：')
+        for move_u in good_move_u_set:
+            print(f'    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is good')
+
+            # （一手詰めの局面で）とりあえず一手指す
+            self._board.push_usi(move_u)
+
+            # プレイアウトする
+            result_str = self.playout()
+
+            # どちらかが投了した
+            if result_str == 'resign':
+                # 自分の負け
+                if self._my_turn == self._board.turn:
+                    # 一手詰めの局面から負けたのなら、すごく悪い手だ。この手の評価を下げる
+                    print(f'[learn] waken {move_u:5}')
+                    self.weaken(move_u)
+
+                else:
+                    pass
+
+
+        print(f'  バッド着手一覧：')
+        for move_u in bad_move_u_set:
+            print(f'    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is bad')
+
+            # （一手詰めの局面で）とりあえず一手指す
+            self._board.push_usi(move_u)
+
+            # プレイアウトする
+            result_str = self.playout()
+
+            # どちらかが投了した
+            if result_str == 'resign':
+                # 自分の勝ち。かかった手数１手
+                if self._my_turn != self._board.turn and move_number_at_end - self._board.move_number == 1:
+                    # 一手詰めの局面で、一手で詰めたのなら、すごく良い手だ。この手の評価を上げる
+                    print(f'[learn] strengthen {move_u:5}')
+                    self.strengthen(move_u)
 
 
     def print_board(self):
