@@ -995,8 +995,8 @@ class Kifuwarabe():
 
         def restore_end_position():
             """終局図の内部データに戻す"""
-            if is_debug:
-                print(f"[{datetime.datetime.now()}] [learn] restore_end_position start...")
+            #if is_debug:
+            #    print(f"[{datetime.datetime.now()}] [learn] restore_end_position start...")
             # 初期局面
             self._board.set_sfen(init_position_sfen)
 
@@ -1004,8 +1004,8 @@ class Kifuwarabe():
             for move_id in principal_history:
                 self._board.push(move_id)
 
-            if is_debug:
-                print(f"[{datetime.datetime.now()}] [learn] restore_end_position end.")
+            #if is_debug:
+            #    print(f"[{datetime.datetime.now()}] [learn] restore_end_position end.")
 
         # 終局図の内部データに戻す
         restore_end_position()
