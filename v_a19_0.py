@@ -952,8 +952,7 @@ class Kifuwarabe():
         print(f"move_number_to_end:{move_number_to_end} = move_number_at_end:{move_number_at_end} - board.move_number:{self._board.move_number}")
 
         # TODO 一手詰めの局面の sfen を取得
-        #sfen = self._board.sfen()
-        #self._board.set_sfen(sfen)
+        end_position_sfen = self._board.sfen()
 
         # - アンドゥした局面は、投了局面ではないはず
         # - 入玉宣言局面は、とりあえず考慮から外す
@@ -979,7 +978,7 @@ class Kifuwarabe():
             # プレイアウトする
             result_str = self.playout()
             move_number_difference = self._board.move_number - move_number_at_end
-            print(f'      result:`{result_str}`  move_number_difference:{move_number_difference} = board.move_number:{self._board.move_number} - move_number_at_end:{move_number_at_end}')
+            print(f'      result:`{result_str}`  move_number_difference:{move_number_difference}')
 
             # どちらかが投了した
             if result_str == 'resign':
@@ -992,8 +991,15 @@ class Kifuwarabe():
                 else:
                     pass
 
-            # 一手指したのを戻す
-            self._board.pop()
+            # どちらかが入玉勝ちした
+            elif result_str == 'nyugyoku_win':
+                if move_number_difference != 0:
+                    # 一手詰めの局面から、一手以上かけて入玉勝ち宣言してるようなら、すごく悪い手だ。この手の評価を下げる
+                    print(f'[learn] waken {move_u:5}')
+                    self.weaken(move_u)
+
+            # プレイアウトしてるなら、sfen を使って元の局面に戻す
+            self._board.set_sfen(end_position_sfen)
 
 
         print(f'  現バッド着手一覧：')
@@ -1014,8 +1020,8 @@ class Kifuwarabe():
                     print(f'[learn] strengthen {move_u:5}')
                     self.strengthen(move_u)
 
-            # 一手指したのを戻す
-            self._board.pop()
+            # プレイアウトしてるなら、sfen を使って元の局面に戻す
+            self._board.set_sfen(end_position_sfen)
 
 
     def print_board(self):
