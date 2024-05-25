@@ -108,7 +108,8 @@ class Kifuwarabe():
             # 対局終了
             elif head == 'gameover':
                 self.gameover(
-                        cmd_tail=tail)
+                        cmd_tail=tail,
+                        is_debug=True)
 
             # アプリケーション終了
             elif head == 'quit':
@@ -348,7 +349,10 @@ class Kifuwarabe():
         print('bestmove resign', flush=True)
 
 
-    def gameover(self, cmd_tail):
+    def gameover(
+            self,
+            cmd_tail,
+            is_debug=False):
         """対局終了
 
         Parameters
@@ -356,6 +360,9 @@ class Kifuwarabe():
         cmd_tail : str
             コマンドの名前以外
         """
+
+        if is_debug:
+            print(f"[{datetime.datetime.now()}] [gameover] start...")
 
         if cmd_tail.strip() == '':
             print(f"`do` command must be result.  ex:`gameover lose`  cmd_tail:`{cmd_tail}`")
@@ -380,6 +387,18 @@ class Kifuwarabe():
         else:
             # ［対局結果］　常に記憶する
             self._game_result_file.save_otherwise(cmd_tail, self._my_turn, self._board)
+
+        # 学習を行う
+        if is_debug:
+            print(f"[{datetime.datetime.now()}] [gameover] learn start...")
+
+        self.learn(
+                is_debug=True)
+
+        if is_debug:
+            print(f"[{datetime.datetime.now()}] [gameover] learn end.")
+            print(f"[{datetime.datetime.now()}] [gameover] end.")
+
 
 
     def do(self, cmd_tail):
@@ -956,9 +975,9 @@ class Kifuwarabe():
 
         # 本譜の指し手を覚えておく
         principal_history = self._board.history
-        for move_id in principal_history:
-            if is_debug:
-                print(f"[{datetime.datetime.now()}] [learn] move_id:{move_id}")
+        #for move_id in principal_history:
+        #    if is_debug:
+        #        print(f"[{datetime.datetime.now()}] [learn] move_id:{move_id}")
 
         # （あとで元の position の内部状態に戻すために）初期局面まで巻き戻し、初期局面を覚えておく
         while 1 < self._board.move_number:
