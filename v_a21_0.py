@@ -1019,8 +1019,10 @@ class Kifuwarabe():
 
         # 終局図の sfen を取得
         end_position_sfen = self._board.sfen()
-        if is_debug:
-            print(f"[{datetime.datetime.now()}] [learn] end_position_sfen:`{end_position_sfen}`")
+
+        # 終局図とその sfen はログに出したい
+        print(self._board)
+        print(f"[{datetime.datetime.now()}] [learn] end_position_sfen:`{end_position_sfen}`   board.move_number:{self._board.move_number}")
 
         # 本譜の指し手を覚えておく
         principal_history = self._board.history
@@ -1038,8 +1040,10 @@ class Kifuwarabe():
 
         # （あとで元の position の内部状態に戻すために）初期局面を覚えておく
         init_position_sfen = self._board.sfen()
-        if is_debug:
-            print(f"[{datetime.datetime.now()}] [learn] init_position_sfen:`{init_position_sfen}`   board.move_number:{self._board.move_number}")
+
+        # 初期局面と、その sfen はログに出したい
+        print(self._board)
+        print(f"[{datetime.datetime.now()}] [learn] init_position_sfen:`{init_position_sfen}`   board.move_number:{self._board.move_number}")
 
 
         def restore_end_position():
@@ -1075,10 +1079,11 @@ class Kifuwarabe():
             return
 
         # １手戻す（一手詰めの局面に戻るはず）
-        if is_debug:
-            print(f"[{datetime.datetime.now()}] [learn > 詰める方] undo board.move_number:{self._board.move_number}")
-
         self._board.pop()
+
+        # １手戻した局面と、その sfen は表示したい
+        print(self._board)
+        print(f"[{datetime.datetime.now()}] [learn > 詰める方] undo.  board.move_number:{self._board.move_number}")
 
         # 終局局面までの手数
         move_number_to_end = move_number_at_end - self._board.move_number
@@ -1146,11 +1151,13 @@ class Kifuwarabe():
 
             # 終局図の内部データに戻す
             restore_end_position()
+            # １手戻す（一手詰めの局面に戻るはず）
+            self._board.pop()
 
             # 元の局面に戻してから weaken する
             if is_weak_move:
-                if is_debug:
-                    print(f'[{datetime.datetime.now()}] [learn > 詰める方]        waken {move_u:5}')
+                # 変更はログに出したい
+                print(f'[{datetime.datetime.now()}] [learn > 詰める方]        waken {move_u:5}')
 
                 self.weaken(
                         cmd_tail=move_u,
@@ -1184,11 +1191,13 @@ class Kifuwarabe():
 
             # 終局図の内部データに戻す
             restore_end_position()
+            # １手戻す（一手詰めの局面に戻るはず）
+            self._board.pop()
 
             # 元の局面に戻してから strengthen する
             if is_strong_move:
-                if is_debug:
-                    print(f'[{datetime.datetime.now()}] [learn > 詰める方]        strengthen {move_u:5}')
+                # 変更はログに出したい
+                print(f'[{datetime.datetime.now()}] [learn > 詰める方]        strengthen {move_u:5}')
 
                 self.strengthen(
                         cmd_tail=move_u,
@@ -1208,8 +1217,9 @@ class Kifuwarabe():
         self._board.pop()
         self._board.pop()
 
-        if is_debug:
-            print(f"[{datetime.datetime.now()}] [learn > 逃げる方]")
+        # ２手戻した局面と、その sfen は表示したい
+        print(self._board)
+        print(f"[{datetime.datetime.now()}] [learn > 逃げる方] 2 undo.  board.move_number:{self._board.move_number}")
 
         # 終局局面までの手数
         move_number_to_end = move_number_at_end - self._board.move_number
@@ -1241,7 +1251,7 @@ class Kifuwarabe():
             move_num += 1
             is_weak_move = False
 
-            # （一手詰めの局面で）とりあえず一手指す
+            # （一手詰めされる側の局面で）とりあえず一手指す
             self._board.push_usi(move_u)
 
             # プレイアウトする
@@ -1261,12 +1271,14 @@ class Kifuwarabe():
 
             # 終局図の内部データに戻す
             restore_end_position()
+            # ２手戻す（このあと一手詰めされる側の局面に戻るはず）
+            self._board.pop()
             self._board.pop()
 
             # 元の局面に戻してから strengthen する
             if is_weak_move:
-                if is_debug:
-                    print(f'[{datetime.datetime.now()}] [learn > 逃げる方]        weaken {move_u:5}')
+                # 変更はログに出したい
+                print(f'[{datetime.datetime.now()}] [learn > 逃げる方]        weaken {move_u:5}')
 
                 self.weaken(
                         cmd_tail=move_u,
@@ -1311,12 +1323,14 @@ class Kifuwarabe():
 
             # 終局図の内部データに戻す
             restore_end_position()
+            # ２手戻す（このあと一手詰めされる側の局面に戻るはず）
+            self._board.pop()
             self._board.pop()
 
             # 元の局面に戻してから strengthen する
             if is_strong_move:
-                if is_debug:
-                    print(f'[{datetime.datetime.now()}] [learn > 逃げる方]        strengthen {move_u:5}')
+                # 変更はログに出したい
+                print(f'[{datetime.datetime.now()}] [learn > 逃げる方]        strengthen {move_u:5}')
 
                 self.strengthen(
                         cmd_tail=move_u,
