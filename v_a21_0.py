@@ -808,13 +808,15 @@ class Kifuwarabe():
             # TODO ＫＱ
 
         else:
+            # TODO ＰＬ
+            # TODO ＰＱ
+
             # TODO 玉の指し手以外にも対応したら、このメッセージを消す
             if is_debug:
                 print(f"[weaken] ignored. this is not king move")
 
-            # TODO ＰＬ
-            # TODO ＰＱ
-            pass
+            return 'igonred_this_is_not_king_move'
+
 
         # 正常終了
         if is_changed:
@@ -974,7 +976,12 @@ class Kifuwarabe():
         else:
             # TODO ＰＬ
             # TODO ＰＱ
-            pass
+
+            # TODO 玉の指し手以外にも対応したら、このメッセージを消す
+            if is_debug:
+                print(f"[weaken] ignored. this is not king move")
+            
+            return 'igonred_this_is_not_king_move'
 
         # 正常終了
         if is_changed:
