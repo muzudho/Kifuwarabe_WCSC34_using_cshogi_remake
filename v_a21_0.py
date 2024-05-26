@@ -1179,7 +1179,7 @@ class Kifuwarabe():
                     is_weak_move = True
                     log_progress("fumble:一手詰めを逃して、２手以上かけて手数の上限に達した。好手の評価を取り下げる")
                 else:
-                    log_progress("ignored:一手詰めではなく、手数の上限で終了した。好手の評価はそのまま")
+                    log_progress("ignored:一手詰めではなく、手数の上限だった。良し悪し付かず、好手の評価はそのまま")
 
             else:
                 log_progress("ignored:好手の評価はそのまま")
@@ -1352,7 +1352,7 @@ class Kifuwarabe():
                     log_progress("fumble:２手詰めが掛けられていて、２手詰めを避けたから、好手の評価はそのまま")
 
             elif result_str == 'max_move':
-                log_progress("ignored:２手詰めが掛けられていて、手数上限に達した。良し悪し付かず、この好手の評価はそのまま")
+                log_progress("ignored:終局の２手前の局面から、２手後に手数上限に達した。良し悪し付かず、この好手の評価はそのまま")
 
             else:
                 log_progress("ignored:この好手の評価はそのまま")
@@ -1430,7 +1430,7 @@ class Kifuwarabe():
             # 手数の上限に達した
             elif result_str == 'max_move':
                 # 相手がわざと負けようとしたのかもしれない。無視しておく
-                log_progress("ignored:指し手の上限手数に達してしまった。この悪手の評価はそのまま")
+                log_progress("ignored:終局の２手前の局面から、上限手数に達してしまった。相手がヘボの可能性を除外できず、この悪手の評価はそのまま")
 
             else:
                 log_progress("ignored:この悪手の評価はそのまま")
