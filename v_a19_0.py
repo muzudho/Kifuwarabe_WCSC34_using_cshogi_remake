@@ -657,7 +657,7 @@ class Kifuwarabe():
         #
         #        best_move = cshogi.move_to_usi(matemove)
         #        if is_debug:
-        #            print(f'# failed to waken (mate {best_move})', flush=True)
+        #            print(f'# failed to weaken (mate {best_move})', flush=True)
         #        return
 
 
@@ -1093,7 +1093,7 @@ class Kifuwarabe():
             # 元の局面に戻してから weaken する
             if is_weak_move:
                 if is_debug:
-                    print(f'[{datetime.datetime.now()}] [learn > 詰める方]        waken {move_u:5}')
+                    print(f'[{datetime.datetime.now()}] [learn > 詰める方]        weaken {move_u:5}')
 
                 self.weaken(
                         cmd_tail=move_u,
@@ -1313,7 +1313,7 @@ class Kifuwarabe():
             if (matemove := self._board.mate_move_in_1ply()):
 
                 best_move = cshogi.move_to_usi(matemove)
-                print(f'# failed to waken (mate {best_move})', flush=True)
+                print(f'# failed to weaken (mate {best_move})', flush=True)
                 return
 
         # 自玉のマス番号
