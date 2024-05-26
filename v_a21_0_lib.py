@@ -651,6 +651,11 @@ class EvalutionMmTable():
             配列のインデックス
         bit : int
             0 か 1
+
+        Returns
+        -------
+        is_changed : bool
+            変更が有ったか？
         """
 
         if bit < 0 or 1 < bit:
@@ -694,8 +699,12 @@ class EvalutionMmTable():
             print(f"[evalution mm table > set_bit_by_index]  index:{index}  byte_index:{byte_index}  bit_index:{bit_index}  figure:{figure}  bit:{bit}  new byte_value:0x{self._table_as_array[byte_index]:08b}")
 
         # 変更が有ったら、フラグを立てるよう上書き
-        if self._table_as_array[byte_index] != old_byte_value:
+        is_changed = self._table_as_array[byte_index] != old_byte_value
+
+        if is_changed:
             self._is_file_modified = True
+
+        return is_changed
 
 
 ########################################

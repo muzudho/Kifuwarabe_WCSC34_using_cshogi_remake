@@ -175,17 +175,21 @@ class Kifuwarabe():
         # これによって、その着手のポリシー値は下がる
         #       code: weaken 5i5h
         elif head == 'weaken':
-            self.weaken(
+            result_str = self.weaken(
                     cmd_tail=tail,
                     is_debug=is_debug)
+
+            print(f"[weaken] result=`{result_str}`")
 
         # 指定の着手の評価値テーブルについて、関連がある箇所を（適当に選んで）、それを関連が有るようにする。
         # これによって、その着手のポリシー値は上がる
         #       code: strengthen 5i5h
         elif head == 'strengthen':
-            self.strengthen(
+            result_str = self.strengthen(
                     cmd_tail=tail,
                     is_debug=is_debug)
+
+            print(f"[strengthen] result=`{result_str}`")
 
         # プレイアウト
         #       code: playout
@@ -664,12 +668,18 @@ class Kifuwarabe():
         ----------
         cmd_tail : str
             コマンドの名前以外
+
+        Returns
+        -------
+        result_str : str
+            'failed', 'changed', 'keep'
         """
+        is_changed = False
 
         if cmd_tail.strip() == '':
             if is_debug:
                 print(f"weaken command must be 1 move.  ex:`weaken 5i5h`  cmd_tail:`{cmd_tail}`")
-            return
+            return 'failed'
 
         ## 投了局面時
         #if self._board.is_game_over():
@@ -785,10 +795,13 @@ class Kifuwarabe():
                         if is_debug:
                             print(f"  turn:{Turn.to_string(self._board.turn)}  kl_index:{kl_index}  K:{move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  remove relation")
 
-                        self._evaluation_kl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kl_moves(
+                        is_changed_temp = self._evaluation_kl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kl_moves(
                                 k_move_obj=k_move_obj,
                                 l_move_obj=l_move_obj,
                                 bit=0)
+
+                        if is_changed_temp:
+                            is_changed = True
 
                         rest -= 1
 
@@ -803,6 +816,13 @@ class Kifuwarabe():
             # TODO ＰＱ
             pass
 
+        # 正常終了
+        if is_changed:
+            return 'changed'
+
+        else:
+            return 'keep'
+
 
     def strengthen(
             self,
@@ -816,12 +836,18 @@ class Kifuwarabe():
         ----------
         cmd_tail : str
             コマンドの名前以外
+
+        Returns
+        -------
+        result_str : str
+            'failed', 'changed', 'keep'
         """
+        is_changed = False
 
         if cmd_tail.strip() == '':
             if is_debug:
                 print(f"strengthen command must be 1 move.  ex:`strengthen 5i5h`  cmd_tail:`{cmd_tail}`")
-            return
+            return 'failed'
 
         ## 投了局面時
         #if self._board.is_game_over():
@@ -933,10 +959,13 @@ class Kifuwarabe():
                         if is_debug:
                             print(f"  turn:{Turn.to_string(self._board.turn)}  kl_index:{kl_index}  K:{move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
 
-                        self._evaluation_kl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kl_moves(
+                        is_changed_temp = self._evaluation_kl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kl_moves(
                                 k_move_obj=k_move_obj,
                                 l_move_obj=l_move_obj,
                                 bit=1)
+
+                        if is_changed_temp:
+                            is_changed = True
 
                         rest -= 1
 
@@ -946,6 +975,13 @@ class Kifuwarabe():
             # TODO ＰＬ
             # TODO ＰＱ
             pass
+
+        # 正常終了
+        if is_changed:
+            return 'changed'
+
+        else:
+            return 'keep'
 
 
     def playout(
@@ -1198,12 +1234,12 @@ class Kifuwarabe():
 
             # 元の局面に戻してから weaken する
             if is_weak_move:
-                # 変更はログに出したい
-                print(f'[{datetime.datetime.now()}] [learn > 詰める方]        weaken {move_u:5}')
-
-                self.weaken(
+                weaken_result_str = self.weaken(
                         cmd_tail=move_u,
                         is_debug=is_debug)
+
+                # 変更はログに出したい
+                print(f'[{datetime.datetime.now()}] [learn > 詰める方]        weaken {move_u:5}  result:`{weaken_result_str}`')
 
 
         if is_debug:
@@ -1261,12 +1297,12 @@ class Kifuwarabe():
 
             # 元の局面に戻してから strengthen する
             if is_strong_move:
-                # 変更はログに出したい
-                print(f'[{datetime.datetime.now()}] [learn > 詰める方]        strengthen {move_u:5}')
-
-                self.strengthen(
+                strengthen_result_str = self.strengthen(
                         cmd_tail=move_u,
                         is_debug=is_debug)
+
+                # 変更はログに出したい
+                print(f'[{datetime.datetime.now()}] [learn > 詰める方]        strengthen {move_u:5}  result:`{strengthen_result_str}`')
 
         #
         # 逃げる方
@@ -1372,12 +1408,12 @@ class Kifuwarabe():
 
             # 元の局面に戻してから strengthen する
             if is_weak_move:
-                # 変更はログに出したい
-                print(f'[{datetime.datetime.now()}] [learn > 逃げる方]        weaken {move_u:5}')
-
-                self.weaken(
+                weaken_result_str = self.weaken(
                         cmd_tail=move_u,
                         is_debug=is_debug)
+
+                # 変更はログに出したい
+                print(f'[{datetime.datetime.now()}] [learn > 逃げる方]        weaken {move_u:5}  result:`{weaken_result_str}`')
 
 
         if is_debug:
@@ -1450,12 +1486,12 @@ class Kifuwarabe():
 
             # 元の局面に戻してから strengthen する
             if is_strong_move:
-                # 変更はログに出したい
-                print(f'[{datetime.datetime.now()}] [learn > 逃げる方]        strengthen {move_u:5}')
-
-                self.strengthen(
+                strengthen_result_str = self.strengthen(
                         cmd_tail=move_u,
                         is_debug=is_debug)
+
+                # 変更はログに出したい
+                print(f'[{datetime.datetime.now()}] [learn > 逃げる方]        strengthen {move_u:5}  result:`{strengthen_result_str}`')
 
 
         #

@@ -159,12 +159,19 @@ class EvaluationKkTable():
             敵玉の指し手
         bit : int
             0 か 1
+
+        Returns
+        -------
+        is_changed : bool
+            変更が有ったか？
         """
-        return self._mm_table_obj.set_bit_by_index(
+        is_changed = self._mm_table_obj.set_bit_by_index(
                 index=EvaluationKkTable.get_index_of_kk_table(
                     k_move_obj=k_move_obj,
                     l_move_obj=l_move_obj),
                 bit=bit)
+
+        return is_changed
 
 
     # create_relation_exists_dictionary_by_k_move_and_l_moves
