@@ -261,7 +261,7 @@ class Kifuwarabe():
             if self._evaluation_kl_table_obj_array[turn_index].mm_table_obj.is_file_modified:
                 self._evaluation_kl_table_obj_array[turn_index].save_kk_evaluation_table_file()
             else:
-                print(f"[{datetime.datetime.now()}] kk file not changed.  turn_index:{turn_index}", flush=True)
+                print(f"[{datetime.datetime.now()}] kk file not changed.  turn:{Turn.to_index(turn)}", flush=True)
 
 
     def usinewgame(self):
@@ -1064,6 +1064,7 @@ class Kifuwarabe():
                 # 終局図の表示
                 print(f"[{datetime.datetime.now()}] [learn] 局面巻き戻しエラー")
                 print(self._board)
+                print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
                 raise ValueError("局面巻き戻しエラー")
 
             #if is_debug:
@@ -1091,11 +1092,11 @@ class Kifuwarabe():
         # １手戻す（一手詰めの局面に戻るはず）
         self._board.pop()
 
-        # １手戻した局面と、その sfen は表示したい
-        undo_1_sfen = self._board.sfen()
-        print(f"[{datetime.datetime.now()}] [learn > 詰める方] 詰みの一手前局面図：")
+        # １手前局面図と、その sfen は表示したい
+        sfen_1_previous = self._board.sfen()
+        print(f"[{datetime.datetime.now()}] [learn > 詰める方] １手前局面図：")
         print(self._board)
-        print(f"  undo.  sfen:`{undo_1_sfen}`  board.move_number:{self._board.move_number}")
+        print(f"  sfen:`{sfen_1_previous}`  board.move_number:{self._board.move_number}")
 
         # 終局局面までの手数
         move_number_to_end = move_number_at_end - self._board.move_number
@@ -1131,14 +1132,15 @@ class Kifuwarabe():
             choice_num += 1
             is_weak_move = False
 
-            # １手詰め局面かチェック
-            if self._board.sfen() != undo_1_sfen:
-                # 終局図の表示
-                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > グッド手] １手詰め局面エラー")
+            # １手前局面図かチェック
+            if self._board.sfen() != sfen_1_previous:
+                # 局面図の表示
+                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > グッド手] １手前局面図エラー")
                 print(self._board)
-                raise ValueError("１手詰め局面エラー")
+                print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
+                raise ValueError("[learn > 詰める方 > グッド手] １手前局面図エラー")
 
-            # （１手詰め局面で）とりあえず一手指す
+            # （１手前局面図で）とりあえず一手指す
             self._board.push_usi(move_u)
 
             # プレイアウトする
@@ -1170,13 +1172,14 @@ class Kifuwarabe():
 
             # 終局図の内部データに戻す
             restore_end_position()
-            # １手戻す（一手詰めの局面に戻るはず）
+            # １手戻す（一手前局面図に戻るはず）
             self._board.pop()
             # 戻せたかチェック
-            if self._board.sfen() != undo_1_sfen:
+            if self._board.sfen() != sfen_1_previous:
                 # 終局図の表示
                 print(f"[{datetime.datetime.now()}] [learn > 詰める方 > グッド手] 局面巻き戻しエラー")
                 print(self._board)
+                print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
                 raise ValueError("局面巻き戻しエラー")
 
             # 元の局面に戻してから weaken する
@@ -1196,14 +1199,15 @@ class Kifuwarabe():
             choice_num += 1
             is_strong_move = False
 
-            # １手詰めの局面かチェック
-            if self._board.sfen() != undo_1_sfen:
-                # 終局図の表示
-                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > バッド手] １手詰め局面エラー")
+            # １手前局面図かチェック
+            if self._board.sfen() != sfen_1_previous:
+                # 局面図の表示
+                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > バッド手] １手前局面図エラー")
                 print(self._board)
-                raise ValueError("１手詰め局面エラー")
+                print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
+                raise ValueError("１手前局面図エラー")
 
-            # （１手詰め局面で）とりあえず一手指す
+            # （１手前局面図で）とりあえず一手指す
             self._board.push_usi(move_u)
 
             # プレイアウトする
@@ -1223,13 +1227,14 @@ class Kifuwarabe():
 
             # 終局図の内部データに戻す
             restore_end_position()
-            # １手戻す（一手詰めの局面に戻るはず）
+            # １手戻す（一手前局面図に戻るはず）
             self._board.pop()
             # 戻せたかチェック
-            if self._board.sfen() != undo_1_sfen:
-                # 終局図の表示
+            if self._board.sfen() != sfen_1_previous:
+                # 局面図の表示
                 print(f"[{datetime.datetime.now()}] [learn > 詰める方 > バッド手] 局面巻き戻しエラー")
                 print(self._board)
+                print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
                 raise ValueError("局面巻き戻しエラー")
 
             # 元の局面に戻してから strengthen する
@@ -1257,11 +1262,11 @@ class Kifuwarabe():
         self._board.pop()
         self._board.pop()
 
-        # ２手戻した局面と、その sfen は表示したい
-        undo_2_sfen = self._board.sfen()
-        print(f"[{datetime.datetime.now()}] [learn > 逃げる方] ２手戻した局面図：")
+        # ２手前局面図と、その sfen は表示したい
+        sfen_2_previous = self._board.sfen()
+        print(f"[{datetime.datetime.now()}] [learn > 逃げる方] ２手前局面図：")
         print(self._board)
-        print(f"  2 undo.  sfen:`{undo_2_sfen}`  board.move_number:{self._board.move_number}")
+        print(f"  sfen:`{sfen_2_previous}`  board.move_number:{self._board.move_number}")
 
         # 終局局面までの手数
         move_number_to_end = move_number_at_end - self._board.move_number
@@ -1293,14 +1298,15 @@ class Kifuwarabe():
             choice_num += 1
             is_weak_move = False
 
-            # ２手詰めの局面かチェック
-            if self._board.sfen() != undo_1_sfen:
-                # 終局図の表示
-                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > グッド手] ２手詰めの局面エラー")
+            # ２手前局面図かチェック
+            if self._board.sfen() != sfen_2_previous:
+                # 局面図の表示
+                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > グッド手] ２手前局面図エラー")
                 print(self._board)
-                raise ValueError("２手詰めの局面エラー")
+                print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
+                raise ValueError("[learn > 詰める方 > グッド手] ２手前局面図エラー")
 
-            # （２手詰め局面で）とりあえず一手指す
+            # （２手前局面図で）とりあえず一手指す
             self._board.push_usi(move_u)
 
             # プレイアウトする
@@ -1324,10 +1330,11 @@ class Kifuwarabe():
             self._board.pop()
             self._board.pop()
             # 戻せたかチェック
-            if self._board.sfen() != undo_2_sfen:
-                # 終局図の表示
+            if self._board.sfen() != sfen_2_previous:
+                # 局面図の表示
                 print(f"[{datetime.datetime.now()}] [learn > 詰める方 > バッド手] 局面巻き戻しエラー")
                 print(self._board)
+                print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
                 raise ValueError("局面巻き戻しエラー")
 
             # 元の局面に戻してから strengthen する
@@ -1347,14 +1354,15 @@ class Kifuwarabe():
             choice_num += 1
             is_strong_move = False
 
-            # ２手詰めの局面かチェック
-            if self._board.sfen() != undo_1_sfen:
-                # 終局図の表示
-                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > バッド手] ２手詰めの局面エラー")
+            # ２手前局面図かチェック
+            if self._board.sfen() != sfen_2_previous:
+                # 局面図の表示
+                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > バッド手] ２手前局面図エラー")
                 print(self._board)
-                raise ValueError("２手詰めの局面エラー")
+                print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
+                raise ValueError("[learn > 詰める方 > バッド手] ２手前局面図エラー")
 
-            # （２手詰め局面で）とりあえず一手指す
+            # （２手前局面図で）とりあえず一手指す
             self._board.push_usi(move_u)
 
             # プレイアウトする
@@ -1389,10 +1397,11 @@ class Kifuwarabe():
             self._board.pop()
             self._board.pop()
             # 戻せたかチェック
-            if self._board.sfen() != undo_2_sfen:
-                # 終局図の表示
+            if self._board.sfen() != sfen_2_previous:
+                # 局面図の表示
                 print(f"[{datetime.datetime.now()}] [learn > 詰める方 > バッド手] 局面巻き戻しエラー")
                 print(self._board)
+                print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
                 raise ValueError("局面巻き戻しエラー")
 
             # 元の局面に戻してから strengthen する
