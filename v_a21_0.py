@@ -91,7 +91,8 @@ class Kifuwarabe():
         #   全部バラバラにすると position コマンドとか解析しにくいので、コマンド名とそれ以外で分ける
         #
         head_tail = command_str.split(' ', 1)
-        print(f"head_tail:`{head_tail}`")
+        if is_debug:
+            print(f"head_tail:`{head_tail}`")
 
         if len(head_tail) == 1:
             head = head_tail[0]
@@ -193,9 +194,9 @@ class Kifuwarabe():
                     is_debug=is_debug)
 
             print(f"""\
-[playout] result:`{result_str}`
-move_number:{self._board.move_number} / max_move_number:{max_move_number}
-sfen {self._board.sfen()}
+[{datetime.datetime.now()}] [playout] result:`{result_str}`
+#   move_number:{self._board.move_number} / max_move_number:{max_move_number}
+#   sfen {self._board.sfen()}
 """,
                     flush=True)
 
@@ -280,13 +281,18 @@ sfen {self._board.sfen()}
                 engine_version_str=engine_version_str)
 
 
-    def position(self, cmd_tail):
+    def position(
+            self,
+            cmd_tail,
+            is_debug=False):
         """局面データ解析
 
         Parameters
         ----------
         cmd_tail : str
             コマンドの名前以外
+        is_debug : bool
+            デバッグモードか？
         """
 
         board_and_moves = cmd_tail.split('moves')
@@ -295,14 +301,16 @@ sfen {self._board.sfen()}
         # `moves` で分割できたなら
         if len(board_and_moves) > 1:
             moves_str = board_and_moves[1].strip()
-            print(f"[kifuwarabe > position] moves:`{moves_str}`")
+            if is_debug:
+                print(f"[kifuwarabe > position] moves:`{moves_str}`")
 
             # 区切りは半角空白１文字とします
             moves_text_as_usi = moves_str.split(' ')
         else:
             moves_text_as_usi = []
 
-        print(f"[kifuwarabe > position] move size:{len(moves_text_as_usi)}")
+        if is_debug:
+            print(f"[kifuwarabe > position] move size:{len(moves_text_as_usi)}")
 
         #
         # 盤面解析
@@ -321,11 +329,13 @@ sfen {self._board.sfen()}
         #
         for move_as_usi in moves_text_as_usi:
             self._board.push_usi(move_as_usi)
-            print(f"[kifuwarabe > position] done  M:{move_as_usi:5}  board turn:{Turn.to_string(self._board.turn)}")
+            if is_debug:
+                print(f"[kifuwarabe > position] done  M:{move_as_usi:5}  board turn:{Turn.to_string(self._board.turn)}")
 
         # 現局面の手番を、自分の手番とする
         self._my_turn = self._board.turn
-        print(f"[kifuwarabe > position] my turn is {Turn.to_string(self._my_turn)}")
+        if is_debug:
+            print(f"[kifuwarabe > position] my turn is {Turn.to_string(self._my_turn)}")
 
 
     def go(self):
@@ -947,8 +957,7 @@ sfen {self._board.sfen()}
         現局面から、投了局面になるまで、適当に指します
         """
 
-        if is_debug:
-            print(f'[playout] start...')
+        print(f'[{datetime.datetime.now()}] [playout] start...')
 
         while True:
 

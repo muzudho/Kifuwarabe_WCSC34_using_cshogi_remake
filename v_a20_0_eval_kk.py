@@ -226,9 +226,9 @@ class EvaluationKkTable():
         l_index = kl_index % king_move_pattern_number
         k_index = kl_index // king_move_pattern_number
 
-        l_move_obj = EvaluationKkTable.destructure_k_index(
+        l_move_obj = EvaluationKMove.destructure_k_index(
             k_index=l_index)
-        k_move_obj = EvaluationKkTable.destructure_k_index(
+        k_move_obj = EvaluationKMove.destructure_k_index(
             k_index=k_index)
 
         return (k_move_obj, l_move_obj)
