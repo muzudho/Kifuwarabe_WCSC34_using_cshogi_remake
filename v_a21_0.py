@@ -3,8 +3,8 @@ import cshogi
 import datetime
 import random
 from decimal import Decimal, ROUND_HALF_UP
-from v_a20_0_lib import Turn, Move, MoveHelper, BoardHelper, MoveListHelper, PolicyHelper, GameResultFile
-from v_a20_0_eval_kk import EvaluationKkTable
+from v_a21_0_lib import Turn, Move, MoveHelper, BoardHelper, MoveListHelper, PolicyHelper, GameResultFile
+from v_a21_0_eval_kk import EvaluationKkTable
 
 
 ########################################
