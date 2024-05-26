@@ -952,12 +952,22 @@ class Kifuwarabe():
 
     def playout(
             self,
+            is_in_learn=False,
             is_debug=False):
         """プレイアウト
         現局面から、投了局面になるまで、適当に指します
+
+        Parameters
+        ----------
+        is_in_learn : bool
+            学習中
+        is_debug : bool
+            デバッグ中
         """
 
-        print(f'[{datetime.datetime.now()}] [playout] start...')
+        # 学習中以外はログを出したい
+        if not is_in_learn:
+            print(f'[{datetime.datetime.now()}] [playout] start...')
 
         while True:
 
@@ -1005,6 +1015,9 @@ class Kifuwarabe():
 
         `playout` してから `learn ` する想定です
         """
+
+        # 開始ログは出したい
+        print(f'[{datetime.datetime.now()}] [learn] start...')
 
         # 終局図の sfen を取得
         end_position_sfen = self._board.sfen()
@@ -1101,7 +1114,9 @@ class Kifuwarabe():
             self._board.push_usi(move_u)
 
             # プレイアウトする
-            result_str = self.playout()
+            result_str = self.playout(
+                    is_in_learn=True)
+
             move_number_difference = self._board.move_number - move_number_at_end
             if is_debug:
                 print(f'[{datetime.datetime.now()}] [learn > 詰める方]      result:`{result_str}`  move_number_difference:{move_number_difference}')
@@ -1151,7 +1166,9 @@ class Kifuwarabe():
             self._board.push_usi(move_u)
 
             # プレイアウトする
-            result_str = self.playout()
+            result_str = self.playout(
+                    is_in_learn=True)
+
             if is_debug:
                 print(f'[{datetime.datetime.now()}] [learn > 詰める方]      result:`{result_str}`')
 
@@ -1218,7 +1235,9 @@ class Kifuwarabe():
             self._board.push_usi(move_u)
 
             # プレイアウトする
-            result_str = self.playout()
+            result_str = self.playout(
+                    is_in_learn=True)
+
             if is_debug:
                 print(f'[{datetime.datetime.now()}] [learn > 逃げる方]      result:`{result_str}`')
 
@@ -1256,7 +1275,9 @@ class Kifuwarabe():
             self._board.push_usi(move_u)
 
             # プレイアウトする
-            result_str = self.playout()
+            result_str = self.playout(
+                    is_in_learn=True)
+
             move_number_difference = self._board.move_number - move_number_at_end
             if is_debug:
                 print(f'[{datetime.datetime.now()}] [learn > 逃げる方]      result:`{result_str}`  move_number_difference:{move_number_difference}')
