@@ -1099,14 +1099,23 @@ class Kifuwarabe():
                 board=self._board,
                 kifuwarabe=self)
 
+        # 作業量はログを出したい
+        good_num = len(good_move_u_set)
+        bad_num = len(bad_move_u_set)
+        total_num = good_num + bad_num
+        print(f'[{datetime.datetime.now()}] [learn > 詰める方]　作業量その１  グッド着手数：{good_num}　バッド着手数：{bad_num}')
+
         if is_debug:
             print(f'[{datetime.datetime.now()}] [learn > 詰める方]  現グッド着手一覧：')
 
+        move_num = 0
+
         for move_u in good_move_u_set:
+            move_num += 1
             is_weak_move = False
 
-            if is_debug:
-                print(f'[{datetime.datetime.now()}] [learn > 詰める方]    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is good', flush=True)
+            # 進捗ログを出したい
+            print(f'[{datetime.datetime.now()}] [learn > 詰める方]    ({move_num:3} / {total_num:3})  turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is good', flush=True)
 
             # （一手詰めの局面で）とりあえず一手指す
             self._board.push_usi(move_u)
@@ -1155,10 +1164,11 @@ class Kifuwarabe():
             print(f'[{datetime.datetime.now()}] [learn > 詰める方]  現バッド着手一覧：')
 
         for move_u in bad_move_u_set:
+            move_num += 1
             is_strong_move = False
 
-            if is_debug:
-                print(f'[{datetime.datetime.now()}] [learn > 詰める方]    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is bad', flush=True)
+            # 進捗ログを出したい
+            print(f'[{datetime.datetime.now()}] [learn > 詰める方]    ({move_num:3} / {total_num:3})  turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is bad', flush=True)
 
             # （一手詰めの局面で）とりあえず一手指す
             self._board.push_usi(move_u)
@@ -1194,12 +1204,13 @@ class Kifuwarabe():
         # -------
         #
 
-        # 棋譜の初手から学ぶことはできません
-        if self._board.move_number < 2:
-            print(f'[{datetime.datetime.now()}] [learn > 逃げる方] You cannot learn from the first move of the game record.')
+        # ２手戻せない場合
+        if self._board.move_number < 3:
+            print(f'[{datetime.datetime.now()}] [learn > 逃げる方] igonred.  board.move_number:{self._board.move_number}')
             return
 
-        # １手戻す（このあと一手詰めされる側の局面に戻るはず）
+        # ２手戻す（このあと一手詰めされる側の局面に戻るはず）
+        self._board.pop()
         self._board.pop()
 
         if is_debug:
@@ -1220,14 +1231,23 @@ class Kifuwarabe():
                 board=self._board,
                 kifuwarabe=self)
 
+        # 作業量はログを出したい
+        good_num = len(good_move_u_set)
+        bad_num = len(bad_move_u_set)
+        total_num = good_num + bad_num
+        print(f'[{datetime.datetime.now()}] [learn > 逃げる方]　作業量その２  グッド着手数：{good_num}　バッド着手数：{bad_num}')
+
         if is_debug:
             print(f'[{datetime.datetime.now()}] [learn > 逃げる方]  現グッド着手一覧：')
 
+        move_num = 0
+
         for move_u in good_move_u_set:
+            move_num += 1
             is_weak_move = False
 
-            if is_debug:
-                print(f'[{datetime.datetime.now()}] [learn > 逃げる方]    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is bad', flush=True)
+            # 進捗ログを出したい
+            print(f'[{datetime.datetime.now()}] [learn > 逃げる方]    ({move_num:3} / {total_num:3})  turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is bad', flush=True)
 
             # （一手詰めの局面で）とりあえず一手指す
             self._board.push_usi(move_u)
@@ -1264,10 +1284,11 @@ class Kifuwarabe():
             print(f'[{datetime.datetime.now()}] [learn > 逃げる方]  現バッド着手一覧：')
 
         for move_u in bad_move_u_set:
+            move_num += 1
             is_strong_move = False
 
-            if is_debug:
-                print(f'[{datetime.datetime.now()}] [learn > 逃げる方]    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is good', flush=True)
+            # 進捗ログを出したい
+            print(f'[{datetime.datetime.now()}] [learn > 逃げる方]    ({move_num:3} / {total_num:3})  turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is good', flush=True)
 
             # （一手詰めの１つ前の局面で）とりあえず一手指す
             self._board.push_usi(move_u)
