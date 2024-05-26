@@ -1,6 +1,7 @@
 class EvaluationKMove():
     """自玉の指し手"""
 
+    #_relative_sq_to_move_index
     _k_index_by_relative_sq = {
         'A':{
             1: 0,
@@ -75,12 +76,27 @@ class EvaluationKMove():
         return 8
 
 
+    #get_king_move_number
+    @staticmethod
+    def get_pattern_number():
+        """玉の指し手の数
+
+        Returns
+        -------
+        - int
+        """
+        # move_number = sq_size * directions
+        #         648 =      81 *          8
+        return    648
+
+
     @classmethod
     def get_k_index_by_relative_sq(clazz):
         """玉の指し手の相対SQを、インデックスへ変換するテーブルを取得"""
         return clazz._k_index_by_relative_sq
 
 
+    #get_index_of_k_move
     @staticmethod
     def get_index_by_k_move(
             move_obj):

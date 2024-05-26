@@ -180,19 +180,6 @@ class EvaluationKkTable():
 
 
     @staticmethod
-    def get_king_move_number():
-        """玉の指し手の数
-
-        Returns
-        -------
-        - int
-        """
-        # move_number = sq_size * directions
-        #         648 =      81 *          8
-        return    648
-
-
-    @staticmethod
     def get_index_of_kk_table(
             k_move_obj,
             l_move_obj):
@@ -206,8 +193,8 @@ class EvaluationKkTable():
             敵玉の指し手
         """
 
-        # 0 ～ 419_903 =                                         0 ～ 647 *                                      648 +                                        0 ～ 647
-        return           EvaluationKMove.get_index_by_k_move(k_move_obj) * EvaluationKkTable.get_king_move_number() + EvaluationKMove.get_index_by_k_move(l_move_obj)
+        # 0 ～ 419_903 =                                         0 ～ 647 *                                 648 +                                        0 ～ 647
+        return           EvaluationKMove.get_index_by_k_move(k_move_obj) * EvaluationKMove.get_pattern_number() + EvaluationKMove.get_index_by_k_move(l_move_obj)
 
 
     def __init__(
@@ -260,8 +247,8 @@ class EvaluationKkTable():
         # ファイルが存在しないとき
         if table_as_array is None:
             table_as_array = EvaluationLib.create_random_evaluation_table_as_array(
-                    a_move_size=EvaluationKkTable.get_king_move_number(),
-                    b_move_size=EvaluationKkTable.get_king_move_number())
+                    a_move_size=EvaluationKMove.get_pattern_number(),
+                    b_move_size=EvaluationKMove.get_pattern_number())
             is_file_modified = True     # 新規作成だから
 
         else:
@@ -438,10 +425,10 @@ class EvaluationKkTable():
         - l_move_obj : Move
             敵玉の応手
         """
-        king_move_number = EvaluationKkTable.get_king_move_number()
+        king_move_pattern_number = EvaluationKMove.get_pattern_number()
 
-        l_index = kl_index % king_move_number
-        k_index = kl_index // king_move_number
+        l_index = kl_index % king_move_pattern_number
+        k_index = kl_index // king_move_pattern_number
 
         l_move_obj = EvaluationKkTable.destructure_k_index(
             k_index=l_index)
