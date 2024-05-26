@@ -1059,6 +1059,13 @@ class Kifuwarabe():
             for move_id in principal_history:
                 self._board.push(move_id)
 
+            # 戻せたかチェック
+            if self._board.sfen() != end_position_sfen:
+                # 終局図の表示
+                print(f"[{datetime.datetime.now()}] [learn] 局面巻き戻しエラー")
+                print(self._board)
+                raise ValueError("局面巻き戻しエラー")
+
             #if is_debug:
             #    print(f"[{datetime.datetime.now()}] [learn] restore_end_position end.")
 
@@ -1124,7 +1131,14 @@ class Kifuwarabe():
             choice_num += 1
             is_weak_move = False
 
-            # （一手詰めの局面で）とりあえず一手指す
+            # １手詰め局面かチェック
+            if self._board.sfen() != undo_1_sfen:
+                # 終局図の表示
+                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > グッド手] １手詰め局面エラー")
+                print(self._board)
+                raise ValueError("１手詰め局面エラー")
+
+            # （１手詰め局面で）とりあえず一手指す
             self._board.push_usi(move_u)
 
             # プレイアウトする
@@ -1182,7 +1196,14 @@ class Kifuwarabe():
             choice_num += 1
             is_strong_move = False
 
-            # （一手詰めの局面で）とりあえず一手指す
+            # １手詰めの局面かチェック
+            if self._board.sfen() != undo_1_sfen:
+                # 終局図の表示
+                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > バッド手] １手詰め局面エラー")
+                print(self._board)
+                raise ValueError("１手詰め局面エラー")
+
+            # （１手詰め局面で）とりあえず一手指す
             self._board.push_usi(move_u)
 
             # プレイアウトする
@@ -1272,7 +1293,14 @@ class Kifuwarabe():
             choice_num += 1
             is_weak_move = False
 
-            # （一手詰めされる側の局面で）とりあえず一手指す
+            # ２手詰めの局面かチェック
+            if self._board.sfen() != undo_1_sfen:
+                # 終局図の表示
+                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > グッド手] ２手詰めの局面エラー")
+                print(self._board)
+                raise ValueError("２手詰めの局面エラー")
+
+            # （２手詰め局面で）とりあえず一手指す
             self._board.push_usi(move_u)
 
             # プレイアウトする
@@ -1319,7 +1347,14 @@ class Kifuwarabe():
             choice_num += 1
             is_strong_move = False
 
-            # （一手詰めの１つ前の局面で）とりあえず一手指す
+            # ２手詰めの局面かチェック
+            if self._board.sfen() != undo_1_sfen:
+                # 終局図の表示
+                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > バッド手] ２手詰めの局面エラー")
+                print(self._board)
+                raise ValueError("２手詰めの局面エラー")
+
+            # （２手詰め局面で）とりあえず一手指す
             self._board.push_usi(move_u)
 
             # プレイアウトする
@@ -1374,6 +1409,9 @@ class Kifuwarabe():
         # おわり
         # -----
         #
+
+        # 終局図の内部データに戻す
+        restore_end_position()
 
         # ＫＬ評価値テーブル［0:先手, 1:後手］の保存
         self.save_eval_kl_table()
