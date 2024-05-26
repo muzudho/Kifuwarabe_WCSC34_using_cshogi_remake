@@ -261,7 +261,7 @@ class Kifuwarabe():
             if self._evaluation_kl_table_obj_array[turn_index].mm_table_obj.is_file_modified:
                 self._evaluation_kl_table_obj_array[turn_index].save_kk_evaluation_table_file()
             else:
-                print(f"[{datetime.datetime.now()}] kk file not changed.  turn:{Turn.to_index(turn)}", flush=True)
+                print(f"[{datetime.datetime.now()}] kk file not changed.  turn:{Turn.to_string(turn)}", flush=True)
 
 
     def usinewgame(self):
@@ -537,8 +537,8 @@ class Kifuwarabe():
                 return
 
         #
-        # グッドな着手、バッドな着手一覧
-        # --------------------------
+        # 好手、悪手一覧
+        # ------------
         #
         (good_move_u_set,
          bad_move_u_set) = MoveAndPolicyHelper.select_good_f_move_u_set_power(
@@ -546,11 +546,11 @@ class Kifuwarabe():
                 board=self._board,
                 kifuwarabe=self)
 
-        print(f'  グッド着手一覧：')
+        print(f'  好手一覧：')
         for move_u in good_move_u_set:
             print(f'    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is good')
 
-        print(f'  バッド着手一覧：')
+        print(f'  悪手一覧：')
         for move_u in bad_move_u_set:
             print(f'    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is bad')
 
@@ -1108,8 +1108,8 @@ class Kifuwarabe():
         # - 一手詰めはとりあえず、考慮から外す
 
         #
-        # グッドな着手、バッドな着手一覧
-        # --------------------------
+        # 好手、悪手一覧
+        # ------------
         #
         (good_move_u_set,
          bad_move_u_set) = MoveAndPolicyHelper.select_good_f_move_u_set_power(
@@ -1121,10 +1121,10 @@ class Kifuwarabe():
         good_num = len(good_move_u_set)
         bad_num = len(bad_move_u_set)
         total_num = good_num + bad_num
-        print(f'[{datetime.datetime.now()}] [learn > 詰める方]　作業量その１  グッド着手数：{good_num}　バッド着手数：{bad_num}')
+        print(f'[{datetime.datetime.now()}] [learn > 詰める方]　作業量その１  好手数：{good_num}　悪手数：{bad_num}')
 
         if is_debug:
-            print(f'[{datetime.datetime.now()}] [learn > 詰める方]  現グッド着手一覧：')
+            print(f'[{datetime.datetime.now()}] [learn > 詰める方]  現好手一覧：')
 
         choice_num = 0
 
@@ -1135,10 +1135,10 @@ class Kifuwarabe():
             # １手前局面図かチェック
             if self._board.sfen() != sfen_1_previous:
                 # 局面図の表示
-                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > グッド手] １手前局面図エラー")
+                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > 好手] １手前局面図エラー")
                 print(self._board)
                 print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
-                raise ValueError("[learn > 詰める方 > グッド手] １手前局面図エラー")
+                raise ValueError("[learn > 詰める方 > 好手] １手前局面図エラー")
 
             # （１手前局面図で）とりあえず一手指す
             self._board.push_usi(move_u)
@@ -1191,7 +1191,7 @@ class Kifuwarabe():
             # 戻せたかチェック
             if self._board.sfen() != sfen_1_previous:
                 # 終局図の表示
-                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > グッド手] 局面巻き戻しエラー")
+                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > 好手] 局面巻き戻しエラー")
                 print(self._board)
                 print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
                 raise ValueError("局面巻き戻しエラー")
@@ -1207,7 +1207,7 @@ class Kifuwarabe():
 
 
         if is_debug:
-            print(f'[{datetime.datetime.now()}] [learn > 詰める方]  現バッド着手一覧：')
+            print(f'[{datetime.datetime.now()}] [learn > 詰める方]  現悪手一覧：')
 
         for move_u in bad_move_u_set:
             choice_num += 1
@@ -1216,7 +1216,7 @@ class Kifuwarabe():
             # １手前局面図かチェック
             if self._board.sfen() != sfen_1_previous:
                 # 局面図の表示
-                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > バッド手] １手前局面図エラー")
+                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > 悪手] １手前局面図エラー")
                 print(self._board)
                 print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
                 raise ValueError("１手前局面図エラー")
@@ -1254,7 +1254,7 @@ class Kifuwarabe():
             # 戻せたかチェック
             if self._board.sfen() != sfen_1_previous:
                 # 局面図の表示
-                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > バッド手] 局面巻き戻しエラー")
+                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > 悪手] 局面巻き戻しエラー")
                 print(self._board)
                 print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
                 raise ValueError("局面巻き戻しエラー")
@@ -1296,8 +1296,8 @@ class Kifuwarabe():
             print(f"[{datetime.datetime.now()}] [learn > 逃げる方] move_number_to_end:{move_number_to_end} = move_number_at_end:{move_number_at_end} - board.move_number:{self._board.move_number}")
 
         #
-        # グッドな着手、バッドな着手一覧
-        # --------------------------
+        # 好手、悪手一覧
+        # ------------
         #
         (good_move_u_set,
          bad_move_u_set) = MoveAndPolicyHelper.select_good_f_move_u_set_power(
@@ -1309,10 +1309,10 @@ class Kifuwarabe():
         good_num = len(good_move_u_set)
         bad_num = len(bad_move_u_set)
         total_num = good_num + bad_num
-        print(f'[{datetime.datetime.now()}] [learn > 逃げる方]　作業量その２  グッド着手数：{good_num}　バッド着手数：{bad_num}')
+        print(f'[{datetime.datetime.now()}] [learn > 逃げる方]　作業量その２  好手数：{good_num}　悪手数：{bad_num}')
 
         if is_debug:
-            print(f'[{datetime.datetime.now()}] [learn > 逃げる方]  現グッド着手一覧：')
+            print(f'[{datetime.datetime.now()}] [learn > 逃げる方]  現好手一覧：')
 
         choice_num = 0
 
@@ -1323,10 +1323,10 @@ class Kifuwarabe():
             # ２手前局面図かチェック
             if self._board.sfen() != sfen_2_previous:
                 # 局面図の表示
-                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > グッド手] ２手前局面図エラー")
+                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > 好手] ２手前局面図エラー")
                 print(self._board)
                 print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
-                raise ValueError("[learn > 詰める方 > グッド手] ２手前局面図エラー")
+                raise ValueError("[learn > 詰める方 > 好手] ２手前局面図エラー")
 
             # （２手前局面図で）とりあえず一手指す
             self._board.push_usi(move_u)
@@ -1351,8 +1351,11 @@ class Kifuwarabe():
                 else:
                     log_progress("fumble:２手詰めが掛けられていて、２手詰めを避けたから、好手の評価はそのまま")
 
+            elif result_str == 'max_move':
+                log_progress("ignored:２手詰めが掛けられていて、手数上限に達した。良し悪し付かず、この好手の評価はそのまま")
+
             else:
-                log_progress("ignored:この手の評価はそのまま")
+                log_progress("ignored:この好手の評価はそのまま")
 
             # 終局図の内部データに戻す
             restore_end_position()
@@ -1362,7 +1365,7 @@ class Kifuwarabe():
             # 戻せたかチェック
             if self._board.sfen() != sfen_2_previous:
                 # 局面図の表示
-                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > バッド手] 局面巻き戻しエラー")
+                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > 悪手] 局面巻き戻しエラー")
                 print(self._board)
                 print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
                 raise ValueError("局面巻き戻しエラー")
@@ -1378,7 +1381,7 @@ class Kifuwarabe():
 
 
         if is_debug:
-            print(f'[{datetime.datetime.now()}] [learn > 逃げる方]  現バッド着手一覧：')
+            print(f'[{datetime.datetime.now()}] [learn > 逃げる方]  現悪手一覧：')
 
         for move_u in bad_move_u_set:
             choice_num += 1
@@ -1387,10 +1390,10 @@ class Kifuwarabe():
             # ２手前局面図かチェック
             if self._board.sfen() != sfen_2_previous:
                 # 局面図の表示
-                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > バッド手] ２手前局面図エラー")
+                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > 悪手] ２手前局面図エラー")
                 print(self._board)
                 print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
-                raise ValueError("[learn > 詰める方 > バッド手] ２手前局面図エラー")
+                raise ValueError("[learn > 詰める方 > 悪手] ２手前局面図エラー")
 
             # （２手前局面図で）とりあえず一手指す
             self._board.push_usi(move_u)
@@ -1440,7 +1443,7 @@ class Kifuwarabe():
             # 戻せたかチェック
             if self._board.sfen() != sfen_2_previous:
                 # 局面図の表示
-                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > バッド手] 局面巻き戻しエラー")
+                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > 悪手] 局面巻き戻しエラー")
                 print(self._board)
                 print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
                 raise ValueError("局面巻き戻しエラー")
@@ -1717,8 +1720,8 @@ class Lottery():
         """
 
         #
-        # グッドな着手、バッドな着手一覧
-        # --------------------------
+        # 好手、悪手一覧
+        # ------------
         #
         (good_move_u_set,
          bad_move_u_set) = MoveAndPolicyHelper.select_good_f_move_u_set_power(
@@ -2030,8 +2033,8 @@ class MoveAndPolicyHelper():
         # そのようにします
 
         #
-        # グッドな着手、バッドな着手一覧
-        # --------------------------
+        # 好手、悪手一覧
+        # ------------
         #
         (good_move_u_set,
          bad_move_u_set) = MoveAndPolicyHelper.select_good_f_move_u_set_pipe(
