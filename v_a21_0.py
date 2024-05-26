@@ -1021,8 +1021,9 @@ class Kifuwarabe():
         end_position_sfen = self._board.sfen()
 
         # 終局図とその sfen はログに出したい
+        print(f"[{datetime.datetime.now()}] [learn] 終局図：")
         print(self._board)
-        print(f"[{datetime.datetime.now()}] [learn] end_position_sfen:`{end_position_sfen}`   board.move_number:{self._board.move_number}")
+        print(f"  end_position_sfen:`{end_position_sfen}`   board.move_number:{self._board.move_number}")
 
         # 本譜の指し手を覚えておく
         principal_history = self._board.history
@@ -1042,8 +1043,9 @@ class Kifuwarabe():
         init_position_sfen = self._board.sfen()
 
         # 初期局面と、その sfen はログに出したい
+        print(f"[{datetime.datetime.now()}] [learn] 初期局面図：")
         print(self._board)
-        print(f"[{datetime.datetime.now()}] [learn] init_position_sfen:`{init_position_sfen}`   board.move_number:{self._board.move_number}")
+        print(f"  init_position_sfen:`{init_position_sfen}`   board.move_number:{self._board.move_number}")
 
 
         def restore_end_position():
@@ -1078,12 +1080,15 @@ class Kifuwarabe():
             print(f'[{datetime.datetime.now()}] [learn > 詰める方] You cannot learn from the first move of the game record.')
             return
 
+        # 終局図の内部データに戻っている
         # １手戻す（一手詰めの局面に戻るはず）
         self._board.pop()
 
         # １手戻した局面と、その sfen は表示したい
+        undo_1_sfen = self._board.sfen()
+        print(f"[{datetime.datetime.now()}] [learn > 詰める方] 詰みの一手前局面図：")
         print(self._board)
-        print(f"[{datetime.datetime.now()}] [learn > 詰める方] undo.  board.move_number:{self._board.move_number}")
+        print(f"  undo.  sfen:`{undo_1_sfen}`  board.move_number:{self._board.move_number}")
 
         # 終局局面までの手数
         move_number_to_end = move_number_at_end - self._board.move_number
@@ -1113,10 +1118,10 @@ class Kifuwarabe():
         if is_debug:
             print(f'[{datetime.datetime.now()}] [learn > 詰める方]  現グッド着手一覧：')
 
-        move_num = 0
+        choice_num = 0
 
         for move_u in good_move_u_set:
-            move_num += 1
+            choice_num += 1
             is_weak_move = False
 
             # （一手詰めの局面で）とりあえず一手指す
@@ -1128,7 +1133,7 @@ class Kifuwarabe():
 
             # 進捗ログを出したい
             move_number_difference = self._board.move_number - move_number_at_end
-            print(f'[{datetime.datetime.now()}] [learn > 詰める方]    ({move_num:3} / {total_num:3})  turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is good.  result:`{result_str}`  move_number_difference:{move_number_difference}', flush=True)
+            print(f'[{datetime.datetime.now()}] [learn > 詰める方]    ({choice_num:3} / {total_num:3}) [{self._board.move_number} moves / {Turn.to_string(self._board.turn)}]  F:{move_u:5}  O:*****  is good.  result:`{result_str}`  move_number_difference:{move_number_difference}', flush=True)
 
             # どちらかが投了した
             if result_str == 'resign':
@@ -1153,6 +1158,12 @@ class Kifuwarabe():
             restore_end_position()
             # １手戻す（一手詰めの局面に戻るはず）
             self._board.pop()
+            # 戻せたかチェック
+            if self._board.sfen() != undo_1_sfen:
+                # 終局図の表示
+                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > グッド手] 局面巻き戻しエラー")
+                print(self._board)
+                raise ValueError("局面巻き戻しエラー")
 
             # 元の局面に戻してから weaken する
             if is_weak_move:
@@ -1168,7 +1179,7 @@ class Kifuwarabe():
             print(f'[{datetime.datetime.now()}] [learn > 詰める方]  現バッド着手一覧：')
 
         for move_u in bad_move_u_set:
-            move_num += 1
+            choice_num += 1
             is_strong_move = False
 
             # （一手詰めの局面で）とりあえず一手指す
@@ -1180,7 +1191,7 @@ class Kifuwarabe():
 
             # 進捗ログを出したい
             move_number_difference = self._board.move_number - move_number_at_end
-            print(f'[{datetime.datetime.now()}] [learn > 詰める方]    ({move_num:3} / {total_num:3})  turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is bad.  result:`{result_str}`  move_number_difference:{move_number_difference}', flush=True)
+            print(f'[{datetime.datetime.now()}] [learn > 詰める方]    ({choice_num:3} / {total_num:3}) [{self._board.move_number} moves / {Turn.to_string(self._board.turn)}]  F:{move_u:5}  O:*****  is bad.  result:`{result_str}`  move_number_difference:{move_number_difference}', flush=True)
 
             # どちらかが投了した
             if result_str == 'resign':
@@ -1193,6 +1204,12 @@ class Kifuwarabe():
             restore_end_position()
             # １手戻す（一手詰めの局面に戻るはず）
             self._board.pop()
+            # 戻せたかチェック
+            if self._board.sfen() != undo_1_sfen:
+                # 終局図の表示
+                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > バッド手] 局面巻き戻しエラー")
+                print(self._board)
+                raise ValueError("局面巻き戻しエラー")
 
             # 元の局面に戻してから strengthen する
             if is_strong_move:
@@ -1213,13 +1230,17 @@ class Kifuwarabe():
             print(f'[{datetime.datetime.now()}] [learn > 逃げる方] igonred.  board.move_number:{self._board.move_number}')
             return
 
+        # 終局図の内部データに戻す
+        restore_end_position()
         # ２手戻す（このあと一手詰めされる側の局面に戻るはず）
         self._board.pop()
         self._board.pop()
 
         # ２手戻した局面と、その sfen は表示したい
+        undo_2_sfen = self._board.sfen()
+        print(f"[{datetime.datetime.now()}] [learn > 逃げる方] ２手戻した局面図：")
         print(self._board)
-        print(f"[{datetime.datetime.now()}] [learn > 逃げる方] 2 undo.  board.move_number:{self._board.move_number}")
+        print(f"  2 undo.  sfen:`{undo_2_sfen}`  board.move_number:{self._board.move_number}")
 
         # 終局局面までの手数
         move_number_to_end = move_number_at_end - self._board.move_number
@@ -1245,10 +1266,10 @@ class Kifuwarabe():
         if is_debug:
             print(f'[{datetime.datetime.now()}] [learn > 逃げる方]  現グッド着手一覧：')
 
-        move_num = 0
+        choice_num = 0
 
         for move_u in good_move_u_set:
-            move_num += 1
+            choice_num += 1
             is_weak_move = False
 
             # （一手詰めされる側の局面で）とりあえず一手指す
@@ -1260,7 +1281,7 @@ class Kifuwarabe():
 
             # 進捗ログを出したい
             move_number_difference = self._board.move_number - move_number_at_end
-            print(f'[{datetime.datetime.now()}] [learn > 逃げる方]    ({move_num:3} / {total_num:3})  turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is bad.  result:`{result_str}`  move_number_difference:{move_number_difference}', flush=True)
+            print(f'[{datetime.datetime.now()}] [learn > 逃げる方]    ({choice_num:3} / {total_num:3})  [{self._board.move_number} moves / {Turn.to_string(self._board.turn)}]  F:{move_u:5}  O:*****  is bad.  result:`{result_str}`  move_number_difference:{move_number_difference}', flush=True)
 
             # どちらかが投了した
             if result_str == 'resign':
@@ -1274,6 +1295,12 @@ class Kifuwarabe():
             # ２手戻す（このあと一手詰めされる側の局面に戻るはず）
             self._board.pop()
             self._board.pop()
+            # 戻せたかチェック
+            if self._board.sfen() != undo_2_sfen:
+                # 終局図の表示
+                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > バッド手] 局面巻き戻しエラー")
+                print(self._board)
+                raise ValueError("局面巻き戻しエラー")
 
             # 元の局面に戻してから strengthen する
             if is_weak_move:
@@ -1289,7 +1316,7 @@ class Kifuwarabe():
             print(f'[{datetime.datetime.now()}] [learn > 逃げる方]  現バッド着手一覧：')
 
         for move_u in bad_move_u_set:
-            move_num += 1
+            choice_num += 1
             is_strong_move = False
 
             # （一手詰めの１つ前の局面で）とりあえず一手指す
@@ -1301,7 +1328,7 @@ class Kifuwarabe():
 
             # 進捗ログを出したい
             move_number_difference = self._board.move_number - move_number_at_end
-            print(f'[{datetime.datetime.now()}] [learn > 逃げる方]    ({move_num:3} / {total_num:3})  turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is good.  result:`{result_str}`  move_number_difference:{move_number_difference}', flush=True)
+            print(f'[{datetime.datetime.now()}] [learn > 逃げる方]    ({choice_num:3} / {total_num:3})  [{self._board.move_number} moves / {Turn.to_string(self._board.turn)}]  F:{move_u:5}  O:*****  is good.  result:`{result_str}`  move_number_difference:{move_number_difference}', flush=True)
 
             # どちらかが投了した
             if result_str == 'resign':
@@ -1326,6 +1353,12 @@ class Kifuwarabe():
             # ２手戻す（このあと一手詰めされる側の局面に戻るはず）
             self._board.pop()
             self._board.pop()
+            # 戻せたかチェック
+            if self._board.sfen() != undo_2_sfen:
+                # 終局図の表示
+                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > バッド手] 局面巻き戻しエラー")
+                print(self._board)
+                raise ValueError("局面巻き戻しエラー")
 
             # 元の局面に戻してから strengthen する
             if is_strong_move:
