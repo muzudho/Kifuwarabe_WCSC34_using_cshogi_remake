@@ -1147,9 +1147,11 @@ class Kifuwarabe():
             result_str = self.playout(
                     is_in_learn=True)
 
-            # 進捗ログを出したい
             move_number_difference = self._board.move_number - move_number_at_end
-            print(f'[{datetime.datetime.now()}] [learn > 詰める方]    ({choice_num:3} / {total_num:3}) [{self._board.move_number} moves / {Turn.to_string(self._board.turn)}]  F:{move_u:5}  O:*****  is good.  result:`{result_str}`  move_number_difference:{move_number_difference}', flush=True)
+
+            # 進捗ログを出したい
+            def log_progress(comment):
+                print(f'[{datetime.datetime.now()}] [learn > 詰める方]    ({choice_num:3} / {total_num:3}) [{self._board.move_number} moves / {Turn.to_string(self._board.turn)}]  F:{move_u:5}  O:*****  is good.  result:`{result_str}`  move_number_difference:{move_number_difference}  {comment}', flush=True)
 
             # どちらかが投了した
             if result_str == 'resign':
@@ -1157,18 +1159,30 @@ class Kifuwarabe():
                 if self._my_turn == self._board.turn:
                     # 一手詰めの局面から負けたのなら、すごく悪い手だ。この手の評価を下げる
                     is_weak_move = True
+                    log_progress("fumble:一手詰めを逃して負けた。好手の評価を取り下げる")
+                else:
+                    log_progress("ignored:一手詰めは逃したが負けなかった。好手の評価はそのまま")
 
             # どちらかが入玉勝ちした
             elif result_str == 'nyugyoku_win':
                 if move_number_difference != 0:
                     # 一手詰めの局面から、一手以上かけて入玉勝ち宣言してるようなら、すごく悪い手だ。この手の評価を下げる
                     is_weak_move = True
+                    log_progress("fumble:一手詰めを逃して、２手以上かけて入玉で決着が付いた。好手の評価を取り下げる")
+                else:
+                    log_progress("ignored:一手詰めより、入玉宣言勝ちを選んだのでＯｋ。好手の評価はそのまま")
 
             # 手数の上限に達した
             elif result_str == 'max_move':
                 if move_number_difference != 0:
                     # 一手詰めの局面から、一手以上かけて手数の上限に達しているようなら、すごく悪い手だ。この手の評価を下げる
                     is_weak_move = True
+                    log_progress("fumble:一手詰めを逃して、２手以上かけて手数の上限に達した。好手の評価を取り下げる")
+                else:
+                    log_progress("ignored:一手詰めではなく、手数の上限で終了した。好手の評価はそのまま")
+
+            else:
+                log_progress("ignored:好手の評価はそのまま")
 
             # 終局図の内部データに戻す
             restore_end_position()
@@ -1214,9 +1228,11 @@ class Kifuwarabe():
             result_str = self.playout(
                     is_in_learn=True)
 
-            # 進捗ログを出したい
             move_number_difference = self._board.move_number - move_number_at_end
-            print(f'[{datetime.datetime.now()}] [learn > 詰める方]    ({choice_num:3} / {total_num:3}) [{self._board.move_number} moves / {Turn.to_string(self._board.turn)}]  F:{move_u:5}  O:*****  is bad.  result:`{result_str}`  move_number_difference:{move_number_difference}', flush=True)
+
+            # 進捗ログを出したい
+            def log_progress(comment):
+                print(f'[{datetime.datetime.now()}] [learn > 詰める方]    ({choice_num:3} / {total_num:3}) [{self._board.move_number} moves / {Turn.to_string(self._board.turn)}]  F:{move_u:5}  O:*****  is bad.  result:`{result_str}`  move_number_difference:{move_number_difference}  {comment}', flush=True)
 
             # どちらかが投了した
             if result_str == 'resign':
@@ -1224,6 +1240,12 @@ class Kifuwarabe():
                 if self._my_turn != self._board.turn and move_number_at_end - self._board.move_number == 1:
                     # 一手詰めの局面で、一手で詰めたのなら、すごく良い手だ。この手の評価を上げる
                     is_strong_move = True
+                    log_progress("nice:一手詰めの局面で、１手詰めできたのだから、評価を上げよう")
+                else:
+                    log_progress("ignored:一手詰めの局面で、１手詰めを逃したのだから、悪手の評価はそのまま")
+
+            else:
+                log_progress("ignored:悪手の評価はそのまま")
 
             # 終局図の内部データに戻す
             restore_end_position()
@@ -1313,16 +1335,24 @@ class Kifuwarabe():
             result_str = self.playout(
                     is_in_learn=True)
 
-            # 進捗ログを出したい
             move_number_difference = self._board.move_number - move_number_at_end
-            print(f'[{datetime.datetime.now()}] [learn > 逃げる方]    ({choice_num:3} / {total_num:3})  [{self._board.move_number} moves / {Turn.to_string(self._board.turn)}]  F:{move_u:5}  O:*****  is bad.  result:`{result_str}`  move_number_difference:{move_number_difference}', flush=True)
+
+            # 進捗ログを出したい
+            def log_progress(comment):
+                print(f'[{datetime.datetime.now()}] [learn > 逃げる方]    ({choice_num:3} / {total_num:3})  [{self._board.move_number} moves / {Turn.to_string(self._board.turn)}]  F:{move_u:5}  O:*****  is good.  result:`{result_str}`  move_number_difference:{move_number_difference}  {comment}', flush=True)
 
             # どちらかが投了した
             if result_str == 'resign':
                 # 自分の負け。かかった手数２手。つまり一手詰め
                 if self._my_turn == self._board.turn and move_number_at_end - self._board.move_number == 2:
-                    # 次に一手詰めが掛けられる局面で、やはり一手詰めで負けたのなら、やはり悪い手だ。この手の評価を下げる
                     is_weak_move = True
+                    log_progress("fumble:２手詰めが掛けられていて、２手詰めを避けられなかったから、好手の評価を取り下げる")
+
+                else:
+                    log_progress("fumble:２手詰めが掛けられていて、２手詰めを避けたから、好手の評価はそのまま")
+
+            else:
+                log_progress("ignored:この手の評価はそのまま")
 
             # 終局図の内部データに戻す
             restore_end_position()
@@ -1369,27 +1399,38 @@ class Kifuwarabe():
             result_str = self.playout(
                     is_in_learn=True)
 
-            # 進捗ログを出したい
             move_number_difference = self._board.move_number - move_number_at_end
-            print(f'[{datetime.datetime.now()}] [learn > 逃げる方]    ({choice_num:3} / {total_num:3})  [{self._board.move_number} moves / {Turn.to_string(self._board.turn)}]  F:{move_u:5}  O:*****  is good.  result:`{result_str}`  move_number_difference:{move_number_difference}', flush=True)
+
+            # 進捗ログを出したい
+            def log_progress(comment):
+                print(f'[{datetime.datetime.now()}] [learn > 逃げる方]    ({choice_num:3} / {total_num:3})  [{self._board.move_number} moves / {Turn.to_string(self._board.turn)}]  F:{move_u:5}  O:*****  is bad.  result:`{result_str}`  move_number_difference:{move_number_difference}  comment:{comment}', flush=True)
 
             # どちらかが投了した
             if result_str == 'resign':
                 # 相手を一手詰め
-                if self._my_turn != self._board.turn and move_number_difference == 2:
+                if self._my_turn != self._board.turn and move_number_difference == 1:
                     # 次に一手詰めの局面に掛けられるところを、その前に詰めたのだから、すごく良い手だ。この手の評価を上げる
                     is_strong_move = True
+                    log_progress("nice:２手詰めを掛けられていて、逆に１手で勝ったのだから、この手の評価を上げる")
+                else:
+                    log_progress("nice:２手詰めを掛けられていて、ここで１手で勝てなかったから、この悪手の評価はそのまま")
 
             # どちらかが入玉勝ちした
             elif result_str == 'nyugyoku_win':
                 if move_number_difference != 2:
                     # 次に一手詰めの局面に掛けられるところを、その前に入玉宣言勝ちしたのだから、すごく良い手だ。この手の評価を上げる
                     is_strong_move = True
+                    log_progress("nice:２手詰めを掛けられていて、逆に１手で入玉宣言勝ちしたのだから、この手の評価を上げる")
+                else:
+                    log_progress("nice:２手詰めを掛けられていて、ここで２手以上掛けて入玉したから、この悪手の評価はそのまま")
 
             # 手数の上限に達した
             elif result_str == 'max_move':
                 # 相手がわざと負けようとしたのかもしれない。無視しておく
-                pass
+                log_progress("ignored:指し手の上限手数に達してしまった。この悪手の評価はそのまま")
+
+            else:
+                log_progress("ignored:この悪手の評価はそのまま")
 
             # 終局図の内部データに戻す
             restore_end_position()
