@@ -400,8 +400,8 @@ class Kifuwarabe():
             コマンドの名前以外
         """
 
-        if is_debug:
-            print(f"[{datetime.datetime.now()}] [gameover] start...")
+        # 開始ログは出したい
+        print(f"[{datetime.datetime.now()}] [gameover] start...")
 
         if cmd_tail.strip() == '':
             print(f"`do` command must be result.  ex:`gameover lose`  cmd_tail:`{cmd_tail}`")
@@ -427,16 +427,14 @@ class Kifuwarabe():
             # ［対局結果］　常に記憶する
             self._game_result_file.save_otherwise(cmd_tail, self._my_turn, self._board)
 
-        # 学習を行う
-        if is_debug:
-            print(f"[{datetime.datetime.now()}] [gameover] learn start...")
+        # 開始ログは出したい
+        print(f"[{datetime.datetime.now()}] [gameover] learn start...")
 
-        self.learn(
-                is_debug=True)
+        self.learn()
 
-        if is_debug:
-            print(f"[{datetime.datetime.now()}] [gameover] learn end.")
-            print(f"[{datetime.datetime.now()}] [gameover] end.")
+        # 終了ログは出したい
+        print(f"[{datetime.datetime.now()}] [gameover] learn end")
+        print(f"[{datetime.datetime.now()}] [gameover] end")
 
 
 
