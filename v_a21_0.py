@@ -1114,9 +1114,6 @@ class Kifuwarabe():
             move_num += 1
             is_weak_move = False
 
-            # 進捗ログを出したい
-            print(f'[{datetime.datetime.now()}] [learn > 詰める方]    ({move_num:3} / {total_num:3})  turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is good', flush=True)
-
             # （一手詰めの局面で）とりあえず一手指す
             self._board.push_usi(move_u)
 
@@ -1124,9 +1121,9 @@ class Kifuwarabe():
             result_str = self.playout(
                     is_in_learn=True)
 
+            # 進捗ログを出したい
             move_number_difference = self._board.move_number - move_number_at_end
-            if is_debug:
-                print(f'[{datetime.datetime.now()}] [learn > 詰める方]      result:`{result_str}`  move_number_difference:{move_number_difference}')
+            print(f'[{datetime.datetime.now()}] [learn > 詰める方]    ({move_num:3} / {total_num:3})  turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is good.  result:`{result_str}`  move_number_difference:{move_number_difference}', flush=True)
 
             # どちらかが投了した
             if result_str == 'resign':
@@ -1167,9 +1164,6 @@ class Kifuwarabe():
             move_num += 1
             is_strong_move = False
 
-            # 進捗ログを出したい
-            print(f'[{datetime.datetime.now()}] [learn > 詰める方]    ({move_num:3} / {total_num:3})  turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is bad', flush=True)
-
             # （一手詰めの局面で）とりあえず一手指す
             self._board.push_usi(move_u)
 
@@ -1177,8 +1171,9 @@ class Kifuwarabe():
             result_str = self.playout(
                     is_in_learn=True)
 
-            if is_debug:
-                print(f'[{datetime.datetime.now()}] [learn > 詰める方]      result:`{result_str}`')
+            # 進捗ログを出したい
+            move_number_difference = self._board.move_number - move_number_at_end
+            print(f'[{datetime.datetime.now()}] [learn > 詰める方]    ({move_num:3} / {total_num:3})  turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is bad.  result:`{result_str}`  move_number_difference:{move_number_difference}', flush=True)
 
             # どちらかが投了した
             if result_str == 'resign':
@@ -1246,9 +1241,6 @@ class Kifuwarabe():
             move_num += 1
             is_weak_move = False
 
-            # 進捗ログを出したい
-            print(f'[{datetime.datetime.now()}] [learn > 逃げる方]    ({move_num:3} / {total_num:3})  turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is bad', flush=True)
-
             # （一手詰めの局面で）とりあえず一手指す
             self._board.push_usi(move_u)
 
@@ -1256,8 +1248,9 @@ class Kifuwarabe():
             result_str = self.playout(
                     is_in_learn=True)
 
-            if is_debug:
-                print(f'[{datetime.datetime.now()}] [learn > 逃げる方]      result:`{result_str}`')
+            # 進捗ログを出したい
+            move_number_difference = self._board.move_number - move_number_at_end
+            print(f'[{datetime.datetime.now()}] [learn > 逃げる方]    ({move_num:3} / {total_num:3})  turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is bad.  result:`{result_str}`  move_number_difference:{move_number_difference}', flush=True)
 
             # どちらかが投了した
             if result_str == 'resign':
@@ -1287,9 +1280,6 @@ class Kifuwarabe():
             move_num += 1
             is_strong_move = False
 
-            # 進捗ログを出したい
-            print(f'[{datetime.datetime.now()}] [learn > 逃げる方]    ({move_num:3} / {total_num:3})  turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is good', flush=True)
-
             # （一手詰めの１つ前の局面で）とりあえず一手指す
             self._board.push_usi(move_u)
 
@@ -1297,9 +1287,9 @@ class Kifuwarabe():
             result_str = self.playout(
                     is_in_learn=True)
 
+            # 進捗ログを出したい
             move_number_difference = self._board.move_number - move_number_at_end
-            if is_debug:
-                print(f'[{datetime.datetime.now()}] [learn > 逃げる方]      result:`{result_str}`  move_number_difference:{move_number_difference}')
+            print(f'[{datetime.datetime.now()}] [learn > 逃げる方]    ({move_num:3} / {total_num:3})  turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is good.  result:`{result_str}`  move_number_difference:{move_number_difference}', flush=True)
 
             # どちらかが投了した
             if result_str == 'resign':
