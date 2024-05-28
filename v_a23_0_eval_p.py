@@ -130,85 +130,143 @@ if __name__ == '__main__':
        マス毎の先手成らずのSFENのパターン数
     """
 
-    def get_sq_by_x_y(file, rank):
-        return file * 9 + rank
+    with open("test.log", 'w', encoding="utf-8") as f:
 
-    # 範囲外チェックを行いたいので、ループカウンタ―は sq ではなく file と rank の２重ループにする
-    for src_file in range(0,9):
-        for src_rank in range(0,9):
-            src_sq = get_sq_by_x_y(
-                    file=src_file,
-                    rank=src_rank)
+        def get_sq_by_x_y(file, rank):
+            return file * 9 + rank
 
-            # 成らないことができる移動先
-            no_pro_dst_sq_set = set()
+        # 範囲外チェックを行いたいので、ループカウンタ―は sq ではなく file と rank の２重ループにする
+        for src_file in range(0,9):
+            for src_rank in range(0,9):
+                src_sq = get_sq_by_x_y(
+                        file=src_file,
+                        rank=src_rank)
 
-            # 成ることができる移動先
-            pro_dst_sq_set = set()
+                # 成らないことができる移動先
+                no_pro_dst_sq_set = set()
 
-            #
-            # 飛車の動き
-            #
+                # 成ることができる移動先
+                pro_dst_sq_set = set()
 
-            # 垂直
-            for delta_rank in range(1,9):
-                # 上
-                next_rank = src_rank-delta_rank
-                if 0 <= next_rank:
-                    dst_sq = get_sq_by_x_y(
-                            file=src_file,
-                            rank=next_rank)
-                    no_pro_dst_sq_set.add(dst_sq)
+                #
+                # 飛車の動き
+                #
 
-                    # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
-                    if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
-                        pro_dst_sq_set.add(dst_sq)
+                # 垂直
+                for delta_rank in range(1,9):
+                    # 上
+                    next_rank = src_rank-delta_rank
+                    if 0 <= next_rank:
+                        dst_sq = get_sq_by_x_y(
+                                file=src_file,
+                                rank=next_rank)
+                        no_pro_dst_sq_set.add(dst_sq)
 
-                # 下
-                next_rank = src_rank+delta_rank
-                if next_rank < 9:
-                    dst_sq = get_sq_by_x_y(
-                            file=src_file,
-                            rank=next_rank)
-                    no_pro_dst_sq_set.add(dst_sq)
+                        # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
+                        if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
+                            pro_dst_sq_set.add(dst_sq)
 
-                    # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
-                    if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
-                        pro_dst_sq_set.add(dst_sq)
+                    # 下
+                    next_rank = src_rank+delta_rank
+                    if next_rank < 9:
+                        dst_sq = get_sq_by_x_y(
+                                file=src_file,
+                                rank=next_rank)
+                        no_pro_dst_sq_set.add(dst_sq)
 
-            # 水平
-            for delta_file in range(1,9):
-                # 右
-                next_file = src_file-delta_file
-                if 0 <= next_file:
-                    dst_sq = get_sq_by_x_y(
-                            file=next_file,
-                            rank=src_rank)
-                    no_pro_dst_sq_set.add(dst_sq)
+                        # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
+                        if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
+                            pro_dst_sq_set.add(dst_sq)
 
-                    # １段目～３段目の水平の動きなら、成ることができる
-                    if 0 <= src_rank and src_rank < 3:
-                        pro_dst_sq_set.add(dst_sq)
+                # 水平
+                for delta_file in range(1,9):
+                    # 右
+                    next_file = src_file-delta_file
+                    if 0 <= next_file:
+                        dst_sq = get_sq_by_x_y(
+                                file=next_file,
+                                rank=src_rank)
+                        no_pro_dst_sq_set.add(dst_sq)
 
-                # 左
-                next_file = src_file+delta_file
-                if next_file < 9:
-                    dst_sq = get_sq_by_x_y(
-                            file=next_file,
-                            rank=src_rank)
-                    no_pro_dst_sq_set.add(dst_sq)
+                        # １段目～３段目の水平の動きなら、成ることができる
+                        if 0 <= src_rank and src_rank < 3:
+                            pro_dst_sq_set.add(dst_sq)
 
-                    # １段目～３段目の水平の動きなら、成ることができる
-                    if 0 <= src_rank and src_rank < 3:
-                        pro_dst_sq_set.add(dst_sq)
+                    # 左
+                    next_file = src_file+delta_file
+                    if next_file < 9:
+                        dst_sq = get_sq_by_x_y(
+                                file=next_file,
+                                rank=src_rank)
+                        no_pro_dst_sq_set.add(dst_sq)
 
-            #
-            # 角の動き
-            #
-            for delta in range(1,9):
-                # 右上
-                next_file = src_file-delta
-                next_rank = src_rank-delta
+                        # １段目～３段目の水平の動きなら、成ることができる
+                        if 0 <= src_rank and src_rank < 3:
+                            pro_dst_sq_set.add(dst_sq)
+
+                #
+                # 角の動き
+                #
+                for delta in range(1,9):
+                    # 右上
+                    next_file = src_file-delta
+                    next_rank = src_rank-delta
+                    if 0 <= next_file and 0 <= next_rank:
+                        dst_sq = get_sq_by_x_y(
+                                file=next_file,
+                                rank=next_rank)
+                        no_pro_dst_sq_set.add(dst_sq)
+
+                        # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
+                        if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
+                            pro_dst_sq_set.add(dst_sq)
+
+                    # 右下
+                    next_file = src_file-delta
+                    next_rank = src_rank+delta
+                    if 0 <= next_file and next_rank < 9:
+                        dst_sq = get_sq_by_x_y(
+                                file=next_file,
+                                rank=next_rank)
+                        no_pro_dst_sq_set.add(dst_sq)
+
+                        # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
+                        if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
+                            pro_dst_sq_set.add(dst_sq)
+
+                    # 左上
+                    next_file = src_file+delta
+                    next_rank = src_rank-delta
+                    if next_file < 9 and 0 <= next_rank:
+                        dst_sq = get_sq_by_x_y(
+                                file=next_file,
+                                rank=next_rank)
+                        no_pro_dst_sq_set.add(dst_sq)
+
+                        # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
+                        if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
+                            pro_dst_sq_set.add(dst_sq)
+
+                    # 左下
+                    next_file = src_file+delta
+                    next_rank = src_rank+delta
+                    if next_file < 9 and next_rank < 9:
+                        dst_sq = get_sq_by_x_y(
+                                file=next_file,
+                                rank=next_rank)
+                        no_pro_dst_sq_set.add(dst_sq)
+
+                        # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
+                        if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
+                            pro_dst_sq_set.add(dst_sq)
+
+                #
+                # 桂馬の動き
+                #
+
+                # 先手右上
+                next_file = src_file-1
+                next_rank = src_rank-2
                 if 0 <= next_file and 0 <= next_rank:
                     dst_sq = get_sq_by_x_y(
                             file=next_file,
@@ -219,22 +277,9 @@ if __name__ == '__main__':
                     if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
                         pro_dst_sq_set.add(dst_sq)
 
-                # 右下
-                next_file = src_file-delta
-                next_rank = src_rank+delta
-                if 0 <= next_file and next_rank < 9:
-                    dst_sq = get_sq_by_x_y(
-                            file=next_file,
-                            rank=next_rank)
-                    no_pro_dst_sq_set.add(dst_sq)
-
-                    # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
-                    if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
-                        pro_dst_sq_set.add(dst_sq)
-
-                # 左上
-                next_file = src_file+delta
-                next_rank = src_rank-delta
+                # 先手左上
+                next_file = src_file+1
+                next_rank = src_rank-2
                 if next_file < 9 and 0 <= next_rank:
                     dst_sq = get_sq_by_x_y(
                             file=next_file,
@@ -245,95 +290,52 @@ if __name__ == '__main__':
                     if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
                         pro_dst_sq_set.add(dst_sq)
 
-                # 左下
-                next_file = src_file+delta
-                next_rank = src_rank+delta
-                if next_file < 9 and next_rank < 9:
-                    dst_sq = get_sq_by_x_y(
-                            file=next_file,
-                            rank=next_rank)
-                    no_pro_dst_sq_set.add(dst_sq)
+                #block_str = EvaluationKMove.get_block_by_sq(sq)
+                no_pro_len = len(no_pro_dst_sq_set)
+                pro_len = len(pro_dst_sq_set)
+                total_len = no_pro_len + pro_len
 
-                    # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
-                    if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
-                        pro_dst_sq_set.add(dst_sq)
+                #
+                # デバッグ表示
+                #
 
-            #
-            # 桂馬の動き
-            #
+                # 成らない指し手の各マス
+                l = ["   "] * 81
 
-            # 先手右上
-            next_file = src_file-1
-            next_rank = src_rank-2
-            if 0 <= next_file and 0 <= next_rank:
-                dst_sq = get_sq_by_x_y(
-                        file=next_file,
-                        rank=next_rank)
-                no_pro_dst_sq_set.add(dst_sq)
+                # 成る指し手の各マス
+                m = ["   "] * 81
 
-                # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
-                if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
-                    pro_dst_sq_set.add(dst_sq)
+                l[src_sq] = "you"
+                m[src_sq] = "you"
 
-            # 先手左上
-            next_file = src_file+1
-            next_rank = src_rank-2
-            if next_file < 9 and 0 <= next_rank:
-                dst_sq = get_sq_by_x_y(
-                        file=next_file,
-                        rank=next_rank)
-                no_pro_dst_sq_set.add(dst_sq)
+                for dst_sq in no_pro_dst_sq_set:
+                    l[dst_sq] = " * "
 
-                # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
-                if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
-                    pro_dst_sq_set.add(dst_sq)
+                for dst_sq in pro_dst_sq_set:
+                    m[dst_sq] = " * "
 
-            #block_str = EvaluationKMove.get_block_by_sq(sq)
-            no_pro_len = len(no_pro_dst_sq_set)
-            pro_len = len(pro_dst_sq_set)
-            total_len = no_pro_len + pro_len
-            print(f"src_sq:{src_sq}  effect:{total_len} = no pro:{no_pro_len} + pro:{pro_len}")
+                f.write(f"""src_sq:{src_sq}  effect:{total_len} = no pro:{no_pro_len} + pro:{pro_len}
+先手成らず                                先手成り
++---+---+---+---+---+---+---+---+---+    +---+---+---+---+---+---+---+---+---+
+│{l[72]}|{l[63]}|{l[54]}|{l[45]}|{l[36]}|{l[27]}|{l[18]}|{l[9]}|{l[0]}|    |{m[72]}|{m[63]}|{m[54]}|{m[45]}|{m[36]}|{m[27]}|{m[18]}|{m[9]}|{m[0]}|
++---+---+---+---+---+---+---+---+---+    +---+---+---+---+---+---+---+---+---+
+|{l[73]}|{l[64]}|{l[55]}|{l[46]}|{l[37]}|{l[28]}|{l[19]}|{l[10]}|{l[1]}|    |{m[73]}|{m[64]}|{m[55]}|{m[46]}|{m[37]}|{m[28]}|{m[19]}|{m[10]}|{m[1]}|
++---+---+---+---+---+---+---+---+---+    +---+---+---+---+---+---+---+---+---+
+|{l[74]}|{l[65]}|{l[56]}|{l[47]}|{l[38]}|{l[29]}|{l[20]}|{l[11]}|{l[2]}|    |{m[74]}|{m[65]}|{m[56]}|{m[47]}|{m[38]}|{m[29]}|{m[20]}|{m[11]}|{m[2]}|
++---+---+---+---+---+---+---+---+---+    +---+---+---+---+---+---+---+---+---+
+|{l[75]}|{l[66]}|{l[57]}|{l[48]}|{l[39]}|{l[30]}|{l[21]}|{l[12]}|{l[3]}|    |{m[75]}|{m[66]}|{m[57]}|{m[48]}|{m[39]}|{m[30]}|{m[21]}|{m[12]}|{m[3]}|
++---+---+---+---+---+---+---+---+---+    +---+---+---+---+---+---+---+---+---+
+|{l[76]}|{l[67]}|{l[58]}|{l[49]}|{l[40]}|{l[31]}|{l[22]}|{l[13]}|{l[4]}|    |{m[76]}|{m[67]}|{m[58]}|{m[49]}|{m[40]}|{m[31]}|{m[22]}|{m[13]}|{m[4]}|
++---+---+---+---+---+---+---+---+---+    +---+---+---+---+---+---+---+---+---+
+|{l[77]}|{l[68]}|{l[59]}|{l[50]}|{l[41]}|{l[32]}|{l[23]}|{l[14]}|{l[5]}|    |{m[77]}|{m[68]}|{m[59]}|{m[50]}|{m[41]}|{m[32]}|{m[23]}|{m[14]}|{m[5]}|
++---+---+---+---+---+---+---+---+---+    +---+---+---+---+---+---+---+---+---+
+|{l[78]}|{l[69]}|{l[60]}|{l[51]}|{l[42]}|{l[33]}|{l[24]}|{l[15]}|{l[6]}|    |{m[78]}|{m[69]}|{m[60]}|{m[51]}|{m[42]}|{m[33]}|{m[24]}|{m[15]}|{m[6]}|
++---+---+---+---+---+---+---+---+---+    +---+---+---+---+---+---+---+---+---+
+|{l[79]}|{l[70]}|{l[61]}|{l[52]}|{l[43]}|{l[34]}|{l[25]}|{l[16]}|{l[7]}|    |{m[79]}|{m[70]}|{m[61]}|{m[52]}|{m[43]}|{m[34]}|{m[25]}|{m[16]}|{m[7]}|
++---+---+---+---+---+---+---+---+---+    +---+---+---+---+---+---+---+---+---+
+|{l[80]}|{l[71]}|{l[62]}|{l[53]}|{l[44]}|{l[35]}|{l[26]}|{l[17]}|{l[8]}|    |{m[80]}|{m[71]}|{m[62]}|{m[53]}|{m[44]}|{m[35]}|{m[26]}|{m[17]}|{m[8]}|
++---+---+---+---+---+---+---+---+---+    +---+---+---+---+---+---+---+---+---+
 
-            #
-            # デバッグ表示
-            #
-
-            # 成らない指し手の各マス
-            l = ["   "] * 81
-
-            # 成る指し手の各マス
-            m = ["   "] * 81
-
-            l[src_sq] = "you"
-            m[src_sq] = "you"
-
-            for dst_sq in no_pro_dst_sq_set:
-                l[dst_sq] = " * "
-
-            for dst_sq in pro_dst_sq_set:
-                m[dst_sq] = " * "
-
-            print(f"""
- 先手成らず                               先手成り
- +---+---+---+---+---+---+---+---+---+    +---+---+---+---+---+---+---+---+---+
- │{l[72]}|{l[63]}|{l[54]}|{l[45]}|{l[36]}|{l[27]}|{l[18]}|{l[9]}|{l[0]}|    |{m[72]}|{m[63]}|{m[54]}|{m[45]}|{m[36]}|{m[27]}|{m[18]}|{m[9]}|{m[0]}|
- +---+---+---+---+---+---+---+---+---+    +---+---+---+---+---+---+---+---+---+
- |{l[73]}|{l[64]}|{l[55]}|{l[46]}|{l[37]}|{l[28]}|{l[19]}|{l[10]}|{l[1]}|    |{m[73]}|{m[64]}|{m[55]}|{m[46]}|{m[37]}|{m[28]}|{m[19]}|{m[10]}|{m[1]}|
- +---+---+---+---+---+---+---+---+---+    +---+---+---+---+---+---+---+---+---+
- |{l[74]}|{l[65]}|{l[56]}|{l[47]}|{l[38]}|{l[29]}|{l[20]}|{l[11]}|{l[2]}|    |{m[74]}|{m[65]}|{m[56]}|{m[47]}|{m[38]}|{m[29]}|{m[20]}|{m[11]}|{m[2]}|
- +---+---+---+---+---+---+---+---+---+    +---+---+---+---+---+---+---+---+---+
- |{l[75]}|{l[66]}|{l[57]}|{l[48]}|{l[39]}|{l[30]}|{l[21]}|{l[12]}|{l[3]}|    |{m[75]}|{m[66]}|{m[57]}|{m[48]}|{m[39]}|{m[30]}|{m[21]}|{m[12]}|{m[3]}|
- +---+---+---+---+---+---+---+---+---+    +---+---+---+---+---+---+---+---+---+
- |{l[76]}|{l[67]}|{l[58]}|{l[49]}|{l[40]}|{l[31]}|{l[22]}|{l[13]}|{l[4]}|    |{m[76]}|{m[67]}|{m[58]}|{m[49]}|{m[40]}|{m[31]}|{m[22]}|{m[13]}|{m[4]}|
- +---+---+---+---+---+---+---+---+---+    +---+---+---+---+---+---+---+---+---+
- |{l[77]}|{l[68]}|{l[59]}|{l[50]}|{l[41]}|{l[32]}|{l[23]}|{l[14]}|{l[5]}|    |{m[77]}|{m[68]}|{m[59]}|{m[50]}|{m[41]}|{m[32]}|{m[23]}|{m[14]}|{m[5]}|
- +---+---+---+---+---+---+---+---+---+    +---+---+---+---+---+---+---+---+---+
- |{l[78]}|{l[69]}|{l[60]}|{l[51]}|{l[42]}|{l[33]}|{l[24]}|{l[15]}|{l[6]}|    |{m[78]}|{m[69]}|{m[60]}|{m[51]}|{m[42]}|{m[33]}|{m[24]}|{m[15]}|{m[6]}|
- +---+---+---+---+---+---+---+---+---+    +---+---+---+---+---+---+---+---+---+
- |{l[79]}|{l[70]}|{l[61]}|{l[52]}|{l[43]}|{l[34]}|{l[25]}|{l[16]}|{l[7]}|    |{m[79]}|{m[70]}|{m[61]}|{m[52]}|{m[43]}|{m[34]}|{m[25]}|{m[16]}|{m[7]}|
- +---+---+---+---+---+---+---+---+---+    +---+---+---+---+---+---+---+---+---+
- |{l[80]}|{l[71]}|{l[62]}|{l[53]}|{l[44]}|{l[35]}|{l[26]}|{l[17]}|{l[8]}|    |{m[80]}|{m[71]}|{m[62]}|{m[53]}|{m[44]}|{m[35]}|{m[26]}|{m[17]}|{m[8]}|
- +---+---+---+---+---+---+---+---+---+    +---+---+---+---+---+---+---+---+---+
 """)
 
             #for dst_sq in sorted(list(dst_sq_set)):
