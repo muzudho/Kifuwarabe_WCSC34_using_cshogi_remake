@@ -134,11 +134,11 @@ if __name__ == '__main__':
         return file * 9 + rank
 
     # 範囲外チェックを行いたいので、ループカウンタ―は sq ではなく file と rank の２重ループにする
-    for file in range(0,9):
-        for rank in range(0,9):
+    for src_file in range(0,9):
+        for src_rank in range(0,9):
             src_sq = get_sq_by_x_y(
-                    file=file,
-                    rank=rank)
+                    file=src_file,
+                    rank=src_rank)
 
             # 成らないことができる移動先
             no_pro_dst_sq_set = set()
@@ -153,53 +153,53 @@ if __name__ == '__main__':
             # 垂直
             for delta_rank in range(1,9):
                 # 上
-                next_rank = rank-delta_rank
+                next_rank = src_rank-delta_rank
                 if 0 <= next_rank:
                     dst_sq = get_sq_by_x_y(
-                            file=file,
+                            file=src_file,
                             rank=next_rank)
                     no_pro_dst_sq_set.add(dst_sq)
 
                     # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
-                    if (0 <= rank and rank < 3) or (0 <= next_rank and next_rank < 3):
+                    if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
                         pro_dst_sq_set.add(dst_sq)
 
                 # 下
-                next_rank = rank+delta_rank
+                next_rank = src_rank+delta_rank
                 if next_rank < 9:
                     dst_sq = get_sq_by_x_y(
-                            file=file,
+                            file=src_file,
                             rank=next_rank)
                     no_pro_dst_sq_set.add(dst_sq)
 
                     # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
-                    if (0 <= rank and rank < 3) or (0 <= next_rank and next_rank < 3):
+                    if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
                         pro_dst_sq_set.add(dst_sq)
 
             # 水平
             for delta_file in range(1,9):
                 # 右
-                next_file = file-delta_file
+                next_file = src_file-delta_file
                 if 0 <= next_file:
                     dst_sq = get_sq_by_x_y(
                             file=next_file,
-                            rank=rank)
+                            rank=src_rank)
                     no_pro_dst_sq_set.add(dst_sq)
 
                     # １段目～３段目の水平の動きなら、成ることができる
-                    if 0 <= rank and rank < 3:
+                    if 0 <= src_rank and src_rank < 3:
                         pro_dst_sq_set.add(dst_sq)
 
                 # 左
-                next_file = file+delta_file
+                next_file = src_file+delta_file
                 if next_file < 9:
                     dst_sq = get_sq_by_x_y(
                             file=next_file,
-                            rank=rank)
+                            rank=src_rank)
                     no_pro_dst_sq_set.add(dst_sq)
 
                     # １段目～３段目の水平の動きなら、成ることができる
-                    if 0 <= rank and rank < 3:
+                    if 0 <= src_rank and src_rank < 3:
                         pro_dst_sq_set.add(dst_sq)
 
             #
@@ -207,8 +207,8 @@ if __name__ == '__main__':
             #
             for delta in range(1,9):
                 # 右上
-                next_file = file-delta
-                next_rank = rank-delta
+                next_file = src_file-delta
+                next_rank = src_rank-delta
                 if 0 <= next_file and 0 <= next_rank:
                     dst_sq = get_sq_by_x_y(
                             file=next_file,
@@ -216,12 +216,12 @@ if __name__ == '__main__':
                     no_pro_dst_sq_set.add(dst_sq)
 
                     # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
-                    if (0 <= rank and rank < 3) or (0 <= next_rank and next_rank < 3):
+                    if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
                         pro_dst_sq_set.add(dst_sq)
 
                 # 右下
-                next_file = file-delta
-                next_rank = rank+delta
+                next_file = src_file-delta
+                next_rank = src_rank+delta
                 if 0 <= next_file and next_rank < 9:
                     dst_sq = get_sq_by_x_y(
                             file=next_file,
@@ -229,12 +229,12 @@ if __name__ == '__main__':
                     no_pro_dst_sq_set.add(dst_sq)
 
                     # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
-                    if (0 <= rank and rank < 3) or (0 <= next_rank and next_rank < 3):
+                    if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
                         pro_dst_sq_set.add(dst_sq)
 
                 # 左上
-                next_file = file+delta
-                next_rank = rank-delta
+                next_file = src_file+delta
+                next_rank = src_rank-delta
                 if next_file < 9 and 0 <= next_rank:
                     dst_sq = get_sq_by_x_y(
                             file=next_file,
@@ -242,12 +242,12 @@ if __name__ == '__main__':
                     no_pro_dst_sq_set.add(dst_sq)
 
                     # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
-                    if (0 <= rank and rank < 3) or (0 <= next_rank and next_rank < 3):
+                    if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
                         pro_dst_sq_set.add(dst_sq)
 
                 # 左下
-                next_file = file+delta
-                next_rank = rank+delta
+                next_file = src_file+delta
+                next_rank = src_rank+delta
                 if next_file < 9 and next_rank < 9:
                     dst_sq = get_sq_by_x_y(
                             file=next_file,
@@ -255,7 +255,7 @@ if __name__ == '__main__':
                     no_pro_dst_sq_set.add(dst_sq)
 
                     # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
-                    if (0 <= rank and rank < 3) or (0 <= next_rank and next_rank < 3):
+                    if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
                         pro_dst_sq_set.add(dst_sq)
 
             #
@@ -263,8 +263,8 @@ if __name__ == '__main__':
             #
 
             # 先手右上
-            next_file = file-1
-            next_rank = rank-2
+            next_file = src_file-1
+            next_rank = src_rank-2
             if 0 <= next_file and 0 <= next_rank:
                 dst_sq = get_sq_by_x_y(
                         file=next_file,
@@ -272,12 +272,12 @@ if __name__ == '__main__':
                 no_pro_dst_sq_set.add(dst_sq)
 
                 # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
-                if (0 <= rank and rank < 3) or (0 <= next_rank and next_rank < 3):
+                if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
                     pro_dst_sq_set.add(dst_sq)
 
             # 先手左上
-            next_file = file+1
-            next_rank = rank-2
+            next_file = src_file+1
+            next_rank = src_rank-2
             if next_file < 9 and 0 <= next_rank:
                 dst_sq = get_sq_by_x_y(
                         file=next_file,
@@ -285,7 +285,7 @@ if __name__ == '__main__':
                 no_pro_dst_sq_set.add(dst_sq)
 
                 # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
-                if (0 <= rank and rank < 3) or (0 <= next_rank and next_rank < 3):
+                if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
                     pro_dst_sq_set.add(dst_sq)
 
             #block_str = EvaluationKMove.get_block_by_sq(sq)
