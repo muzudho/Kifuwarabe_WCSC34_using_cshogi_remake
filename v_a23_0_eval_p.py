@@ -135,6 +135,8 @@ if __name__ == '__main__':
         def get_sq_by_x_y(file, rank):
             return file * 9 + rank
 
+        total_effect = 0
+
         # 範囲外チェックを行いたいので、ループカウンタ―は sq ではなく file と rank の２重ループにする
         for src_file in range(0,9):
             for src_rank in range(0,9):
@@ -294,6 +296,7 @@ if __name__ == '__main__':
                 no_pro_len = len(no_pro_dst_sq_set)
                 pro_len = len(pro_dst_sq_set)
                 total_len = no_pro_len + pro_len
+                total_effect += total_len
 
                 #
                 # デバッグ表示
@@ -337,8 +340,11 @@ if __name__ == '__main__':
 +---+---+---+---+---+---+---+---+---+    +---+---+---+---+---+---+---+---+---+
 
 """)
-
+                
             #for dst_sq in sorted(list(dst_sq_set)):
             #    #print(f"  dst_sq:{dst_sq}")
             #    pass
+
+        f.write(f"total_effect:{total_effect}")
+
 
