@@ -421,25 +421,7 @@ drop:{drop}
 total_effect:{effect_index}
 
 no pro + pro
-+---+---+---+---+---+---+---+---+---+
-│{subtotal_effect[72]:3}|{subtotal_effect[63]:3}|{subtotal_effect[54]:3}|{subtotal_effect[45]:3}|{subtotal_effect[36]:3}|{subtotal_effect[27]:3}|{subtotal_effect[18]:3}|{subtotal_effect[9]:3}|{subtotal_effect[0]:3}|
-+---+---+---+---+---+---+---+---+---+
-|{subtotal_effect[73]:3}|{subtotal_effect[64]:3}|{subtotal_effect[55]:3}|{subtotal_effect[46]:3}|{subtotal_effect[37]:3}|{subtotal_effect[28]:3}|{subtotal_effect[19]:3}|{subtotal_effect[10]:3}|{subtotal_effect[1]:3}|
-+---+---+---+---+---+---+---+---+---+
-|{subtotal_effect[74]:3}|{subtotal_effect[65]:3}|{subtotal_effect[56]:3}|{subtotal_effect[47]:3}|{subtotal_effect[38]:3}|{subtotal_effect[29]:3}|{subtotal_effect[20]:3}|{subtotal_effect[11]:3}|{subtotal_effect[2]:3}|
-+---+---+---+---+---+---+---+---+---+
-|{subtotal_effect[75]:3}|{subtotal_effect[66]:3}|{subtotal_effect[57]:3}|{subtotal_effect[48]:3}|{subtotal_effect[39]:3}|{subtotal_effect[30]:3}|{subtotal_effect[21]:3}|{subtotal_effect[12]:3}|{subtotal_effect[3]:3}|
-+---+---+---+---+---+---+---+---+---+
-|{subtotal_effect[76]:3}|{subtotal_effect[67]:3}|{subtotal_effect[58]:3}|{subtotal_effect[49]:3}|{subtotal_effect[40]:3}|{subtotal_effect[31]:3}|{subtotal_effect[22]:3}|{subtotal_effect[13]:3}|{subtotal_effect[4]:3}|
-+---+---+---+---+---+---+---+---+---+
-|{subtotal_effect[77]:3}|{subtotal_effect[68]:3}|{subtotal_effect[59]:3}|{subtotal_effect[50]:3}|{subtotal_effect[41]:3}|{subtotal_effect[32]:3}|{subtotal_effect[23]:3}|{subtotal_effect[14]:3}|{subtotal_effect[5]:3}|
-+---+---+---+---+---+---+---+---+---+
-|{subtotal_effect[78]:3}|{subtotal_effect[69]:3}|{subtotal_effect[60]:3}|{subtotal_effect[51]:3}|{subtotal_effect[42]:3}|{subtotal_effect[33]:3}|{subtotal_effect[24]:3}|{subtotal_effect[15]:3}|{subtotal_effect[6]:3}|
-+---+---+---+---+---+---+---+---+---+
-|{subtotal_effect[79]:3}|{subtotal_effect[70]:3}|{subtotal_effect[61]:3}|{subtotal_effect[52]:3}|{subtotal_effect[43]:3}|{subtotal_effect[34]:3}|{subtotal_effect[25]:3}|{subtotal_effect[16]:3}|{subtotal_effect[7]:3}|
-+---+---+---+---+---+---+---+---+---+
-|{subtotal_effect[80]:3}|{subtotal_effect[71]:3}|{subtotal_effect[62]:3}|{subtotal_effect[53]:3}|{subtotal_effect[44]:3}|{subtotal_effect[35]:3}|{subtotal_effect[26]:3}|{subtotal_effect[17]:3}|{subtotal_effect[8]:3}|
-+---+---+---+---+---+---+---+---+---+
+{DebugHelper.stringify_3characters_board(subtotal_effect)}
 
 """)
 
