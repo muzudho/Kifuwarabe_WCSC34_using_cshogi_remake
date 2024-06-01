@@ -91,69 +91,6 @@ class EvaluationKMove():
     1 - 544 / 658 = 0.17... なので１７％の削減
     """
 
-    #_relative_sq_to_move_index
-    _k_index_by_relative_sq = {
-        'A':{
-            1: 0,
-            9: 1,
-            10: 2,
-        },
-        'B':{
-            -1: 0,
-            1: 1,
-            8: 2,
-            9: 3,
-            10: 4,
-        },
-        'C':{
-            -1: 0,
-            8: 1,
-            9: 2,
-        },
-        'D':{
-            -9: 0,
-            -8: 1,
-            1: 2,
-            9: 3,
-            10: 4,
-        },
-        'E':{
-            -10: 0,
-            -9: 1,
-            -8: 2,
-            -1: 3,
-            1: 4,
-            8: 5,
-            9: 6,
-            10: 7,
-        },
-        'F':{
-            -10: 0,
-            -9: 1,
-            -1: 2,
-            8: 3,
-            9: 4,
-        },
-        'G':{
-            -9: 0,
-            -8: 1,
-            1: 2,
-        },
-        'H':{
-            -10: 0,
-            -9: 1,
-            -8: 2,
-            -1: 3,
-            1: 4,
-        },
-        'I':{
-            -10: 0,
-            -9: 1,
-            -1: 2,
-        },
-    }
-    """玉の指し手の相対SQを、インデックスへ変換"""
-
 
     #_relative_index_to_relative_sq
     _relative_sq_by_k_index = {
@@ -219,6 +156,129 @@ class EvaluationKMove():
     """将棋盤を A ～ I の９ブロックに分け、玉の指し手のインデックスを相対SQへ変換"""
 
 
+    _src_to_dst_index_dictionary = None
+
+    @classmethod
+    def get_src_to_dst_index_dictionary(clazz):
+        """元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します。
+        初回アクセス時はテーブル生成に時間がかかります"""
+
+        # 未生成なら生成
+        if clazz._src_to_dst_index_dictionary == None:
+
+            # 右
+            right_file = - 1
+            # 左
+            left_file = 1
+            # 上
+            top_rank = - 1
+            # 下
+            bottom_rank = 1
+
+            clazz._src_to_dst_index_dictionary = dict()
+
+            effect_serial_index = 0
+
+            #
+            # 利きのマスの集合を作成
+            #
+            for src_sq in range(0,81):
+
+                dst_to_index_dictionary = dict()
+                clazz._src_to_dst_index_dictionary[src_sq] = dst_to_index_dictionary
+
+                # 利きのマスの集合
+                dst_sq_set = set()
+
+                # 元マスの座標
+                (src_file,
+                src_rank) = BoardHelper.get_file_rank_by_sq(src_sq)
+
+                #
+                # 絶対マス番号を作成
+                #
+
+                # 右上
+                dst_file = src_file + right_file
+                dst_rank = src_rank + top_rank
+                if 0 <= dst_file and 0 <= dst_rank:
+                    dst_sq_set.add(BoardHelper.get_sq_by_file_rank(
+                            file=dst_file,
+                            rank=dst_rank))
+
+                # 右
+                dst_file = src_file + right_file
+                dst_rank = src_rank
+                if 0 <= dst_file:
+                    dst_sq_set.add(BoardHelper.get_sq_by_file_rank(
+                            file=dst_file,
+                            rank=dst_rank))
+
+                # 右下
+                dst_file = src_file + right_file
+                dst_rank = src_rank + bottom_rank
+                if 0 <= dst_file and dst_rank < 9:
+                    dst_sq_set.add(BoardHelper.get_sq_by_file_rank(
+                            file=dst_file,
+                            rank=dst_rank))
+
+                # 上
+                dst_file = src_file
+                dst_rank = src_rank + top_rank
+                if 0 <= dst_rank:
+                    dst_sq_set.add(BoardHelper.get_sq_by_file_rank(
+                            file=dst_file,
+                            rank=dst_rank))
+
+                # 下
+                dst_file = src_file
+                dst_rank = src_rank + bottom_rank
+                if dst_rank < 9:
+                    dst_sq_set.add(BoardHelper.get_sq_by_file_rank(
+                            file=dst_file,
+                            rank=dst_rank))
+
+                # 左上
+                dst_file = src_file + left_file
+                dst_rank = src_rank + top_rank
+                if dst_file < 9 and 0 <= dst_rank:
+                    dst_sq_set.add(BoardHelper.get_sq_by_file_rank(
+                            file=dst_file,
+                            rank=dst_rank))
+
+                # 左
+                dst_file = src_file + left_file
+                dst_rank = src_rank
+                if dst_file < 9:
+                    dst_sq_set.add(BoardHelper.get_sq_by_file_rank(
+                            file=dst_file,
+                            rank=dst_rank))
+
+                # 左下
+                dst_file = src_file + left_file
+                dst_rank = src_rank + bottom_rank
+                if dst_file < 9 and dst_rank < 9:
+                    dst_sq_set.add(BoardHelper.get_sq_by_file_rank(
+                            file=dst_file,
+                            rank=dst_rank))
+
+                #
+                # マス番号を昇順に並べる
+                #
+                dst_sq_list = sorted(list(dst_sq_set))
+
+                #
+                # 左表の利きのマスに、通し番号を振っていく
+                #
+                for dst_sq in dst_sq_list:
+                    print(f"[昇順] dst_sq={dst_sq}")
+                    dst_to_index_dictionary[dst_sq] = effect_serial_index
+                    effect_serial_index += 1
+
+
+        return clazz._src_to_dst_index_dictionary
+
+
     @staticmethod
     def get_king_direction_max_number():
         """玉の移動方向の最大数
@@ -268,12 +328,6 @@ class EvaluationKMove():
 
 
     @classmethod
-    def get_k_index_by_relative_sq(clazz):
-        """玉の指し手の相対SQを、インデックスへ変換するテーブルを取得"""
-        return clazz._k_index_by_relative_sq
-
-
-    @classmethod
     def get_relative_sq_by_k_index(clazz):
         return clazz._relative_sq_by_k_index
 
@@ -301,13 +355,20 @@ class EvaluationKMove():
         #
         src_sq = move_obj.src_sq_or_none
 
+        # 移動先マス番号
+        dst_sq = move_obj.dst_sq
+
         # 玉は成らない
 
         # 相対SQ    =  移動先マス番号    - 移動元マス番号
-        relative_sq = move_obj.dst_sq - src_sq
+        relative_sq = dst_sq          - src_sq
+
+        # 元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します
+        src_to_dst_index_dictionary = EvaluationKMove.get_src_to_dst_index_dictionary()
+
 
         try:
-            k_index = EvaluationKMove.get_k_index_by_relative_sq()['E'][relative_sq]
+            k_index = src_to_dst_index_dictionary[src_sq][dst_sq]
 
         except KeyError as ex:
             # move_obj.as_usi:5a5b / relative_sq:1 move_obj.dst_sq:37 src_sq:36
@@ -363,115 +424,8 @@ if __name__ == '__main__':
 
     with open("test_eval_k.log", 'w', encoding="utf-8") as f:
 
-        # 右
-        right_file = - 1
-        # 左
-        left_file = 1
-        # 上
-        top_rank = - 1
-        # 下
-        bottom_rank = 1
-
-        src_to_dst_index_dictionary = dict()
-
-        effect_serial_index = 0
-
-        #
-        # 利きのマスの集合を作成
-        #
-        for src_sq in range(0,81):
-
-            dst_to_index_dictionary = dict()
-            src_to_dst_index_dictionary[src_sq] = dst_to_index_dictionary
-
-            # 利きのマスの集合
-            dst_sq_set = set()
-
-            # 元マスの座標
-            (src_file,
-             src_rank) = BoardHelper.get_file_rank_by_sq(src_sq)
-
-            #
-            # 絶対マス番号を作成
-            #
-
-            # 右上
-            dst_file = src_file + right_file
-            dst_rank = src_rank + top_rank
-            if 0 <= dst_file and 0 <= dst_rank:
-                dst_sq_set.add(BoardHelper.get_sq_by_file_rank(
-                        file=dst_file,
-                        rank=dst_rank))
-
-            # 右
-            dst_file = src_file + right_file
-            dst_rank = src_rank
-            if 0 <= dst_file:
-                dst_sq_set.add(BoardHelper.get_sq_by_file_rank(
-                        file=dst_file,
-                        rank=dst_rank))
-
-            # 右下
-            dst_file = src_file + right_file
-            dst_rank = src_rank + bottom_rank
-            if 0 <= dst_file and dst_rank < 9:
-                dst_sq_set.add(BoardHelper.get_sq_by_file_rank(
-                        file=dst_file,
-                        rank=dst_rank))
-
-            # 上
-            dst_file = src_file
-            dst_rank = src_rank + top_rank
-            if 0 <= dst_rank:
-                dst_sq_set.add(BoardHelper.get_sq_by_file_rank(
-                        file=dst_file,
-                        rank=dst_rank))
-
-            # 下
-            dst_file = src_file
-            dst_rank = src_rank + bottom_rank
-            if dst_rank < 9:
-                dst_sq_set.add(BoardHelper.get_sq_by_file_rank(
-                        file=dst_file,
-                        rank=dst_rank))
-
-            # 左上
-            dst_file = src_file + left_file
-            dst_rank = src_rank + top_rank
-            if dst_file < 9 and 0 <= dst_rank:
-                dst_sq_set.add(BoardHelper.get_sq_by_file_rank(
-                        file=dst_file,
-                        rank=dst_rank))
-
-            # 左
-            dst_file = src_file + left_file
-            dst_rank = src_rank
-            if dst_file < 9:
-                dst_sq_set.add(BoardHelper.get_sq_by_file_rank(
-                        file=dst_file,
-                        rank=dst_rank))
-
-            # 左下
-            dst_file = src_file + left_file
-            dst_rank = src_rank + bottom_rank
-            if dst_file < 9 and dst_rank < 9:
-                dst_sq_set.add(BoardHelper.get_sq_by_file_rank(
-                        file=dst_file,
-                        rank=dst_rank))
-
-            #
-            # マス番号を昇順に並べる
-            #
-            dst_sq_list = sorted(list(dst_sq_set))
-
-            #
-            # 左表の利きのマスに、通し番号を振っていく
-            #
-            for dst_sq in dst_sq_list:
-                print(f"[昇順] dst_sq={dst_sq}")
-                dst_to_index_dictionary[dst_sq] = effect_serial_index
-                effect_serial_index += 1
-
+        # 元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します
+        src_to_dst_index_dictionary = EvaluationKMove.get_src_to_dst_index_dictionary()
 
         #
         # 表示：　３桁ますテーブルを２つ並べる
