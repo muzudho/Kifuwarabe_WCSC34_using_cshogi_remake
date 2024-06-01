@@ -287,6 +287,7 @@ class EvaluationKMove():
             print(f"move_obj.as_usi:{move_obj.as_usi} / relative_sq:{relative_sq} move_obj.dst_sq:{move_obj.dst_sq} src_sq:{src_sq}")
             raise
 
+        # assert
         if EvaluationKMove.get_serial_number_size() <= k_index:
             raise ValueError(f"k_index:{k_index} out of range {EvaluationKMove.get_serial_number_size()}")
 
@@ -308,8 +309,6 @@ class EvaluationKMove():
         - move_obj : Move
             指し手
         """
-        if EvaluationKMove.get_serial_number_size() <= k_index:
-            raise ValueError(f"k_index:{k_index} out of range {EvaluationKMove.get_serial_number_size()}")
 
         # マスの通し番号を渡すと、元マスと移動先マスを返す入れ子の辞書を返します
         (_, index_to_src_dst_dictionary) = EvaluationKMove.get_src_to_dst_index_dictionary_pair()

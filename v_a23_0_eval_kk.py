@@ -233,17 +233,17 @@ class EvaluationKkTable():
         - l_move_obj : Move
             敵玉の応手
         """
-        if EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size() <= kl_index:
-            raise ValueError(f"kl_index:{kl_index} out of range {EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size()}")
 
         king_serial_number_size = EvaluationKMove.get_serial_number_size()
 
         l_index = kl_index % king_serial_number_size
         k_index = kl_index // king_serial_number_size
 
+        # assert
         if EvaluationKMove.get_serial_number_size() <= l_index:
             raise ValueError(f"l_index:{l_index} out of range {EvaluationKMove.get_serial_number_size()}")
 
+        # assert
         if EvaluationKMove.get_serial_number_size() <= k_index:
             raise ValueError(f"k_index:{k_index} out of range {EvaluationKMove.get_serial_number_size()}")
 
