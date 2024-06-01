@@ -1,5 +1,6 @@
 # python v_a23_0_eval_k.py
 from v_a23_0_lib import Move
+from v_a23_0_debug import DebugHelper
 
 
 class EvaluationKMove():
@@ -359,8 +360,18 @@ class EvaluationKMove():
 if __name__ == '__main__':
     """スクリプト実行時"""
 
+    # ３桁
+    squares = ['   '] * 81
+
     with open("test_eval_k.log", 'w', encoding="utf-8") as f:
 
         for sq in range(0,81):
             block_str = EvaluationKMove.get_block_by_sq(sq)
-            f.write(f"sq:{sq}  block:{block_str}\n")
+            squares[sq] = f" {block_str} "
+            #f.write(f"sq:{sq}  block:{block_str}\n")
+
+        f.write(f"""\
+block:
+{DebugHelper.stringify_3characters_board(squares)}
+
+""")
