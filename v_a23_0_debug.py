@@ -1,8 +1,9 @@
 class DebugHelper():
+    """デバッグの助けに使う"""
 
 
     def stringify_3characters_board(squares):
-        """１マス３桁
+        """１マスに３桁を表示できる表
 
         Parameters
         ----------
@@ -11,7 +12,7 @@ class DebugHelper():
         """
 
         return f"""+---+---+---+---+---+---+---+---+---+
-│{squares[72]:3}|{squares[63]:3}|{squares[54]:3}|{squares[45]:3}|{squares[36]:3}|{squares[27]:3}|{squares[18]:3}|{squares[9]:3}|{squares[0]:3}|
+|{squares[72]:3}|{squares[63]:3}|{squares[54]:3}|{squares[45]:3}|{squares[36]:3}|{squares[27]:3}|{squares[18]:3}|{squares[9]:3}|{squares[0]:3}|
 +---+---+---+---+---+---+---+---+---+
 |{squares[73]:3}|{squares[64]:3}|{squares[55]:3}|{squares[46]:3}|{squares[37]:3}|{squares[28]:3}|{squares[19]:3}|{squares[10]:3}|{squares[1]:3}|
 +---+---+---+---+---+---+---+---+---+
@@ -33,7 +34,7 @@ class DebugHelper():
 
 
     def stringify_double_3characters_boards(left, right):
-        """１マス３桁の表を２つ並べる
+        """１マスに３桁を表示できる表を２つ並べる
 
         Parameters
         ----------
@@ -43,7 +44,7 @@ class DebugHelper():
             右側の表
         """
         return f"""+---+---+---+---+---+---+---+---+---+   +---+---+---+---+---+---+---+---+---+
-│{left[72]:3}|{left[63]:3}|{left[54]:3}|{left[45]:3}|{left[36]:3}|{left[27]:3}|{left[18]:3}|{left[9]:3}|{left[0]:3}|   │{right[72]:3}|{right[63]:3}|{right[54]:3}|{right[45]:3}|{right[36]:3}|{right[27]:3}|{right[18]:3}|{right[9]:3}|{right[0]:3}|
+|{left[72]:3}|{left[63]:3}|{left[54]:3}|{left[45]:3}|{left[36]:3}|{left[27]:3}|{left[18]:3}|{left[9]:3}|{left[0]:3}|   │{right[72]:3}|{right[63]:3}|{right[54]:3}|{right[45]:3}|{right[36]:3}|{right[27]:3}|{right[18]:3}|{right[9]:3}|{right[0]:3}|
 +---+---+---+---+---+---+---+---+---+   +---+---+---+---+---+---+---+---+---+
 |{left[73]:3}|{left[64]:3}|{left[55]:3}|{left[46]:3}|{left[37]:3}|{left[28]:3}|{left[19]:3}|{left[10]:3}|{left[1]:3}|   |{right[73]:3}|{right[64]:3}|{right[55]:3}|{right[46]:3}|{right[37]:3}|{right[28]:3}|{right[19]:3}|{right[10]:3}|{right[1]:3}|
 +---+---+---+---+---+---+---+---+---+   +---+---+---+---+---+---+---+---+---+
@@ -65,7 +66,7 @@ class DebugHelper():
 
 
     def stringify_4characters_board(squares):
-        """１マス４桁
+        """１マスに４桁を表示できる表
 
         Parameters
         ----------
@@ -75,7 +76,7 @@ class DebugHelper():
 
         return f"""\
 +----+----+----+----+----+----+----+----+----+
-│{squares[72]:4}|{squares[63]:4}|{squares[54]:4}|{squares[45]:4}|{squares[36]:4}|{squares[27]:4}|{squares[18]:4}|{squares[9]:4}|{squares[0]:4}|
+|{squares[72]:4}|{squares[63]:4}|{squares[54]:4}|{squares[45]:4}|{squares[36]:4}|{squares[27]:4}|{squares[18]:4}|{squares[9]:4}|{squares[0]:4}|
 +----+----+----+----+----+----+----+----+----+
 |{squares[73]:4}|{squares[64]:4}|{squares[55]:4}|{squares[46]:4}|{squares[37]:4}|{squares[28]:4}|{squares[19]:4}|{squares[10]:4}|{squares[1]:4}|
 +----+----+----+----+----+----+----+----+----+

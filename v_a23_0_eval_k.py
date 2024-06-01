@@ -1,5 +1,5 @@
 # python v_a23_0_eval_k.py
-from v_a23_0_lib import Move
+from v_a23_0_lib import Move, BoardHelper
 from v_a23_0_debug import DebugHelper
 
 
@@ -366,10 +366,10 @@ if __name__ == '__main__':
         # ３桁
         squares = ['   '] * 81
 
-        for sq in range(0,81):
-            block_str = EvaluationKMove.get_block_by_sq(sq)
-            squares[sq] = f" {block_str} "
-            #f.write(f"sq:{sq}  block:{block_str}\n")
+        for src_sq in range(0,81):
+            block_str = EvaluationKMove.get_block_by_sq(src_sq)
+            squares[src_sq] = f" {block_str} "
+            #f.write(f"src_sq:{src_sq}  block:{block_str}\n")
 
         f.write(f"""\
 block:
@@ -380,15 +380,104 @@ block:
         #for block_str in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']:
         #    f.write(f"block:{block_str}\n")
 
-        # ３桁
-        left = ['   '] * 81
-        right = ['   '] * 81
 
-        for sq in range(0,81):
-            block_str = EvaluationKMove.get_block_by_sq(sq)
+        for src_sq in range(0,81):
+        #for src_sq in [4]:
+            # ３桁
+            left = ['   '] * 81
+            right = ['   '] * 81
+
+            block_str = EvaluationKMove.get_block_by_sq(src_sq)
+
+            # 元マスの座標
+            (src_file,
+             src_rank) = BoardHelper.get_file_rank_by_sq(src_sq)
+
+            # 右
+            right_file = - 1
+            # 左
+            left_file = 1
+            # 上
+            top_rank = - 1
+            # 下
+            bottom_rank = 1
+
+            #
+            # 相対マス番号を作成
+            #
+
+            # 右上
+            diff_sq = - 10
+            dst_sq = src_sq + diff_sq
+            dst_file = src_file + right_file
+            dst_rank = src_rank + top_rank
+            if 0 <= dst_file and 0 <= dst_rank:
+                right[dst_sq] = f'{diff_sq:3}'
+
+            # 右
+            diff_sq = - 9
+            dst_sq = src_sq + diff_sq
+            dst_file = src_file + right_file
+            dst_rank = src_rank
+            if 0 <= dst_file:
+                right[dst_sq] = f'{diff_sq:3}'
+
+            # 右下
+            diff_sq = - 8
+            dst_sq = src_sq + diff_sq
+            dst_file = src_file + right_file
+            dst_rank = src_rank + bottom_rank
+            if 0 <= dst_file and dst_rank < 9:
+                right[dst_sq] = f'{diff_sq:3}'
+
+            # 上
+            diff_sq = -1
+            dst_sq = src_sq + diff_sq
+            dst_file = src_file
+            dst_rank = src_rank + top_rank
+            if 0 <= dst_rank:
+                right[dst_sq] = f'{diff_sq:3}'
+
+            # 元マス
+            right[src_sq] = 'you'
+
+            # 下
+            diff_sq = 1
+            dst_sq = src_sq + diff_sq
+            dst_file = src_file
+            dst_rank = src_rank + bottom_rank
+            #print(f'[下] dst_sq:{dst_sq} = src_sq:{src_sq} + diff_sq:{diff_sq};  dst_file:{dst_file} = src_file:{src_file};  dst_rank:{dst_rank} = src_rank:{src_rank} + bottom_rank:{bottom_rank}')
+            if dst_rank < 9:
+                #print(f'[下] ok')
+                right[dst_sq] = f'{diff_sq:3}'
+
+            # 左上
+            diff_sq = 8
+            dst_sq = src_sq + diff_sq
+            dst_file = src_file + left_file
+            dst_rank = src_rank + top_rank
+            if dst_file < 9 and 0 <= dst_rank:
+                right[dst_sq] = f'{diff_sq:3}'
+
+            # 左
+            diff_sq = 9
+            dst_sq = src_sq + diff_sq
+            dst_file = src_file + left_file
+            dst_rank = src_rank
+            if dst_file < 9:
+                right[dst_sq] = f'{diff_sq:3}'
+
+            # 左下
+            diff_sq = 10
+            dst_sq = src_sq + diff_sq
+            dst_file = src_file + left_file
+            dst_rank = src_rank + bottom_rank
+            if dst_file < 9 and dst_rank < 9:
+                #print(f'[左下] diff_sq:{diff_sq}  dst_sq:{dst_sq}  dst_file:{dst_file}  src_rank:{dst_rank}')
+                right[dst_sq] = f'{diff_sq:3}'
 
             # ３桁ますテーブルを２つ並べる
-            f.write(f"""sq:{sq:2}  block:{block_str}
+            f.write(f"""sq:{src_sq:2}  block:{block_str}
 通しインデックス                          相対マス
 {DebugHelper.stringify_double_3characters_boards(left, right)}
 """)

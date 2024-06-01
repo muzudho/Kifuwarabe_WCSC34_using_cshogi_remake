@@ -1,5 +1,5 @@
 # python v_a23_0_eval_p.py
-from v_a23_0_lib import Move
+from v_a23_0_lib import BoardHelper
 from v_a23_0_debug import DebugHelper
 
 
@@ -123,9 +123,6 @@ if __name__ == '__main__':
 
     with open("test_eval_p.log", 'w', encoding="utf-8") as f:
 
-        def get_sq_by_x_y(file, rank):
-            return file * 9 + rank
-
         subtotal_effect = [0] * 81
 
         # 通しのインデックス
@@ -134,7 +131,7 @@ if __name__ == '__main__':
         # 範囲外チェックを行いたいので、ループカウンタ―は sq ではなく file と rank の２重ループにする
         for src_file in range(0,9):
             for src_rank in range(0,9):
-                src_sq = get_sq_by_x_y(
+                src_sq = BoardHelper.get_sq_by_file_rank(
                         file=src_file,
                         rank=src_rank)
 
@@ -153,7 +150,7 @@ if __name__ == '__main__':
                     # 上
                     next_rank = src_rank-delta_rank
                     if 0 <= next_rank:
-                        dst_sq = get_sq_by_x_y(
+                        dst_sq = BoardHelper.get_sq_by_file_rank(
                                 file=src_file,
                                 rank=next_rank)
                         no_pro_dst_sq_set.add(dst_sq)
@@ -165,7 +162,7 @@ if __name__ == '__main__':
                     # 下
                     next_rank = src_rank+delta_rank
                     if next_rank < 9:
-                        dst_sq = get_sq_by_x_y(
+                        dst_sq = BoardHelper.get_sq_by_file_rank(
                                 file=src_file,
                                 rank=next_rank)
                         no_pro_dst_sq_set.add(dst_sq)
@@ -179,7 +176,7 @@ if __name__ == '__main__':
                     # 右
                     next_file = src_file-delta_file
                     if 0 <= next_file:
-                        dst_sq = get_sq_by_x_y(
+                        dst_sq = BoardHelper.get_sq_by_file_rank(
                                 file=next_file,
                                 rank=src_rank)
                         no_pro_dst_sq_set.add(dst_sq)
@@ -191,7 +188,7 @@ if __name__ == '__main__':
                     # 左
                     next_file = src_file+delta_file
                     if next_file < 9:
-                        dst_sq = get_sq_by_x_y(
+                        dst_sq = BoardHelper.get_sq_by_file_rank(
                                 file=next_file,
                                 rank=src_rank)
                         no_pro_dst_sq_set.add(dst_sq)
@@ -208,7 +205,7 @@ if __name__ == '__main__':
                     next_file = src_file-delta
                     next_rank = src_rank-delta
                     if 0 <= next_file and 0 <= next_rank:
-                        dst_sq = get_sq_by_x_y(
+                        dst_sq = BoardHelper.get_sq_by_file_rank(
                                 file=next_file,
                                 rank=next_rank)
                         no_pro_dst_sq_set.add(dst_sq)
@@ -221,7 +218,7 @@ if __name__ == '__main__':
                     next_file = src_file-delta
                     next_rank = src_rank+delta
                     if 0 <= next_file and next_rank < 9:
-                        dst_sq = get_sq_by_x_y(
+                        dst_sq = BoardHelper.get_sq_by_file_rank(
                                 file=next_file,
                                 rank=next_rank)
                         no_pro_dst_sq_set.add(dst_sq)
@@ -234,7 +231,7 @@ if __name__ == '__main__':
                     next_file = src_file+delta
                     next_rank = src_rank-delta
                     if next_file < 9 and 0 <= next_rank:
-                        dst_sq = get_sq_by_x_y(
+                        dst_sq = BoardHelper.get_sq_by_file_rank(
                                 file=next_file,
                                 rank=next_rank)
                         no_pro_dst_sq_set.add(dst_sq)
@@ -247,7 +244,7 @@ if __name__ == '__main__':
                     next_file = src_file+delta
                     next_rank = src_rank+delta
                     if next_file < 9 and next_rank < 9:
-                        dst_sq = get_sq_by_x_y(
+                        dst_sq = BoardHelper.get_sq_by_file_rank(
                                 file=next_file,
                                 rank=next_rank)
                         no_pro_dst_sq_set.add(dst_sq)
@@ -264,7 +261,7 @@ if __name__ == '__main__':
                 next_file = src_file-1
                 next_rank = src_rank-2
                 if 0 <= next_file and 0 <= next_rank:
-                    dst_sq = get_sq_by_x_y(
+                    dst_sq = BoardHelper.get_sq_by_file_rank(
                             file=next_file,
                             rank=next_rank)
                     no_pro_dst_sq_set.add(dst_sq)
@@ -277,7 +274,7 @@ if __name__ == '__main__':
                 next_file = src_file+1
                 next_rank = src_rank-2
                 if next_file < 9 and 0 <= next_rank:
-                    dst_sq = get_sq_by_x_y(
+                    dst_sq = BoardHelper.get_sq_by_file_rank(
                             file=next_file,
                             rank=next_rank)
                     no_pro_dst_sq_set.add(dst_sq)
@@ -401,7 +398,7 @@ if __name__ == '__main__':
 
             for dst_file in range(0,9):
                 for dst_rank in range(min_rank,9):
-                    dst_sq = get_sq_by_x_y(
+                    dst_sq = BoardHelper.get_sq_by_file_rank(
                             file=dst_file,
                             rank=dst_rank)
 
