@@ -1,0 +1,406 @@
+# python v_a24_0_eval_p.py
+from v_a24_0_lib import BoardHelper
+from v_a24_0_debug import DebugHelper
+
+
+class EvaluationKMove():
+    """自兵の指し手
+
+    兵は玉以外の駒。
+
+    +---+---+---+---+---+---+---+---+---+
+    |   |   |   |   |   |   |   |   |   |
+    +---+---+---+---+---+---+---+---+---+
+    |   |   |   |   |   |   |   |   |   |
+    +---+---+---+---+---+---+---+---+---+
+    |   |   |   |   |   |   |   |   |   |
+    +---+---+---+---+---+---+---+---+---+
+    |   |   |   |   |   |   |   |   |   |
+    +---+---+---+---+---+---+---+---+---+
+    |   |   |   |   |   |   |   |   |   |
+    +---+---+---+---+---+---+---+---+---+
+    |   |   |   |   |   |   |   |   |   |
+    +---+---+---+---+---+---+---+---+---+
+    |   |   |   |   |   |   |   |   |   |
+    +---+---+---+---+---+---+---+---+---+
+    |   |   |   |   |   |   |   |   |   |
+    +---+---+---+---+---+---+---+---+---+
+    |   |   |   |   |   |   |   |   |   |
+    +---+---+---+---+---+---+---+---+---+
+              将棋盤のテンプレート
+
+    👇 兵の指し手は、次の２種類に大別できる
+
+    1. 先手
+    2. 後手
+
+    👇 さらに細かく、以下の３つに分類できる
+
+    1. 成らずの手
+    2. 成りの手
+    3. 打
+
+    👇 下図：　兵の指し手は、現在地 yo と、移動先で表せる。例えば１一にある兵
+
+    +---+---+---+---+---+---+---+---+---+
+    | 22| 20| 18| 16| 14| 12| 10|  8|you|
+    +---+---+---+---+---+---+---+---+---+
+    |   |   |   |   |   |   |   |  9|  0|
+    +---+---+---+---+---+---+---+---+---+
+    |   |   |   |   |   |   | 11|   |  1|
+    +---+---+---+---+---+---+---+---+---+
+    |   |   |   |   |   | 13|   |   |  2|
+    +---+---+---+---+---+---+---+---+---+
+    |   |   |   |   | 15|   |   |   |  3|
+    +---+---+---+---+---+---+---+---+---+
+    |   |   |   | 17|   |   |   |   |  4|
+    +---+---+---+---+---+---+---+---+---+
+    |   |   | 19|   |   |   |   |   |  5|
+    +---+---+---+---+---+---+---+---+---+
+    |   | 21|   |   |   |   |   |   |  6|
+    +---+---+---+---+---+---+---+---+---+
+    | 23|   |   |   |   |   |   |   |  7|
+    +---+---+---+---+---+---+---+---+---+
+
+    👆　例えば　1a2b　なら、移動先は 9 が該当する
+
+    飛車の利き、角の利き、桂の利きだけを考慮すればいい。金、銀、香、歩はその中に包摂される。
+
+    +---+---+---+---+---+---+---+---+---+
+    | 31|   |   |   | 13|   |   |   |  0|
+    +---+---+---+---+---+---+---+---+---+
+    |   | 28|   |   | 14|   |   |  3|   |
+    +---+---+---+---+---+---+---+---+---+
+    |   |   | 25| 21| 15|  9|  6|   |   |
+    +---+---+---+---+---+---+---+---+---+
+    |   |   |   | 22| 16| 10|   |   |   |
+    +---+---+---+---+---+---+---+---+---+
+    | 32| 29| 26| 23| yo| 11|  7|  4|  1|
+    +---+---+---+---+---+---+---+---+---+
+    |   |   |   | 24| 17| 12|   |   |   |
+    +---+---+---+---+---+---+---+---+---+
+    |   |   | 27|   | 18|   |  8|   |   |
+    +---+---+---+---+---+---+---+---+---+
+    |   | 30|   |   | 19|   |   |  5|   |
+    +---+---+---+---+---+---+---+---+---+
+    | 33|   |   |   | 20|   |   |   |  2|
+    +---+---+---+---+---+---+---+---+---+
+                 ５五のケース
+
+    👇　移動先は、移動元との相対SQを使うことでマス番号を取得できる
+
+    +---+---+---+---+---+---+---+---+---+
+    | 32|   |   |   | -4|   |   |   |-40|
+    +---+---+---+---+---+---+---+---+---+
+    |   | 24|   |   | -3|   |   |-30|   |
+    +---+---+---+---+---+---+---+---+---+
+    |   |   | 16|  7| -2|-11|-20|   |   |
+    +---+---+---+---+---+---+---+---+---+
+    |   |   |   |  8| -1|-10|   |   |   |
+    +---+---+---+---+---+---+---+---+---+
+    | 36| 27| 18|  9|you| -9|-18|-27|-36|
+    +---+---+---+---+---+---+---+---+---+
+    |   |   |   | 10|  1| -8|   |   |   |
+    +---+---+---+---+---+---+---+---+---+
+    |   |   | 20|   |  2|   |-16|   |   |
+    +---+---+---+---+---+---+---+---+---+
+    |   | 30|   |   |  3|   |   |-24|   |
+    +---+---+---+---+---+---+---+---+---+
+    | 40|   |   |   |  4|   |   |   |-32|
+    +---+---+---+---+---+---+---+---+---+
+                先手５五のケース
+
+    👆　このマッピングは８１マス分あり、要素数も１種類ではない
+    """
+
+
+########################################
+# スクリプト実行時
+########################################
+
+if __name__ == '__main__':
+    """スクリプト実行時"""
+
+    with open("test_eval_p.log", 'w', encoding="utf-8") as f:
+
+        subtotal_effect = [0] * 81
+
+        # 通しのインデックス
+        effect_index = 0
+
+        # 範囲外チェックを行いたいので、ループカウンタ―は sq ではなく file と rank の２重ループにする
+        for src_file in range(0,9):
+            for src_rank in range(0,9):
+                src_sq = BoardHelper.get_sq_by_file_rank(
+                        file=src_file,
+                        rank=src_rank)
+
+                # 成らないことができる移動先
+                no_pro_dst_sq_set = set()
+
+                # 成ることができる移動先
+                pro_dst_sq_set = set()
+
+                #
+                # 飛車の動き
+                #
+
+                # 垂直
+                for delta_rank in range(1,9):
+                    # 上
+                    next_rank = src_rank-delta_rank
+                    if 0 <= next_rank:
+                        dst_sq = BoardHelper.get_sq_by_file_rank(
+                                file=src_file,
+                                rank=next_rank)
+                        no_pro_dst_sq_set.add(dst_sq)
+
+                        # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
+                        if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
+                            pro_dst_sq_set.add(dst_sq)
+
+                    # 下
+                    next_rank = src_rank+delta_rank
+                    if next_rank < 9:
+                        dst_sq = BoardHelper.get_sq_by_file_rank(
+                                file=src_file,
+                                rank=next_rank)
+                        no_pro_dst_sq_set.add(dst_sq)
+
+                        # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
+                        if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
+                            pro_dst_sq_set.add(dst_sq)
+
+                # 水平
+                for delta_file in range(1,9):
+                    # 右
+                    next_file = src_file-delta_file
+                    if 0 <= next_file:
+                        dst_sq = BoardHelper.get_sq_by_file_rank(
+                                file=next_file,
+                                rank=src_rank)
+                        no_pro_dst_sq_set.add(dst_sq)
+
+                        # １段目～３段目の水平の動きなら、成ることができる
+                        if 0 <= src_rank and src_rank < 3:
+                            pro_dst_sq_set.add(dst_sq)
+
+                    # 左
+                    next_file = src_file+delta_file
+                    if next_file < 9:
+                        dst_sq = BoardHelper.get_sq_by_file_rank(
+                                file=next_file,
+                                rank=src_rank)
+                        no_pro_dst_sq_set.add(dst_sq)
+
+                        # １段目～３段目の水平の動きなら、成ることができる
+                        if 0 <= src_rank and src_rank < 3:
+                            pro_dst_sq_set.add(dst_sq)
+
+                #
+                # 角の動き
+                #
+                for delta in range(1,9):
+                    # 右上
+                    next_file = src_file-delta
+                    next_rank = src_rank-delta
+                    if 0 <= next_file and 0 <= next_rank:
+                        dst_sq = BoardHelper.get_sq_by_file_rank(
+                                file=next_file,
+                                rank=next_rank)
+                        no_pro_dst_sq_set.add(dst_sq)
+
+                        # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
+                        if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
+                            pro_dst_sq_set.add(dst_sq)
+
+                    # 右下
+                    next_file = src_file-delta
+                    next_rank = src_rank+delta
+                    if 0 <= next_file and next_rank < 9:
+                        dst_sq = BoardHelper.get_sq_by_file_rank(
+                                file=next_file,
+                                rank=next_rank)
+                        no_pro_dst_sq_set.add(dst_sq)
+
+                        # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
+                        if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
+                            pro_dst_sq_set.add(dst_sq)
+
+                    # 左上
+                    next_file = src_file+delta
+                    next_rank = src_rank-delta
+                    if next_file < 9 and 0 <= next_rank:
+                        dst_sq = BoardHelper.get_sq_by_file_rank(
+                                file=next_file,
+                                rank=next_rank)
+                        no_pro_dst_sq_set.add(dst_sq)
+
+                        # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
+                        if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
+                            pro_dst_sq_set.add(dst_sq)
+
+                    # 左下
+                    next_file = src_file+delta
+                    next_rank = src_rank+delta
+                    if next_file < 9 and next_rank < 9:
+                        dst_sq = BoardHelper.get_sq_by_file_rank(
+                                file=next_file,
+                                rank=next_rank)
+                        no_pro_dst_sq_set.add(dst_sq)
+
+                        # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
+                        if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
+                            pro_dst_sq_set.add(dst_sq)
+
+                #
+                # 桂馬の動き
+                #
+
+                # 先手右上
+                next_file = src_file-1
+                next_rank = src_rank-2
+                if 0 <= next_file and 0 <= next_rank:
+                    dst_sq = BoardHelper.get_sq_by_file_rank(
+                            file=next_file,
+                            rank=next_rank)
+                    no_pro_dst_sq_set.add(dst_sq)
+
+                    # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
+                    if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
+                        pro_dst_sq_set.add(dst_sq)
+
+                # 先手左上
+                next_file = src_file+1
+                next_rank = src_rank-2
+                if next_file < 9 and 0 <= next_rank:
+                    dst_sq = BoardHelper.get_sq_by_file_rank(
+                            file=next_file,
+                            rank=next_rank)
+                    no_pro_dst_sq_set.add(dst_sq)
+
+                    # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
+                    if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
+                        pro_dst_sq_set.add(dst_sq)
+
+                no_pro_len = len(no_pro_dst_sq_set)
+                pro_len = len(pro_dst_sq_set)
+                subtotal_len = no_pro_len + pro_len
+
+                subtotal_effect[src_sq] = subtotal_len
+
+                #
+                # デバッグ表示
+                #
+
+                # 成らない指し手の各マス　値：通しインデックス
+                a = ["    "] * 81
+
+                # 成る指し手の各マス　値：通しインデックス
+                m = ["    "] * 81
+
+                # 成らない指し手の各マス　値：相対ます番号
+                b = ["    "] * 81
+
+                # 成る指し手の各マス　値：相対ます番号
+                c = ["    "] * 81
+
+                a[src_sq] = " you"
+                m[src_sq] = " you"
+                b[src_sq] = " you"
+                c[src_sq] = " you"
+
+                for dst_sq in no_pro_dst_sq_set:
+                    a[dst_sq] = f"{effect_index:4}"
+                    effect_index += 1
+                    b[dst_sq] = f"{dst_sq-src_sq:4}"
+
+                for dst_sq in pro_dst_sq_set:
+                    m[dst_sq] = f"{effect_index:4}"
+                    effect_index += 1
+                    c[dst_sq] = f"{dst_sq-src_sq:4}"
+
+                f.write(f"""src_sq:{src_sq}  effect:{subtotal_len} = no pro:{no_pro_len} + pro:{pro_len}
+通しインデックス  先手成らず                          通しインデックス  先手成り                           相対マス  先手成らず                                 相対マス  先手成り
+{DebugHelper.stringify_quadruple_4characters_board(a, m, b, c)}
+
+""")
+
+            #for dst_sq in sorted(list(dst_sq_set)):
+            #    #print(f"  dst_sq:{dst_sq}")
+            #    pass
+
+        #
+        # TODO 打
+        #
+        #   - 打は SFEN では駒種類毎に分かれている。 R, B, G, S, N, L, P
+        #
+        r = ['    '] * 81
+        b = ['    '] * 81
+        g = ['    '] * 81
+        s = ['    '] * 81
+        n = ['    '] * 81
+        l = ['    '] * 81
+        p = ['    '] * 81
+        for drop in ['R', 'B', 'G', 'S', 'N', 'L', 'P']:
+
+            if drop == 'R':
+                arr = r
+
+            elif drop == 'B':
+                arr = b
+
+            elif drop == 'G':
+                arr = g
+
+            elif drop == 'S':
+                arr = s
+
+            elif drop == 'N':
+                arr = n
+
+            elif drop == 'L':
+                arr = l
+
+            elif drop == 'P':
+                arr = p
+
+            else:
+                raise ValueError(f'drop:{drop}')
+
+            if drop == 'N':
+                min_rank = 2
+
+            elif drop in ['L', 'P']:
+                min_rank = 1
+
+            else:
+                min_rank = 0
+
+            for dst_file in range(0,9):
+                for dst_rank in range(min_rank,9):
+                    dst_sq = BoardHelper.get_sq_by_file_rank(
+                            file=dst_file,
+                            rank=dst_rank)
+
+                    arr[dst_sq] = f"{effect_index:4}"
+                    effect_index += 1
+
+            f.write(f"""
+drop:{drop}
+{DebugHelper.stringify_4characters_board(arr)}
+
+""")
+
+
+
+
+        f.write(f"""
+total_effect:{effect_index}
+
+no pro + pro
+{DebugHelper.stringify_3characters_board(subtotal_effect)}
+
+""")
+
+# TODO 後手
