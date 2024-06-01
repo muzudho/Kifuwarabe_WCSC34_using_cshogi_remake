@@ -473,20 +473,22 @@ if __name__ == '__main__':
                 effect_serial_index += 1
 
 
-            #
-            # ３桁ますテーブルを２つ並べる
-            #
+        #
+        # 表示：　３桁ますテーブルを２つ並べる
+        #
+        for src_sq in range(0,81):
+            dst_to_index_dictionary = src_to_dst_index_dictionary[src_sq]
+
             #   - １マスが３桁の文字列の表
             #   - 元マス
-            #
             serial_index_table = ['   '] * 81
             serial_index_table[src_sq] = 'you'
 
             src_dst_table = ['   '] * 81
             src_dst_table[src_sq] = 'you'
 
-            for dst_sq in dst_sq_list:
-                serial_index_table[dst_sq] = f'{dst_to_index_dictionary[dst_sq]:3}'
+            for dst_sq, serial_index in dst_to_index_dictionary.items():
+                serial_index_table[dst_sq] = f'{serial_index:3}'
                 src_dst_table[dst_sq] = f'{dst_sq:3}'
 
             # 表示
