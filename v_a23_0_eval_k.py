@@ -359,6 +359,8 @@ class EvaluationKMove():
 if __name__ == '__main__':
     """スクリプト実行時"""
 
-    for sq in range(0,81):
-        block_str = EvaluationKMove.get_block_by_sq(sq)
-        print(f"sq:{sq}  block:{block_str}")
+    with open("test_eval_k.log", 'w', encoding="utf-8") as f:
+
+        for sq in range(0,81):
+            block_str = EvaluationKMove.get_block_by_sq(sq)
+            f.write(f"sq:{sq}  block:{block_str}\n")
