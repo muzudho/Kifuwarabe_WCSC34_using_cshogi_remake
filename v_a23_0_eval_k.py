@@ -384,12 +384,6 @@ if __name__ == '__main__':
             dst_to_index_dictionary = dict()
             src_to_dst_index_dictionary[src_sq] = dst_to_index_dictionary
 
-            # １マスが３桁の文字列の表
-            src_dst_table = ['   '] * 81
-
-            # 元マス
-            src_dst_table[src_sq] = 'you'
-
             # 利きのマスの集合
             dst_sq_set = set()
 
@@ -476,23 +470,26 @@ if __name__ == '__main__':
             for dst_sq in dst_sq_list:
                 print(f"[昇順] dst_sq={dst_sq}")
                 dst_to_index_dictionary[dst_sq] = effect_serial_index
-                src_dst_table[dst_sq] = f'{dst_sq:3}'
                 effect_serial_index += 1
-
-
-            #
-            # 表示用テーブル
-            #
-            serial_index_table = ['   '] * 81
-            serial_index_table[src_sq] = 'you'
-
-            for dst_sq in dst_sq_list:
-                serial_index_table[dst_sq] = f'{dst_to_index_dictionary[dst_sq]:3}'
 
 
             #
             # ３桁ますテーブルを２つ並べる
             #
+            #   - １マスが３桁の文字列の表
+            #   - 元マス
+            #
+            serial_index_table = ['   '] * 81
+            serial_index_table[src_sq] = 'you'
+
+            src_dst_table = ['   '] * 81
+            src_dst_table[src_sq] = 'you'
+
+            for dst_sq in dst_sq_list:
+                serial_index_table[dst_sq] = f'{dst_to_index_dictionary[dst_sq]:3}'
+                src_dst_table[dst_sq] = f'{dst_sq:3}'
+
+            # 表示
             f.write(f"""src_masu:{BoardHelper.sq_to_jsa(src_sq):2}
 src と dst                              通しインデックス
 {DebugHelper.stringify_double_3characters_boards(src_dst_table, serial_index_table)}
