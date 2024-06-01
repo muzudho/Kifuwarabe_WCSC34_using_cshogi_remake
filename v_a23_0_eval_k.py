@@ -380,27 +380,120 @@ block:
         #for block_str in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']:
         #    f.write(f"block:{block_str}\n")
 
+        # 右
+        right_file = - 1
+        # 左
+        left_file = 1
+        # 上
+        top_rank = - 1
+        # 下
+        bottom_rank = 1
 
+        effect_serial_index = 0
+
+        #
+        # 利きのマスの集合を作成
+        #
         for src_sq in range(0,81):
-        #for src_sq in [4]:
-            # ３桁
-            left = ['   '] * 81
-            right = ['   '] * 81
+
+            # １マスが３桁の文字列の表
+            left_table = ['   '] * 81
+            right_table = ['   '] * 81
+
+            # 利きのマスの集合
+            effect_sq_set = set()
+
+            # 元マスの座標
+            (src_file,
+             src_rank) = BoardHelper.get_file_rank_by_sq(src_sq)
+
+            #
+            # 絶対マス番号を作成
+            #
+
+            # 右上
+            dst_file = src_file + right_file
+            dst_rank = src_rank + top_rank
+            if 0 <= dst_file and 0 <= dst_rank:
+                effect_sq_set.add(BoardHelper.get_sq_by_file_rank(
+                        file=dst_file,
+                        rank=dst_rank))
+
+            # 右
+            dst_file = src_file + right_file
+            dst_rank = src_rank
+            if 0 <= dst_file:
+                effect_sq_set.add(BoardHelper.get_sq_by_file_rank(
+                        file=dst_file,
+                        rank=dst_rank))
+
+            # 右下
+            dst_file = src_file + right_file
+            dst_rank = src_rank + bottom_rank
+            if 0 <= dst_file and dst_rank < 9:
+                effect_sq_set.add(BoardHelper.get_sq_by_file_rank(
+                        file=dst_file,
+                        rank=dst_rank))
+
+            # 上
+            dst_file = src_file
+            dst_rank = src_rank + top_rank
+            if 0 <= dst_rank:
+                effect_sq_set.add(BoardHelper.get_sq_by_file_rank(
+                        file=dst_file,
+                        rank=dst_rank))
+
+            # 下
+            dst_file = src_file
+            dst_rank = src_rank + bottom_rank
+            if dst_rank < 9:
+                effect_sq_set.add(BoardHelper.get_sq_by_file_rank(
+                        file=dst_file,
+                        rank=dst_rank))
+
+            # 左上
+            dst_file = src_file + left_file
+            dst_rank = src_rank + top_rank
+            if dst_file < 9 and 0 <= dst_rank:
+                effect_sq_set.add(BoardHelper.get_sq_by_file_rank(
+                        file=dst_file,
+                        rank=dst_rank))
+
+            # 左
+            dst_file = src_file + left_file
+            dst_rank = src_rank
+            if dst_file < 9:
+                effect_sq_set.add(BoardHelper.get_sq_by_file_rank(
+                        file=dst_file,
+                        rank=dst_rank))
+
+            # 左下
+            dst_file = src_file + left_file
+            dst_rank = src_rank + bottom_rank
+            if dst_file < 9 and dst_rank < 9:
+                effect_sq_set.add(BoardHelper.get_sq_by_file_rank(
+                        file=dst_file,
+                        rank=dst_rank))
+
+            #
+            # マス番号を昇順に並べる
+            #
+            effect_sq_list = sorted(list(effect_sq_set))
+
+            #
+            # 左表の利きのマスに、通し番号を振っていく
+            #
+            for left_table_sq in effect_sq_list:
+                print(f"[昇順] left_table_sq={left_table_sq}")
+                left_table[left_table_sq] = f'{effect_serial_index:3}'
+                effect_serial_index += 1
+
 
             block_str = EvaluationKMove.get_block_by_sq(src_sq)
 
             # 元マスの座標
             (src_file,
              src_rank) = BoardHelper.get_file_rank_by_sq(src_sq)
-
-            # 右
-            right_file = - 1
-            # 左
-            left_file = 1
-            # 上
-            top_rank = - 1
-            # 下
-            bottom_rank = 1
 
             #
             # 相対マス番号を作成
@@ -412,7 +505,7 @@ block:
             dst_file = src_file + right_file
             dst_rank = src_rank + top_rank
             if 0 <= dst_file and 0 <= dst_rank:
-                right[dst_sq] = f'{diff_sq:3}'
+                right_table[dst_sq] = f'{diff_sq:3}'
 
             # 右
             diff_sq = - 9
@@ -420,7 +513,7 @@ block:
             dst_file = src_file + right_file
             dst_rank = src_rank
             if 0 <= dst_file:
-                right[dst_sq] = f'{diff_sq:3}'
+                right_table[dst_sq] = f'{diff_sq:3}'
 
             # 右下
             diff_sq = - 8
@@ -428,7 +521,7 @@ block:
             dst_file = src_file + right_file
             dst_rank = src_rank + bottom_rank
             if 0 <= dst_file and dst_rank < 9:
-                right[dst_sq] = f'{diff_sq:3}'
+                right_table[dst_sq] = f'{diff_sq:3}'
 
             # 上
             diff_sq = -1
@@ -436,10 +529,10 @@ block:
             dst_file = src_file
             dst_rank = src_rank + top_rank
             if 0 <= dst_rank:
-                right[dst_sq] = f'{diff_sq:3}'
+                right_table[dst_sq] = f'{diff_sq:3}'
 
             # 元マス
-            right[src_sq] = 'you'
+            right_table[src_sq] = 'you'
 
             # 下
             diff_sq = 1
@@ -449,7 +542,7 @@ block:
             #print(f'[下] dst_sq:{dst_sq} = src_sq:{src_sq} + diff_sq:{diff_sq};  dst_file:{dst_file} = src_file:{src_file};  dst_rank:{dst_rank} = src_rank:{src_rank} + bottom_rank:{bottom_rank}')
             if dst_rank < 9:
                 #print(f'[下] ok')
-                right[dst_sq] = f'{diff_sq:3}'
+                right_table[dst_sq] = f'{diff_sq:3}'
 
             # 左上
             diff_sq = 8
@@ -457,7 +550,7 @@ block:
             dst_file = src_file + left_file
             dst_rank = src_rank + top_rank
             if dst_file < 9 and 0 <= dst_rank:
-                right[dst_sq] = f'{diff_sq:3}'
+                right_table[dst_sq] = f'{diff_sq:3}'
 
             # 左
             diff_sq = 9
@@ -465,7 +558,7 @@ block:
             dst_file = src_file + left_file
             dst_rank = src_rank
             if dst_file < 9:
-                right[dst_sq] = f'{diff_sq:3}'
+                right_table[dst_sq] = f'{diff_sq:3}'
 
             # 左下
             diff_sq = 10
@@ -474,10 +567,10 @@ block:
             dst_rank = src_rank + bottom_rank
             if dst_file < 9 and dst_rank < 9:
                 #print(f'[左下] diff_sq:{diff_sq}  dst_sq:{dst_sq}  dst_file:{dst_file}  src_rank:{dst_rank}')
-                right[dst_sq] = f'{diff_sq:3}'
+                right_table[dst_sq] = f'{diff_sq:3}'
 
             # ３桁ますテーブルを２つ並べる
-            f.write(f"""sq:{src_sq:2}  block:{block_str}
+            f.write(f"""masu:{BoardHelper.sq_to_jsa(src_sq):2}  block:{block_str}
 通しインデックス                          相対マス
-{DebugHelper.stringify_double_3characters_boards(left, right)}
+{DebugHelper.stringify_double_3characters_boards(left_table, right_table)}
 """)
