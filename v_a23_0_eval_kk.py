@@ -23,8 +23,13 @@ class EvaluationKkTable():
             敵玉の指し手
         """
 
-        # 0 ～ 419_903 =                                         0 ～ 647 *                                 648 +                                        0 ～ 647
-        return           EvaluationKMove.get_index_by_k_move(k_move_obj) * EvaluationKMove.get_pattern_number() + EvaluationKMove.get_index_by_k_move(l_move_obj)
+        # 0 ～ 353_159 =                                         0 ～ 647 *                                     544 +                                        0 ～ 647
+        kk_index       = EvaluationKMove.get_index_by_k_move(k_move_obj) * EvaluationKMove.get_serial_number_size() + EvaluationKMove.get_index_by_k_move(l_move_obj)
+
+        if EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size() <= kk_index:
+            raise ValueError(f"kk_index:{kk_index} out of range {EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size()}")
+
+        return kk_index
 
 
     def __init__(
@@ -77,8 +82,8 @@ class EvaluationKkTable():
         # ファイルが存在しないとき
         if table_as_array is None:
             table_as_array = EvaluationLib.create_random_evaluation_table_as_array(
-                    a_move_size=EvaluationKMove.get_pattern_number(),
-                    b_move_size=EvaluationKMove.get_pattern_number())
+                    a_move_size=EvaluationKMove.get_serial_number_size(),
+                    b_move_size=EvaluationKMove.get_serial_number_size())
             is_file_modified = True     # 新規作成だから
 
         else:
@@ -228,10 +233,20 @@ class EvaluationKkTable():
         - l_move_obj : Move
             敵玉の応手
         """
-        king_move_pattern_number = EvaluationKMove.get_pattern_number()
+        if EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size() <= kl_index:
+            raise ValueError(f"kl_index:{kl_index} out of range {EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size()}")
 
-        l_index = kl_index % king_move_pattern_number
-        k_index = kl_index // king_move_pattern_number
+        king_serial_number_size = EvaluationKMove.get_serial_number_size()
+
+        l_index = kl_index % king_serial_number_size
+        k_index = kl_index // king_serial_number_size
+
+        if EvaluationKMove.get_serial_number_size() <= l_index:
+            raise ValueError(f"l_index:{l_index} out of range {EvaluationKMove.get_serial_number_size()}")
+
+        if EvaluationKMove.get_serial_number_size() <= k_index:
+            raise ValueError(f"k_index:{k_index} out of range {EvaluationKMove.get_serial_number_size()}")
+
 
         l_move_obj = EvaluationKMove.destructure_k_index(
             k_index=l_index)

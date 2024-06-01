@@ -4,6 +4,7 @@ import datetime
 import random
 from decimal import Decimal, ROUND_HALF_UP
 from v_a23_0_lib import Turn, Move, MoveHelper, BoardHelper, MoveListHelper, PolicyHelper, GameResultFile
+from v_a23_0_eval_k import EvaluationKMove
 from v_a23_0_eval_kk import EvaluationKkTable
 
 
@@ -652,6 +653,10 @@ class Kifuwarabe():
 
             # ＫＬ
             for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
+
+                if EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size() <= kl_index:
+                    raise ValueError(f"kl_index:{kl_index} out of range {EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size()}")
+
                 k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
                         kl_index=kl_index)
 
@@ -745,6 +750,10 @@ class Kifuwarabe():
                 number_of_connection = 0
 
                 for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
+
+                    if EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size() <= kl_index:
+                        raise ValueError(f"kl_index:{kl_index} out of range {EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size()}")
+
                     k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
                             kl_index=kl_index)
 
@@ -794,6 +803,9 @@ class Kifuwarabe():
             for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
                 if rest < 1:
                     break
+
+                if EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size() <= kl_index:
+                    raise ValueError(f"kl_index:{kl_index} out of range {EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size()}")
 
                 k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
                         kl_index=kl_index)
@@ -915,6 +927,10 @@ class Kifuwarabe():
                 number_of_connection = 0
 
                 for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
+
+                    if EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size() <= kl_index:
+                        raise ValueError(f"kl_index:{kl_index} out of range {EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size()}")
+
                     k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
                             kl_index=kl_index)
 
@@ -960,6 +976,9 @@ class Kifuwarabe():
             for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
                 if rest < 1:
                     break
+
+                if EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size() <= kl_index:
+                    raise ValueError(f"kl_index:{kl_index} out of range {EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size()}")
 
                 k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
                         kl_index=kl_index)
@@ -1652,6 +1671,12 @@ class Kifuwarabe():
         for fo_index, relation_bit in weaken_pq_index_and_relation_bit_dictionary.items():
             print(f"  PQ:{fo_index:6}  relation_bit:{relation_bit}")
 
+        # assert
+        for fo_index, relation_bit in weaken_kl_index_and_relation_bit_dictionary.items():
+
+            if EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size() <= fo_index:
+                raise ValueError(f"fo_index:{fo_index} out of range {EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size()}")
+
         # 関係のキーをインデックスから着手へ変換
         (k_move_u_and_l_to_relation_number_dictionary,
          k_move_u_and_q_to_relation_number_dictionary,
@@ -2191,6 +2216,11 @@ class EvaluationFacade():
                     fo_index = EvaluationKkTable.get_index_of_kk_table(
                         k_move_obj=f_move_obj,
                         l_move_obj=o_move_obj)
+                    
+                    # assert
+                    if EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size() <= fo_index:
+                        raise ValueError(f"fo_index:{fo_index} out of range {EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size()}")
+
                 # FIXME ＫＱ
                 elif kind == 'KQ':
                     pass
@@ -2224,6 +2254,12 @@ class EvaluationFacade():
 
                 fo_index_and_relation_bit_dictionary[fo_index] = relation_bit
 
+            # assert
+            for fo_index, relation_bit in fo_index_and_relation_bit_dictionary.items():
+
+                if EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size() <= fo_index:
+                    raise ValueError(f"fo_index:{fo_index} out of range {EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size()}")
+
             return fo_index_and_relation_bit_dictionary
 
         # 指し手と、ビット値を紐づける
@@ -2241,6 +2277,12 @@ class EvaluationFacade():
                     kind='KL',
                     f_move_obj=k_move_obj,
                     o_move_u_for_f_set=l_move_u_for_k_set)
+
+            # assert
+            for fo_index, relation_bit in temp_dictionary.items():
+
+                if EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size() <= fo_index:
+                    raise ValueError(f"fo_index:{fo_index} out of range {EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size()}")
 
             # 和集合
             kl_index_and_relation_bit_dictionary = kl_index_and_relation_bit_dictionary | temp_dictionary
@@ -2271,6 +2313,12 @@ class EvaluationFacade():
                     o_move_u_for_f_set=q_move_u_for_p_set)
 
             pq_index_and_relation_bit_dictionary = pq_index_and_relation_bit_dictionary | temp_dictionary
+
+        # assert
+        for kl_index, relation_bit in kl_index_and_relation_bit_dictionary.items():
+
+            if EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size() <= kl_index:
+                raise ValueError(f"kl_index:{kl_index} out of range {EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size()}")
 
         return (kl_index_and_relation_bit_dictionary,
                 kq_index_and_relation_bit_dictionary,
@@ -2397,6 +2445,13 @@ class EvaluationFacade():
             - 自兵の着手に対する、敵兵の応手の数
         """
 
+        # assert
+        for fo_index, relation_bit in kl_index_and_relation_bit_dictionary.items():
+
+            if EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size() <= fo_index:
+                raise ValueError(f"fo_index:{fo_index} out of range {EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size()}")
+
+
         def select_f_move_u_and_o_and_relation_number(
                 fo_index_and_relation_bit_dictionary,
                 label_f,
@@ -2407,6 +2462,9 @@ class EvaluationFacade():
             kind = f"{label_f}{label_o}"
 
             for fo_index, relation_bit in fo_index_and_relation_bit_dictionary.items():
+
+                if EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size() <= fo_index:
+                    raise ValueError(f"fo_index:{fo_index} out of range {EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size()}")
 
                 if kind == 'KL':
                     f_move_obj, o_move_obj = EvaluationKkTable.destructure_kl_index(fo_index)
@@ -2646,9 +2704,19 @@ class EvaluationFacade():
                 turn=board.turn,
                 kifuwarabe=kifuwarabe)
 
+        # assert
+        for fo_index, relation_bit in kl_index_and_relation_bit_dictionary.items():
+
+            if EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size() <= fo_index:
+                raise ValueError(f"fo_index:{fo_index} out of range {EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size()}")
+
         if is_debug:
             print(f"  自玉の着手と、敵玉の応手の、関係の一覧（キー：ｆｏ＿ｉｎｄｅｘ，　値：関係ビット）：")
             for fo_index, relation_bit in kl_index_and_relation_bit_dictionary.items():
+
+                if EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size() <= fo_index:
+                    raise ValueError(f"fo_index:{fo_index} out of range {EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size()}")
+
                 (k_move_obj,
                 l_move_obj) = EvaluationKkTable.destructure_kl_index(
                     kl_index=fo_index)

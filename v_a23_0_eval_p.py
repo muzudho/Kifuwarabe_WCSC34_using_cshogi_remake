@@ -283,7 +283,6 @@ if __name__ == '__main__':
                     if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
                         pro_dst_sq_set.add(dst_sq)
 
-                #block_str = EvaluationKMove.get_block_by_sq(sq)
                 no_pro_len = len(no_pro_dst_sq_set)
                 pro_len = len(pro_dst_sq_set)
                 subtotal_len = no_pro_len + pro_len

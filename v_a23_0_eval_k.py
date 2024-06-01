@@ -91,70 +91,6 @@ class EvaluationKMove():
     1 - 544 / 658 = 0.17... なので１７％の削減
     """
 
-
-    #_relative_index_to_relative_sq
-    _relative_sq_by_k_index = {
-        'A':{
-            0:1,
-            1:9,
-            2:10,
-        },
-        'B':{
-            0:-1,
-            1:1,
-            2:8,
-            3:9,
-            4:10,
-        },
-        'C':{
-            0:-1,
-            1:8,
-            2:9,
-        },
-        'D':{
-            0:-9,
-            1:-8,
-            2:1,
-            3:9,
-            4:10,
-        },
-        'E':{
-            0: -10,
-            1: -9,
-            2: -8,
-            3: -1,
-            4: 1,
-            5: 8,
-            6: 9,
-            7: 10,
-        },
-        'F':{
-            0:-10,
-            1:-9,
-            2:-1,
-            3:8,
-            4:9,
-        },
-        'G':{
-            0:-9,
-            1:-8,
-            2:1,
-        },
-        'H':{
-            0:-10,
-            1:-9,
-            2:-8,
-            3:-1,
-            4:1,
-        },
-        'I':{
-            0:-10,
-            1:-9,
-            2:-1,
-        },
-    }
-    """将棋盤を A ～ I の９ブロックに分け、玉の指し手のインデックスを相対SQへ変換"""
-
     _src_to_dst_index_dictionary = None
     """元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書"""
 
@@ -298,20 +234,6 @@ class EvaluationKMove():
         return 8
 
 
-    #get_king_move_number
-    @staticmethod
-    def get_pattern_number():
-        """玉の指し手の数
-
-        Returns
-        -------
-        - int
-        """
-        # move_number = sq_size * directions
-        #         648 =      81 *          8
-        return    648
-
-
     def get_serial_number_size():
         """玉の指し手の数
 
@@ -320,34 +242,6 @@ class EvaluationKMove():
         - int
         """
         return 544
-
-
-    @staticmethod
-    def get_block_by_sq(sq):
-        """マス番号をブロック番号へ変換"""
-        if sq == 0:
-            return 'A'
-        elif sq == 8:
-            return 'C'
-        elif sq == 72:
-            return 'G'
-        elif sq == 80:
-            return 'I'
-        elif sq % 9 == 0: # and sq != 0 and sq != 72:
-            return 'D'
-        elif sq % 9 == 8: # and sq != 8 and sq != 80:
-            return 'F'
-        elif 1 <= sq and sq <= 7:
-            return 'B'
-        elif 73 <= sq and sq <= 79:
-            return 'H'
-        else:
-            return 'E'
-
-
-    @classmethod
-    def get_relative_sq_by_k_index(clazz):
-        return clazz._relative_sq_by_k_index
 
 
     #get_index_of_k_move
@@ -393,9 +287,10 @@ class EvaluationKMove():
             print(f"move_obj.as_usi:{move_obj.as_usi} / relative_sq:{relative_sq} move_obj.dst_sq:{move_obj.dst_sq} src_sq:{src_sq}")
             raise
 
+        if EvaluationKMove.get_serial_number_size() <= k_index:
+            raise ValueError(f"k_index:{k_index} out of range {EvaluationKMove.get_serial_number_size()}")
 
-        # 0～647 =  0～80  *                                              8 +    0～7
-        return     src_sq * EvaluationKMove.get_king_direction_max_number() + k_index
+        return k_index
 
 
     @staticmethod
@@ -413,18 +308,13 @@ class EvaluationKMove():
         - move_obj : Move
             指し手
         """
-        rest = k_index
+        if EvaluationKMove.get_serial_number_size() <= k_index:
+            raise ValueError(f"k_index:{k_index} out of range {EvaluationKMove.get_serial_number_size()}")
 
-        king_direction_max_number = EvaluationKMove.get_king_direction_max_number()
+        # マスの通し番号を渡すと、元マスと移動先マスを返す入れ子の辞書を返します
+        (_, index_to_src_dst_dictionary) = EvaluationKMove.get_src_to_dst_index_dictionary_pair()
 
-        relative_index = rest % king_direction_max_number
-        rest //= king_direction_max_number
-
-        src_sq = rest
-
-        # Ｅブロック
-        relative_sq = EvaluationKMove.get_relative_sq_by_k_index()['E'][relative_index]
-        dst_sq = src_sq + relative_sq
+        (src_sq, dst_sq) = index_to_src_dst_dictionary[k_index]
 
         return Move.from_src_dst_pro(
                 src_sq=src_sq,
