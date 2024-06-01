@@ -363,23 +363,6 @@ if __name__ == '__main__':
 
     with open("test_eval_k.log", 'w', encoding="utf-8") as f:
 
-        # ３桁
-        squares = ['   '] * 81
-
-        for src_sq in range(0,81):
-            block_str = EvaluationKMove.get_block_by_sq(src_sq)
-            squares[src_sq] = f" {block_str} "
-            #f.write(f"src_sq:{src_sq}  block:{block_str}\n")
-
-        f.write(f"""\
-block:
-{DebugHelper.stringify_3characters_board(squares)}
-
-""")
-
-        #for block_str in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']:
-        #    f.write(f"block:{block_str}\n")
-
         # 右
         right_file = - 1
         # 左
@@ -489,8 +472,6 @@ block:
                 effect_serial_index += 1
 
 
-            block_str = EvaluationKMove.get_block_by_sq(src_sq)
-
             # 元マスの座標
             (src_file,
              src_rank) = BoardHelper.get_file_rank_by_sq(src_sq)
@@ -570,7 +551,7 @@ block:
                 right_table[dst_sq] = f'{diff_sq:3}'
 
             # ３桁ますテーブルを２つ並べる
-            f.write(f"""masu:{BoardHelper.sq_to_jsa(src_sq):2}  block:{block_str}
+            f.write(f"""src_masu:{BoardHelper.sq_to_jsa(src_sq):2}
 通しインデックス                          相対マス
 {DebugHelper.stringify_double_3characters_boards(left_table, right_table)}
 """)
