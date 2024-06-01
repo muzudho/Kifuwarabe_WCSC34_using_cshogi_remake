@@ -155,11 +155,15 @@ class EvaluationKMove():
     }
     """将棋盤を A ～ I の９ブロックに分け、玉の指し手のインデックスを相対SQへ変換"""
 
-
     _src_to_dst_index_dictionary = None
+    """元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書"""
+
+    _index_to_src_dst_dictionary = None
+    """マスの通し番号を渡すと、元マスと移動先マスを返す入れ子の辞書"""
+
 
     @classmethod
-    def get_src_to_dst_index_dictionary(clazz):
+    def get_src_to_dst_index_dictionary_pair(clazz):
         """元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します。
         初回アクセス時はテーブル生成に時間がかかります"""
 
@@ -176,6 +180,7 @@ class EvaluationKMove():
             bottom_rank = 1
 
             clazz._src_to_dst_index_dictionary = dict()
+            clazz._index_to_src_dst_dictionary = dict()
 
             effect_serial_index = 0
 
@@ -271,12 +276,15 @@ class EvaluationKMove():
                 # 左表の利きのマスに、通し番号を振っていく
                 #
                 for dst_sq in dst_sq_list:
-                    print(f"[昇順] dst_sq={dst_sq}")
+                    #print(f"[昇順] dst_sq={dst_sq}")
+
                     dst_to_index_dictionary[dst_sq] = effect_serial_index
+                    clazz._index_to_src_dst_dictionary[effect_serial_index] = (src_sq, dst_sq)
+
                     effect_serial_index += 1
 
 
-        return clazz._src_to_dst_index_dictionary
+        return (clazz._src_to_dst_index_dictionary, clazz._index_to_src_dst_dictionary)
 
 
     @staticmethod
@@ -302,6 +310,16 @@ class EvaluationKMove():
         # move_number = sq_size * directions
         #         648 =      81 *          8
         return    648
+
+
+    def get_serial_number_size():
+        """玉の指し手の数
+
+        Returns
+        -------
+        - int
+        """
+        return 544
 
 
     @staticmethod
@@ -364,7 +382,7 @@ class EvaluationKMove():
         relative_sq = dst_sq          - src_sq
 
         # 元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します
-        src_to_dst_index_dictionary = EvaluationKMove.get_src_to_dst_index_dictionary()
+        (src_to_dst_index_dictionary, _) = EvaluationKMove.get_src_to_dst_index_dictionary_pair()
 
 
         try:
@@ -425,10 +443,16 @@ if __name__ == '__main__':
     with open("test_eval_k.log", 'w', encoding="utf-8") as f:
 
         # 元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します
-        src_to_dst_index_dictionary = EvaluationKMove.get_src_to_dst_index_dictionary()
+        (src_to_dst_index_dictionary, index_to_src_dst_dictionary) = EvaluationKMove.get_src_to_dst_index_dictionary_pair()
 
         #
+        #
         # 表示：　３桁ますテーブルを２つ並べる
+        #
+        #
+
+        #
+        # 元マス・先マス to インデックス
         #
         for src_sq in range(0,81):
             dst_to_index_dictionary = src_to_dst_index_dictionary[src_sq]
@@ -450,3 +474,37 @@ if __name__ == '__main__':
 src と dst                              通しインデックス
 {DebugHelper.stringify_double_3characters_boards(src_dst_table, serial_index_table)}
 """)
+
+        #
+        # インデックス to 元マス・先マス
+        #
+
+        previous_src_sq = -1
+
+        for serial_index in range(0, EvaluationKMove.get_serial_number_size()):
+            (src_sq, dst_sq) = index_to_src_dst_dictionary[serial_index]
+
+            print(f"(src_masu:{BoardHelper.sq_to_jsa(src_sq):2}, dst_masu:{BoardHelper.sq_to_jsa(dst_sq):2}) = dictionary[ serial_index:{serial_index:3} ]")
+
+            if previous_src_sq != src_sq:
+
+                if previous_src_sq != -1:
+                    # 表示
+                    f.write(f"""src_masu:{BoardHelper.sq_to_jsa(src_sq):2}
+通しインデックス                           src と dst
+{DebugHelper.stringify_double_3characters_boards(serial_index_table, src_dst_table)}
+""")
+
+
+                #   - １マスが３桁の文字列の表
+                #   - 元マス
+                src_dst_table = ['   '] * 81
+                src_dst_table[src_sq] = 'you'
+
+                serial_index_table = ['   '] * 81
+                serial_index_table[src_sq] = 'you'
+
+            src_dst_table[dst_sq] = f'{dst_sq:3}'
+            serial_index_table[dst_sq] = f'{serial_index:3}'
+
+            previous_src_sq = src_sq
