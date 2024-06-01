@@ -360,10 +360,11 @@ class EvaluationKMove():
 if __name__ == '__main__':
     """スクリプト実行時"""
 
-    # ３桁
-    squares = ['   '] * 81
 
     with open("test_eval_k.log", 'w', encoding="utf-8") as f:
+
+        # ３桁
+        squares = ['   '] * 81
 
         for sq in range(0,81):
             block_str = EvaluationKMove.get_block_by_sq(sq)
@@ -374,4 +375,20 @@ if __name__ == '__main__':
 block:
 {DebugHelper.stringify_3characters_board(squares)}
 
+""")
+
+        #for block_str in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']:
+        #    f.write(f"block:{block_str}\n")
+
+        # ３桁
+        left = ['   '] * 81
+        right = ['   '] * 81
+
+        for sq in range(0,81):
+            block_str = EvaluationKMove.get_block_by_sq(sq)
+
+            # ３桁ますテーブルを２つ並べる
+            f.write(f"""sq:{sq:2}  block:{block_str}
+通しインデックス                          相対マス
+{DebugHelper.stringify_double_3characters_boards(left, right)}
 """)
