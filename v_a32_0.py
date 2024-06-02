@@ -528,7 +528,6 @@ class Kifuwarabe():
         print(f"[{datetime.datetime.now()}] [gameover] end")
 
 
-
     def do(self, cmd_tail):
         """一手指す
         example: ７六歩
@@ -830,13 +829,14 @@ class Kifuwarabe():
 
         if is_king_move:
 
-            # ＫＬの関係数
-            total = len(kl_index_to_relation_exists_dictionary)
+            # ＫＬとＫＱの関係数
+            kl_kq_total = len(kl_index_to_relation_exists_dictionary) + len(kq_index_to_relation_exists_dictionary)
 
-            def get_number_of_connection():
-                """ＫＬの関係が有りのものの数"""
+            def get_number_of_connection_for_kl_kq():
+                """ＫＬとＫＱの関係が有りのものの数"""
                 number_of_connection = 0
 
+                # ＫＬ
                 for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
 
                     k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
@@ -849,12 +849,25 @@ class Kifuwarabe():
                     if relation_exists == 1:
                         number_of_connection += 1
 
+                # ＫＱ
+                for kq_index, relation_exists in kq_index_to_relation_exists_dictionary.items():
+
+                    k_move_obj, q_move_obj = EvaluationKpTable.destructure_kq_index(
+                            kp_index=kq_index)
+
+                    if is_debug:
+                        # 表示
+                        print(f"kq_index:{kq_index}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+
+                    if relation_exists == 1:
+                        number_of_connection += 1
+
                 return number_of_connection
 
-            # ＫＬの関係が有りのものの数
-            number_of_connection = get_number_of_connection()
+            # ＫＬとＫＱの関係が有りのものの数
+            number_of_connection_kl_kq = get_number_of_connection_for_kl_kq()
 
-            # ＫＬの関係の有りのものの数が５割未満の内、最大の整数
+            # ＫＬとＫＱの関係の有りのものの数が５割未満の内、最大の整数
             #
             #   総数が０なら、答えは０
             #   総数が１なら、答えは０
@@ -863,12 +876,12 @@ class Kifuwarabe():
             #   総数が４なら、答えは１
             #   総数が５なら、答えは２
             #
-            # (1)   単純に　total // 2 - 1 とすると、total が３のときに答えが０になってしまう。
+            # (1)   単純に kl_kq_total // 2 - 1 とすると、 kl_kq_total が３のときに答えが０になってしまう。
             #       そこで総数の半分は四捨五入しておく
             # (2)   総数が０のとき、答えはー１になってしまうので、最低の値は０にしておく
             #
             # (1)
-            max_number_of_less_than_50_percent = Decimal(str(total / 2)).quantize(Decimal('0'), rounding=ROUND_HALF_UP) - 1
+            max_number_of_less_than_50_percent = Decimal(str(kl_kq_total / 2)).quantize(Decimal('0'), rounding=ROUND_HALF_UP) - 1
             # (2)
             if max_number_of_less_than_50_percent < 0:
                 max_number_of_less_than_50_percent = 0
@@ -877,11 +890,11 @@ class Kifuwarabe():
             #
             #   差を埋めればよい
             #
-            difference = number_of_connection - max_number_of_less_than_50_percent
+            difference = number_of_connection_kl_kq - max_number_of_less_than_50_percent
 
             if is_debug:
                 # デバッグ表示
-                print(f"  K:{move_obj.as_usi:5}  L:*****  number_of_connection:{number_of_connection} / total:{total}  max_number_of_less_than_50_percent:{max_number_of_less_than_50_percent}  difference:{difference}")
+                print(f"  K:{move_obj.as_usi:5}  O:*****  number_of_connection_kl_kq:{number_of_connection_kl_kq} / kl_kq_total:{kl_kq_total}  max_number_of_less_than_50_percent:{max_number_of_less_than_50_percent}  difference:{difference}")
 
             # 関係を difference 個削除
             rest = difference
@@ -935,6 +948,63 @@ class Kifuwarabe():
                             rest -= 1
 
         else:
+
+            # ＰＬとＰＱの関係数
+            pl_pq_total = len(pl_index_to_relation_exists_dictionary) + len(pq_index_to_relation_exists_dictionary)
+
+            def get_number_of_connection_for_pl_pq():
+                """ＰＬとＰＱの関係が有りのものの数"""
+                number_of_connection = 0
+
+                # ＰＬ
+                for pl_index, relation_exists in pl_index_to_relation_exists_dictionary.items():
+
+                    p_move_obj, l_move_obj = EvaluationKkTable.destructure_Pk_index(
+                            pl_index=pl_index)
+
+                    if is_debug:
+                        # 表示
+                        print(f"pl_index:{pl_index}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+
+                    if relation_exists == 1:
+                        number_of_connection += 1
+
+                # ＰＱ
+                for pq_index, relation_exists in pq_index_to_relation_exists_dictionary.items():
+
+                    p_move_obj, q_move_obj = EvaluationPpTable.destructure_pp_index(
+                            pp_index=pq_index)
+
+                    if is_debug:
+                        # 表示
+                        print(f"pq_index:{pq_index}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+
+                    if relation_exists == 1:
+                        number_of_connection += 1
+
+                return number_of_connection
+
+            # ＰＬとＰＱの関係が有りのものの数
+            number_of_connection_pl_pq = get_number_of_connection_for_pl_pq()
+
+            max_number_of_less_than_50_percent = Decimal(str(pl_pq_total / 2)).quantize(Decimal('0'), rounding=ROUND_HALF_UP) - 1
+
+            if max_number_of_less_than_50_percent < 0:
+                max_number_of_less_than_50_percent = 0
+
+            # この着手に対する応手の関係を減らしたい
+            #
+            #   差を埋めればよい
+            #
+            difference = number_of_connection_pl_pq - max_number_of_less_than_50_percent
+
+            if is_debug:
+                # デバッグ表示
+                print(f"  P:{move_obj.as_usi:5}  O:*****  number_of_connection_pl_pq:{number_of_connection_pl_pq} / pl_pq_total:{pl_pq_total}  max_number_of_less_than_50_percent:{max_number_of_less_than_50_percent}  difference:{difference}")
+
+            # 関係を difference 個削除
+            rest = difference
+
             # ＰＬ
             for pl_index, relation_exists in pl_index_to_relation_exists_dictionary.items():
                 if rest < 1:
@@ -1064,8 +1134,8 @@ class Kifuwarabe():
 
         if is_king_move:
 
-            # ＫＬの関係数
-            total = len(kl_index_to_relation_exists_dictionary)
+            # ＫＬとＫＱの関係数
+            kl_kq_total = len(kl_index_to_relation_exists_dictionary) + len(kq_index_to_relation_exists_dictionary)
 
             def get_number_of_connection():
                 """ＫＬの関係が有りのものの数"""
@@ -1097,11 +1167,11 @@ class Kifuwarabe():
             #   総数が４なら、答えは２
             #   総数が５なら、答えは３
             #
-            # (1)   単純に　total // 2 とすると、total が３のときに答えが１になってしまう。
+            # (1)   単純に kl_kq_total // 2 とすると、 kl_kq_total が３のときに答えが１になってしまう。
             #       そこで総数の半分は四捨五入しておく
             #
             # (1)
-            max_number_of_less_than_50_percent = Decimal(str(total / 2)).quantize(Decimal('0'), rounding=ROUND_HALF_UP)
+            max_number_of_less_than_50_percent = Decimal(str(kl_kq_total / 2)).quantize(Decimal('0'), rounding=ROUND_HALF_UP)
 
             # この着手に対する応手の関係を増やしたい
             #
@@ -1111,7 +1181,7 @@ class Kifuwarabe():
 
             if is_debug:
                 # デバッグ表示
-                print(f"  K:{move_obj.as_usi:5}  L:*****  number_of_connection:{number_of_connection} / total:{total}  max_number_of_less_than_50_percent:{max_number_of_less_than_50_percent}  difference:{difference}")
+                print(f"  K:{move_obj.as_usi:5}  L:*****  number_of_connection:{number_of_connection} / kl_kq_total:{kl_kq_total}  max_number_of_less_than_50_percent:{max_number_of_less_than_50_percent}  difference:{difference}")
 
             # 関係を difference 個追加
             rest = difference
