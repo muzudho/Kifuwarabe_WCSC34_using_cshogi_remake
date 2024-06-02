@@ -36,7 +36,7 @@ class Move():
     """指し手"""
 
 
-    _file_str_to_num = {
+    _file_th_str_to_num = {
         '1':1,
         '2':2,
         '3':3,
@@ -47,10 +47,10 @@ class Move():
         '8':8,
         '9':9,
     }
-    """列数字を数に変換"""
+    """1 から始まる列番号の数字を整数に変換"""
 
 
-    _file_num_to_str = {
+    _file_th_num_to_str = {
         1:'1',
         2:'2',
         3:'3',
@@ -61,10 +61,10 @@ class Move():
         8:'8',
         9:'9',
     }
-    """列数を文字に変換"""
+    """1 から始まる列番号の整数を文字に変換"""
 
 
-    _rank_str_to_num = {
+    _rank_str_to_th_num = {
         'a':1,
         'b':2,
         'c':3,
@@ -75,10 +75,10 @@ class Move():
         'h':8,
         'i':9,
     }
-    """段英字を数に変換"""
+    """段英字を 1 から始まる整数に変換"""
 
 
-    _rank_num_to_str = {
+    _rank_th_num_to_alphabet = {
         1:'a',
         2:'b',
         3:'c',
@@ -89,7 +89,7 @@ class Move():
         8:'h',
         9:'i',
     }
-    """段数を英字に変換"""
+    """1 から始まる段の整数を a から始まる英字に変換"""
 
 
     _src_dst_str_1st_figure_to_sq = {
@@ -132,9 +132,10 @@ class Move():
     _src_drop_files = ('R', 'B', 'G', 'S', 'N', 'L', 'P')
 
 
+    # 使ってない？
     @staticmethod
-    def get_rank_num_to_str(rank_num):
-        return Move._rank_num_to_str[rank_num]
+    def get_rank_th_num_to_alphabet(rank_num):
+        return Move._rank_th_num_to_alphabet[rank_num]
 
 
     @staticmethod
@@ -157,13 +158,13 @@ class Move():
         # 移動元の列番号を 1 から始まる整数で返す。打にはマス番号は無い
         #
         if src_str in Move._src_drops:
-            src_file_or_none = None
+            src_file_th_or_none = None
 
         else:
             file_str = src_str[0]
 
             try:
-                src_file_or_none = Move._file_str_to_num[file_str]
+                src_file_th_or_none = Move._file_th_str_to_num[file_str]
             except:
                 raise Exception(f"src file error: '{file_str}' in '{move_as_usi}'")
 
@@ -171,13 +172,13 @@ class Move():
         # 移動元の段番号を 1 から始まる整数で返す。打は無い
         #
         if src_str in Move._src_drops:
-            src_rank_or_none = None
+            src_rank_th_or_none = None
 
         else:
             rank_str = src_str[1]
 
             try:
-                src_rank_or_none = Move._rank_str_to_num[rank_str]
+                src_rank_th_or_none = Move._rank_str_to_th_num[rank_str]
             except:
                 raise Exception(f"src rank error: '{rank_str}' in '{move_as_usi}'")
 
@@ -187,7 +188,7 @@ class Move():
         file_str = dst_str[0]
 
         try:
-            dst_file = Move._file_str_to_num[file_str]
+            dst_file = Move._file_th_str_to_num[file_str]
         except:
             raise Exception(f"dst file error: '{file_str}' in '{move_as_usi}'")
 
@@ -197,7 +198,7 @@ class Move():
         rank_str = dst_str[1]
 
         try:
-            dst_rank = Move._rank_str_to_num[rank_str]
+            dst_rank = Move._rank_str_to_th_num[rank_str]
         except:
             raise Exception(f"dst rank error: '{rank_str}' in '{move_as_usi}'")
 
@@ -218,8 +219,8 @@ class Move():
                 move_as_usi=move_as_usi,
                 src_str=src_str,
                 dst_str=dst_str,
-                src_file_or_none=src_file_or_none,
-                src_rank_or_none=src_rank_or_none,
+                src_file_th_or_none=src_file_th_or_none,
+                src_rank_th_or_none=src_rank_th_or_none,
                 dst_file=dst_file,
                 dst_rank=dst_rank,
                 dst_sq=dst_sq,
@@ -243,14 +244,15 @@ class Move():
             成ったか？
         """
 
-        src_file = src_sq // 9 + 1
-        src_rank = src_sq % 9 + 1
+        # 筋と段は 1 から始まる整数（序数）とします
+        src_file_th = src_sq // 9 + 1
+        src_rank_th = src_sq % 9 + 1
 
-        dst_file = dst_sq // 9 + 1
-        dst_rank = dst_sq % 9 + 1
+        dst_file_th = dst_sq // 9 + 1
+        dst_rank_th = dst_sq % 9 + 1
 
-        src_str = f"{src_file}{Move._rank_num_to_str[src_rank]}"
-        dst_str = f"{dst_file}{Move._rank_num_to_str[dst_rank]}"
+        src_str = f"{src_file_th}{Move._rank_th_num_to_alphabet[src_rank_th]}"
+        dst_str = f"{dst_file_th}{Move._rank_th_num_to_alphabet[dst_rank_th]}"
 
         if promoted:
             pro_str = "+"
@@ -261,11 +263,11 @@ class Move():
                 move_as_usi=f"{src_str}{dst_str}{pro_str}",
                 src_str=src_str,
                 dst_str=dst_str,
-                src_file_or_none=src_file,
-                src_rank_or_none=src_rank,
+                src_file_th_or_none=src_file_th,
+                src_rank_th_or_none=src_rank_th,
                 src_sq_or_none=src_sq,
-                dst_file=dst_file,
-                dst_rank=dst_rank,
+                dst_file=dst_file_th,
+                dst_rank=dst_rank_th,
                 dst_sq=dst_sq,
                 promoted=promoted)
 
@@ -275,8 +277,8 @@ class Move():
             move_as_usi,
             src_str,
             dst_str,
-            src_file_or_none,
-            src_rank_or_none,
+            src_file_th_or_none,
+            src_rank_th_or_none,
             src_sq_or_none,
             dst_file,
             dst_rank,
@@ -292,9 +294,9 @@ class Move():
             移動元
         dst_str : str
             移動先
-        src_file_or_none : int
+        src_file_th_or_none : int
             移動元の列番号を 1 から始まる整数で返す。打にはマス番号は無い
-        src_rank_or_none : int
+        src_rank_th_or_none : int
             移動元の段番号を 1 から始まる整数で返す。打は無い
         src_sq_or_none : int
             移動元のマス番号を 0 から始まる整数で返す。打にはマス番号は無い
@@ -310,8 +312,8 @@ class Move():
         self._move_as_usi = move_as_usi
         self._src_str = src_str
         self._dst_str = dst_str
-        self._src_file_or_none = src_file_or_none
-        self._src_rank_or_none = src_rank_or_none
+        self._src_file_th_or_none = src_file_th_or_none
+        self._src_rank_th_or_none = src_rank_th_or_none
         self._src_sq_or_none = src_sq_or_none
         self._dst_file = dst_file
         self._dst_rank = dst_rank
@@ -337,21 +339,21 @@ class Move():
 
 
     @property
-    def src_file_or_none(self):
+    def src_file_th_or_none(self):
         """移動元の列番号を 1 から始まる整数で返す。打にはマス番号は無い"""
-        return self._src_file_or_none
+        return self._src_file_th_or_none
 
 
     @property
-    def src_rank_or_none(self):
+    def src_rank_th_or_none(self):
         """移動元の段番号を 1 から始まる整数で返す。打にはマス番号は無い"""
-        return self._src_rank_or_none
+        return self._src_rank_th_or_none
 
 
     def get_src_sq_or_none(self):
         """移動元のマス番号を 0 から始まる整数で返す。打にはマス番号は無い"""
-        if self.src_file_or_none is not None and self.src_rank_or_none is not None:
-            return (self.src_file_or_none - 1) * 9 + (self.src_rank_or_none - 1)
+        if self.src_file_th_or_none is not None and self.src_rank_th_or_none is not None:
+            return (self.src_file_th_or_none - 1) * 9 + (self.src_rank_th_or_none - 1)
         else:
             return None
 

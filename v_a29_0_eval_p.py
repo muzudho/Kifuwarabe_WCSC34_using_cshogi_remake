@@ -392,7 +392,7 @@ class EvaluationPMove():
 
         try:
             # 打か。打に成りはありません。したがって None にはなりません
-            if p_move_obj.src_rank_or_none is None:
+            if p_move_obj.src_rank_th_or_none is None:
                 # 'R*' とかが入っていると想定して、 'R' の部分だけ取る
                 drop_char = p_move_obj.src_str[0:1]
                 p_index = drop_to_dst_sq_index[drop_char][p_move_obj.dst_sq]
