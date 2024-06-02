@@ -113,11 +113,11 @@ class EvaluationKMove():
     👆　このマッピングは８１マス分あり、要素数も１種類ではない
     """
 
-    _src_sq_to_dst_sq_to_index_for_a_dictionary = None
-    """通しインデックス  先手成らず"""
+    _src_sq_to_dst_sq_to_index_for_npsi_dictionary = None
+    """先手成らず（no promote）　通しインデックス（serial index）"""
 
-    _src_sq_to_dst_sq_to_index_for_b_dictionary = None
-    """通しインデックス  先手成り"""
+    _src_sq_to_dst_sq_to_index_for_psi_dictionary = None
+    """先手成り（promote）　通しインデックス（serial index）"""
 
     _drop_to_dst_sq_index = None
     """持ち駒 to （移動先 to 通し番号）"""
@@ -126,14 +126,14 @@ class EvaluationKMove():
     @classmethod
     def get_src_sq_to_dst_sq_index_dictionary_tuple(clazz):
 
-        # 通しインデックス  先手成らず
-        src_sq_to_dst_sq_to_index_for_a_dictionary = dict()
+        # 先手成らず（no promote）　通しインデックス（serial index）
+        clazz._src_sq_to_dst_sq_to_index_for_npsi_dictionary = dict()
 
-        # 通しインデックス  先手成り
-        src_sq_to_dst_sq_to_index_for_b_dictionary = dict()
+        # 先手成り（promote）　通しインデックス（serial index）
+        clazz._src_sq_to_dst_sq_to_index_for_psi_dictionary = dict()
 
         # 持ち駒 to （移動先 to 通し番号）
-        drop_to_dst_sq_index = dict()
+        clazz._drop_to_dst_sq_index = dict()
 
         # 通しのインデックス
         effect_index = 0
@@ -145,11 +145,11 @@ class EvaluationKMove():
                         file=src_file,
                         rank=src_rank)
 
-                dst_sq_to_index_for_a_dictionary = dict()
+                dst_sq_to_index_for_npsi_dictionary = dict()
                 dst_sq_to_index_for_b_dictionary = dict()
 
-                src_sq_to_dst_sq_to_index_for_a_dictionary[src_sq] = dst_sq_to_index_for_a_dictionary
-                src_sq_to_dst_sq_to_index_for_b_dictionary[src_sq] = dst_sq_to_index_for_b_dictionary
+                clazz._src_sq_to_dst_sq_to_index_for_npsi_dictionary[src_sq] = dst_sq_to_index_for_npsi_dictionary
+                clazz._src_sq_to_dst_sq_to_index_for_psi_dictionary[src_sq] = dst_sq_to_index_for_b_dictionary
 
                 # 成らないことができる移動先
                 no_pro_dst_sq_set = set()
@@ -304,7 +304,7 @@ class EvaluationKMove():
                 #
 
                 for dst_sq in no_pro_dst_sq_set:
-                    dst_sq_to_index_for_a_dictionary[dst_sq] = effect_index
+                    dst_sq_to_index_for_npsi_dictionary[dst_sq] = effect_index
                     effect_index += 1
 
                 for dst_sq in pro_dst_sq_set:
@@ -319,7 +319,7 @@ class EvaluationKMove():
             #
             dst_sq_to_index = dict()
 
-            drop_to_dst_sq_index[drop] = dst_sq_to_index
+            clazz._drop_to_dst_sq_index[drop] = dst_sq_to_index
 
             if drop == 'N':
                 min_rank = 2
@@ -341,9 +341,9 @@ class EvaluationKMove():
                     dst_sq_to_index[dst_sq] = effect_index
                     effect_index += 1
 
-        return (src_sq_to_dst_sq_to_index_for_a_dictionary,
-                src_sq_to_dst_sq_to_index_for_b_dictionary,
-                drop_to_dst_sq_index)
+        return (clazz._src_sq_to_dst_sq_to_index_for_npsi_dictionary,
+                clazz._src_sq_to_dst_sq_to_index_for_psi_dictionary,
+                clazz._drop_to_dst_sq_index)
 
 
 ########################################
@@ -354,8 +354,8 @@ if __name__ == '__main__':
     """スクリプト実行時"""
 
     # 元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します
-    (src_sq_to_dst_sq_to_index_for_a_dictionary,
-     src_sq_to_dst_sq_to_index_for_b_dictionary,
+    (src_sq_to_dst_sq_to_index_for_npsi_dictionary,
+     src_sq_to_dst_sq_to_index_for_psi_dictionary,
      drop_to_dst_sq_index) = EvaluationKMove.get_src_sq_to_dst_sq_index_dictionary_tuple()
 
     with open("test_eval_p.log", 'w', encoding="utf-8") as f:
@@ -370,38 +370,42 @@ if __name__ == '__main__':
         # 元マス・先マス to インデックス
         #
         for src_sq in range(0,81):
-            dst_sq_to_index_for_a_dictionary = src_sq_to_dst_sq_to_index_for_a_dictionary[src_sq]
-            dst_sq_to_index_for_b_dictionary = src_sq_to_dst_sq_to_index_for_b_dictionary[src_sq]
+            dst_sq_to_index_for_npsi_dictionary = src_sq_to_dst_sq_to_index_for_npsi_dictionary[src_sq]
+            dst_sq_to_index_for_b_dictionary = src_sq_to_dst_sq_to_index_for_psi_dictionary[src_sq]
 
-            # 成らない指し手の各マス　値：通しインデックス
-            label_table_for_a = ["    "] * 81
+            # 成らない指し手（no promote）の各マス　値：通しインデックス（serial index）
+            label_table_for_npsi = ["    "] * 81
 
-            # 成る指し手の各マス　値：通しインデックス
-            label_table_for_b = ["    "] * 81
+            # 成る指し手（promote）の各マス　値：通しインデックス
+            label_table_for_psi = ["    "] * 81
 
-            # 成らない指し手の各マス　値：相対ます番号
-            label_table_for_c = ["    "] * 81
+            # 成らない指し手の各マス　値：絶対マス番号（sq）
+            label_table_for_npsq = ["    "] * 81
 
-            # 成る指し手の各マス　値：相対ます番号
-            label_table_for_d = ["    "] * 81
+            # 成る指し手の各マス　値：絶対マス番号
+            label_table_for_psq = ["    "] * 81
 
-            label_table_for_a[src_sq] = " you"
-            label_table_for_b[src_sq] = " you"
-            label_table_for_c[src_sq] = " you"
-            label_table_for_d[src_sq] = " you"
+            label_table_for_npsi[src_sq] = " you"
+            label_table_for_psi[src_sq] = " you"
+            label_table_for_npsq[src_sq] = " you"
+            label_table_for_psq[src_sq] = " you"
 
-            for dst_sq, effect_index in dst_sq_to_index_for_a_dictionary.items():
-                label_table_for_a[dst_sq] = f"{effect_index:4}"
-                label_table_for_c[dst_sq] = f"{dst_sq:4}"
+            for dst_sq, effect_index in dst_sq_to_index_for_npsi_dictionary.items():
+                label_table_for_npsi[dst_sq] = f"{effect_index:4}"
+                label_table_for_npsq[dst_sq] = f"{dst_sq:4}"
 
             for dst_sq, effect_index in dst_sq_to_index_for_b_dictionary.items():
-                label_table_for_b[dst_sq] = f"{effect_index:4}"
-                label_table_for_d[dst_sq] = f"{dst_sq:4}"
+                label_table_for_psi[dst_sq] = f"{effect_index:4}"
+                label_table_for_psq[dst_sq] = f"{dst_sq:4}"
 
 
             f.write(f"""src_masu:{BoardHelper.sq_to_jsa(src_sq)}
-通しインデックス  先手成らず                          通しインデックス  先手成り                           絶対マス  先手成らず                                 絶対マス  先手成り
-{DebugHelper.stringify_quadruple_4characters_board(label_table_for_a, label_table_for_b, label_table_for_c, label_table_for_d)}
+先手成らず  通しインデックス                          先手成らず  絶対マス                                先手成り  通しインデックス                            先手成り  絶対マス
+{DebugHelper.stringify_quadruple_4characters_board(
+        a=label_table_for_npsi,
+        b=label_table_for_npsq,
+        c=label_table_for_psi,
+        d=label_table_for_psq)}
 
 """)
 
