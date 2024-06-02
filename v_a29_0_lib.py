@@ -154,7 +154,7 @@ class Move():
         dst_str = move_as_usi[2: 4]
 
         #
-        # 移動元の列番号を序数で。打にはマス番号は無い
+        # 移動元の列番号を 1 から始まる整数で返す。打にはマス番号は無い
         #
         if src_str in Move._src_drops:
             src_file_or_none = None
@@ -168,7 +168,7 @@ class Move():
                 raise Exception(f"src file error: '{file_str}' in '{move_as_usi}'")
 
         #
-        # 移動元の段番号を序数で。打は無い
+        # 移動元の段番号を 1 から始まる整数で返す。打は無い
         #
         if src_str in Move._src_drops:
             src_rank_or_none = None
@@ -182,15 +182,7 @@ class Move():
                 raise Exception(f"src rank error: '{rank_str}' in '{move_as_usi}'")
 
         #
-        # 移動元のマス番号を基数で。打にはマス番号は無い
-        #
-        if src_file_or_none is not None and src_rank_or_none is not None:
-            src_sq_or_none = (src_file_or_none - 1) * 9 + (src_rank_or_none - 1)
-        else:
-            src_sq_or_none = None
-
-        #
-        # 移動先の列番号を序数で
+        # 移動先の列番号を 1 から始まる整数で返す
         #
         file_str = dst_str[0]
 
@@ -200,7 +192,7 @@ class Move():
             raise Exception(f"dst file error: '{file_str}' in '{move_as_usi}'")
 
         #
-        # 移動先の段番号を序数で
+        # 移動先の段番号を 1 から始まる整数で返す
         #
         rank_str = dst_str[1]
 
@@ -210,7 +202,7 @@ class Move():
             raise Exception(f"dst rank error: '{rank_str}' in '{move_as_usi}'")
 
         #
-        # 移動先のマス番号を序数で
+        # 移動先のマス番号を 0 から始まる整数で返す
         #
         # 0～80 = (1～9     - 1) * 9 + (1～9      - 1)
         dst_sq  = (dst_file - 1) * 9 + (dst_rank - 1)
@@ -228,7 +220,6 @@ class Move():
                 dst_str=dst_str,
                 src_file_or_none=src_file_or_none,
                 src_rank_or_none=src_rank_or_none,
-                src_sq_or_none=src_sq_or_none,
                 dst_file=dst_file,
                 dst_rank=dst_rank,
                 dst_sq=dst_sq,
@@ -302,17 +293,17 @@ class Move():
         dst_str : str
             移動先
         src_file_or_none : int
-            移動元の列番号を序数で。打にはマス番号は無い
+            移動元の列番号を 1 から始まる整数で返す。打にはマス番号は無い
         src_rank_or_none : int
-            移動元の段番号を序数で。打は無い
+            移動元の段番号を 1 から始まる整数で返す。打は無い
         src_sq_or_none : int
-            移動元のマス番号を基数で。打にはマス番号は無い
+            移動元のマス番号を 0 から始まる整数で返す。打にはマス番号は無い
         dst_file : int
-            移動先の列番号を序数で
+            移動先の列番号を 1 から始まる整数で返す
         dst_rank : int
-            移動先の段番号を序数で
+            移動先の段番号を 1 から始まる整数で返す
         dst_sq : int
-            移動先のマス番号を序数で
+            移動先のマス番号を 0 から始まる整数で返す
         promoted : bool
             成ったか？
         """
@@ -347,37 +338,45 @@ class Move():
 
     @property
     def src_file_or_none(self):
-        """移動元の列番号を序数で。打にはマス番号は無い"""
+        """移動元の列番号を 1 から始まる整数で返す。打にはマス番号は無い"""
         return self._src_file_or_none
 
 
     @property
     def src_rank_or_none(self):
-        """移動元の段番号を序数で。打にはマス番号は無い"""
+        """移動元の段番号を 1 から始まる整数で返す。打にはマス番号は無い"""
         return self._src_rank_or_none
+
+
+    def get_src_sq_or_none(self):
+        """移動元のマス番号を 0 から始まる整数で返す。打にはマス番号は無い"""
+        if self.src_file_or_none is not None and self.src_rank_or_none is not None:
+            return (self.src_file_or_none - 1) * 9 + (self.src_rank_or_none - 1)
+        else:
+            return None
 
 
     @property
     def src_sq_or_none(self):
-        """移動元のマス番号を基数で。打にはマス番号は無い"""
+        """移動元のマス番号を 0 から始まる整数で返す。打にはマス番号は無い"""
         return self._src_sq_or_none
 
 
     @property
     def dst_file(self):
-        """移動先の列番号を序数で"""
+        """移動先の列番号を 1 から始まる整数で返す"""
         return self._dst_file
 
 
     @property
     def dst_rank(self):
-        """移動先の段番号を序数で"""
+        """移動先の段番号を 1 から始まる整数で返す"""
         return self._dst_rank
 
 
     @property
     def dst_sq(self):
-        """移動先のマス番号を序数で"""
+        """移動先のマス番号を 0 から始まる整数で返す"""
         return self._dst_sq
 
 
