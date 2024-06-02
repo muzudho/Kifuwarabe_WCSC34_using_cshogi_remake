@@ -204,7 +204,7 @@ class EvaluationKMove():
                             rank=dst_rank))
 
                 #
-                # マス番号を昇順に並べる
+                # マス番号を昇順に並べ替える
                 #
                 dst_sq_list = sorted(list(dst_sq_set))
 

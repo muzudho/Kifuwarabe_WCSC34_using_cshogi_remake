@@ -300,14 +300,16 @@ class EvaluationKMove():
                         pro_dst_sq_set.add(dst_sq)
 
                 #
-                # 表示
+                # マス番号を昇順に並べ替える
                 #
+                no_pro_dst_sq_list = sorted(list(no_pro_dst_sq_set))
+                pro_dst_sq_list = sorted(list(pro_dst_sq_set))
 
-                for dst_sq in no_pro_dst_sq_set:
+                for dst_sq in no_pro_dst_sq_list:
                     dst_sq_to_index_for_npsi_dictionary[dst_sq] = effect_index
                     effect_index += 1
 
-                for dst_sq in pro_dst_sq_set:
+                for dst_sq in pro_dst_sq_list:
                     dst_sq_to_index_for_b_dictionary[dst_sq] = effect_index
                     effect_index += 1
 
