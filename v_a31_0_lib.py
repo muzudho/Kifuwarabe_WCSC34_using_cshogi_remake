@@ -742,25 +742,25 @@ class EvalutionMmTable():
         bit_index = index % 8
         byte_index = index // 8
 
-        # bit_index == 0 のとき、右から８桁目を指す（ビッグエンディアン）
+        # bit_index == 0 のとき、右橋から７桁移動する（ビッグエンディアン）
         #
         #   1xxx xxxx
         #
-        # bit_index == 7 のとき、右から１桁目を指す
+        # bit_index == 7 のとき、右橋から０桁移動する
         #
         #   xxxx xxx1
         #
-        # そこで、 (8 - bit_index) 桁目を指す
+        # そこで、 (7 - bit_index) 桁目を指す
         #
-        figure = 8 - bit_index
+        left_shift = 7 - bit_index
 
         byte_value = self._table_as_array[byte_index]
 
-        bit_value = byte_value // (0b1 << figure) % 2
+        bit_value = byte_value // (0b1 << left_shift) % 2
 
         if is_debug:
-            # format `:08b` - 0 supply, 8 figures, binary
-            print(f"[evalution mm table > get_bit_by_index]  index:{index}  byte_index:{byte_index}  bit_index:{bit_index}  figure:{figure}  byte_value:0x{self._table_as_array[byte_index]:08b}  bit_value:{bit_value}")
+            # format `:08b` - 0 supply, 8 left shift, binary
+            print(f"[evalution mm table > get_bit_by_index]  index:{index}  byte_index:{byte_index}  bit_index:{bit_index}  left_shift:{left_shift}  byte_value:0x{self._table_as_array[byte_index]:08b}  bit_value:{bit_value}")
 
         if bit_value < 0 or 1 < bit_value:
             raise ValueError(f"bit must be 0 or 1. bit:{bit_value}")
@@ -809,26 +809,26 @@ class EvalutionMmTable():
         #
         # そこで、 (7 - bit_index) 桁移動すればよい
         #
-        figure = 7 - bit_index
+        left_shift = 7 - bit_index
 
         old_byte_value = self._table_as_array[byte_index]
 
         if is_debug:
-            # format `:08b` - 0 supply, 8 figures, binary
-            print(f"[evalution mm table > set_bit_by_index]  index:{index}  byte_index:{byte_index}  bit_index:{bit_index}  figure:{figure}  bit:{bit}  old byte value:0x{old_byte_value:08b}")
+            # format `:08b` - 0 supply, 8 left shift, binary
+            print(f"[evalution mm table > set_bit_by_index]  index:{index}  byte_index:{byte_index}  bit_index:{bit_index}  left_shift:{left_shift}  bit:{bit}  old byte value:0x{old_byte_value:08b}")
 
         # ビットはめんどくさい。ビッグエンディアン
         if bit == 1:
             # 指定の桁を 1 で上書きする
-            self._table_as_array[byte_index] = BitOpe.stand_at(byte_value, figure)
+            self._table_as_array[byte_index] = BitOpe.stand_at(byte_value, left_shift)
 
         else:
             # 指定の桁を 0 で上書きする
-            self._table_as_array[byte_index] = BitOpe.sit_at(byte_value, figure)
+            self._table_as_array[byte_index] = BitOpe.sit_at(byte_value, left_shift)
 
         if is_debug:
-            # format `:08b` - 0 supply, 8 figures, binary
-            print(f"[evalution mm table > set_bit_by_index]  index:{index}  byte_index:{byte_index}  bit_index:{bit_index}  figure:{figure}  bit:{bit}  new byte_value:0x{self._table_as_array[byte_index]:08b}")
+            # format `:08b` - 0 supply, 8 left shift, binary
+            print(f"[evalution mm table > set_bit_by_index]  index:{index}  byte_index:{byte_index}  bit_index:{bit_index}  left_shift:{left_shift}  bit:{bit}  new byte_value:0x{self._table_as_array[byte_index]:08b}")
 
         # 変更が有ったら、フラグを立てるよう上書き
         is_changed = self._table_as_array[byte_index] != old_byte_value
