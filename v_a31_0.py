@@ -6,6 +6,7 @@ from decimal import Decimal, ROUND_HALF_UP
 from v_a31_0_lib import Turn, Move, MoveHelper, BoardHelper, MoveListHelper, PolicyHelper, GameResultFile
 from v_a31_0_eval_kk import EvaluationKkTable
 from v_a31_0_eval_kp import EvaluationKpTable
+from v_a31_0_eval_pk import EvaluationPkTable
 
 
 ########################################
@@ -56,6 +57,14 @@ class Kifuwarabe():
                     engine_version_str=engine_version_str),
         ]
 
+        # ＰＬ評価値テーブル　[0:先手, 1:後手]
+        self._evaluation_pl_table_obj_array = [
+            EvaluationPkTable(
+                    engine_version_str=engine_version_str),
+            EvaluationPkTable(
+                    engine_version_str=engine_version_str),
+        ]
+
         # 自分の手番
         self._my_turn = None
 
@@ -73,6 +82,12 @@ class Kifuwarabe():
     def evaluation_kq_table_obj_array(self):
         """ＫＱ評価値テーブル　[0:先手, 1:後手]"""
         return self._evaluation_kq_table_obj_array
+
+
+    @property
+    def evaluation_pl_table_obj_array(self):
+        """ＰＬ評価値テーブル　[0:先手, 1:後手]"""
+        return self._evaluation_pl_table_obj_array
 
 
     def usi_loop(self):
@@ -277,15 +292,23 @@ class Kifuwarabe():
         for turn in [cshogi.BLACK, cshogi.WHITE]:
             turn_index = Turn.to_index(turn)
 
+            # ＫＬ
             if self._evaluation_kl_table_obj_array[turn_index].mm_table_obj.is_file_modified:
                 self._evaluation_kl_table_obj_array[turn_index].save_kk_evaluation_table_file()
             else:
                 print(f"[{datetime.datetime.now()}] kl file not changed.  turn:{Turn.to_string(turn)}", flush=True)
 
+            # ＫＱ
             if self._evaluation_kq_table_obj_array[turn_index].mm_table_obj.is_file_modified:
                 self._evaluation_kq_table_obj_array[turn_index].save_kp_evaluation_table_file()
             else:
                 print(f"[{datetime.datetime.now()}] kq file not changed.  turn:{Turn.to_string(turn)}", flush=True)
+
+            # ＰＬ
+            if self._evaluation_pl_table_obj_array[turn_index].mm_table_obj.is_file_modified:
+                self._evaluation_pl_table_obj_array[turn_index].save_pk_evaluation_table_file()
+            else:
+                print(f"[{datetime.datetime.now()}] pl file not changed.  turn:{Turn.to_string(turn)}", flush=True)
 
 
     def usinewgame(self):
@@ -301,6 +324,10 @@ class Kifuwarabe():
 
             # ＫＱ
             self._evaluation_kq_table_obj_array[turn_index].load_on_usinewgame(
+                    turn=turn)
+
+            # ＰＬ
+            self._evaluation_pl_table_obj_array[turn_index].load_on_usinewgame(
                     turn=turn)
 
         # 全ての評価値テーブル［0:先手, 1:後手］の（変更があれば）保存
@@ -832,7 +859,7 @@ class Kifuwarabe():
                     if relation_exists == 1:
 
                         if is_debug:
-                            print(f"  turn:{Turn.to_string(self._board.turn)}  kl_index:{kl_index}  K:{move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  remove relation")
+                            print(f"  turn:{Turn.to_string(self._board.turn)}  kl_index:{kl_index}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  remove relation")
 
                         is_changed_temp = self._evaluation_kl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kl_moves(
                                 k_move_obj=k_move_obj,
@@ -857,7 +884,7 @@ class Kifuwarabe():
                     if relation_exists == 1:
 
                         if is_debug:
-                            print(f"  turn:{Turn.to_string(self._board.turn)}  kq_index:{kq_index}  K:{move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}  remove relation")
+                            print(f"  turn:{Turn.to_string(self._board.turn)}  kq_index:{kq_index}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}  remove relation")
 
                         is_changed_temp = self._evaluation_kq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kp_moves(
                                 k_move_obj=k_move_obj,
@@ -871,7 +898,31 @@ class Kifuwarabe():
                         rest -= 1
 
         else:
-            # TODO ＰＬ
+            # ＰＬ
+            for pl_index, relation_exists in pl_index_to_relation_exists_dictionary.items():
+                if rest < 1:
+                    break
+
+                p_move_obj, l_move_obj = EvaluationPkTable.destructure_pk_index(
+                        pk_index=pl_index)
+
+                if p_move_obj.as_usi == move_u:
+                    if relation_exists == 1:
+
+                        if is_debug:
+                            print(f"  turn:{Turn.to_string(self._board.turn)}  pl_index:{pl_index}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  remove relation")
+
+                        is_changed_temp = self._evaluation_pl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kp_moves(
+                                p_move_obj=p_move_obj,
+                                k_move_obj=l_move_obj,
+                                bit=0,
+                                is_rotate=self._board.turn==cshogi.WHITE)
+
+                        if is_changed_temp:
+                            is_changed = True
+
+                        rest -= 1
+
             # TODO ＰＱ
 
             # TODO 玉の指し手以外にも対応したら、このメッセージを消す
@@ -1025,7 +1076,7 @@ class Kifuwarabe():
                     if relation_exists == 0:
 
                         if is_debug:
-                            print(f"  turn:{Turn.to_string(self._board.turn)}  kl_index:{kl_index}  K:{move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
+                            print(f"  turn:{Turn.to_string(self._board.turn)}  kl_index:{kl_index}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
 
                         is_changed_temp = self._evaluation_kl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kl_moves(
                                 k_move_obj=k_move_obj,
@@ -1043,14 +1094,14 @@ class Kifuwarabe():
                 if rest < 1:
                     break
 
-                k_move_obj, q_move_obj = EvaluationKkTable.destructure_kp_index(
+                k_move_obj, q_move_obj = EvaluationKpTable.destructure_kp_index(
                         kp_index=kq_index)
 
                 if k_move_obj.as_usi == move_u:
                     if relation_exists == 0:
 
                         if is_debug:
-                            print(f"  turn:{Turn.to_string(self._board.turn)}  kq_index:{kq_index}  K:{move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
+                            print(f"  turn:{Turn.to_string(self._board.turn)}  kq_index:{kq_index}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
 
                         is_changed_temp = self._evaluation_kq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kp_moves(
                                 k_move_obj=k_move_obj,
@@ -1065,12 +1116,36 @@ class Kifuwarabe():
 
         else:
             # TODO ＰＬ
+            for pl_index, relation_exists in pl_index_to_relation_exists_dictionary.items():
+                if rest < 1:
+                    break
+
+                p_move_obj, l_move_obj = EvaluationPkTable.destructure_pl_index(
+                        pl_index=pl_index)
+
+                if p_move_obj.as_usi == move_u:
+                    if relation_exists == 0:
+
+                        if is_debug:
+                            print(f"  turn:{Turn.to_string(self._board.turn)}  pl_index:{pl_index}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
+
+                        is_changed_temp = self._evaluation_pl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kp_moves(
+                                p_move_obj=p_move_obj,
+                                k_move_obj=l_move_obj,
+                                bit=1,
+                                is_rotate=self._board.turn==cshogi.WHITE)
+
+                        if is_changed_temp:
+                            is_changed = True
+
+                        rest -= 1
+
             # TODO ＰＱ
 
             # TODO 玉の指し手以外にも対応したら、このメッセージを消す
             if is_debug:
                 print(f"[weaken] ignored. this is not king move")
-            
+
             return 'igonred_this_is_not_king_move'
 
         # 正常終了
