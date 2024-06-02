@@ -1,5 +1,5 @@
 # python v_a24_0_eval_p.py
-from v_a24_0_lib import BoardHelper
+from v_a24_0_lib import Move, BoardHelper
 from v_a24_0_debug import DebugHelper
 
 
@@ -120,7 +120,10 @@ class EvaluationPMove():
     """先手成り（promote）　通しインデックス（serial index）"""
 
     _drop_to_dst_sq_index = None
-    """持ち駒 to （移動先 to 通し番号）"""
+    """先手持ち駒 to （移動先 to 通し番号）"""
+
+    _index_to_src_sq_dst_sq_promotion_dictionary = None
+    """通しインデックスを渡すと、移動元、移動先、成りか、を返す辞書"""
 
 
     @classmethod
@@ -134,6 +137,9 @@ class EvaluationPMove():
 
         # 持ち駒 to （移動先 to 通し番号）
         clazz._drop_to_dst_sq_index = dict()
+
+        # 通しインデックスを渡すと、移動元、移動先、成りか、を返す辞書
+        clazz._index_to_src_sq_dst_sq_promotion_dictionary = dict()
 
         # 通しのインデックス
         effect_index = 0
@@ -307,10 +313,12 @@ class EvaluationPMove():
 
                 for dst_sq in no_pro_dst_sq_list:
                     dst_sq_to_index_for_npsi_dictionary[dst_sq] = effect_index
+                    clazz._index_to_src_sq_dst_sq_promotion_dictionary[effect_index] = (src_sq, dst_sq, False)
                     effect_index += 1
 
                 for dst_sq in pro_dst_sq_list:
                     dst_sq_to_index_for_b_dictionary[dst_sq] = effect_index
+                    clazz._index_to_src_sq_dst_sq_promotion_dictionary[effect_index] = (src_sq, dst_sq, True)
                     effect_index += 1
 
 
@@ -341,11 +349,13 @@ class EvaluationPMove():
 
                     # 格納
                     dst_sq_to_index[dst_sq] = effect_index
+                    clazz._index_to_src_sq_dst_sq_promotion_dictionary[effect_index] = (drop, dst_sq, False)
                     effect_index += 1
 
         return (clazz._src_sq_to_dst_sq_to_index_for_npsi_dictionary,
                 clazz._src_sq_to_dst_sq_to_index_for_psi_dictionary,
-                clazz._drop_to_dst_sq_index)
+                clazz._drop_to_dst_sq_index,
+                clazz._index_to_src_sq_dst_sq_promotion_dictionary)
 
 
     def get_serial_number_size():
@@ -375,8 +385,9 @@ class EvaluationPMove():
 
         # 元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します
         (src_sq_to_dst_sq_to_index_for_npsi_dictionary,
-        src_sq_to_dst_sq_to_index_for_psi_dictionary,
-        drop_to_dst_sq_index) = EvaluationPMove.get_src_sq_to_dst_sq_index_dictionary_tuple()
+         src_sq_to_dst_sq_to_index_for_psi_dictionary,
+         drop_to_dst_sq_index,
+         index_to_src_sq_dst_sq_promotion_dictionary) = EvaluationPMove.get_src_sq_to_dst_sq_index_dictionary_tuple()
 
 
         try:
@@ -405,6 +416,38 @@ class EvaluationPMove():
         return p_index
 
 
+    @staticmethod
+    def destructure_p_index(
+            p_index):
+        """Ｐインデックス分解
+
+        Parameter
+        ---------
+        p_index : int
+            兵の指し手のインデックス
+
+        Returns
+        -------
+        - p_move_obj : Move
+            兵の指し手
+        """
+
+        # マスの通し番号を渡すと、元マスと移動先マスを返す入れ子の辞書を返します
+        (src_sq_to_dst_sq_to_index_for_npsi_dictionary,
+         src_sq_to_dst_sq_to_index_for_psi_dictionary,
+         drop_to_dst_sq_index,
+         index_to_src_sq_dst_sq_promotion_dictionary) = EvaluationPMove.get_src_sq_to_dst_sq_index_dictionary_tuple()
+
+        (src_sq,
+         dst_sq,
+         promoted) = index_to_src_sq_dst_sq_promotion_dictionary[p_index]
+
+        return Move.from_src_dst_pro(
+                src_sq=src_sq,
+                dst_sq=dst_sq,
+                promoted=False)
+
+
 ########################################
 # スクリプト実行時
 ########################################
@@ -415,7 +458,8 @@ if __name__ == '__main__':
     # 元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します
     (src_sq_to_dst_sq_to_index_for_npsi_dictionary,
      src_sq_to_dst_sq_to_index_for_psi_dictionary,
-     drop_to_dst_sq_index) = EvaluationPMove.get_src_sq_to_dst_sq_index_dictionary_tuple()
+     drop_to_dst_sq_index,
+     index_to_src_sq_dst_sq_promotion_dictionary) = EvaluationPMove.get_src_sq_to_dst_sq_index_dictionary_tuple()
 
     with open("test_eval_p.log", 'w', encoding="utf-8") as f:
 
