@@ -2,6 +2,8 @@ import cshogi
 import os
 import datetime
 
+from v_a31_0_bit_ope import BitOpe
+
 
 class Turn():
     """手番"""
