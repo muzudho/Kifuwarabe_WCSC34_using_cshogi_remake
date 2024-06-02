@@ -13,7 +13,8 @@ class EvaluationKpTable():
     @staticmethod
     def get_index_of_kp_table(
             k_move_obj,
-            p_move_obj):
+            p_move_obj,
+            is_rotate=False):
         """ＫＰ評価値テーブルのインデックスを算出
 
         Parameters
@@ -22,10 +23,12 @@ class EvaluationKpTable():
             玉の指し手
         p_move_obj : Move
             兵の指し手
+        is_rotate : bool
+            後手なら真。指し手を１８０°回転させます
         """
 
-        # 0 ～ 2_078_084 =                                         0 ～ 543 *                                    3813 +                                       0 ～ 3812
-        kp_index         = EvaluationKMove.get_index_by_k_move(k_move_obj) * EvaluationPMove.get_serial_number_size() + EvaluationPMove.get_index_by_p_move(p_move_obj)
+        # 0 ～ 2_078_084 =                                                    0 ～ 543 *                                    3813 +                                                  0 ～ 3812
+        kp_index         = EvaluationKMove.get_index_by_k_move(k_move_obj, is_rotate) * EvaluationPMove.get_serial_number_size() + EvaluationPMove.get_index_by_p_move(p_move_obj, is_rotate)
 
         # assert
         if EvaluationKMove.get_serial_number_size() * EvaluationPMove.get_serial_number_size() <= kp_index:

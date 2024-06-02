@@ -370,18 +370,28 @@ class EvaluationPMove():
 
     @staticmethod
     def get_index_by_p_move(
-            p_move_obj):
+            p_move_obj,
+            is_rotate=False):
         """兵の指し手を指定すると、兵の指し手のインデックスを返す。
 
         Parameters
         ----------
         p_move_obj : Move
             兵の指し手
+        is_rotate : bool
+            後手なら真。指し手を１８０°回転させます
 
         Returns
         -------
             - 兵の指し手のインデックス
         """
+
+        if is_rotate:
+            p_src_sq_or_none = p_move_obj.rot_src_sq_or_none
+            p_dst_sq = p_move_obj.rot_dst_sq
+        else:
+            p_src_sq_or_none = p_move_obj.src_sq_or_none
+            p_dst_sq = p_move_obj.dst_sq
 
         # 元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します
         (src_sq_to_dst_sq_to_index_for_npsi_dictionary,
@@ -395,18 +405,18 @@ class EvaluationPMove():
             if p_move_obj.src_rank_th_or_none is None:
                 # 'R*' とかが入っていると想定して、 'R' の部分だけ取る
                 drop_char = p_move_obj.src_str[0:1]
-                p_index = drop_to_dst_sq_index[drop_char][p_move_obj.dst_sq]
+                p_index = drop_to_dst_sq_index[drop_char][p_dst_sq]
 
             # 成りか。成りに打は有りません
             elif p_move_obj.promoted:
-                p_index = src_sq_to_dst_sq_to_index_for_psi_dictionary[p_move_obj.src_sq_or_none][p_move_obj.dst_sq]
+                p_index = src_sq_to_dst_sq_to_index_for_psi_dictionary[p_src_sq_or_none][p_dst_sq]
 
             # 成らずだ
             else:
-                p_index = src_sq_to_dst_sq_to_index_for_npsi_dictionary[p_move_obj.src_sq_or_none][p_move_obj.dst_sq]
+                p_index = src_sq_to_dst_sq_to_index_for_npsi_dictionary[p_src_sq_or_none][p_dst_sq]
 
         except KeyError as ex:
-            print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  src_sq:{p_move_obj.src_sq_or_none}  src_str:{p_move_obj.src_str}  promoted:{p_move_obj.promoted}  dst_sq:{p_move_obj.dst_sq}  ex:{ex}")
+            print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  src_str:{p_move_obj.src_str}  is_rotate:{is_rotate}  src_sq:{p_src_sq_or_none}  promoted:{p_move_obj.promoted}  dst_sq:{p_dst_sq}  ex:{ex}")
             raise
 
         # assert

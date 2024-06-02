@@ -236,18 +236,28 @@ class EvaluationKMove():
     #get_index_of_k_move
     @staticmethod
     def get_index_by_k_move(
-            k_move_obj):
+            k_move_obj,
+            is_rotate=False):
         """玉の指し手を指定すると、玉の指し手のインデックスを返す。
 
         Parameters
         ----------
         k_move_obj : Move
             玉の指し手
+        is_rotate : bool
+            後手なら真。指し手を１８０°回転させます
 
         Returns
         -------
             - 玉の指し手のインデックス
         """
+
+        if is_rotate:
+            k_src_sq_or_none = k_move_obj.rot_src_sq_or_none
+            k_dst_sq = k_move_obj.rot_dst_sq
+        else:
+            k_src_sq_or_none = k_move_obj.src_sq_or_none
+            k_dst_sq = k_move_obj.dst_sq
 
         # 玉は成らない
 
@@ -260,11 +270,11 @@ class EvaluationKMove():
             #
             #   - 打はありません。したがって None にはなりません
             #
-            k_index = src_to_dst_index_dictionary[k_move_obj.src_sq_or_none][k_move_obj.dst_sq]
+            k_index = src_to_dst_index_dictionary[k_src_sq_or_none][k_move_obj.dst_sq]
 
         except KeyError as ex:
             # k_move_obj.as_usi:5a5b  src_sq:36  dst_sq:37
-            print(f"k_move_obj.as_usi:{k_move_obj.as_usi}  src_sq:{k_move_obj.src_sq_or_none}  dst_sq:{k_move_obj.dst_sq}  ex:{ex}")
+            print(f"k_move_obj.as_usi:{k_move_obj.as_usi}  is_rotate:{is_rotate}  src_sq:{k_src_sq_or_none}  dst_sq:{k_dst_sq}  ex:{ex}")
             raise
 
         # assert

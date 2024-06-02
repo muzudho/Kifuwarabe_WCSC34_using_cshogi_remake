@@ -12,7 +12,8 @@ class EvaluationKkTable():
     @staticmethod
     def get_index_of_kk_table(
             k_move_obj,
-            l_move_obj):
+            l_move_obj,
+            is_rotate=False):
         """ＫＫ評価値テーブルのインデックスを算出
 
         Parameters
@@ -21,10 +22,12 @@ class EvaluationKkTable():
             自玉の指し手
         l_move_obj : Move
             敵玉の指し手
+        is_rotate : bool
+            後手なら真。指し手を１８０°回転させます
         """
 
-        # 0 ～ 296_479 =                                         0 ～ 543 *                                     544 +                                        0 ～ 543
-        kk_index       = EvaluationKMove.get_index_by_k_move(k_move_obj) * EvaluationKMove.get_serial_number_size() + EvaluationKMove.get_index_by_k_move(l_move_obj)
+        # 0 ～ 296_479 =                                                    0 ～ 543 *                                     544 +                                                   0 ～ 543
+        kk_index       = EvaluationKMove.get_index_by_k_move(k_move_obj, is_rotate) * EvaluationKMove.get_serial_number_size() + EvaluationKMove.get_index_by_k_move(l_move_obj, is_rotate)
 
         # assert
         if EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size() <= kk_index:
