@@ -742,25 +742,25 @@ class EvalutionMmTable():
         bit_index = index % 8
         byte_index = index // 8
 
-        # bit_index == 0 のとき、右橋から７桁移動する（ビッグエンディアン）
+        # bit_index == 0 のとき、左端のビットを取得する（左端から右へ７ビット移動して、右端のビットを取得する）（ビッグエンディアン）
         #
         #   1xxx xxxx
         #
-        # bit_index == 7 のとき、右橋から０桁移動する
+        # bit_index == 7 のとき、右端のビットを取得する（右端から右へ０ビット移動して、右端のビットを取得する）
         #
         #   xxxx xxx1
         #
-        # そこで、 (7 - bit_index) 桁目を指す
+        # そこで、 (7 - bit_index) ビットずらせばよい
         #
-        left_shift = 7 - bit_index
+        right_shift = 7 - bit_index
 
         byte_value = self._table_as_array[byte_index]
 
-        bit_value = BitOpe.get_bit_at(byte_value, left_shift)
+        bit_value = BitOpe.get_bit_at(byte_value, right_shift)
 
         if is_debug:
             # format `:08b` - 0 supply, 8 left shift, binary
-            print(f"[evalution mm table > get_bit_by_index]  index:{index}  byte_index:{byte_index}  bit_index:{bit_index}  left_shift:{left_shift}  byte_value:0x{self._table_as_array[byte_index]:08b}  bit_value:{bit_value}")
+            print(f"[evalution mm table > get_bit_by_index]  index:{index}  byte_index:{byte_index}  bit_index:{bit_index}  right_shift:{right_shift}  byte_value:0x{self._table_as_array[byte_index]:08b}  bit_value:{bit_value}")
 
         if bit_value < 0 or 1 < bit_value:
             raise ValueError(f"bit must be 0 or 1. bit:{bit_value}")
@@ -799,15 +799,15 @@ class EvalutionMmTable():
 
         byte_value = self._table_as_array[byte_index]
 
-        # bit_index == 0 のとき、右端から７桁移動する（ビッグエンディアン）
+        # bit_index == 0 のとき、右端から左へ７桁移動したところのビットを立てる（ビッグエンディアン）
         #
         #   1xxx xxxx
         #
-        # bit_index == 7 のとき、右橋から０桁移動する
+        # bit_index == 7 のとき、右端から左へ０桁移動したところのビットを立てる
         #
         #   xxxx xxx1
         #
-        # そこで、 (7 - bit_index) 桁移動すればよい
+        # そこで、左へ (7 - bit_index) 桁移動すればよい
         #
         left_shift = 7 - bit_index
 
