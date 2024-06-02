@@ -400,24 +400,55 @@ class EvaluationPMove():
          index_to_src_sq_dst_sq_promotion_dictionary) = EvaluationPMove.get_src_sq_to_dst_sq_index_dictionary_tuple()
 
 
-        try:
-            # 打か。打に成りはありません。したがって None にはなりません
-            if p_move_obj.src_rank_th_or_none is None:
+        # 打か。打に成りはありません。したがって None にはなりません
+        if p_move_obj.src_rank_th_or_none is None:
+            try:
                 # 'R*' とかが入っていると想定して、 'R' の部分だけ取る
                 drop_char = p_move_obj.src_str[0:1]
-                p_index = drop_to_dst_sq_index[drop_char][p_dst_sq]
+                dst_sq_to_index_dictionary = drop_to_dst_sq_index[drop_char]
 
-            # 成りか。成りに打は有りません
-            elif p_move_obj.promoted:
-                p_index = src_sq_to_dst_sq_to_index_for_psi_dictionary[p_src_sq_or_none][p_dst_sq]
+            except KeyError as ex:
+                print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  src_str:{p_move_obj.src_str}  rotated:{is_rotate}  p_src_sq:{p_src_sq_or_none}  promoted:{p_move_obj.promoted}  ex:{ex}")
+                raise
 
-            # 成らずだ
-            else:
-                p_index = src_sq_to_dst_sq_to_index_for_npsi_dictionary[p_src_sq_or_none][p_dst_sq]
+            try:
+                p_index = dst_sq_to_index_dictionary[p_dst_sq]
 
-        except KeyError as ex:
-            print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  src_str:{p_move_obj.src_str}  is_rotate:{is_rotate}  src_sq:{p_src_sq_or_none}  promoted:{p_move_obj.promoted}  dst_sq:{p_dst_sq}  ex:{ex}")
-            raise
+            except KeyError as ex:
+                print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  src_str:{p_move_obj.src_str}  rotated:{is_rotate}  p_src_sq:{p_src_sq_or_none}  promoted:{p_move_obj.promoted}  p_dst_sq:{p_dst_sq}  ex:{ex}")
+                raise
+
+        # 成りか。成りに打は有りません
+        elif p_move_obj.promoted:
+            try:
+                dst_sq_to_index_dictionary = src_sq_to_dst_sq_to_index_for_psi_dictionary[p_src_sq_or_none]
+
+            except KeyError as ex:
+                print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  src_str:{p_move_obj.src_str}  rotated:{is_rotate}  p_src_sq:{p_src_sq_or_none}  promoted:{p_move_obj.promoted}  ex:{ex}")
+                raise
+
+            try:
+                p_index = dst_sq_to_index_dictionary[p_dst_sq]
+
+            except KeyError as ex:
+                print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  src_str:{p_move_obj.src_str}  rotated:{is_rotate}  p_src_sq:{p_src_sq_or_none}  promoted:{p_move_obj.promoted}  p_dst_sq:{p_dst_sq}  ex:{ex}")
+                raise
+
+        # 成らずだ
+        else:
+            try:
+                dst_sq_to_index_dictionary = src_sq_to_dst_sq_to_index_for_npsi_dictionary[p_src_sq_or_none]
+
+            except KeyError as ex:
+                print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  src_str:{p_move_obj.src_str}  rotated:{is_rotate}  p_src_sq:{p_src_sq_or_none}  promoted:{p_move_obj.promoted}  ex:{ex}")
+                raise
+
+            try:
+                p_index = dst_sq_to_index_dictionary[p_dst_sq]
+
+            except KeyError as ex:
+                print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  src_str:{p_move_obj.src_str}  rotated:{is_rotate}  p_src_sq:{p_src_sq_or_none}  promoted:{p_move_obj.promoted}  p_dst_sq:{p_dst_sq}  ex:{ex}")
+                raise
 
         # assert
         if EvaluationPMove.get_serial_number_size() <= p_index:

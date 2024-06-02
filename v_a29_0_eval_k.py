@@ -272,7 +272,7 @@ class EvaluationKMove():
             dst_to_index_dictionary = src_to_dst_index_dictionary[k_src_sq_or_none]
 
         except KeyError as ex:
-            print(f"k_move_obj.as_usi:{k_move_obj.as_usi}  is_rotate:{is_rotate}  k_src_sq:{k_src_sq_or_none}  src_masu:{BoardHelper.sq_to_jsa(k_src_sq_or_none)}  ex:{ex}")
+            print(f"k_move_obj.as_usi:{k_move_obj.as_usi}  rotated:{is_rotate}  k_src_sq:{k_src_sq_or_none}  src_masu:{BoardHelper.sq_to_jsa(k_src_sq_or_none)}  ex:{ex}")
             raise
 
         try:
@@ -285,7 +285,7 @@ class EvaluationKMove():
         except KeyError as ex:
             # k_move_obj.as_usi:5a5b  src_sq:36  dst_sq:37
             # k_move_obj.as_usi:5a4b  is_rotate:True  src_sq:44  dst_sq:52  src_masu:59  dst_masu:68  ex:28
-            print(f"k_move_obj.as_usi:{k_move_obj.as_usi}  is_rotate:{is_rotate}  k_src_sq:{k_src_sq_or_none}  k_dst_sq:{k_dst_sq}  src_masu:{BoardHelper.sq_to_jsa(k_src_sq_or_none)}  dst_masu:{BoardHelper.sq_to_jsa(k_dst_sq)}  ex:{ex}")
+            print(f"k_move_obj.as_usi:{k_move_obj.as_usi}  rotated:{is_rotate}  k_src_sq:{k_src_sq_or_none}  k_dst_sq:{k_dst_sq}  src_masu:{BoardHelper.sq_to_jsa(k_src_sq_or_none)}  dst_masu:{BoardHelper.sq_to_jsa(k_dst_sq)}  ex:{ex}")
             raise
 
         # assert
