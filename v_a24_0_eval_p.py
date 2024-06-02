@@ -290,7 +290,26 @@ if __name__ == '__main__':
                 subtotal_effect[src_sq] = subtotal_len
 
                 #
-                # デバッグ表示
+                # 表示
+                #
+
+                dst_sq_to_index_for_a_dictionary = dict()
+                dst_sq_to_index_for_b_dictionary = dict()
+                dst_sq_for_c_set = set()
+                dst_sq_for_d_set = set()
+
+                for dst_sq in no_pro_dst_sq_set:
+                    dst_sq_to_index_for_a_dictionary[dst_sq] = effect_index
+                    effect_index += 1
+                    dst_sq_for_c_set.add(dst_sq)
+
+                for dst_sq in pro_dst_sq_set:
+                    dst_sq_to_index_for_b_dictionary[dst_sq] = effect_index
+                    effect_index += 1
+                    dst_sq_for_d_set.add(dst_sq)
+
+                #
+                # 表示
                 #
 
                 # 成らない指し手の各マス　値：通しインデックス
@@ -310,18 +329,20 @@ if __name__ == '__main__':
                 label_table_for_c[src_sq] = " you"
                 label_table_for_d[src_sq] = " you"
 
-                for dst_sq in no_pro_dst_sq_set:
+                for dst_sq, effect_index in dst_sq_to_index_for_a_dictionary.items():
                     label_table_for_a[dst_sq] = f"{effect_index:4}"
-                    effect_index += 1
-                    label_table_for_c[dst_sq] = f"{dst_sq-src_sq:4}"
 
-                for dst_sq in pro_dst_sq_set:
+                for dst_sq, effect_index in dst_sq_to_index_for_b_dictionary.items():
                     label_table_for_b[dst_sq] = f"{effect_index:4}"
-                    effect_index += 1
-                    label_table_for_d[dst_sq] = f"{dst_sq-src_sq:4}"
+
+                for dst_sq in dst_sq_for_c_set:
+                    label_table_for_c[dst_sq] = f"{dst_sq:4}"
+
+                for dst_sq in dst_sq_for_d_set:
+                    label_table_for_d[dst_sq] = f"{dst_sq:4}"
 
                 f.write(f"""src_sq:{src_sq}  effect:{subtotal_len} = no pro:{no_pro_len} + pro:{pro_len}
-通しインデックス  先手成らず                          通しインデックス  先手成り                           相対マス  先手成らず                                 相対マス  先手成り
+通しインデックス  先手成らず                          通しインデックス  先手成り                           絶対マス  先手成らず                                 絶対マス  先手成り
 {DebugHelper.stringify_quadruple_4characters_board(label_table_for_a, label_table_for_b, label_table_for_c, label_table_for_d)}
 
 """)
@@ -359,7 +380,6 @@ if __name__ == '__main__':
                     # 格納
                     dst_sq_to_index[dst_sq] = effect_index
                     effect_index += 1
-
 
 
         #
