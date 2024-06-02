@@ -99,7 +99,7 @@ class EvaluationKMove():
 
 
     @classmethod
-    def get_src_to_dst_index_dictionary_pair(clazz):
+    def get_src_sq_to_dst_sq_index_dictionary_tuple(clazz):
         """元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します。
         初回アクセス時はテーブル生成に時間がかかります"""
 
@@ -276,7 +276,7 @@ class EvaluationKMove():
         relative_sq = dst_sq          - src_sq
 
         # 元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します
-        (src_to_dst_index_dictionary, _) = EvaluationKMove.get_src_to_dst_index_dictionary_pair()
+        (src_to_dst_index_dictionary, _) = EvaluationKMove.get_src_sq_to_dst_sq_index_dictionary_tuple()
 
 
         try:
@@ -311,7 +311,7 @@ class EvaluationKMove():
         """
 
         # マスの通し番号を渡すと、元マスと移動先マスを返す入れ子の辞書を返します
-        (_, index_to_src_dst_dictionary) = EvaluationKMove.get_src_to_dst_index_dictionary_pair()
+        (_, index_to_src_dst_dictionary) = EvaluationKMove.get_src_sq_to_dst_sq_index_dictionary_tuple()
 
         (src_sq, dst_sq) = index_to_src_dst_dictionary[k_index]
 
@@ -328,15 +328,14 @@ class EvaluationKMove():
 if __name__ == '__main__':
     """スクリプト実行時"""
 
+    # 元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します
+    (src_to_dst_index_dictionary, index_to_src_dst_dictionary) = EvaluationKMove.get_src_sq_to_dst_sq_index_dictionary_tuple()
 
     with open("test_eval_k.log", 'w', encoding="utf-8") as f:
 
-        # 元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します
-        (src_to_dst_index_dictionary, index_to_src_dst_dictionary) = EvaluationKMove.get_src_to_dst_index_dictionary_pair()
-
         #
         #
-        # 表示：　３桁ますテーブルを２つ並べる
+        # １マスが３桁のテーブルを２つ並べる
         #
         #
 
@@ -349,9 +348,9 @@ if __name__ == '__main__':
             #   - １マスが３桁の文字列の表
             #   - 元マス
             label_table_for_serial_index = ['   '] * 81
-            label_table_for_serial_index[src_sq] = 'you'
-
             label_table_for_src_dst = ['   '] * 81
+
+            label_table_for_serial_index[src_sq] = 'you'
             label_table_for_src_dst[src_sq] = 'you'
 
             for dst_sq, serial_index in dst_to_index_dictionary.items():

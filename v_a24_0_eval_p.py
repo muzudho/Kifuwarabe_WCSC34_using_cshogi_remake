@@ -113,22 +113,39 @@ class EvaluationKMove():
     👆　このマッピングは８１マス分あり、要素数も１種類ではない
     """
 
+    _src_sq_to_dst_sq_to_index_for_a_dictionary = None
+    """通しインデックス  先手成らず"""
 
-########################################
-# スクリプト実行時
-########################################
+    _src_sq_to_dst_sq_to_index_for_b_dictionary = None
+    """通しインデックス  先手成り"""
 
-if __name__ == '__main__':
-    """スクリプト実行時"""
+    _src_sq_to_dst_sq_for_c_dictionary = None
+    """絶対マス  先手成らず"""
 
-    with open("test_eval_p.log", 'w', encoding="utf-8") as f:
+    _src_sq_to_dst_sq_for_d_dictionary = None
+    """絶対マス  先手成り"""
 
-        subtotal_effect = [0] * 81
+    _drop_to_dst_sq_index = dict()
+    """持ち駒 to （移動先 to 通し番号）"""
 
+
+    @classmethod
+    def get_src_sq_to_dst_sq_index_dictionary_tuple(clazz):
+
+        # 通しインデックス  先手成らず
         src_sq_to_dst_sq_to_index_for_a_dictionary = dict()
+
+        # 通しインデックス  先手成り
         src_sq_to_dst_sq_to_index_for_b_dictionary = dict()
+
+        # 絶対マス  先手成らず
         src_sq_to_dst_sq_for_c_dictionary = dict()
+
+        # 絶対マス  先手成り
         src_sq_to_dst_sq_for_d_dictionary = dict()
+
+        # 持ち駒 to （移動先 to 通し番号）
+        drop_to_dst_sq_index = dict()
 
         # 通しのインデックス
         effect_index = 0
@@ -298,12 +315,6 @@ if __name__ == '__main__':
                     if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
                         pro_dst_sq_set.add(dst_sq)
 
-                no_pro_len = len(no_pro_dst_sq_set)
-                pro_len = len(pro_dst_sq_set)
-                subtotal_len = no_pro_len + pro_len
-
-                subtotal_effect[src_sq] = subtotal_len
-
                 #
                 # 表示
                 #
@@ -318,10 +329,6 @@ if __name__ == '__main__':
                     effect_index += 1
                     dst_sq_for_d_set.add(dst_sq)
 
-        #
-        # 持ち駒 to （移動先 to 通し番号）
-        #
-        drop_to_dst_sq_index = dict()
 
         for drop in ['R', 'B', 'G', 'S', 'N', 'L', 'P']:
 
@@ -352,9 +359,37 @@ if __name__ == '__main__':
                     dst_sq_to_index[dst_sq] = effect_index
                     effect_index += 1
 
+        return (src_sq_to_dst_sq_to_index_for_a_dictionary,
+                src_sq_to_dst_sq_to_index_for_b_dictionary,
+                src_sq_to_dst_sq_for_c_dictionary,
+                src_sq_to_dst_sq_for_d_dictionary,
+                drop_to_dst_sq_index)
+
+
+########################################
+# スクリプト実行時
+########################################
+
+if __name__ == '__main__':
+    """スクリプト実行時"""
+
+    # 元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します
+    (src_sq_to_dst_sq_to_index_for_a_dictionary,
+     src_sq_to_dst_sq_to_index_for_b_dictionary,
+     src_sq_to_dst_sq_for_c_dictionary,
+     src_sq_to_dst_sq_for_d_dictionary,
+     drop_to_dst_sq_index) = EvaluationKMove.get_src_sq_to_dst_sq_index_dictionary_tuple()
+
+    with open("test_eval_p.log", 'w', encoding="utf-8") as f:
 
         #
-        # 表示
+        #
+        # １マスが４桁のテーブルを４つ並べる
+        #
+        #
+
+        #
+        # 元マス・先マス to インデックス
         #
         for src_sq in range(0,81):
             dst_sq_to_index_for_a_dictionary = src_sq_to_dst_sq_to_index_for_a_dictionary[src_sq]
@@ -391,7 +426,7 @@ if __name__ == '__main__':
             for dst_sq in dst_sq_for_d_set:
                 label_table_for_d[dst_sq] = f"{dst_sq:4}"
 
-            f.write(f"""src_sq:{src_sq}  effect:{subtotal_len} = no pro:{no_pro_len} + pro:{pro_len}
+            f.write(f"""src_masu:{BoardHelper.sq_to_jsa(src_sq)}
 通しインデックス  先手成らず                          通しインデックス  先手成り                           絶対マス  先手成らず                                 絶対マス  先手成り
 {DebugHelper.stringify_quadruple_4characters_board(label_table_for_a, label_table_for_b, label_table_for_c, label_table_for_d)}
 
@@ -412,14 +447,6 @@ if __name__ == '__main__':
             f.write(f"""
 drop:{drop}
 {DebugHelper.stringify_4characters_board(label_table_for_drop)}
-
-""")
-
-        f.write(f"""
-total_effect:{effect_index + 1}
-
-no pro + pro
-{DebugHelper.stringify_3characters_board(subtotal_effect)}
 
 """)
 
