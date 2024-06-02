@@ -198,7 +198,8 @@ class Kifuwarabe():
         # 現局面のポリシー値を確認する
         #       code: policy
         elif head == 'policy':
-            self.policy()
+            self.policy(
+                    is_debug=is_debug)
 
         # 現局面の最弱手を確認する
         #       code: weakest
@@ -222,7 +223,7 @@ class Kifuwarabe():
         elif head == 'weaken':
             result_str = self.weaken(
                     cmd_tail=tail,
-                    is_debug=True)
+                    is_debug=is_debug)
 
             print(f"[weaken] result=`{result_str}`")
 
@@ -232,7 +233,7 @@ class Kifuwarabe():
         elif head == 'strengthen':
             result_str = self.strengthen(
                     cmd_tail=tail,
-                    is_debug=True)
+                    is_debug=is_debug)
 
             print(f"[strengthen] result=`{result_str}`")
 
@@ -568,9 +569,16 @@ class Kifuwarabe():
                 kifuwarabe=self)
 
 
-    def policy(self):
+    def policy(
+            self,
+            is_debug=False):
         """現局面のポリシー値を確認する
             code: policy
+
+        Parameters
+        ----------
+        is_debug : bool
+            デバッグか？
         """
 
         # 自分の手番と、局面の手番が一致なら自分のターン
@@ -634,7 +642,8 @@ class Kifuwarabe():
          bad_move_u_set) = MoveAndPolicyHelper.select_good_f_move_u_set_power(
                 legal_moves=list(self._board.legal_moves),
                 board=self._board,
-                kifuwarabe=self)
+                kifuwarabe=self,
+                is_debug=is_debug)
 
         print(f'  好手一覧：')
         for move_u in good_move_u_set:
@@ -1534,7 +1543,8 @@ class Kifuwarabe():
          bad_move_u_set) = MoveAndPolicyHelper.select_good_f_move_u_set_power(
                 legal_moves=list(self._board.legal_moves),
                 board=self._board,
-                kifuwarabe=self)
+                kifuwarabe=self,
+                is_debug=is_debug)
 
         # 作業量はログを出したい
         good_num = len(good_move_u_set)
@@ -1722,7 +1732,8 @@ class Kifuwarabe():
          bad_move_u_set) = MoveAndPolicyHelper.select_good_f_move_u_set_power(
                 legal_moves=list(self._board.legal_moves),
                 board=self._board,
-                kifuwarabe=self)
+                kifuwarabe=self,
+                is_debug=is_debug)
 
         # 作業量はログを出したい
         good_num = len(good_move_u_set)
@@ -2474,6 +2485,21 @@ class MoveAndPolicyHelper():
                 kifuwarabe=kifuwarabe,
                 is_debug=is_debug)
 
+
+        if is_debug:
+            for k_move_u, policy in k_move_u_for_l_and_policy_dictionary.items():
+                print(f"[select good f move u set power] k_move_u:{k_move_u:5} for l  policy:{policy}‰")
+
+            for k_move_u, policy in k_move_u_for_q_and_policy_dictionary.items():
+                print(f"[select good f move u set power] k_move_u:{k_move_u:5} for q  policy:{policy}‰")
+
+            for p_move_u, policy in p_move_u_for_l_and_policy_dictionary.items():
+                print(f"[select good f move u set power] p_move_u:{p_move_u:5} for l  policy:{policy}‰")
+
+            for p_move_u, policy in p_move_u_for_q_and_policy_dictionary.items():
+                print(f"[select good f move u set power] p_move_u:{p_move_u:5} for q  policy:{policy}‰")
+
+
         (k_move_u_to_policy_dictionary,
          p_move_u_to_policy_dictionary) = MoveAndPolicyHelper.seleft_f_move_u_add_l_and_q(
                 k_move_u_for_l_and_policy_dictionary=k_move_u_for_l_and_policy_dictionary,
@@ -2481,6 +2507,15 @@ class MoveAndPolicyHelper():
                 p_move_u_for_l_and_policy_dictionary=p_move_u_for_l_and_policy_dictionary,
                 p_move_u_for_q_and_policy_dictionary=p_move_u_for_q_and_policy_dictionary,
                 is_debug=is_debug)
+
+
+        if is_debug:
+            for k_move_u, policy in k_move_u_to_policy_dictionary.items():
+                print(f"[select good f move u set power] k_move_u:{k_move_u:5}  policy:{policy}‰")
+
+            for p_move_u, policy in p_move_u_to_policy_dictionary.items():
+                print(f"[select good f move u set power] p_move_u:{p_move_u:5}  policy:{policy}‰")
+
 
         # ポリシー値は　分母の異なる集団の　投票数なので、
         # 絶対値に意味はなく、
