@@ -870,8 +870,8 @@ class Kifuwarabe():
                     k_move_obj, q_move_obj = EvaluationKpTable.destructure_kp_index(
                             kp_index=kq_index)
 
+                    # 表示
                     if is_debug:
-                        # 表示
                         print(f"[weaken > kq]  kq_index:{kq_index:7}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
                     if relation_exists == 1:
@@ -907,16 +907,20 @@ class Kifuwarabe():
             #
             difference = number_of_connection_kl_kq - max_number_of_less_than_50_percent
 
+            # デバッグ表示
             if is_debug:
-                # デバッグ表示
-                print(f"  K:{move_obj.as_usi:5}  O:*****  number_of_connection_kl_kq:{number_of_connection_kl_kq} / kl_kq_total:{kl_kq_total}  max_number_of_less_than_50_percent:{max_number_of_less_than_50_percent}  difference:{difference}")
+                print(f"[weaken > ko]  K:{move_obj.as_usi:5}  O:*****  number_of_connection_kl_kq:{number_of_connection_kl_kq} / kl_kq_total:{kl_kq_total}  max_number_of_less_than_50_percent:{max_number_of_less_than_50_percent}  difference:{difference}")
 
             # 関係を difference 個削除
             rest = difference
 
             # ＫＬ
             for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
+
                 if rest < 1:
+                    if is_debug:
+                        print(f"[weaken > kl]  rest:{rest}  break")
+
                     break
 
                 k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
@@ -940,7 +944,11 @@ class Kifuwarabe():
 
             # ＫＱ
             for kq_index, relation_exists in kq_index_to_relation_exists_dictionary.items():
+
                 if rest < 1:
+                    if is_debug:
+                        print(f"[weaken > kq]  rest:{rest}  break")
+
                     break
 
                 k_move_obj, q_move_obj = EvaluationKpTable.destructure_kp_index(
@@ -1016,14 +1024,17 @@ class Kifuwarabe():
 
             if is_debug:
                 # デバッグ表示
-                print(f"  P:{move_obj.as_usi:5}  O:*****  number_of_connection_pl_pq:{number_of_connection_pl_pq} / pl_pq_total:{pl_pq_total}  max_number_of_less_than_50_percent:{max_number_of_less_than_50_percent}  difference:{difference}")
+                print(f"[weaken > po]  P:{move_obj.as_usi:5}  O:*****  number_of_connection_pl_pq:{number_of_connection_pl_pq} / pl_pq_total:{pl_pq_total}  max_number_of_less_than_50_percent:{max_number_of_less_than_50_percent}  difference:{difference}")
 
             # 関係を difference 個削除
             rest = difference
 
             # ＰＬ
             for pl_index, relation_exists in pl_index_to_relation_exists_dictionary.items():
+
                 if rest < 1:
+                    if is_debug:
+                        print(f"[weaken > pl]  rest:{rest}  break")
                     break
 
                 p_move_obj, l_move_obj = EvaluationPkTable.destructure_pk_index(
@@ -1047,7 +1058,10 @@ class Kifuwarabe():
 
             # ＰＱ
             for pq_index, relation_exists in pq_index_to_relation_exists_dictionary.items():
+
                 if rest < 1:
+                    if is_debug:
+                        print(f"[weaken > pq]  rest:{rest}  break")
                     break
 
                 p_move_obj, q_move_obj = EvaluationPpTable.destructure_pp_index(
@@ -1211,14 +1225,18 @@ class Kifuwarabe():
 
             # デバッグ表示
             if is_debug:
-                print(f"  K:{move_obj.as_usi:5}  O:*****  number_of_connection_kl_kq:{number_of_connection_kl_kq} / kl_kq_total:{kl_kq_total}  max_number_of_less_than_50_percent:{max_number_of_less_than_50_percent}  difference:{difference}")
+                print(f"[strengthen > ko]  K:{move_obj.as_usi:5}  O:*****  number_of_connection_kl_kq:{number_of_connection_kl_kq} / kl_kq_total:{kl_kq_total}  max_number_of_less_than_50_percent:{max_number_of_less_than_50_percent}  difference:{difference}")
 
             # 関係を difference 個追加
             rest = difference
 
             # ＫＬ
             for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
+
                 if rest < 1:
+                    if is_debug:
+                        print(f"[strengthen > kl]  rest:{rest}  break")
+
                     break
 
                 k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
@@ -1242,7 +1260,11 @@ class Kifuwarabe():
 
             # ＫＱ
             for kq_index, relation_exists in kq_index_to_relation_exists_dictionary.items():
+
                 if rest < 1:
+                    if is_debug:
+                        print(f"[strengthen > kq]  rest:{rest}  break")
+
                     break
 
                 k_move_obj, q_move_obj = EvaluationKpTable.destructure_kp_index(
@@ -1314,14 +1336,18 @@ class Kifuwarabe():
 
             # デバッグ表示
             if is_debug:
-                print(f"  P:{move_obj.as_usi:5}  O:*****  number_of_connection_pl_pq:{number_of_connection_pl_pq} / pl_pq_total:{pl_pq_total}  max_number_of_less_than_50_percent:{max_number_of_less_than_50_percent}  difference:{difference}")
+                print(f"[strengthen > po]  P:{move_obj.as_usi:5}  O:*****  number_of_connection_pl_pq:{number_of_connection_pl_pq} / pl_pq_total:{pl_pq_total}  max_number_of_less_than_50_percent:{max_number_of_less_than_50_percent}  difference:{difference}")
 
             # 関係を difference 個追加
             rest = difference
 
             # ＰＬ
             for pl_index, relation_exists in pl_index_to_relation_exists_dictionary.items():
+
                 if rest < 1:
+                    if is_debug:
+                        print(f"[strengthen > pl]  rest:{rest}  break")
+
                     break
 
                 p_move_obj, l_move_obj = EvaluationPkTable.destructure_pl_index(
@@ -1345,7 +1371,11 @@ class Kifuwarabe():
 
             # ＰＱ
             for pq_index, relation_exists in pq_index_to_relation_exists_dictionary.items():
+
                 if rest < 1:
+                    if is_debug:
+                        print(f"[strengthen > pq]  rest:{rest}  break")
+
                     break
 
                 p_move_obj, q_move_obj = EvaluationPpTable.destructure_pp_index(
