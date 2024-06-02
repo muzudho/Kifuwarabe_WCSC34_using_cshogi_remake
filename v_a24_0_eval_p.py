@@ -119,13 +119,7 @@ class EvaluationKMove():
     _src_sq_to_dst_sq_to_index_for_b_dictionary = None
     """通しインデックス  先手成り"""
 
-    _src_sq_to_dst_sq_for_c_dictionary = None
-    """絶対マス  先手成らず"""
-
-    _src_sq_to_dst_sq_for_d_dictionary = None
-    """絶対マス  先手成り"""
-
-    _drop_to_dst_sq_index = dict()
+    _drop_to_dst_sq_index = None
     """持ち駒 to （移動先 to 通し番号）"""
 
 
@@ -137,12 +131,6 @@ class EvaluationKMove():
 
         # 通しインデックス  先手成り
         src_sq_to_dst_sq_to_index_for_b_dictionary = dict()
-
-        # 絶対マス  先手成らず
-        src_sq_to_dst_sq_for_c_dictionary = dict()
-
-        # 絶対マス  先手成り
-        src_sq_to_dst_sq_for_d_dictionary = dict()
 
         # 持ち駒 to （移動先 to 通し番号）
         drop_to_dst_sq_index = dict()
@@ -159,13 +147,9 @@ class EvaluationKMove():
 
                 dst_sq_to_index_for_a_dictionary = dict()
                 dst_sq_to_index_for_b_dictionary = dict()
-                dst_sq_for_c_set = set()
-                dst_sq_for_d_set = set()
 
                 src_sq_to_dst_sq_to_index_for_a_dictionary[src_sq] = dst_sq_to_index_for_a_dictionary
                 src_sq_to_dst_sq_to_index_for_b_dictionary[src_sq] = dst_sq_to_index_for_b_dictionary
-                src_sq_to_dst_sq_for_c_dictionary[src_sq] = dst_sq_for_c_set
-                src_sq_to_dst_sq_for_d_dictionary[src_sq] = dst_sq_for_d_set
 
                 # 成らないことができる移動先
                 no_pro_dst_sq_set = set()
@@ -322,12 +306,10 @@ class EvaluationKMove():
                 for dst_sq in no_pro_dst_sq_set:
                     dst_sq_to_index_for_a_dictionary[dst_sq] = effect_index
                     effect_index += 1
-                    dst_sq_for_c_set.add(dst_sq)
 
                 for dst_sq in pro_dst_sq_set:
                     dst_sq_to_index_for_b_dictionary[dst_sq] = effect_index
                     effect_index += 1
-                    dst_sq_for_d_set.add(dst_sq)
 
 
         for drop in ['R', 'B', 'G', 'S', 'N', 'L', 'P']:
@@ -361,8 +343,6 @@ class EvaluationKMove():
 
         return (src_sq_to_dst_sq_to_index_for_a_dictionary,
                 src_sq_to_dst_sq_to_index_for_b_dictionary,
-                src_sq_to_dst_sq_for_c_dictionary,
-                src_sq_to_dst_sq_for_d_dictionary,
                 drop_to_dst_sq_index)
 
 
@@ -376,8 +356,6 @@ if __name__ == '__main__':
     # 元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します
     (src_sq_to_dst_sq_to_index_for_a_dictionary,
      src_sq_to_dst_sq_to_index_for_b_dictionary,
-     src_sq_to_dst_sq_for_c_dictionary,
-     src_sq_to_dst_sq_for_d_dictionary,
      drop_to_dst_sq_index) = EvaluationKMove.get_src_sq_to_dst_sq_index_dictionary_tuple()
 
     with open("test_eval_p.log", 'w', encoding="utf-8") as f:
@@ -394,8 +372,6 @@ if __name__ == '__main__':
         for src_sq in range(0,81):
             dst_sq_to_index_for_a_dictionary = src_sq_to_dst_sq_to_index_for_a_dictionary[src_sq]
             dst_sq_to_index_for_b_dictionary = src_sq_to_dst_sq_to_index_for_b_dictionary[src_sq]
-            dst_sq_for_c_set = src_sq_to_dst_sq_for_c_dictionary[src_sq]
-            dst_sq_for_d_set = src_sq_to_dst_sq_for_d_dictionary[src_sq]
 
             # 成らない指し手の各マス　値：通しインデックス
             label_table_for_a = ["    "] * 81
@@ -416,15 +392,12 @@ if __name__ == '__main__':
 
             for dst_sq, effect_index in dst_sq_to_index_for_a_dictionary.items():
                 label_table_for_a[dst_sq] = f"{effect_index:4}"
+                label_table_for_c[dst_sq] = f"{dst_sq:4}"
 
             for dst_sq, effect_index in dst_sq_to_index_for_b_dictionary.items():
                 label_table_for_b[dst_sq] = f"{effect_index:4}"
-
-            for dst_sq in dst_sq_for_c_set:
-                label_table_for_c[dst_sq] = f"{dst_sq:4}"
-
-            for dst_sq in dst_sq_for_d_set:
                 label_table_for_d[dst_sq] = f"{dst_sq:4}"
+
 
             f.write(f"""src_masu:{BoardHelper.sq_to_jsa(src_sq)}
 通しインデックス  先手成らず                          通しインデックス  先手成り                           絶対マス  先手成らず                                 絶対マス  先手成り
