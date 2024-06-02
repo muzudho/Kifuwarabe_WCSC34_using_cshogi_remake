@@ -700,9 +700,10 @@ class Kifuwarabe():
         # 自玉の指し手か？
         is_king_move = MoveHelper.is_king(k_sq, move_obj)
 
+        #
         # 表示
+        #
         if is_king_move:
-
             # ＫＬ
             for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
 
@@ -711,10 +712,23 @@ class Kifuwarabe():
 
                 print(f"  turn:{Turn.to_string(self._board.turn)}  kl_index:{kl_index}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
-            # TODO ＫＱ
+            # ＫＱ
+            for kq_index, relation_exists in kq_index_to_relation_exists_dictionary.items():
+
+                k_move_obj, q_move_obj = EvaluationKpTable.destructure_kp_index(
+                        kp_index=kq_index)
+
+                print(f"  turn:{Turn.to_string(self._board.turn)}  kq_index:{kq_index}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
         else:
-            # TODO ＰＬ
+            # ＰＬ
+            for pl_index, relation_exists in pl_index_to_relation_exists_dictionary.items():
+
+                p_move_obj, l_move_obj = EvaluationPkTable.destructure_pl_index(
+                        pk_index=pl_index)
+
+                print(f"  turn:{Turn.to_string(self._board.turn)}  pl_index:{pl_index}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+
             # TODO ＰＱ
             pass
 
@@ -924,12 +938,8 @@ class Kifuwarabe():
                         rest -= 1
 
             # TODO ＰＱ
-
-            # TODO 玉の指し手以外にも対応したら、このメッセージを消す
             if is_debug:
-                print(f"[weaken] ignored. this is not king move")
-
-            return 'igonred_this_is_not_king_move'
+                print(f"[weaken] TODO PQ")
 
 
         # 正常終了
@@ -1115,7 +1125,7 @@ class Kifuwarabe():
                         rest -= 1
 
         else:
-            # TODO ＰＬ
+            # ＰＬ
             for pl_index, relation_exists in pl_index_to_relation_exists_dictionary.items():
                 if rest < 1:
                     break
@@ -1141,12 +1151,9 @@ class Kifuwarabe():
                         rest -= 1
 
             # TODO ＰＱ
-
-            # TODO 玉の指し手以外にも対応したら、このメッセージを消す
             if is_debug:
-                print(f"[weaken] ignored. this is not king move")
+                print(f"[weaken] TODO PQ")
 
-            return 'igonred_this_is_not_king_move'
 
         # 正常終了
         if is_changed:
@@ -2575,15 +2582,19 @@ class EvaluationFacade():
 
                 if kind == 'KL':
                     f_move_obj, o_move_obj = EvaluationKkTable.destructure_kl_index(fo_index)
-                # TODO ＫＱ
+
+                # ＫＱ
                 elif kind == 'KQ':
-                    continue
-                # TODO ＰＬ
+                    f_move_obj, o_move_obj = EvaluationKpTable.destructure_kp_index(fo_index)
+
+                # ＰＬ
                 elif kind == 'PL':
-                    continue
+                    f_move_obj, o_move_obj = EvaluationPkTable.destructure_pk_index(fo_index)
+
                 # TODO ＰＱ
                 elif kind == 'PQ':
                     continue
+
                 else:
                     raise ValueError(f"unexpected kind:{kind}")
 
@@ -2604,13 +2615,13 @@ class EvaluationFacade():
                 label_f='K',
                 label_o='L')
 
-        # TODO ＫＱ
+        # ＫＱ
         k_move_u_and_q_and_relation_number_dictionary = select_f_move_u_and_o_and_relation_number(
                 fo_index_and_relation_bit_dictionary=kq_index_and_relation_bit_dictionary,
                 label_f='K',
                 label_o='Q')
 
-        # TODO ＰＬ
+        # ＰＬ
         p_move_u_and_l_and_relation_number_dictionary = select_f_move_u_and_o_and_relation_number(
                 fo_index_and_relation_bit_dictionary=pl_index_and_relation_bit_dictionary,
                 label_f='P',
