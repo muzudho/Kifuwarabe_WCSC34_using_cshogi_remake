@@ -2197,7 +2197,8 @@ class MoveAndPolicyHelper():
     def get_best_moves(
             weakest0_strongest1,
             board,
-            kifuwarabe):
+            kifuwarabe,
+            is_debug=False):
         """最強手または最弱手の取得
 
         Parameters
@@ -2208,6 +2209,8 @@ class MoveAndPolicyHelper():
             局面
         kifuwarabe : Kifuwarabe
             きふわらべ
+        is_debug : bool
+            デバッグか？
         """
         #
         # USIプロトコルでの符号表記と、ポリシー値の辞書に変換
@@ -2216,13 +2219,14 @@ class MoveAndPolicyHelper():
         #   自玉の指し手と、自玉を除く自軍の指し手を分けて取得
         #   ポリシー値は千分率の４桁の整数
         #
-        (kl_move_u_and_policy_dictionary,
-         kq_move_u_and_policy_dictionary,
-         pl_move_u_and_policy_dictionary,
-         pq_move_u_and_policy_dictionary) = EvaluationFacade.select_fo_move_u_and_policy_dictionary(
+        (k_move_u_for_l_and_policy_dictionary,
+         k_move_u_for_q_and_policy_dictionary,
+         p_move_u_for_l_and_policy_dictionary,
+         p_move_u_for_q_and_policy_dictionary) = EvaluationFacade.select_fo_move_u_and_policy_dictionary(
                 legal_moves=list(board.legal_moves),
                 board=board,
-                kifuwarabe=kifuwarabe)
+                kifuwarabe=kifuwarabe,
+                is_debug=is_debug)
 
         if weakest0_strongest1 == 1:
             best_kl_policy = -1000
@@ -2246,7 +2250,7 @@ class MoveAndPolicyHelper():
         # ----
         #
 
-        for move_u, policy in kl_move_u_and_policy_dictionary.items():
+        for move_u, policy in k_move_u_for_l_and_policy_dictionary.items():
 
             # tie
             if best_kl_policy == policy:
@@ -2262,7 +2266,7 @@ class MoveAndPolicyHelper():
         # ----
         #
 
-        for move_u, policy in kq_move_u_and_policy_dictionary.items():
+        for move_u, policy in k_move_u_for_q_and_policy_dictionary.items():
 
             # tie
             if best_kq_policy == policy:
@@ -2278,7 +2282,7 @@ class MoveAndPolicyHelper():
         # ----
         #
 
-        for move_u, policy in pl_move_u_and_policy_dictionary.items():
+        for move_u, policy in p_move_u_for_l_and_policy_dictionary.items():
 
             # tie
             if best_pl_policy == policy:
@@ -2294,7 +2298,7 @@ class MoveAndPolicyHelper():
         # ----
         #
 
-        for move_u, policy in pq_move_u_and_policy_dictionary.items():
+        for move_u, policy in p_move_u_for_q_and_policy_dictionary.items():
 
             # tie
             if best_pq_policy == policy:
@@ -2317,11 +2321,26 @@ class MoveAndPolicyHelper():
 
 
     def seleft_f_move_u_add_l_and_q(
-            kl_move_u_and_policy_dictionary,
-            kq_move_u_and_policy_dictionary,
-            pl_move_u_and_policy_dictionary,
-            pq_move_u_and_policy_dictionary):
-        """ＫＬとＫＱをマージしてＫにし、ＰＬとＰＱをマージしてＰにする"""
+            k_move_u_for_l_and_policy_dictionary,
+            k_move_u_for_q_and_policy_dictionary,
+            p_move_u_for_l_and_policy_dictionary,
+            p_move_u_for_q_and_policy_dictionary,
+            is_debug=False):
+        """ＫＬとＫＱをマージしてＫにし、ＰＬとＰＱをマージしてＰにする
+
+        Parameters
+        ----------
+        k_move_u_for_l_and_policy_dictionary :
+            ＫＬ
+        k_move_u_for_q_and_policy_dictionary :
+            ＫＱ
+        p_move_u_for_l_and_policy_dictionary :
+            ＰＬ
+        p_move_u_for_q_and_policy_dictionary :
+            ＰＱ
+        is_debug : bool
+            デバッグか？
+        """
 
         k_move_u_to_policy_dictionary = {}
         p_move_u_to_policy_dictionary = {}
@@ -2330,10 +2349,10 @@ class MoveAndPolicyHelper():
         # Ｋ
         #
 
-        for move_u, policy in kl_move_u_and_policy_dictionary.items():
+        for move_u, policy in k_move_u_for_l_and_policy_dictionary.items():
             k_move_u_to_policy_dictionary[move_u] = policy
 
-        for move_u, policy in kq_move_u_and_policy_dictionary.items():
+        for move_u, policy in k_move_u_for_q_and_policy_dictionary.items():
             if move_u in k_move_u_to_policy_dictionary.keys():
                 k_move_u_to_policy_dictionary[move_u] = (k_move_u_to_policy_dictionary[move_u] + policy) // 2
             else:
@@ -2343,10 +2362,10 @@ class MoveAndPolicyHelper():
         # Ｐ
         #
 
-        for move_u, policy in pl_move_u_and_policy_dictionary.items():
+        for move_u, policy in p_move_u_for_l_and_policy_dictionary.items():
             p_move_u_to_policy_dictionary[move_u] = policy
 
-        for move_u, policy in pq_move_u_and_policy_dictionary.items():
+        for move_u, policy in p_move_u_for_q_and_policy_dictionary.items():
             if move_u in p_move_u_to_policy_dictionary.keys():
                 p_move_u_to_policy_dictionary[move_u] = (p_move_u_to_policy_dictionary[move_u] + policy) // 2
             else:
@@ -2372,6 +2391,8 @@ class MoveAndPolicyHelper():
             自兵の着手と、そのポリシー値を格納した辞書
         turn : int
             手番
+        is_debug : bool
+            デバッグか？
         """
 
         number = 1
@@ -2426,25 +2447,40 @@ class MoveAndPolicyHelper():
             board,
             kifuwarabe,
             is_debug=False):
+        """好手と悪手の一覧を作成
+
+        Parameters
+        ----------
+        legal_moves :
+            合法手
+        board : Board
+            局面
+        kifuwarabe : Kifuwarabe
+            きふわらべ
+        is_debug : bool
+            デバッグか？
+        """
 
         # 合法手を、着手と応手に紐づくポリシー値を格納した辞書に変換します
         #
         #   ポリシー値は千分率の４桁の整数
         #
-        (kl_move_u_and_policy_dictionary,
-         kq_move_u_and_policy_dictionary,
-         pl_move_u_and_policy_dictionary,
-         pq_move_u_and_policy_dictionary) = EvaluationFacade.select_fo_move_u_and_policy_dictionary(
+        (k_move_u_for_l_and_policy_dictionary,
+         k_move_u_for_q_and_policy_dictionary,
+         p_move_u_for_l_and_policy_dictionary,
+         p_move_u_for_q_and_policy_dictionary) = EvaluationFacade.select_fo_move_u_and_policy_dictionary(
                 legal_moves=legal_moves,
                 board=board,
-                kifuwarabe=kifuwarabe)
+                kifuwarabe=kifuwarabe,
+                is_debug=is_debug)
 
         (k_move_u_to_policy_dictionary,
          p_move_u_to_policy_dictionary) = MoveAndPolicyHelper.seleft_f_move_u_add_l_and_q(
-                kl_move_u_and_policy_dictionary=kl_move_u_and_policy_dictionary,
-                kq_move_u_and_policy_dictionary=kq_move_u_and_policy_dictionary,
-                pl_move_u_and_policy_dictionary=pl_move_u_and_policy_dictionary,
-                pq_move_u_and_policy_dictionary=pq_move_u_and_policy_dictionary)
+                k_move_u_for_l_and_policy_dictionary=k_move_u_for_l_and_policy_dictionary,
+                k_move_u_for_q_and_policy_dictionary=k_move_u_for_q_and_policy_dictionary,
+                p_move_u_for_l_and_policy_dictionary=p_move_u_for_l_and_policy_dictionary,
+                p_move_u_for_q_and_policy_dictionary=p_move_u_for_q_and_policy_dictionary,
+                is_debug=is_debug)
 
         # ポリシー値は　分母の異なる集団の　投票数なので、
         # 絶対値に意味はなく、
@@ -2459,7 +2495,8 @@ class MoveAndPolicyHelper():
          bad_move_u_set) = MoveAndPolicyHelper.select_good_f_move_u_set_pipe(
                 k_move_u_to_policy_dictionary=k_move_u_to_policy_dictionary,
                 p_move_u_to_policy_dictionary=p_move_u_to_policy_dictionary,
-                turn=board.turn)
+                turn=board.turn,
+                is_debug=is_debug)
 
         return (good_move_u_set,
                 bad_move_u_set)
@@ -2923,13 +2960,13 @@ class EvaluationFacade():
 
         Returns
         -------
-        - kl_move_u_and_policy_dictionary : Dictionary<str, int>
+        - k_move_u_for_l_and_policy_dictionary : Dictionary<str, int>
             自玉の着手と、敵玉の応手の、関係のポリシー値。ポリシー値は千分率の４桁の整数
-        - kq_move_u_and_policy_dictionary,
+        - k_move_u_for_q_and_policy_dictionary,
             自玉の着手と、敵兵の応手の、関係のポリシー値。ポリシー値は千分率の４桁の整数
-        - pl_move_u_and_policy_dictionary,
+        - p_move_u_for_l_and_policy_dictionary,
             自兵の着手と、敵玉の応手の、関係のポリシー値。ポリシー値は千分率の４桁の整数
-        - pq_move_u_and_policy_dictionary
+        - p_move_u_for_q_and_policy_dictionary
             自兵の着手と、敵兵の応手の、関係のポリシー値。ポリシー値は千分率の４桁の整数
         """
 
