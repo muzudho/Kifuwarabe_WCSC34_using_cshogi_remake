@@ -156,7 +156,6 @@ class EvaluationKpTable():
                 index=kp_index)
 
 
-    # 使ってない？
     def set_relation_esixts_by_kp_moves(
             self,
             k_move_obj,

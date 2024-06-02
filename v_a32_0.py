@@ -966,8 +966,8 @@ class Kifuwarabe():
                 # ＰＬ
                 for pl_index, relation_exists in pl_index_to_relation_exists_dictionary.items():
 
-                    p_move_obj, l_move_obj = EvaluationKkTable.destructure_Pk_index(
-                            pl_index=pl_index)
+                    p_move_obj, l_move_obj = EvaluationPkTable.destructure_pk_index(
+                            pk_index=pl_index)
 
                     if is_debug:
                         # 表示
@@ -3139,8 +3139,8 @@ class EvaluationFacade():
                     k_move_u_set=l_move_u_set,
                     is_rotate=board.turn==cshogi.WHITE)
 
-            # 自兵の着手と、敵兵の応手の一覧から、ＰＰテーブルのインデックスと、関係の有無を格納した辞書を作成
-            pq_index_to_relation_exists_dic = kifuwarabe.evaluation_pp_table_obj_array[Turn.to_index(board.turn)].select_pp_index_and_relation_exists(
+            # 自兵の着手と、敵兵の応手の一覧から、ＰＱテーブルのインデックスと、関係の有無を格納した辞書を作成
+            pq_index_to_relation_exists_dic = kifuwarabe.evaluation_pq_table_obj_array[Turn.to_index(board.turn)].select_pp_index_and_relation_exists(
                     p1_move_obj=move_obj,
                     p2_move_u_set=q_move_u_set,
                     is_rotate=board.turn==cshogi.WHITE)

@@ -191,8 +191,7 @@ class EvaluationPpTable():
         return is_changed
 
 
-    # 使ってない？
-    def select_kp_index_and_relation_exists(
+    def select_pp_index_and_relation_exists(
             self,
             p1_move_obj,
             p2_move_u_set,
@@ -266,7 +265,7 @@ class EvaluationPpTable():
             raise ValueError(f"p1_index:{p1_index} out of range {EvaluationPMove.get_serial_number_size()}")
 
 
-        p2_move_obj = EvaluationKMove.destructure_p_index(
+        p2_move_obj = EvaluationPMove.destructure_p_index(
                 p_index=p2_index)
         p1_move_obj = EvaluationPMove.destructure_p_index(
                 p_index=p1_index)

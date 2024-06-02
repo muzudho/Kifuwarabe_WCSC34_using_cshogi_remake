@@ -191,7 +191,6 @@ class EvaluationPkTable():
         return is_changed
 
 
-    # 使ってない？
     def select_pk_index_and_relation_exists(
             self,
             p_move_obj,
