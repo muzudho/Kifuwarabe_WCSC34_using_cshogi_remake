@@ -7,6 +7,7 @@ from v_a32_0_lib import Turn, Move, MoveHelper, BoardHelper, MoveListHelper, Pol
 from v_a32_0_eval_kk import EvaluationKkTable
 from v_a32_0_eval_kp import EvaluationKpTable
 from v_a32_0_eval_pk import EvaluationPkTable
+from v_a32_0_eval_pp import EvaluationPpTable
 
 
 ########################################
@@ -65,6 +66,14 @@ class Kifuwarabe():
                     engine_version_str=engine_version_str),
         ]
 
+        # ＰＱ評価値テーブル　[0:先手, 1:後手]
+        self._evaluation_pq_table_obj_array = [
+            EvaluationPpTable(
+                    engine_version_str=engine_version_str),
+            EvaluationPpTable(
+                    engine_version_str=engine_version_str),
+        ]
+
         # 自分の手番
         self._my_turn = None
 
@@ -88,6 +97,12 @@ class Kifuwarabe():
     def evaluation_pl_table_obj_array(self):
         """ＰＬ評価値テーブル　[0:先手, 1:後手]"""
         return self._evaluation_pl_table_obj_array
+
+
+    @property
+    def evaluation_pq_table_obj_array(self):
+        """ＰＰ評価値テーブル　[0:先手, 1:後手]"""
+        return self._evaluation_pq_table_obj_array
 
 
     def usi_loop(self):
@@ -310,6 +325,12 @@ class Kifuwarabe():
             else:
                 print(f"[{datetime.datetime.now()}] pl file not changed.  turn:{Turn.to_string(turn)}", flush=True)
 
+            # ＰＱ
+            if self._evaluation_pq_table_obj_array[turn_index].mm_table_obj.is_file_modified:
+                self._evaluation_pq_table_obj_array[turn_index].save_pp_evaluation_table_file()
+            else:
+                print(f"[{datetime.datetime.now()}] pp file not changed.  turn:{Turn.to_string(turn)}", flush=True)
+
 
     def usinewgame(self):
         """新しい対局"""
@@ -328,6 +349,10 @@ class Kifuwarabe():
 
             # ＰＬ
             self._evaluation_pl_table_obj_array[turn_index].load_on_usinewgame(
+                    turn=turn)
+
+            # ＰＰ
+            self._evaluation_pq_table_obj_array[turn_index].load_on_usinewgame(
                     turn=turn)
 
         # 全ての評価値テーブル［0:先手, 1:後手］の（変更があれば）保存
@@ -934,9 +959,29 @@ class Kifuwarabe():
                             is_changed = True
                             rest -= 1
 
-            # TODO ＰＱ
-            if is_debug:
-                print(f"[weaken] TODO PQ")
+            # ＰＱ
+            for pq_index, relation_exists in pq_index_to_relation_exists_dictionary.items():
+                if rest < 1:
+                    break
+
+                p_move_obj, q_move_obj = EvaluationPpTable.destructure_pp_index(
+                        pp_index=pq_index)
+
+                if p_move_obj.as_usi == move_u:
+                    if relation_exists == 1:
+
+                        if is_debug:
+                            print(f"  turn:{Turn.to_string(self._board.turn)}  pq_index:{pq_index}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}  remove relation")
+
+                        is_changed_temp = self._evaluation_pq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_pp_moves(
+                                p1_move_obj=p_move_obj,
+                                p2_move_obj=q_move_obj,
+                                bit=0,
+                                is_rotate=self._board.turn==cshogi.WHITE)
+
+                        if is_changed_temp:
+                            is_changed = True
+                            rest -= 1
 
 
         # 正常終了
@@ -1145,8 +1190,28 @@ class Kifuwarabe():
                             rest -= 1
 
             # TODO ＰＱ
-            if is_debug:
-                print(f"[weaken] TODO PQ")
+            for pq_index, relation_exists in pq_index_to_relation_exists_dictionary.items():
+                if rest < 1:
+                    break
+
+                p_move_obj, q_move_obj = EvaluationPpTable.destructure_pp_index(
+                        pp_index=pq_index)
+
+                if p_move_obj.as_usi == move_u:
+                    if relation_exists == 0:
+
+                        if is_debug:
+                            print(f"  turn:{Turn.to_string(self._board.turn)}  pq_index:{pq_index}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
+
+                        is_changed_temp = self._evaluation_pq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kp_moves(
+                                p1_move_obj=p_move_obj,
+                                p2_move_obj=q_move_obj,
+                                bit=1,
+                                is_rotate=self._board.turn==cshogi.WHITE)
+
+                        if is_changed_temp:
+                            is_changed = True
+                            rest -= 1
 
 
         # 正常終了
