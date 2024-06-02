@@ -1,6 +1,7 @@
 # Kifuwarabe (^q^)
 *.bin
 *_game_result_*.txt
+*.bak
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

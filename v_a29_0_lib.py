@@ -183,6 +183,14 @@ class Move():
                 raise Exception(f"src rank error: '{rank_str}' in '{move_as_usi}'")
 
         #
+        # 移動元のマス番号を基数で。打にはマス番号は無い
+        #
+        if src_file_th_or_none is not None and src_rank_th_or_none is not None:
+            src_sq_or_none = (src_file_th_or_none - 1) * 9 + (src_rank_th_or_none - 1)
+        else:
+            src_sq_or_none = None
+
+        #
         # 移動先の列番号を 1 から始まる整数で返す
         #
         file_str = dst_str[0]
@@ -221,6 +229,7 @@ class Move():
                 dst_str=dst_str,
                 src_file_th_or_none=src_file_th_or_none,
                 src_rank_th_or_none=src_rank_th_or_none,
+                src_sq_or_none=src_sq_or_none,
                 dst_file=dst_file,
                 dst_rank=dst_rank,
                 dst_sq=dst_sq,
@@ -324,6 +333,22 @@ class Move():
         # １８０°回転
         #
 
+        def rotate_src_file_th_or_none():
+            if self._src_file_th_or_none is None:
+                return None
+            else:
+                return 8 - (self._src_file_th_or_none - 1) + 1
+
+        self._rot_src_file_th_or_none = rotate_src_file_th_or_none()
+
+        def rotate_src_rank_th_or_none():
+            if self._src_rank_th_or_none is None:
+                return None
+            else:
+                return 8 - (self._src_rank_th_or_none - 1) + 1
+
+        self._rot_src_rank_th_or_none = rotate_src_rank_th_or_none()
+
         # 打はそのまま
         def rotate_src_sq_or_none():
             if self.src_sq_or_none is None:
@@ -333,6 +358,11 @@ class Move():
                 return 80 - self.src_sq_or_none
 
         self._rot_src_sq_or_none = rotate_src_sq_or_none()
+
+        self._rot_dst_file = 8 - (self._dst_file - 1) + 1
+
+        self._rot_dst_rank = 8 - (self._dst_rank - 1) + 1
+
         self._rot_dst_sq = 80 - self.dst_sq
 
 
@@ -398,19 +428,13 @@ class Move():
     @property
     def rot_src_file_th_or_none(self):
         """指し手を１８０°回転する。移動元の列番号を 1 から始まる整数で返す。打にはマス番号は無い"""
-        if self._src_file_th_or_none is None:
-            return None
-
-        return 8 - (self._src_file_th_or_none - 1) + 1
+        return self._rot_src_file_th_or_none
 
 
     @property
     def rot_src_rank_th_or_none(self):
         """指し手を１８０°回転する。移動元の段番号を 1 から始まる整数で返す。打にはマス番号は無い"""
-        if self._src_rank_th_or_none is None:
-            return None
-
-        return 8 - (self._src_rank_th_or_none - 1) + 1
+        return self._rot_src_rank_th_or_none
 
 
     @property
@@ -422,19 +446,19 @@ class Move():
     @property
     def rot_dst_file(self):
         """指し手を１８０°回転する。移動先の列番号を 1 から始まる整数で返す"""
-        return 8 - (self._dst_file - 1) + 1
+        return self._rot_dst_file
 
 
     @property
     def rot_dst_rank(self):
         """指し手を１８０°回転する。移動先の段番号を 1 から始まる整数で返す"""
-        return 8 - (self._dst_rank - 1) + 1
+        return self._rot_dst_rank
 
 
     @property
     def rot_dst_sq(self):
         """指し手を１８０°回転する。移動先のマス番号を 0 から始まる整数で返す"""
-        return self._dst_sq
+        return self._rot_dst_sq
 
 
 class MoveHelper():
