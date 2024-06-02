@@ -3,7 +3,7 @@ from v_a24_0_lib import BoardHelper
 from v_a24_0_debug import DebugHelper
 
 
-class EvaluationKMove():
+class EvaluationPMove():
     """自兵の指し手
 
     兵は玉以外の駒。
@@ -348,6 +348,63 @@ class EvaluationKMove():
                 clazz._drop_to_dst_sq_index)
 
 
+    def get_serial_number_size():
+        """兵の指し手の数
+
+        Returns
+        -------
+        - int
+        """
+        return 3813
+
+
+    @staticmethod
+    def get_index_by_p_move(
+            p_move_obj):
+        """兵の指し手を指定すると、兵の指し手のインデックスを返す。
+
+        Parameters
+        ----------
+        p_move_obj : Move
+            兵の指し手
+
+        Returns
+        -------
+            - 兵の指し手のインデックス
+        """
+
+        # 元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します
+        (src_sq_to_dst_sq_to_index_for_npsi_dictionary,
+        src_sq_to_dst_sq_to_index_for_psi_dictionary,
+        drop_to_dst_sq_index) = EvaluationPMove.get_src_sq_to_dst_sq_index_dictionary_tuple()
+
+
+        try:
+            # 打か。打に成りはありません。したがって None にはなりません
+            if p_move_obj.src_rank_or_none is None:
+                # 'R*' とかが入っていると想定して、 'R' の部分だけ取る
+                drop_char = p_move_obj.src_str[0:1]
+                p_index = drop_to_dst_sq_index[drop_char][p_move_obj.dst_sq]
+
+            # 成りか。成りに打は有りません
+            elif p_move_obj.promoted:
+                p_index = src_sq_to_dst_sq_to_index_for_psi_dictionary[p_move_obj.src_sq_or_none][p_move_obj.dst_sq]
+
+            # 成らずだ
+            else:
+                p_index = src_sq_to_dst_sq_to_index_for_npsi_dictionary[p_move_obj.src_sq_or_none][p_move_obj.dst_sq]
+
+        except KeyError as ex:
+            print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  src_sq:{p_move_obj.src_sq_or_none}  src_str:{p_move_obj.src_str}  promoted:{p_move_obj.promoted}  dst_sq:{p_move_obj.dst_sq}  ex:{ex}")
+            raise
+
+        # assert
+        if EvaluationPMove.get_serial_number_size() <= p_index:
+            raise ValueError(f"p_index:{p_index} out of range {EvaluationPMove.get_serial_number_size()}")
+
+        return p_index
+
+
 ########################################
 # スクリプト実行時
 ########################################
@@ -358,7 +415,7 @@ if __name__ == '__main__':
     # 元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します
     (src_sq_to_dst_sq_to_index_for_npsi_dictionary,
      src_sq_to_dst_sq_to_index_for_psi_dictionary,
-     drop_to_dst_sq_index) = EvaluationKMove.get_src_sq_to_dst_sq_index_dictionary_tuple()
+     drop_to_dst_sq_index) = EvaluationPMove.get_src_sq_to_dst_sq_index_dictionary_tuple()
 
     with open("test_eval_p.log", 'w', encoding="utf-8") as f:
 

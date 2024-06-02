@@ -247,28 +247,28 @@ class EvaluationKMove():
     #get_index_of_k_move
     @staticmethod
     def get_index_by_k_move(
-            move_obj):
-        """指し手を指定すると、指し手のインデックスを返す。
+            k_move_obj):
+        """玉の指し手を指定すると、玉の指し手のインデックスを返す。
         ＫＫ評価値テーブル用
 
         Parameters
         ----------
-        move_obj : Move
-            指し手
+        k_move_obj : Move
+            玉の指し手
 
         Returns
         -------
-            - 指し手のインデックス
+            - 玉の指し手のインデックス
         """
 
         # 移動元マス番号
         #
         #   - 打はありません。したがって None にはなりません
         #
-        src_sq = move_obj.src_sq_or_none
+        src_sq = k_move_obj.src_sq_or_none
 
         # 移動先マス番号
-        dst_sq = move_obj.dst_sq
+        dst_sq = k_move_obj.dst_sq
 
         # 玉は成らない
 
@@ -283,8 +283,8 @@ class EvaluationKMove():
             k_index = src_to_dst_index_dictionary[src_sq][dst_sq]
 
         except KeyError as ex:
-            # move_obj.as_usi:5a5b / relative_sq:1 move_obj.dst_sq:37 src_sq:36
-            print(f"move_obj.as_usi:{move_obj.as_usi} / relative_sq:{relative_sq} move_obj.dst_sq:{move_obj.dst_sq} src_sq:{src_sq}")
+            # k_move_obj.as_usi:5a5b / relative_sq:1 move_obj.dst_sq:37 src_sq:36
+            print(f"k_move_obj.as_usi:{k_move_obj.as_usi} / relative_sq:{relative_sq}  src_sq:{src_sq}  dst_sq:{k_move_obj.dst_sq}")
             raise
 
         # assert

@@ -223,17 +223,6 @@ class EvaluationKMove():
         return (clazz._src_to_dst_index_dictionary, clazz._index_to_src_dst_dictionary)
 
 
-    @staticmethod
-    def get_king_direction_max_number():
-        """玉の移動方向の最大数
-
-        Returns
-        -------
-        - int
-        """
-        return 8
-
-
     def get_serial_number_size():
         """玉の指し手の数
 
@@ -247,44 +236,35 @@ class EvaluationKMove():
     #get_index_of_k_move
     @staticmethod
     def get_index_by_k_move(
-            move_obj):
-        """指し手を指定すると、指し手のインデックスを返す。
-        ＫＫ評価値テーブル用
+            k_move_obj):
+        """玉の指し手を指定すると、玉の指し手のインデックスを返す。
 
         Parameters
         ----------
-        move_obj : Move
-            指し手
+        k_move_obj : Move
+            玉の指し手
 
         Returns
         -------
-            - 指し手のインデックス
+            - 玉の指し手のインデックス
         """
 
-        # 移動元マス番号
-        #
-        #   - 打はありません。したがって None にはなりません
-        #
-        src_sq = move_obj.src_sq_or_none
-
-        # 移動先マス番号
-        dst_sq = move_obj.dst_sq
-
         # 玉は成らない
-
-        # 相対SQ    =  移動先マス番号    - 移動元マス番号
-        relative_sq = dst_sq          - src_sq
 
         # 元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します
         (src_to_dst_index_dictionary, _) = EvaluationKMove.get_src_sq_to_dst_sq_index_dictionary_tuple()
 
 
         try:
-            k_index = src_to_dst_index_dictionary[src_sq][dst_sq]
+            # 移動元マス番号
+            #
+            #   - 打はありません。したがって None にはなりません
+            #
+            k_index = src_to_dst_index_dictionary[k_move_obj.src_sq_or_none][k_move_obj.dst_sq]
 
         except KeyError as ex:
-            # move_obj.as_usi:5a5b / relative_sq:1 move_obj.dst_sq:37 src_sq:36
-            print(f"move_obj.as_usi:{move_obj.as_usi} / relative_sq:{relative_sq} move_obj.dst_sq:{move_obj.dst_sq} src_sq:{src_sq}")
+            # k_move_obj.as_usi:5a5b  src_sq:36  dst_sq:37
+            print(f"k_move_obj.as_usi:{k_move_obj.as_usi}  src_sq:{k_move_obj.src_sq_or_none}  dst_sq:{k_move_obj.dst_sq}  ex:{ex}")
             raise
 
         # assert
@@ -306,8 +286,8 @@ class EvaluationKMove():
 
         Returns
         -------
-        - move_obj : Move
-            指し手
+        - k_move_obj : Move
+            玉の指し手
         """
 
         # マスの通し番号を渡すと、元マスと移動先マスを返す入れ子の辞書を返します
