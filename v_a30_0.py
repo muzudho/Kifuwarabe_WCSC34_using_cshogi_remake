@@ -5,6 +5,7 @@ import random
 from decimal import Decimal, ROUND_HALF_UP
 from v_a30_0_lib import Turn, Move, MoveHelper, BoardHelper, MoveListHelper, PolicyHelper, GameResultFile
 from v_a30_0_eval_kk import EvaluationKkTable
+from v_a30_0_eval_kp import EvaluationKpTable
 
 
 ########################################
@@ -47,6 +48,14 @@ class Kifuwarabe():
                     engine_version_str=engine_version_str),
         ]
 
+        # ＫＱ評価値テーブル　[0:先手, 1:後手]
+        self._evaluation_kq_table_obj_array = [
+            EvaluationKpTable(
+                    engine_version_str=engine_version_str),
+            EvaluationKpTable(
+                    engine_version_str=engine_version_str),
+        ]
+
         # 自分の手番
         self._my_turn = None
 
@@ -58,6 +67,12 @@ class Kifuwarabe():
     def evaluation_kl_table_obj_array(self):
         """ＫＬ評価値テーブル　[0:先手, 1:後手]"""
         return self._evaluation_kl_table_obj_array
+
+
+    @property
+    def evaluation_kq_table_obj_array(self):
+        """ＫＱ評価値テーブル　[0:先手, 1:後手]"""
+        return self._evaluation_kq_table_obj_array
 
 
     def usi_loop(self):
@@ -257,7 +272,7 @@ class Kifuwarabe():
         print('readyok', flush=True)
 
 
-    def save_eval_kl_table(self):
+    def save_eval_all_tables(self):
         """（変更があれば）ＫＬ評価値テーブル［0:先手, 1:後手］の保存"""
         for turn in [cshogi.BLACK, cshogi.WHITE]:
             turn_index = Turn.to_index(turn)
@@ -265,20 +280,31 @@ class Kifuwarabe():
             if self._evaluation_kl_table_obj_array[turn_index].mm_table_obj.is_file_modified:
                 self._evaluation_kl_table_obj_array[turn_index].save_kk_evaluation_table_file()
             else:
-                print(f"[{datetime.datetime.now()}] kk file not changed.  turn:{Turn.to_string(turn)}", flush=True)
+                print(f"[{datetime.datetime.now()}] kl file not changed.  turn:{Turn.to_string(turn)}", flush=True)
+
+            if self._evaluation_kq_table_obj_array[turn_index].mm_table_obj.is_file_modified:
+                self._evaluation_kq_table_obj_array[turn_index].save_kp_evaluation_table_file()
+            else:
+                print(f"[{datetime.datetime.now()}] kq file not changed.  turn:{Turn.to_string(turn)}", flush=True)
 
 
     def usinewgame(self):
         """新しい対局"""
 
-        # ＫＬ評価値テーブル［0:先手, 1:後手］の読込
+        # 評価値テーブル［0:先手, 1:後手］の読込
         for turn in [cshogi.BLACK, cshogi.WHITE]:
             turn_index = Turn.to_index(turn)
+
+            # ＫＬ
             self._evaluation_kl_table_obj_array[turn_index].load_on_usinewgame(
                     turn=turn)
 
-        # （変更があれば）ＫＬ評価値テーブル［0:先手, 1:後手］の保存
-        self.save_eval_kl_table()
+            # ＫＱ
+            self._evaluation_kq_table_obj_array[turn_index].load_on_usinewgame(
+                    turn=turn)
+
+        # 全ての評価値テーブル［0:先手, 1:後手］の（変更があれば）保存
+        self.save_eval_all_tables()
 
         # 対局結果ファイル（デフォルト）
         self._game_result_file = GameResultFile(
@@ -793,6 +819,8 @@ class Kifuwarabe():
 
             # 関係を difference 個削除
             rest = difference
+
+            # ＫＬ
             for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
                 if rest < 1:
                     break
@@ -817,7 +845,30 @@ class Kifuwarabe():
 
                         rest -= 1
 
-            # TODO ＫＱ
+            # ＫＱ
+            for kq_index, relation_exists in kq_index_to_relation_exists_dictionary.items():
+                if rest < 1:
+                    break
+
+                k_move_obj, q_move_obj = EvaluationKpTable.destructure_kp_index(
+                        kp_index=kq_index)
+
+                if k_move_obj.as_usi == move_u:
+                    if relation_exists == 1:
+
+                        if is_debug:
+                            print(f"  turn:{Turn.to_string(self._board.turn)}  kq_index:{kq_index}  K:{move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}  remove relation")
+
+                        is_changed_temp = self._evaluation_kq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kp_moves(
+                                k_move_obj=k_move_obj,
+                                p_move_obj=q_move_obj,
+                                bit=0,
+                                is_rotate=self._board.turn==cshogi.WHITE)
+
+                        if is_changed_temp:
+                            is_changed = True
+
+                        rest -= 1
 
         else:
             # TODO ＰＬ
@@ -961,6 +1012,8 @@ class Kifuwarabe():
 
             # 関係を difference 個追加
             rest = difference
+
+            # ＫＬ
             for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
                 if rest < 1:
                     break
@@ -985,7 +1038,30 @@ class Kifuwarabe():
 
                         rest -= 1
 
-            # TODO ＫＱ
+            # ＫＱ
+            for kq_index, relation_exists in kq_index_to_relation_exists_dictionary.items():
+                if rest < 1:
+                    break
+
+                k_move_obj, q_move_obj = EvaluationKkTable.destructure_kp_index(
+                        kp_index=kq_index)
+
+                if k_move_obj.as_usi == move_u:
+                    if relation_exists == 0:
+
+                        if is_debug:
+                            print(f"  turn:{Turn.to_string(self._board.turn)}  kq_index:{kq_index}  K:{move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
+
+                        is_changed_temp = self._evaluation_kq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kp_moves(
+                                k_move_obj=k_move_obj,
+                                p_move_obj=q_move_obj,
+                                bit=1,
+                                is_rotate=self._board.turn==cshogi.WHITE)
+
+                        if is_changed_temp:
+                            is_changed = True
+
+                        rest -= 1
 
         else:
             # TODO ＰＬ
@@ -1523,8 +1599,8 @@ class Kifuwarabe():
         # 終局図の内部データに戻す
         restore_end_position()
 
-        # ＫＬ評価値テーブル［0:先手, 1:後手］の保存
-        self.save_eval_kl_table()
+        # 全ての評価値テーブル［0:先手, 1:後手］の（変更があれば）保存
+        self.save_eval_all_tables()
 
         print(f"[{datetime.datetime.now()}] [learn] finished", flush=True)
 
