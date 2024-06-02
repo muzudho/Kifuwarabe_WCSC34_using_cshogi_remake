@@ -10,42 +10,61 @@ class BitOpe():
     @staticmethod
     def stand_at(
             byte_value,
-            figure):
+            left_shift):
         """指定の桁のフラグを立てる
 
         Parameters
         ----------
         byte_value : int
             元の値
-        figure : int
+        left_shift : int
             一の位から数えて何桁目のビットを立てるか？
 
         Returns
         -------
         byte_value
         """
-        return byte_value | (0b1 << figure)
+        return byte_value | (0b1 << left_shift)
 
 
     @staticmethod
     def sit_at(
             byte_value,
-            figure):
+            left_shift):
         """指定の桁のフラグを下ろす
 
         Parameters
         ----------
         byte_value : int
             元の値
-        figure : int
+        left_shift : int
             一の位から数えて何桁目のビットを下ろすか？
 
         Returns
         -------
         byte_value
         """
-        return byte_value & (0b1111_1111 - (0b1 << figure))
+        return byte_value & (0b1111_1111 - (0b1 << left_shift))
 
+
+    @staticmethod
+    def get_bit_at(
+            byte_value,
+            right_shift):
+        """指定の桁のフラグを下ろす
+
+        Parameters
+        ----------
+        byte_value : int
+            元の値
+        right_shift : int
+            一の位から数えて何桁目のビットを下ろすか？
+
+        Returns
+        -------
+        byte_value
+        """
+        return (byte_value >> right_shift) % 2
 
 
 ########################################
@@ -56,25 +75,34 @@ if __name__ == '__main__':
     """スクリプト実行時"""
 
     init_value = 0b0000_0001
-    figure = 2
+    bit_shift = 2
     expected_value = 0b0000_0101
-    byte_value = BitOpe.stand_at(init_value, figure)
-    print(f"[{datetime.datetime.now()}] {init_value:08b} <<< {figure} ----> byte_value:0b{byte_value:08b}")
-    if byte_value != expected_value:
-        raise ValueError(f"actual:{byte_value}  expected:{expected_value}")
+    actual_value = BitOpe.stand_at(init_value, bit_shift)
+    print(f"[{datetime.datetime.now()}] {init_value:08b} <<< {bit_shift} ----> actual_value:0b{actual_value:08b}")
+    if actual_value != expected_value:
+        raise ValueError(f"actual:{actual_value}  expected:{expected_value}")
 
     init_value = 0b0000_1000
-    figure = 3
+    bit_shift = 3
     expected_value = 0b0000_1000
-    byte_value = BitOpe.stand_at(init_value, figure)
-    print(f"[{datetime.datetime.now()}] {init_value:08b} <<< {figure} ----> byte_value:0b{byte_value:08b}")
-    if byte_value != expected_value:
-        raise ValueError(f"actual:{byte_value}  expected:{expected_value}")
+    actual_value = BitOpe.stand_at(init_value, bit_shift)
+    print(f"[{datetime.datetime.now()}] {init_value:08b} <<< {bit_shift} ----> actual_value:0b{actual_value:08b}")
+    if actual_value != expected_value:
+        raise ValueError(f"actual:{actual_value}  expected:{expected_value}")
 
     init_value = 0b0000_0111
-    figure = 1
+    bit_shift = 1
     expected_value = 0b0000_0101
-    byte_value = BitOpe.sit_at(init_value, figure)
-    print(f"[{datetime.datetime.now()}] {init_value:08b} <<< {figure} ----> byte_value:0b{byte_value:08b}")
-    if byte_value != expected_value:
-        raise ValueError(f"actual:{byte_value}  expected:{expected_value}")
+    actual_value = BitOpe.sit_at(init_value, bit_shift)
+    print(f"[{datetime.datetime.now()}] {init_value:08b} <<< {bit_shift} ----> actual_value:0b{actual_value:08b}")
+    if actual_value != expected_value:
+        raise ValueError(f"actual:{actual_value}  expected:{expected_value}")
+
+
+    init_value = 0b1000_0000
+    bit_shift = 7
+    expected_value = 0b0000_0001
+    actual_value = BitOpe.get_bit_at(init_value, bit_shift)
+    print(f"[{datetime.datetime.now()}] ({init_value:08b} >>> {bit_shift}) % 2 ----> actual_value:0b{actual_value:08b}")
+    if actual_value != expected_value:
+        raise ValueError(f"actual:{actual_value}  expected:{expected_value}")

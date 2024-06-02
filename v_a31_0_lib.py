@@ -756,7 +756,7 @@ class EvalutionMmTable():
 
         byte_value = self._table_as_array[byte_index]
 
-        bit_value = byte_value // (0b1 << left_shift) % 2
+        bit_value = BitOpe.get_bit_at(byte_value, left_shift)
 
         if is_debug:
             # format `:08b` - 0 supply, 8 left shift, binary
