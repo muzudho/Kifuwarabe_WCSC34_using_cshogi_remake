@@ -125,6 +125,11 @@ if __name__ == '__main__':
 
         subtotal_effect = [0] * 81
 
+        src_sq_to_dst_sq_to_index_for_a_dictionary = dict()
+        src_sq_to_dst_sq_to_index_for_b_dictionary = dict()
+        src_sq_to_dst_sq_for_c_dictionary = dict()
+        src_sq_to_dst_sq_for_d_dictionary = dict()
+
         # 通しのインデックス
         effect_index = 0
 
@@ -134,6 +139,16 @@ if __name__ == '__main__':
                 src_sq = BoardHelper.get_sq_by_file_rank(
                         file=src_file,
                         rank=src_rank)
+
+                dst_sq_to_index_for_a_dictionary = dict()
+                dst_sq_to_index_for_b_dictionary = dict()
+                dst_sq_for_c_set = set()
+                dst_sq_for_d_set = set()
+
+                src_sq_to_dst_sq_to_index_for_a_dictionary[src_sq] = dst_sq_to_index_for_a_dictionary
+                src_sq_to_dst_sq_to_index_for_b_dictionary[src_sq] = dst_sq_to_index_for_b_dictionary
+                src_sq_to_dst_sq_for_c_dictionary[src_sq] = dst_sq_for_c_set
+                src_sq_to_dst_sq_for_d_dictionary[src_sq] = dst_sq_for_d_set
 
                 # 成らないことができる移動先
                 no_pro_dst_sq_set = set()
@@ -293,11 +308,6 @@ if __name__ == '__main__':
                 # 表示
                 #
 
-                dst_sq_to_index_for_a_dictionary = dict()
-                dst_sq_to_index_for_b_dictionary = dict()
-                dst_sq_for_c_set = set()
-                dst_sq_for_d_set = set()
-
                 for dst_sq in no_pro_dst_sq_set:
                     dst_sq_to_index_for_a_dictionary[dst_sq] = effect_index
                     effect_index += 1
@@ -307,45 +317,6 @@ if __name__ == '__main__':
                     dst_sq_to_index_for_b_dictionary[dst_sq] = effect_index
                     effect_index += 1
                     dst_sq_for_d_set.add(dst_sq)
-
-                #
-                # 表示
-                #
-
-                # 成らない指し手の各マス　値：通しインデックス
-                label_table_for_a = ["    "] * 81
-
-                # 成る指し手の各マス　値：通しインデックス
-                label_table_for_b = ["    "] * 81
-
-                # 成らない指し手の各マス　値：相対ます番号
-                label_table_for_c = ["    "] * 81
-
-                # 成る指し手の各マス　値：相対ます番号
-                label_table_for_d = ["    "] * 81
-
-                label_table_for_a[src_sq] = " you"
-                label_table_for_b[src_sq] = " you"
-                label_table_for_c[src_sq] = " you"
-                label_table_for_d[src_sq] = " you"
-
-                for dst_sq, effect_index in dst_sq_to_index_for_a_dictionary.items():
-                    label_table_for_a[dst_sq] = f"{effect_index:4}"
-
-                for dst_sq, effect_index in dst_sq_to_index_for_b_dictionary.items():
-                    label_table_for_b[dst_sq] = f"{effect_index:4}"
-
-                for dst_sq in dst_sq_for_c_set:
-                    label_table_for_c[dst_sq] = f"{dst_sq:4}"
-
-                for dst_sq in dst_sq_for_d_set:
-                    label_table_for_d[dst_sq] = f"{dst_sq:4}"
-
-                f.write(f"""src_sq:{src_sq}  effect:{subtotal_len} = no pro:{no_pro_len} + pro:{pro_len}
-通しインデックス  先手成らず                          通しインデックス  先手成り                           絶対マス  先手成らず                                 絶対マス  先手成り
-{DebugHelper.stringify_quadruple_4characters_board(label_table_for_a, label_table_for_b, label_table_for_c, label_table_for_d)}
-
-""")
 
         #
         # 持ち駒 to （移動先 to 通し番号）
@@ -385,6 +356,46 @@ if __name__ == '__main__':
         #
         # 表示
         #
+        for src_sq in range(0,81):
+            dst_sq_to_index_for_a_dictionary = src_sq_to_dst_sq_to_index_for_a_dictionary[src_sq]
+            dst_sq_to_index_for_b_dictionary = src_sq_to_dst_sq_to_index_for_b_dictionary[src_sq]
+            dst_sq_for_c_set = src_sq_to_dst_sq_for_c_dictionary[src_sq]
+            dst_sq_for_d_set = src_sq_to_dst_sq_for_d_dictionary[src_sq]
+
+            # 成らない指し手の各マス　値：通しインデックス
+            label_table_for_a = ["    "] * 81
+
+            # 成る指し手の各マス　値：通しインデックス
+            label_table_for_b = ["    "] * 81
+
+            # 成らない指し手の各マス　値：相対ます番号
+            label_table_for_c = ["    "] * 81
+
+            # 成る指し手の各マス　値：相対ます番号
+            label_table_for_d = ["    "] * 81
+
+            label_table_for_a[src_sq] = " you"
+            label_table_for_b[src_sq] = " you"
+            label_table_for_c[src_sq] = " you"
+            label_table_for_d[src_sq] = " you"
+
+            for dst_sq, effect_index in dst_sq_to_index_for_a_dictionary.items():
+                label_table_for_a[dst_sq] = f"{effect_index:4}"
+
+            for dst_sq, effect_index in dst_sq_to_index_for_b_dictionary.items():
+                label_table_for_b[dst_sq] = f"{effect_index:4}"
+
+            for dst_sq in dst_sq_for_c_set:
+                label_table_for_c[dst_sq] = f"{dst_sq:4}"
+
+            for dst_sq in dst_sq_for_d_set:
+                label_table_for_d[dst_sq] = f"{dst_sq:4}"
+
+            f.write(f"""src_sq:{src_sq}  effect:{subtotal_len} = no pro:{no_pro_len} + pro:{pro_len}
+通しインデックス  先手成らず                          通しインデックス  先手成り                           絶対マス  先手成らず                                 絶対マス  先手成り
+{DebugHelper.stringify_quadruple_4characters_board(label_table_for_a, label_table_for_b, label_table_for_c, label_table_for_d)}
+
+""")
 
         # 打
         #
