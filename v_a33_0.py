@@ -859,7 +859,7 @@ class Kifuwarabe():
 
                     if is_debug:
                         # 表示
-                        print(f"kl_index:{kl_index}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                        print(f"[weaken > kl]  kl_index:{kl_index:7}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
                     if relation_exists == 1:
                         number_of_connection += 1
@@ -867,12 +867,12 @@ class Kifuwarabe():
                 # ＫＱ
                 for kq_index, relation_exists in kq_index_to_relation_exists_dictionary.items():
 
-                    k_move_obj, q_move_obj = EvaluationKpTable.destructure_kq_index(
+                    k_move_obj, q_move_obj = EvaluationKpTable.destructure_kp_index(
                             kp_index=kq_index)
 
                     if is_debug:
                         # 表示
-                        print(f"kq_index:{kq_index}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                        print(f"[weaken > kq]  kq_index:{kq_index:7}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
                     if relation_exists == 1:
                         number_of_connection += 1
@@ -926,7 +926,7 @@ class Kifuwarabe():
                     if relation_exists == 1:
 
                         if is_debug:
-                            print(f"  turn:{Turn.to_string(self._board.turn)}  kl_index:{kl_index}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  remove relation")
+                            print(f"[weaken > kl]  turn:{Turn.to_string(self._board.turn)}  kl_index:{kl_index:7}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  remove relation")
 
                         is_changed_temp = self._evaluation_kl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kl_moves(
                                 k_move_obj=k_move_obj,
@@ -950,7 +950,7 @@ class Kifuwarabe():
                     if relation_exists == 1:
 
                         if is_debug:
-                            print(f"  turn:{Turn.to_string(self._board.turn)}  kq_index:{kq_index}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}  remove relation")
+                            print(f"[weaken > kq]  turn:{Turn.to_string(self._board.turn)}  kq_index:{kq_index:7}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}  remove relation")
 
                         is_changed_temp = self._evaluation_kq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kp_moves(
                                 k_move_obj=k_move_obj,
@@ -980,7 +980,7 @@ class Kifuwarabe():
 
                     if is_debug:
                         # 表示
-                        print(f"pl_index:{pl_index}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                        print(f"[weaken > kl]  pl_index:{pl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
                     if relation_exists == 1:
                         number_of_connection += 1
@@ -993,7 +993,7 @@ class Kifuwarabe():
 
                     if is_debug:
                         # 表示
-                        print(f"pq_index:{pq_index}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                        print(f"[weaken > kl]  pq_index:{pq_index:7}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
                     if relation_exists == 1:
                         number_of_connection += 1
@@ -1033,7 +1033,7 @@ class Kifuwarabe():
                     if relation_exists == 1:
 
                         if is_debug:
-                            print(f"  turn:{Turn.to_string(self._board.turn)}  pl_index:{pl_index}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  remove relation")
+                            print(f"[weaken > pl]  turn:{Turn.to_string(self._board.turn)}  pl_index:{pl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  remove relation")
 
                         is_changed_temp = self._evaluation_pl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kp_moves(
                                 p_move_obj=p_move_obj,
@@ -1057,7 +1057,7 @@ class Kifuwarabe():
                     if relation_exists == 1:
 
                         if is_debug:
-                            print(f"  turn:{Turn.to_string(self._board.turn)}  pq_index:{pq_index}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}  remove relation")
+                            print(f"[weaken > pq]  turn:{Turn.to_string(self._board.turn)}  pq_index:{pq_index:7}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}  remove relation")
 
                         is_changed_temp = self._evaluation_pq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_pp_moves(
                                 p1_move_obj=p_move_obj,
@@ -1165,7 +1165,7 @@ class Kifuwarabe():
 
                     if is_debug:
                         # 表示
-                        print(f"  kl_index:{kl_index}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                        print(f"[strengthen > kl]  kl_index:{kl_index:7}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
                     if relation_exists == 1:
                         number_of_connection += 1
@@ -1178,7 +1178,7 @@ class Kifuwarabe():
 
                     if is_debug:
                         # 表示
-                        print(f"  kq_index:{kq_index}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                        print(f"[strengthen > kq]  kq_index:{kq_index:7}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
                     if relation_exists == 1:
                         number_of_connection += 1
@@ -1228,7 +1228,7 @@ class Kifuwarabe():
                     if relation_exists == 0:
 
                         if is_debug:
-                            print(f"  turn:{Turn.to_string(self._board.turn)}  kl_index:{kl_index}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
+                            print(f"[strengthen > kl]  turn:{Turn.to_string(self._board.turn)}  kl_index:{kl_index:7}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
 
                         is_changed_temp = self._evaluation_kl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kl_moves(
                                 k_move_obj=k_move_obj,
@@ -1252,7 +1252,7 @@ class Kifuwarabe():
                     if relation_exists == 0:
 
                         if is_debug:
-                            print(f"  turn:{Turn.to_string(self._board.turn)}  kq_index:{kq_index}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
+                            print(f"[strengthen > kq]  turn:{Turn.to_string(self._board.turn)}  kq_index:{kq_index:7}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
 
                         is_changed_temp = self._evaluation_kq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kp_moves(
                                 k_move_obj=k_move_obj,
@@ -1281,7 +1281,7 @@ class Kifuwarabe():
 
                     if is_debug:
                         # 表示
-                        print(f"  pl_index:{pl_index}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                        print(f"[strengthen > pl]  pl_index:{pl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
                     if relation_exists == 1:
                         number_of_connection += 1
@@ -1294,7 +1294,7 @@ class Kifuwarabe():
 
                     if is_debug:
                         # 表示
-                        print(f"  pq_index:{pq_index}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                        print(f"[strengthen > pq]  pq_index:{pq_index:7}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
                     if relation_exists == 1:
                         number_of_connection += 1
@@ -1331,7 +1331,7 @@ class Kifuwarabe():
                     if relation_exists == 0:
 
                         if is_debug:
-                            print(f"  turn:{Turn.to_string(self._board.turn)}  pl_index:{pl_index}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
+                            print(f"[strengthen > pl]  turn:{Turn.to_string(self._board.turn)}  pl_index:{pl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
 
                         is_changed_temp = self._evaluation_pl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kp_moves(
                                 p_move_obj=p_move_obj,
@@ -1355,7 +1355,7 @@ class Kifuwarabe():
                     if relation_exists == 0:
 
                         if is_debug:
-                            print(f"  turn:{Turn.to_string(self._board.turn)}  pq_index:{pq_index}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
+                            print(f"[strengthen > pq]  turn:{Turn.to_string(self._board.turn)}  pq_index:{pq_index:7}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
 
                         is_changed_temp = self._evaluation_pq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kp_moves(
                                 p1_move_obj=p_move_obj,
