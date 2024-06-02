@@ -330,6 +330,8 @@ if __name__ == '__main__':
             #    #print(f"  dst_sq:{dst_sq}")
             #    pass
 
+        label_table = None
+
         #
         # TODO 打
         #
@@ -345,25 +347,25 @@ if __name__ == '__main__':
         for drop in ['R', 'B', 'G', 'S', 'N', 'L', 'P']:
 
             if drop == 'R':
-                arr = r
+                label_table = r
 
             elif drop == 'B':
-                arr = b
+                label_table = b
 
             elif drop == 'G':
-                arr = g
+                label_table = g
 
             elif drop == 'S':
-                arr = s
+                label_table = s
 
             elif drop == 'N':
-                arr = n
+                label_table = n
 
             elif drop == 'L':
-                arr = l
+                label_table = l
 
             elif drop == 'P':
-                arr = p
+                label_table = p
 
             else:
                 raise ValueError(f'drop:{drop}')
@@ -377,24 +379,40 @@ if __name__ == '__main__':
             else:
                 min_rank = 0
 
+            #
+            # 移動先 to 通し番号
+            #
+            dst_sq_to_index = dict()
+
             for dst_file in range(0,9):
                 for dst_rank in range(min_rank,9):
                     dst_sq = BoardHelper.get_sq_by_file_rank(
                             file=dst_file,
                             rank=dst_rank)
 
-                    arr[dst_sq] = f"{effect_index:4}"
+                    # 格納
+                    dst_sq_to_index[dst_sq] = effect_index
                     effect_index += 1
 
+            # 詰め替え
+            for dst_sq, effect_index in dst_sq_to_index:
+                # 表示用
+                label_table[dst_sq] = f"{effect_index:4}"
+
+            #
+            # 表示
+            #
             f.write(f"""
 drop:{drop}
-{DebugHelper.stringify_4characters_board(arr)}
+{DebugHelper.stringify_4characters_board(label_table)}
 
 """)
 
 
 
-
+        #
+        # 表示
+        #
         f.write(f"""
 total_effect:{effect_index}
 

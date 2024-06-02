@@ -348,20 +348,20 @@ if __name__ == '__main__':
 
             #   - １マスが３桁の文字列の表
             #   - 元マス
-            serial_index_table = ['   '] * 81
-            serial_index_table[src_sq] = 'you'
+            label_table_for_serial_index = ['   '] * 81
+            label_table_for_serial_index[src_sq] = 'you'
 
-            src_dst_table = ['   '] * 81
-            src_dst_table[src_sq] = 'you'
+            label_table_for_src_dst = ['   '] * 81
+            label_table_for_src_dst[src_sq] = 'you'
 
             for dst_sq, serial_index in dst_to_index_dictionary.items():
-                serial_index_table[dst_sq] = f'{serial_index:3}'
-                src_dst_table[dst_sq] = f'{dst_sq:3}'
+                label_table_for_serial_index[dst_sq] = f'{serial_index:3}'
+                label_table_for_src_dst[dst_sq] = f'{dst_sq:3}'
 
             # 表示
             f.write(f"""src_masu:{BoardHelper.sq_to_jsa(src_sq):2}
 src と dst                              通しインデックス
-{DebugHelper.stringify_double_3characters_boards(src_dst_table, serial_index_table)}
+{DebugHelper.stringify_double_3characters_boards(label_table_for_src_dst, label_table_for_serial_index)}
 """)
 
         #
@@ -381,19 +381,19 @@ src と dst                              通しインデックス
                     # 表示
                     f.write(f"""src_masu:{BoardHelper.sq_to_jsa(src_sq):2}
 通しインデックス                           src と dst
-{DebugHelper.stringify_double_3characters_boards(serial_index_table, src_dst_table)}
+{DebugHelper.stringify_double_3characters_boards(label_table_for_serial_index, label_table_for_src_dst)}
 """)
 
 
                 #   - １マスが３桁の文字列の表
                 #   - 元マス
-                src_dst_table = ['   '] * 81
-                src_dst_table[src_sq] = 'you'
+                label_table_for_src_dst = ['   '] * 81
+                label_table_for_src_dst[src_sq] = 'you'
 
-                serial_index_table = ['   '] * 81
-                serial_index_table[src_sq] = 'you'
+                label_table_for_serial_index = ['   '] * 81
+                label_table_for_serial_index[src_sq] = 'you'
 
-            src_dst_table[dst_sq] = f'{dst_sq:3}'
-            serial_index_table[dst_sq] = f'{serial_index:3}'
+            label_table_for_src_dst[dst_sq] = f'{dst_sq:3}'
+            label_table_for_serial_index[dst_sq] = f'{serial_index:3}'
 
             previous_src_sq = src_sq
