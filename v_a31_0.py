@@ -883,8 +883,7 @@ class Kifuwarabe():
 
                         if is_changed_temp:
                             is_changed = True
-
-                        rest -= 1
+                            rest -= 1
 
             # ＫＱ
             for kq_index, relation_exists in kq_index_to_relation_exists_dictionary.items():
@@ -908,8 +907,7 @@ class Kifuwarabe():
 
                         if is_changed_temp:
                             is_changed = True
-
-                        rest -= 1
+                            rest -= 1
 
         else:
             # ＰＬ
@@ -934,8 +932,7 @@ class Kifuwarabe():
 
                         if is_changed_temp:
                             is_changed = True
-
-                        rest -= 1
+                            rest -= 1
 
             # TODO ＰＱ
             if is_debug:
@@ -1096,8 +1093,7 @@ class Kifuwarabe():
 
                         if is_changed_temp:
                             is_changed = True
-
-                        rest -= 1
+                            rest -= 1
 
             # ＫＱ
             for kq_index, relation_exists in kq_index_to_relation_exists_dictionary.items():
@@ -1121,8 +1117,7 @@ class Kifuwarabe():
 
                         if is_changed_temp:
                             is_changed = True
-
-                        rest -= 1
+                            rest -= 1
 
         else:
             # ＰＬ
@@ -1147,8 +1142,7 @@ class Kifuwarabe():
 
                         if is_changed_temp:
                             is_changed = True
-
-                        rest -= 1
+                            rest -= 1
 
             # TODO ＰＱ
             if is_debug:

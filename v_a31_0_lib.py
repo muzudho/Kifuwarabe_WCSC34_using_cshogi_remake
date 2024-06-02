@@ -779,6 +779,8 @@ class EvalutionMmTable():
             配列のインデックス
         bit : int
             0 か 1
+        is_debug : bool
+            デバッグか？
 
         Returns
         -------
