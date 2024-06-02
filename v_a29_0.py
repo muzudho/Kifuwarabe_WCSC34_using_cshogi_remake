@@ -809,7 +809,8 @@ class Kifuwarabe():
                         is_changed_temp = self._evaluation_kl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kl_moves(
                                 k_move_obj=k_move_obj,
                                 l_move_obj=l_move_obj,
-                                bit=0)
+                                bit=0,
+                                is_rotate=self._board.turn==cshogi.WHITE)
 
                         if is_changed_temp:
                             is_changed = True
@@ -976,7 +977,8 @@ class Kifuwarabe():
                         is_changed_temp = self._evaluation_kl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kl_moves(
                                 k_move_obj=k_move_obj,
                                 l_move_obj=l_move_obj,
-                                bit=1)
+                                bit=1,
+                                is_rotate=self._board.turn==cshogi.WHITE)
 
                         if is_changed_temp:
                             is_changed = True
@@ -2169,7 +2171,8 @@ class EvaluationFacade():
         def select_fo_index_and_relation_bit(
                 kind,
                 f_move_obj,
-                o_move_u_for_f_set):
+                o_move_u_for_f_set,
+                is_rotate):
             """指定の着手と、指定の応手のセットに対して、
 
             Parameters
@@ -2180,6 +2183,8 @@ class EvaluationFacade():
                 指定の着手
             o_move_u_for_f_set : set<str>
                 指定の応手のセット
+            is_rotate : bool
+                後手なら真。指し手を１８０°回転させます
             """
             fo_index_and_relation_bit_dictionary = {}
 
@@ -2192,8 +2197,9 @@ class EvaluationFacade():
 
                 if kind == 'KL':
                     fo_index = EvaluationKkTable.get_index_of_kk_table(
-                        k_move_obj=f_move_obj,
-                        l_move_obj=o_move_obj)
+                            k_move_obj=f_move_obj,
+                            l_move_obj=o_move_obj,
+                            is_rotate=is_rotate)
 
                 # FIXME ＫＱ
                 elif kind == 'KQ':
@@ -2244,7 +2250,8 @@ class EvaluationFacade():
             temp_dictionary = select_fo_index_and_relation_bit(
                     kind='KL',
                     f_move_obj=k_move_obj,
-                    o_move_u_for_f_set=l_move_u_for_k_set)
+                    o_move_u_for_f_set=l_move_u_for_k_set,
+                    is_rotate=turn==cshogi.WHITE)
 
             # 和集合
             kl_index_and_relation_bit_dictionary = kl_index_and_relation_bit_dictionary | temp_dictionary
@@ -2253,7 +2260,8 @@ class EvaluationFacade():
             temp_dictionary = select_fo_index_and_relation_bit(
                     kind='KQ',
                     f_move_obj=k_move_obj,
-                    o_move_u_for_f_set=q_move_u_for_k_set)
+                    o_move_u_for_f_set=q_move_u_for_k_set,
+                    is_rotate=turn==cshogi.WHITE)
 
             kq_index_and_relation_bit_dictionary = kq_index_and_relation_bit_dictionary | temp_dictionary
 
@@ -2264,7 +2272,8 @@ class EvaluationFacade():
             temp_dictionary = select_fo_index_and_relation_bit(
                     kind='PL',
                     f_move_obj=p_move_obj,
-                    o_move_u_for_f_set=l_move_u_for_p_set)
+                    o_move_u_for_f_set=l_move_u_for_p_set,
+                    is_rotate=turn==cshogi.WHITE)
 
             pl_index_and_relation_bit_dictionary = pl_index_and_relation_bit_dictionary | temp_dictionary
 
@@ -2272,7 +2281,8 @@ class EvaluationFacade():
             temp_dictionary = select_fo_index_and_relation_bit(
                     kind='PQ',
                     f_move_obj=p_move_obj,
-                    o_move_u_for_f_set=q_move_u_for_p_set)
+                    o_move_u_for_f_set=q_move_u_for_p_set,
+                    is_rotate=turn==cshogi.WHITE)
 
             pq_index_and_relation_bit_dictionary = pq_index_and_relation_bit_dictionary | temp_dictionary
 
@@ -2815,7 +2825,8 @@ class EvaluationFacade():
             # 自玉の着手と、敵玉の応手の一覧から、ＫＬテーブルのインデックスと、関係の有無を格納した辞書を作成
             kl_index_to_relation_exists_dic = kifuwarabe.evaluation_kl_table_obj_array[Turn.to_index(board.turn)].select_kl_index_and_relation_exists(
                     k_move_obj=move_obj,
-                    l_move_u_set=l_move_u_set)
+                    l_move_u_set=l_move_u_set,
+                    is_rotate=board.turn==cshogi.WHITE)
 
             # TODO 自玉の着手と、敵兵の応手の一覧から、ＫＱテーブルのインデックスと、関係の有無を格納した辞書を作成
 

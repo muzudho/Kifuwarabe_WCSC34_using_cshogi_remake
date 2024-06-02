@@ -371,7 +371,7 @@ class EvaluationPMove():
     @staticmethod
     def get_index_by_p_move(
             p_move_obj,
-            is_rotate=False):
+            is_rotate):
         """兵の指し手を指定すると、兵の指し手のインデックスを返す。
 
         Parameters

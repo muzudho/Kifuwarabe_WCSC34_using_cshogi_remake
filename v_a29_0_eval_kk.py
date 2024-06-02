@@ -13,7 +13,7 @@ class EvaluationKkTable():
     def get_index_of_kk_table(
             k_move_obj,
             l_move_obj,
-            is_rotate=False):
+            is_rotate):
         """ＫＫ評価値テーブルのインデックスを算出
 
         Parameters
@@ -107,10 +107,12 @@ class EvaluationKkTable():
                 table_as_array=self.mm_table_obj.table_as_array)
 
 
+    # 使ってない？
     def get_relation_esixts_by_kl_moves(
             self,
             k_move_obj,
-            l_move_obj):
+            l_move_obj,
+            is_rotate):
         """自玉と敵玉の指し手を受け取って、関係の有無を返します
 
         Parameters
@@ -119,6 +121,8 @@ class EvaluationKkTable():
             自玉の指し手
         l_move_obj : Move
             敵玉の指し手
+        is_rotate : bool
+            後手なら真。指し手を１８０°回転させます
 
         Returns
         -------
@@ -127,8 +131,9 @@ class EvaluationKkTable():
         """
         return self.get_relation_esixts_by_index(
                 kl_index=EvaluationKkTable.get_index_of_kk_table(
-                    k_move_obj=k_move_obj,
-                    l_move_obj=l_move_obj))
+                        k_move_obj=k_move_obj,
+                        l_move_obj=l_move_obj,
+                        is_rotate=is_rotate))
 
 
     def get_relation_esixts_by_index(
@@ -154,7 +159,8 @@ class EvaluationKkTable():
             self,
             k_move_obj,
             l_move_obj,
-            bit):
+            bit,
+            is_rotate):
         """自玉の着手と敵玉の応手を受け取って、関係の有無を設定します
 
         Parameters
@@ -165,6 +171,8 @@ class EvaluationKkTable():
             敵玉の指し手
         bit : int
             0 か 1
+        is_rotate : bool
+            後手なら真。指し手を１８０°回転させます
 
         Returns
         -------
@@ -173,8 +181,9 @@ class EvaluationKkTable():
         """
         is_changed = self._mm_table_obj.set_bit_by_index(
                 index=EvaluationKkTable.get_index_of_kk_table(
-                    k_move_obj=k_move_obj,
-                    l_move_obj=l_move_obj),
+                        k_move_obj=k_move_obj,
+                        l_move_obj=l_move_obj,
+                        is_rotate=is_rotate),
                 bit=bit)
 
         return is_changed
@@ -184,7 +193,8 @@ class EvaluationKkTable():
     def select_kl_index_and_relation_exists(
             self,
             k_move_obj,
-            l_move_u_set):
+            l_move_u_set,
+            is_rotate):
         """自玉の指し手と、敵玉の応手のリストを受け取ると、すべての関係の有無を辞書に入れて返します
         ＫＫ評価値テーブル用
 
@@ -194,6 +204,8 @@ class EvaluationKkTable():
             自玉の着手
         l_move_u_set : List<str>
             敵玉の応手のリスト
+        is_rotate : bool
+            後手なら真。指し手を１８０°回転させます
 
         Returns
         -------
@@ -206,8 +218,9 @@ class EvaluationKkTable():
 
         for l_move_u in l_move_u_set:
             kl_index = EvaluationKkTable.get_index_of_kk_table(
-                k_move_obj=k_move_obj,
-                l_move_obj=Move.from_usi(l_move_u))
+                    k_move_obj=k_move_obj,
+                    l_move_obj=Move.from_usi(l_move_u),
+                    is_rotate=is_rotate)
 
             relation_bit = self.get_relation_esixts_by_index(
                     kl_index=kl_index)

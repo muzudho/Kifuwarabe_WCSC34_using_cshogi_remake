@@ -237,7 +237,7 @@ class EvaluationKMove():
     @staticmethod
     def get_index_by_k_move(
             k_move_obj,
-            is_rotate=False):
+            is_rotate):
         """玉の指し手を指定すると、玉の指し手のインデックスを返す。
 
         Parameters
@@ -264,17 +264,28 @@ class EvaluationKMove():
         # 元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します
         (src_to_dst_index_dictionary, _) = EvaluationKMove.get_src_sq_to_dst_sq_index_dictionary_tuple()
 
+        try:
+            # 移動元マス番号
+            #
+            #   - 打はありません。したがって None にはなりません
+            #
+            dst_to_index_dictionary = src_to_dst_index_dictionary[k_src_sq_or_none]
+
+        except KeyError as ex:
+            print(f"k_move_obj.as_usi:{k_move_obj.as_usi}  is_rotate:{is_rotate}  k_src_sq:{k_src_sq_or_none}  src_masu:{BoardHelper.sq_to_jsa(k_src_sq_or_none)}  ex:{ex}")
+            raise
 
         try:
             # 移動元マス番号
             #
             #   - 打はありません。したがって None にはなりません
             #
-            k_index = src_to_dst_index_dictionary[k_src_sq_or_none][k_move_obj.dst_sq]
+            k_index = dst_to_index_dictionary[k_dst_sq]
 
         except KeyError as ex:
             # k_move_obj.as_usi:5a5b  src_sq:36  dst_sq:37
-            print(f"k_move_obj.as_usi:{k_move_obj.as_usi}  is_rotate:{is_rotate}  src_sq:{k_src_sq_or_none}  dst_sq:{k_dst_sq}  ex:{ex}")
+            # k_move_obj.as_usi:5a4b  is_rotate:True  src_sq:44  dst_sq:52  src_masu:59  dst_masu:68  ex:28
+            print(f"k_move_obj.as_usi:{k_move_obj.as_usi}  is_rotate:{is_rotate}  k_src_sq:{k_src_sq_or_none}  k_dst_sq:{k_dst_sq}  src_masu:{BoardHelper.sq_to_jsa(k_src_sq_or_none)}  dst_masu:{BoardHelper.sq_to_jsa(k_dst_sq)}  ex:{ex}")
             raise
 
         # assert

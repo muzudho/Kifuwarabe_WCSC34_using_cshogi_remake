@@ -14,7 +14,7 @@ class EvaluationKpTable():
     def get_index_of_kp_table(
             k_move_obj,
             p_move_obj,
-            is_rotate=False):
+            is_rotate):
         """ＫＰ評価値テーブルのインデックスを算出
 
         Parameters
@@ -108,10 +108,12 @@ class EvaluationKpTable():
                 table_as_array=self.mm_table_obj.table_as_array)
 
 
+    # 使ってない？
     def get_relation_esixts_by_kp_moves(
             self,
             k_move_obj,
-            p_move_obj):
+            p_move_obj,
+            is_rotate):
         """玉と兵の指し手を受け取って、関係の有無を返します
 
         Parameters
@@ -120,6 +122,8 @@ class EvaluationKpTable():
             玉の指し手
         p_move_obj : Move
             兵の指し手
+        is_rotate : bool
+            後手なら真。指し手を１８０°回転させます
 
         Returns
         -------
@@ -129,7 +133,8 @@ class EvaluationKpTable():
         return self.get_relation_esixts_by_index(
                 kp_index=EvaluationKpTable.get_index_of_kp_table(
                     k_move_obj=k_move_obj,
-                    p_move_obj=p_move_obj))
+                    p_move_obj=p_move_obj,
+                    is_rotate=is_rotate))
 
 
     def get_relation_esixts_by_index(
@@ -151,11 +156,13 @@ class EvaluationKpTable():
                 index=kp_index)
 
 
+    # 使ってない？
     def set_relation_esixts_by_kp_moves(
             self,
             k_move_obj,
             p_move_obj,
-            bit):
+            bit,
+            is_rotate):
         """玉の着手と兵の応手を受け取って、関係の有無を設定します
 
         Parameters
@@ -166,6 +173,8 @@ class EvaluationKpTable():
             兵の指し手
         bit : int
             0 か 1
+        is_rotate : bool
+            後手なら真。指し手を１８０°回転させます
 
         Returns
         -------
@@ -175,16 +184,19 @@ class EvaluationKpTable():
         is_changed = self._mm_table_obj.set_bit_by_index(
                 index=EvaluationKpTable.get_index_of_kp_table(
                     k_move_obj=k_move_obj,
-                    p_move_obj=p_move_obj),
+                    p_move_obj=p_move_obj,
+                    is_rotate=is_rotate),
                 bit=bit)
 
         return is_changed
 
 
+    # 使ってない？
     def select_kp_index_and_relation_exists(
             self,
             k_move_obj,
-            p_move_u_set):
+            p_move_u_set,
+            is_rotate):
         """玉の指し手と、兵の応手のリストを受け取ると、すべての関係の有無を辞書に入れて返します
         ＫＰ評価値テーブル用
 
@@ -194,6 +206,8 @@ class EvaluationKpTable():
             玉の着手
         p_move_u_set : List<str>
             兵の応手のリスト
+        is_rotate : bool
+            後手なら真。指し手を１８０°回転させます
 
         Returns
         -------
@@ -207,7 +221,8 @@ class EvaluationKpTable():
         for p_move_u in p_move_u_set:
             kp_index = EvaluationKpTable.get_index_of_kp_table(
                 k_move_obj=k_move_obj,
-                p_move_obj=Move.from_usi(p_move_u))
+                p_move_obj=Move.from_usi(p_move_u),
+                is_rotate=is_rotate)
 
             relation_bit = self.get_relation_esixts_by_index(
                     kp_index=kp_index)
