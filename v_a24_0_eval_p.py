@@ -326,12 +326,6 @@ if __name__ == '__main__':
 
 """)
 
-            #for dst_sq in sorted(list(dst_sq_set)):
-            #    #print(f"  dst_sq:{dst_sq}")
-            #    pass
-
-        label_table = None
-
         #
         # 持ち駒 to （移動先 to 通し番号）
         #
@@ -376,16 +370,17 @@ if __name__ == '__main__':
         #
         #   - 打は SFEN では駒種類毎に分かれている。 R, B, G, S, N, L, P
         #
-        for drop, dst_sq_to_index_dictionary in drop_to_dst_sq_index.items():
+        for drop in ['R', 'B', 'G', 'S', 'N', 'L', 'P']:
+            dst_sq_to_index_dictionary = drop_to_dst_sq_index[drop]
 
-            label_table = ['    '] * 81
+            label_table_for_drop = ['    '] * 81
 
             for dst_sq, effect_index in dst_sq_to_index_dictionary.items():
-                label_table[dst_sq] = f"{effect_index:4}"
+                label_table_for_drop[dst_sq] = f"{effect_index:4}"
 
             f.write(f"""
 drop:{drop}
-{DebugHelper.stringify_4characters_board(label_table)}
+{DebugHelper.stringify_4characters_board(label_table_for_drop)}
 
 """)
 
