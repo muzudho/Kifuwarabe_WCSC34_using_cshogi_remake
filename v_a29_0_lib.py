@@ -196,7 +196,7 @@ class Move():
         file_str = dst_str[0]
 
         try:
-            dst_file = Move._file_th_str_to_num[file_str]
+            dst_file_th = Move._file_th_str_to_num[file_str]
         except:
             raise Exception(f"dst file error: '{file_str}' in '{move_as_usi}'")
 
@@ -206,15 +206,15 @@ class Move():
         rank_str = dst_str[1]
 
         try:
-            dst_rank = Move._rank_str_to_th_num[rank_str]
+            dst_rank_th = Move._rank_str_to_th_num[rank_str]
         except:
             raise Exception(f"dst rank error: '{rank_str}' in '{move_as_usi}'")
 
         #
         # 移動先のマス番号を 0 から始まる整数で返す
         #
-        # 0～80 = (1～9     - 1) * 9 + (1～9      - 1)
-        dst_sq  = (dst_file - 1) * 9 + (dst_rank - 1)
+        # 0～80 = (1～9         - 1) * 9 + (1～9        - 1)
+        dst_sq  = (dst_file_th - 1) * 9 + (dst_rank_th - 1)
 
         #
         # 成ったか？
@@ -230,8 +230,8 @@ class Move():
                 src_file_th_or_none=src_file_th_or_none,
                 src_rank_th_or_none=src_rank_th_or_none,
                 src_sq_or_none=src_sq_or_none,
-                dst_file=dst_file,
-                dst_rank=dst_rank,
+                dst_file_th=dst_file_th,
+                dst_rank_th=dst_rank_th,
                 dst_sq=dst_sq,
                 promoted=promoted)
 
@@ -275,8 +275,8 @@ class Move():
                 src_file_th_or_none=src_file_th,
                 src_rank_th_or_none=src_rank_th,
                 src_sq_or_none=src_sq,
-                dst_file=dst_file_th,
-                dst_rank=dst_rank_th,
+                dst_file_th=dst_file_th,
+                dst_rank_th=dst_rank_th,
                 dst_sq=dst_sq,
                 promoted=promoted)
 
@@ -289,8 +289,8 @@ class Move():
             src_file_th_or_none,
             src_rank_th_or_none,
             src_sq_or_none,
-            dst_file,
-            dst_rank,
+            dst_file_th,
+            dst_rank_th,
             dst_sq,
             promoted):
         """初期化
@@ -309,9 +309,9 @@ class Move():
             移動元の段番号を 1 から始まる整数で返す。打は無い
         src_sq_or_none : int
             移動元のマス番号を 0 から始まる整数で返す。打にはマス番号は無い
-        dst_file : int
+        dst_file_th : int
             移動先の列番号を 1 から始まる整数で返す
-        dst_rank : int
+        dst_rank_th : int
             移動先の段番号を 1 から始まる整数で返す
         dst_sq : int
             移動先のマス番号を 0 から始まる整数で返す
@@ -324,8 +324,8 @@ class Move():
         self._src_file_th_or_none = src_file_th_or_none
         self._src_rank_th_or_none = src_rank_th_or_none
         self._src_sq_or_none = src_sq_or_none
-        self._dst_file = dst_file
-        self._dst_rank = dst_rank
+        self._dst_file_th = dst_file_th
+        self._dst_rank_th = dst_rank_th
         self._dst_sq = dst_sq
         self._promoted = promoted
 
@@ -359,9 +359,9 @@ class Move():
 
         self._rot_src_sq_or_none = rotate_src_sq_or_none()
 
-        self._rot_dst_file = 8 - (self._dst_file - 1) + 1
+        self._rot_dst_file = 8 - (self._dst_file_th - 1) + 1
 
-        self._rot_dst_rank = 8 - (self._dst_rank - 1) + 1
+        self._rot_dst_rank = 8 - (self._dst_rank_th - 1) + 1
 
         self._rot_dst_sq = 80 - self.dst_sq
 
@@ -402,15 +402,15 @@ class Move():
 
 
     @property
-    def dst_file(self):
+    def dst_file_th(self):
         """移動先の列番号を 1 から始まる整数で返す"""
-        return self._dst_file
+        return self._dst_file_th
 
 
     @property
-    def dst_rank(self):
+    def dst_rank_th(self):
         """移動先の段番号を 1 から始まる整数で返す"""
-        return self._dst_rank
+        return self._dst_rank_th
 
 
     @property
