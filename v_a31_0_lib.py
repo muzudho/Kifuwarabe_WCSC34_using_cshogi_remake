@@ -799,17 +799,17 @@ class EvalutionMmTable():
 
         byte_value = self._table_as_array[byte_index]
 
-        # bit_index == 0 のとき、右から８桁目を指す（ビッグエンディアン）
+        # bit_index == 0 のとき、右端から７桁移動する（ビッグエンディアン）
         #
         #   1xxx xxxx
         #
-        # bit_index == 7 のとき、右から１桁目を指す
+        # bit_index == 7 のとき、右橋から０桁移動する
         #
         #   xxxx xxx1
         #
-        # そこで、 (8 - bit_index) 桁目を指す
+        # そこで、 (7 - bit_index) 桁移動すればよい
         #
-        figure = 8 - bit_index
+        figure = 7 - bit_index
 
         old_byte_value = self._table_as_array[byte_index]
 
@@ -820,11 +820,11 @@ class EvalutionMmTable():
         # ビットはめんどくさい。ビッグエンディアン
         if bit == 1:
             # 指定の桁を 1 で上書きする
-            self._table_as_array[byte_index] = byte_value | (0b1 << figure)
+            self._table_as_array[byte_index] = BitOpe.stand_at(byte_value, figure)
 
         else:
             # 指定の桁を 0 で上書きする
-            self._table_as_array[byte_index] = byte_value & (0b1111_1111 - (0b1 << figure))
+            self._table_as_array[byte_index] = BitOpe.sit_at(byte_value, figure)
 
         if is_debug:
             # format `:08b` - 0 supply, 8 figures, binary
