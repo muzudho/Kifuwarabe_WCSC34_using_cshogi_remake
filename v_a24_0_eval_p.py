@@ -294,35 +294,35 @@ if __name__ == '__main__':
                 #
 
                 # 成らない指し手の各マス　値：通しインデックス
-                a = ["    "] * 81
+                label_table_for_a = ["    "] * 81
 
                 # 成る指し手の各マス　値：通しインデックス
-                m = ["    "] * 81
+                label_table_for_b = ["    "] * 81
 
                 # 成らない指し手の各マス　値：相対ます番号
-                b = ["    "] * 81
+                label_table_for_c = ["    "] * 81
 
                 # 成る指し手の各マス　値：相対ます番号
-                c = ["    "] * 81
+                label_table_for_d = ["    "] * 81
 
-                a[src_sq] = " you"
-                m[src_sq] = " you"
-                b[src_sq] = " you"
-                c[src_sq] = " you"
+                label_table_for_a[src_sq] = " you"
+                label_table_for_b[src_sq] = " you"
+                label_table_for_c[src_sq] = " you"
+                label_table_for_d[src_sq] = " you"
 
                 for dst_sq in no_pro_dst_sq_set:
-                    a[dst_sq] = f"{effect_index:4}"
+                    label_table_for_a[dst_sq] = f"{effect_index:4}"
                     effect_index += 1
-                    b[dst_sq] = f"{dst_sq-src_sq:4}"
+                    label_table_for_c[dst_sq] = f"{dst_sq-src_sq:4}"
 
                 for dst_sq in pro_dst_sq_set:
-                    m[dst_sq] = f"{effect_index:4}"
+                    label_table_for_b[dst_sq] = f"{effect_index:4}"
                     effect_index += 1
-                    c[dst_sq] = f"{dst_sq-src_sq:4}"
+                    label_table_for_d[dst_sq] = f"{dst_sq-src_sq:4}"
 
                 f.write(f"""src_sq:{src_sq}  effect:{subtotal_len} = no pro:{no_pro_len} + pro:{pro_len}
 通しインデックス  先手成らず                          通しインデックス  先手成り                           相対マス  先手成らず                                 相対マス  先手成り
-{DebugHelper.stringify_quadruple_4characters_board(a, m, b, c)}
+{DebugHelper.stringify_quadruple_4characters_board(label_table_for_a, label_table_for_b, label_table_for_c, label_table_for_d)}
 
 """)
 
