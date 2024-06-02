@@ -320,6 +320,21 @@ class Move():
         self._dst_sq = dst_sq
         self._promoted = promoted
 
+        #
+        # １８０°回転
+        #
+
+        # 打はそのまま
+        def rotate_src_sq_or_none():
+            if self.src_sq_or_none is None:
+                return self.src_str
+
+            else:
+                return 80 - self.src_sq_or_none
+
+        self._rot_src_sq_or_none = rotate_src_sq_or_none()
+        self._rot_dst_sq = 80 - self.dst_sq
+
 
     @property
     def as_usi(self):
@@ -350,14 +365,6 @@ class Move():
         return self._src_rank_th_or_none
 
 
-    def get_src_sq_or_none(self):
-        """移動元のマス番号を 0 から始まる整数で返す。打にはマス番号は無い"""
-        if self.src_file_th_or_none is not None and self.src_rank_th_or_none is not None:
-            return (self.src_file_th_or_none - 1) * 9 + (self.src_rank_th_or_none - 1)
-        else:
-            return None
-
-
     @property
     def src_sq_or_none(self):
         """移動元のマス番号を 0 から始まる整数で返す。打にはマス番号は無い"""
@@ -386,6 +393,48 @@ class Move():
     def promoted(self):
         """成ったか？"""
         return self._promoted
+
+
+    @property
+    def rot_src_file_th_or_none(self):
+        """指し手を１８０°回転する。移動元の列番号を 1 から始まる整数で返す。打にはマス番号は無い"""
+        if self._src_file_th_or_none is None:
+            return None
+
+        return 8 - (self._src_file_th_or_none - 1) + 1
+
+
+    @property
+    def rot_src_rank_th_or_none(self):
+        """指し手を１８０°回転する。移動元の段番号を 1 から始まる整数で返す。打にはマス番号は無い"""
+        if self._src_rank_th_or_none is None:
+            return None
+
+        return 8 - (self._src_rank_th_or_none - 1) + 1
+
+
+    @property
+    def rot_src_sq_or_none(self):
+        """指し手を１８０°回転する。移動元のマス番号を 0 から始まる整数で返す。打にはマス番号は無い"""
+        return self._rot_src_sq_or_none
+
+
+    @property
+    def rot_dst_file(self):
+        """指し手を１８０°回転する。移動先の列番号を 1 から始まる整数で返す"""
+        return 8 - (self._dst_file - 1) + 1
+
+
+    @property
+    def rot_dst_rank(self):
+        """指し手を１８０°回転する。移動先の段番号を 1 から始まる整数で返す"""
+        return 8 - (self._dst_rank - 1) + 1
+
+
+    @property
+    def rot_dst_sq(self):
+        """指し手を１８０°回転する。移動先のマス番号を 0 から始まる整数で返す"""
+        return self._dst_sq
 
 
 class MoveHelper():
