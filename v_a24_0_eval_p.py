@@ -333,42 +333,18 @@ if __name__ == '__main__':
         label_table = None
 
         #
-        # TODO 打
+        # 持ち駒 to （移動先 to 通し番号）
         #
-        #   - 打は SFEN では駒種類毎に分かれている。 R, B, G, S, N, L, P
-        #
-        r = ['    '] * 81
-        b = ['    '] * 81
-        g = ['    '] * 81
-        s = ['    '] * 81
-        n = ['    '] * 81
-        l = ['    '] * 81
-        p = ['    '] * 81
+        drop_to_dst_sq_index = dict()
+
         for drop in ['R', 'B', 'G', 'S', 'N', 'L', 'P']:
 
-            if drop == 'R':
-                label_table = r
+            #
+            # 移動先 to 通し番号
+            #
+            dst_sq_to_index = dict()
 
-            elif drop == 'B':
-                label_table = b
-
-            elif drop == 'G':
-                label_table = g
-
-            elif drop == 'S':
-                label_table = s
-
-            elif drop == 'N':
-                label_table = n
-
-            elif drop == 'L':
-                label_table = l
-
-            elif drop == 'P':
-                label_table = p
-
-            else:
-                raise ValueError(f'drop:{drop}')
+            drop_to_dst_sq_index[drop] = dst_sq_to_index
 
             if drop == 'N':
                 min_rank = 2
@@ -379,10 +355,6 @@ if __name__ == '__main__':
             else:
                 min_rank = 0
 
-            #
-            # 移動先 to 通し番号
-            #
-            dst_sq_to_index = dict()
 
             for dst_file in range(0,9):
                 for dst_rank in range(min_rank,9):
@@ -394,27 +366,31 @@ if __name__ == '__main__':
                     dst_sq_to_index[dst_sq] = effect_index
                     effect_index += 1
 
-            # 詰め替え
-            for dst_sq, effect_index in dst_sq_to_index:
-                # 表示用
+
+
+        #
+        # 表示
+        #
+
+        # 打
+        #
+        #   - 打は SFEN では駒種類毎に分かれている。 R, B, G, S, N, L, P
+        #
+        for drop, dst_sq_to_index_dictionary in drop_to_dst_sq_index.items():
+
+            label_table = ['    '] * 81
+
+            for dst_sq, effect_index in dst_sq_to_index_dictionary.items():
                 label_table[dst_sq] = f"{effect_index:4}"
 
-            #
-            # 表示
-            #
             f.write(f"""
 drop:{drop}
 {DebugHelper.stringify_4characters_board(label_table)}
 
 """)
 
-
-
-        #
-        # 表示
-        #
         f.write(f"""
-total_effect:{effect_index}
+total_effect:{effect_index + 1}
 
 no pro + pro
 {DebugHelper.stringify_3characters_board(subtotal_effect)}
