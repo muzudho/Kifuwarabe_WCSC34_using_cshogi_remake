@@ -222,7 +222,7 @@ class Kifuwarabe():
         elif head == 'weaken':
             result_str = self.weaken(
                     cmd_tail=tail,
-                    is_debug=is_debug)
+                    is_debug=True)
 
             print(f"[weaken] result=`{result_str}`")
 
@@ -232,7 +232,7 @@ class Kifuwarabe():
         elif head == 'strengthen':
             result_str = self.strengthen(
                     cmd_tail=tail,
-                    is_debug=is_debug)
+                    is_debug=True)
 
             print(f"[strengthen] result=`{result_str}`")
 
@@ -753,8 +753,13 @@ class Kifuwarabe():
 
                 print(f"  turn:{Turn.to_string(self._board.turn)}  pl_index:{pl_index}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
-            # TODO ＰＱ
-            pass
+            # ＰＱ
+            for pq_index, relation_exists in pq_index_to_relation_exists_dictionary.items():
+
+                p_move_obj, q_move_obj = EvaluationPpTable.destructure_pp_index(
+                        pq_index=pq_index)
+
+                print(f"  turn:{Turn.to_string(self._board.turn)}  pq_index:{pq_index}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
 
     def weaken(
@@ -831,6 +836,7 @@ class Kifuwarabe():
 
             # ＫＬとＫＱの関係数
             kl_kq_total = len(kl_index_to_relation_exists_dictionary) + len(kq_index_to_relation_exists_dictionary)
+            print(f"  kl_kq_total:{kl_kq_total}  =  len(kl_index_to_relation_exists_dictionary):{len(kl_index_to_relation_exists_dictionary)}  +  len(kq_index_to_relation_exists_dictionary):{len(kq_index_to_relation_exists_dictionary)}")
 
             def get_number_of_connection_for_kl_kq():
                 """ＫＬとＫＱの関係が有りのものの数"""
@@ -951,6 +957,7 @@ class Kifuwarabe():
 
             # ＰＬとＰＱの関係数
             pl_pq_total = len(pl_index_to_relation_exists_dictionary) + len(pq_index_to_relation_exists_dictionary)
+            print(f"  pl_pq_total:{pl_pq_total}  =  len(pl_index_to_relation_exists_dictionary):{len(pl_index_to_relation_exists_dictionary)}  +  len(pq_index_to_relation_exists_dictionary):{len(pq_index_to_relation_exists_dictionary)}")
 
             def get_number_of_connection_for_pl_pq():
                 """ＰＬとＰＱの関係が有りのものの数"""
@@ -1259,7 +1266,7 @@ class Kifuwarabe():
                             is_changed = True
                             rest -= 1
 
-            # TODO ＰＱ
+            # ＰＱ
             for pq_index, relation_exists in pq_index_to_relation_exists_dictionary.items():
                 if rest < 1:
                     break
@@ -2720,9 +2727,9 @@ class EvaluationFacade():
                 elif kind == 'PL':
                     f_move_obj, o_move_obj = EvaluationPkTable.destructure_pk_index(fo_index)
 
-                # TODO ＰＱ
+                # ＰＱ
                 elif kind == 'PQ':
-                    continue
+                    f_move_obj, o_move_obj = EvaluationPpTable.destructure_pp_index(fo_index)
 
                 else:
                     raise ValueError(f"unexpected kind:{kind}")
@@ -2756,7 +2763,7 @@ class EvaluationFacade():
                 label_f='P',
                 label_o='L')
 
-        # TODO ＰＱ
+        # ＰＱ
         p_move_u_and_q_and_relation_number_dictionary = select_f_move_u_and_o_and_relation_number(
                 fo_index_and_relation_bit_dictionary=pq_index_and_relation_bit_dictionary,
                 label_f='P',
@@ -3119,12 +3126,24 @@ class EvaluationFacade():
                     l_move_u_set=l_move_u_set,
                     is_rotate=board.turn==cshogi.WHITE)
 
-            # TODO 自玉の着手と、敵兵の応手の一覧から、ＫＱテーブルのインデックスと、関係の有無を格納した辞書を作成
+            # 自玉の着手と、敵兵の応手の一覧から、ＫＱテーブルのインデックスと、関係の有無を格納した辞書を作成
+            kq_index_to_relation_exists_dic = kifuwarabe.evaluation_kq_table_obj_array[Turn.to_index(board.turn)].select_kp_index_and_relation_exists(
+                    k_move_obj=move_obj,
+                    p_move_u_set=q_move_u_set,
+                    is_rotate=board.turn==cshogi.WHITE)
 
         else:
-            # TODO 自兵の着手と、敵玉の応手の一覧から、ＰＬテーブルのインデックスと、関係の有無を格納した辞書を作成
-            # TODO 自兵の着手と、敵兵の応手の一覧から、ＰＰテーブルのインデックスと、関係の有無を格納した辞書を作成
-            pass
+            # 自兵の着手と、敵玉の応手の一覧から、ＰＬテーブルのインデックスと、関係の有無を格納した辞書を作成
+            pl_index_to_relation_exists_dic = kifuwarabe.evaluation_pl_table_obj_array[Turn.to_index(board.turn)].select_pk_index_and_relation_exists(
+                    p_move_obj=move_obj,
+                    k_move_u_set=l_move_u_set,
+                    is_rotate=board.turn==cshogi.WHITE)
+
+            # 自兵の着手と、敵兵の応手の一覧から、ＰＰテーブルのインデックスと、関係の有無を格納した辞書を作成
+            pq_index_to_relation_exists_dic = kifuwarabe.evaluation_pp_table_obj_array[Turn.to_index(board.turn)].select_pp_index_and_relation_exists(
+                    p1_move_obj=move_obj,
+                    p2_move_u_set=q_move_u_set,
+                    is_rotate=board.turn==cshogi.WHITE)
 
         return (kl_index_to_relation_exists_dic,
                 kq_index_to_relation_exists_dic,

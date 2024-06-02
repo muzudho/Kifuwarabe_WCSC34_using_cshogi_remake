@@ -28,7 +28,7 @@ class EvaluationPkTable():
         """
 
         # 0 ～ 2_074_815 =                                                   0 ～ 3812 *                                      544 +                                                  0 ～ 543
-        pk_index         = EvaluationPMove.get_index_by_p_move(p_move_obj, is_rotate) * EvaluationPMove.get_serial_number_size() + EvaluationKMove.get_index_by_k_move(k_move_obj, is_rotate)
+        pk_index         = EvaluationPMove.get_index_by_p_move(p_move_obj, is_rotate) * EvaluationKMove.get_serial_number_size() + EvaluationKMove.get_index_by_k_move(k_move_obj, is_rotate)
 
         # assert
         if EvaluationPMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size() <= pk_index:
@@ -192,7 +192,7 @@ class EvaluationPkTable():
 
 
     # 使ってない？
-    def select_kp_index_and_relation_exists(
+    def select_pk_index_and_relation_exists(
             self,
             p_move_obj,
             k_move_u_set,
