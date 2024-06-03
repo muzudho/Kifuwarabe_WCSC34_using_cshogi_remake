@@ -753,7 +753,8 @@ class Kifuwarabe():
             for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
 
                 k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
-                        kl_index=kl_index)
+                        kl_index=kl_index,
+                        k_turn=self._board.turn)
 
                 print(f"  turn:{Turn.to_string(self._board.turn)}  kl_index:{kl_index}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
@@ -761,7 +762,8 @@ class Kifuwarabe():
             for kq_index, relation_exists in kq_index_to_relation_exists_dictionary.items():
 
                 k_move_obj, q_move_obj = EvaluationKpTable.destructure_kp_index(
-                        kp_index=kq_index)
+                        kp_index=kq_index,
+                        k_turn=self._board.turn)
 
                 print(f"  turn:{Turn.to_string(self._board.turn)}  kq_index:{kq_index}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
@@ -770,7 +772,8 @@ class Kifuwarabe():
             for pl_index, relation_exists in pl_index_to_relation_exists_dictionary.items():
 
                 p_move_obj, l_move_obj = EvaluationPkTable.destructure_pl_index(
-                        pk_index=pl_index)
+                        pk_index=pl_index,
+                        p_turn=self._board.turn)
 
                 print(f"  turn:{Turn.to_string(self._board.turn)}  pl_index:{pl_index}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
@@ -778,7 +781,8 @@ class Kifuwarabe():
             for pq_index, relation_exists in pq_index_to_relation_exists_dictionary.items():
 
                 p_move_obj, q_move_obj = EvaluationPpTable.destructure_pp_index(
-                        pq_index=pq_index)
+                        pq_index=pq_index,
+                        p1_turn=self._board.turn)
 
                 print(f"  turn:{Turn.to_string(self._board.turn)}  pq_index:{pq_index}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
@@ -867,7 +871,8 @@ class Kifuwarabe():
                 for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
 
                     k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
-                            kl_index=kl_index)
+                            kl_index=kl_index,
+                            k_turn=self._board.turn)
 
                     if is_debug:
                         # 表示
@@ -880,7 +885,8 @@ class Kifuwarabe():
                 for kq_index, relation_exists in kq_index_to_relation_exists_dictionary.items():
 
                     k_move_obj, q_move_obj = EvaluationKpTable.destructure_kp_index(
-                            kp_index=kq_index)
+                            kp_index=kq_index,
+                            k_turn=self._board.turn)
 
                     # 表示
                     if is_debug:
@@ -936,7 +942,8 @@ class Kifuwarabe():
                     break
 
                 k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
-                        kl_index=kl_index)
+                        kl_index=kl_index,
+                        k_turn=self._board.turn)
 
                 if k_move_obj.as_usi == move_u:
                     if relation_exists == 1:
@@ -964,7 +971,8 @@ class Kifuwarabe():
                     break
 
                 k_move_obj, q_move_obj = EvaluationKpTable.destructure_kp_index(
-                        kp_index=kq_index)
+                        kp_index=kq_index,
+                        k_turn=self._board.turn)
 
                 if k_move_obj.as_usi == move_u:
                     if relation_exists == 1:
@@ -996,7 +1004,8 @@ class Kifuwarabe():
                 for pl_index, relation_exists in pl_index_to_relation_exists_dictionary.items():
 
                     p_move_obj, l_move_obj = EvaluationPkTable.destructure_pk_index(
-                            pk_index=pl_index)
+                            pk_index=pl_index,
+                            p_turn=self._board.turn)
 
                     if is_debug:
                         # 表示
@@ -1009,7 +1018,8 @@ class Kifuwarabe():
                 for pq_index, relation_exists in pq_index_to_relation_exists_dictionary.items():
 
                     p_move_obj, q_move_obj = EvaluationPpTable.destructure_pp_index(
-                            pp_index=pq_index)
+                            pp_index=pq_index,
+                            p1_turn=self._board.turn)
 
                     if is_debug:
                         # 表示
@@ -1050,7 +1060,8 @@ class Kifuwarabe():
                     break
 
                 p_move_obj, l_move_obj = EvaluationPkTable.destructure_pk_index(
-                        pk_index=pl_index)
+                        pk_index=pl_index,
+                        p_turn=self._board.turn)
 
                 if p_move_obj.as_usi == move_u:
                     if relation_exists == 1:
@@ -1077,7 +1088,8 @@ class Kifuwarabe():
                     break
 
                 p_move_obj, q_move_obj = EvaluationPpTable.destructure_pp_index(
-                        pp_index=pq_index)
+                        pp_index=pq_index,
+                        p1_turn=self._board.turn)
 
                 if p_move_obj.as_usi == move_u:
                     if relation_exists == 1:
@@ -1187,7 +1199,8 @@ class Kifuwarabe():
                 for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
 
                     k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
-                            kl_index=kl_index)
+                            kl_index=kl_index,
+                            k_turn=self._board.turn)
 
                     if is_debug:
                         # 表示
@@ -1200,7 +1213,8 @@ class Kifuwarabe():
                 for kq_index, relation_exists in kq_index_to_relation_exists_dictionary.items():
 
                     k_move_obj, q_move_obj = EvaluationKpTable.destructure_kp_index(
-                            kp_index=kq_index)
+                            kp_index=kq_index,
+                            k_turn=self._board.turn)
 
                     if is_debug:
                         # 表示
@@ -1252,7 +1266,8 @@ class Kifuwarabe():
                     break
 
                 k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
-                        kl_index=kl_index)
+                        kl_index=kl_index,
+                        k_turn=self._board.turn)
 
                 if k_move_obj.as_usi == move_u:
                     if relation_exists == 0:
@@ -1280,7 +1295,8 @@ class Kifuwarabe():
                     break
 
                 k_move_obj, q_move_obj = EvaluationKpTable.destructure_kp_index(
-                        kp_index=kq_index)
+                        kp_index=kq_index,
+                        k_turn=self._board.turn)
 
                 if k_move_obj.as_usi == move_u:
                     if relation_exists == 0:
@@ -1311,7 +1327,8 @@ class Kifuwarabe():
                 for pl_index, relation_exists in pl_index_to_relation_exists_dictionary.items():
 
                     p_move_obj, l_move_obj = EvaluationPkTable.destructure_pk_index(
-                            pk_index=pl_index)
+                            pk_index=pl_index,
+                            p_turn=self._board.turn)
 
                     if is_debug:
                         # 表示
@@ -1324,7 +1341,8 @@ class Kifuwarabe():
                 for pq_index, relation_exists in pq_index_to_relation_exists_dictionary.items():
 
                     p_move_obj, q_move_obj = EvaluationPpTable.destructure_pp_index(
-                            pp_index=pq_index)
+                            pp_index=pq_index,
+                            p1_turn=self._board.turn)
 
                     if is_debug:
                         # 表示
@@ -1363,7 +1381,8 @@ class Kifuwarabe():
                     break
 
                 p_move_obj, l_move_obj = EvaluationPkTable.destructure_pl_index(
-                        pl_index=pl_index)
+                        pl_index=pl_index,
+                        p_turn=self._board.turn)
 
                 if p_move_obj.as_usi == move_u:
                     if relation_exists == 0:
@@ -1391,7 +1410,8 @@ class Kifuwarabe():
                     break
 
                 p_move_obj, q_move_obj = EvaluationPpTable.destructure_pp_index(
-                        pp_index=pq_index)
+                        pp_index=pq_index,
+                        p1_turn=self._board.turn)
 
                 if p_move_obj.as_usi == move_u:
                     if relation_exists == 0:
@@ -2080,7 +2100,8 @@ class Kifuwarabe():
                 weaken_kl_index_and_relation_bit_dictionary,
                 weaken_kq_index_and_relation_bit_dictionary,
                 weaken_pl_index_and_relation_bit_dictionary,
-                weaken_pq_index_and_relation_bit_dictionary)
+                weaken_pq_index_and_relation_bit_dictionary,
+                turn=self._board.turn)
 
         for move_u, relation_number in k_move_u_and_l_to_relation_number_dictionary.items():
             print(f"[K for L]  F:{move_u:5}  O:*****  relation_number:{relation_number}")
@@ -2896,6 +2917,7 @@ class EvaluationFacade():
             kq_index_and_relation_bit_dictionary,
             pl_index_and_relation_bit_dictionary,
             pq_index_and_relation_bit_dictionary,
+            turn,
             is_debug=False):
         """ＭＮ関係を、Ｍ毎にまとめ直して、関係の有無は件数に変換します
 
@@ -2909,6 +2931,10 @@ class EvaluationFacade():
             - 自兵の着手に対する、敵玉の応手の数
         pq_index_and_relation_bit_dictionary - Dictionary<int, int>
             - 自兵の着手に対する、敵兵の応手の数
+        turn : int
+            手番
+        is_debug : bool
+            デバッグモードか？
 
         Returns
         -------
@@ -2934,19 +2960,27 @@ class EvaluationFacade():
             for fo_index, relation_bit in fo_index_and_relation_bit_dictionary.items():
 
                 if kind == 'KL':
-                    f_move_obj, o_move_obj = EvaluationKkTable.destructure_kl_index(fo_index)
+                    f_move_obj, o_move_obj = EvaluationKkTable.destructure_kl_index(
+                            kl_index=fo_index,
+                            k_turn=turn)
 
                 # ＫＱ
                 elif kind == 'KQ':
-                    f_move_obj, o_move_obj = EvaluationKpTable.destructure_kp_index(fo_index)
+                    f_move_obj, o_move_obj = EvaluationKpTable.destructure_kp_index(
+                            kp_index=fo_index,
+                            k_turn=turn)
 
                 # ＰＬ
                 elif kind == 'PL':
-                    f_move_obj, o_move_obj = EvaluationPkTable.destructure_pk_index(fo_index)
+                    f_move_obj, o_move_obj = EvaluationPkTable.destructure_pk_index(
+                            pk_index=fo_index,
+                            p_turn=turn)
 
                 # ＰＱ
                 elif kind == 'PQ':
-                    f_move_obj, o_move_obj = EvaluationPpTable.destructure_pp_index(fo_index)
+                    f_move_obj, o_move_obj = EvaluationPpTable.destructure_pp_index(
+                            pp_index=fo_index,
+                            p1_turn=turn)
 
                 else:
                     raise ValueError(f"unexpected kind:{kind}")
@@ -3181,7 +3215,9 @@ class EvaluationFacade():
             for fo_index, relation_bit in kl_index_and_relation_bit_dictionary.items():
 
                 (k_move_obj,
-                l_move_obj) = EvaluationKkTable.destructure_kl_index(kl_index=fo_index)
+                l_move_obj) = EvaluationKkTable.destructure_kl_index(
+                        kl_index=fo_index,
+                        k_turn=board.turn)
 
                 print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no3]      [KL]  turn:{Turn.to_string(board.turn)}  kl_index:{fo_index:6}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_bit:{relation_bit}")
 
@@ -3189,7 +3225,9 @@ class EvaluationFacade():
             for fo_index, relation_bit in kq_index_and_relation_bit_dictionary.items():
 
                 (k_move_obj,
-                q_move_obj) = EvaluationKpTable.destructure_kp_index(kp_index=fo_index)
+                q_move_obj) = EvaluationKpTable.destructure_kp_index(
+                        kp_index=fo_index,
+                        k_turn=board.turn)
 
                 print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no3]      [KQ]  turn:{Turn.to_string(board.turn)}  kq_index:{fo_index:6}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_bit:{relation_bit}")
 
@@ -3197,7 +3235,9 @@ class EvaluationFacade():
             for fo_index, relation_bit in pl_index_and_relation_bit_dictionary.items():
 
                 (p_move_obj,
-                l_move_obj) = EvaluationPkTable.destructure_pk_index(pk_index=fo_index)
+                l_move_obj) = EvaluationPkTable.destructure_pk_index(
+                        pk_index=fo_index,
+                        p_turn=board.turn)
 
                 print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no3]      [PL]  turn:{Turn.to_string(board.turn)}  pl_index:{fo_index:6}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_bit:{relation_bit}")
 
@@ -3205,7 +3245,9 @@ class EvaluationFacade():
             for fo_index, relation_bit in pq_index_and_relation_bit_dictionary.items():
 
                 (p_move_obj,
-                q_move_obj) = EvaluationPpTable.destructure_pp_index(pp_index=fo_index)
+                q_move_obj) = EvaluationPpTable.destructure_pp_index(
+                        pp_index=fo_index,
+                        p1_turn=board.turn)
 
                 print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no3]      [PQ]  turn:{Turn.to_string(board.turn)}  pq_index:{fo_index:6}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_bit:{relation_bit}")
 
@@ -3217,7 +3259,8 @@ class EvaluationFacade():
                 kl_index_and_relation_bit_dictionary,
                 kq_index_and_relation_bit_dictionary,
                 pl_index_and_relation_bit_dictionary,
-                pq_index_and_relation_bit_dictionary)
+                pq_index_and_relation_bit_dictionary,
+                turn=board.turn)
 
 
         if is_debug and DebugPlan.select_fo_move_u_and_policy_dictionary_no4():

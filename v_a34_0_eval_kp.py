@@ -48,13 +48,16 @@ class EvaluationKpTable():
 
     @staticmethod
     def destructure_kp_index(
-            kp_index):
+            kp_index,
+            k_turn):
         """ＫＰインデックス分解
 
         Parameter
         ---------
         kp_index : int
             玉と兵の関係の通しインデックス
+        k_turn : int
+            着手側の手番
 
         Returns
         -------
@@ -80,12 +83,20 @@ class EvaluationKpTable():
             raise ValueError(f"k_index:{k_index} out of range {EvaluationKMove.get_serial_number_size()}")
 
 
+        # 評価値テーブルは先手用の形なので、後手番は１８０°回転させる必要がある
+        if k_turn == cshogi.BLACK:
+            k_rotate = False
+            l_rotate = True
+        else:
+            k_rotate = True
+            l_rotate = False
+
         p_move_obj = EvaluationPMove.destructure_p_index(
                 p_index=p_index,
-                is_rotate=True)
+                is_rotate=l_rotate)
         k_move_obj = EvaluationKMove.destructure_k_index(
                 k_index=k_index,
-                is_rotate=False)
+                is_rotate=k_rotate)
 
         return (k_move_obj, p_move_obj)
 

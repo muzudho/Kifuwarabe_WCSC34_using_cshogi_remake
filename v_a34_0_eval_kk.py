@@ -48,13 +48,16 @@ class EvaluationKkTable():
 
     @staticmethod
     def destructure_kl_index(
-            kl_index):
+            kl_index,
+            k_turn):
         """ＫＬインデックス分解
 
         Parameter
         ---------
         kl_index : int
             自玉と敵玉の関係の通しインデックス
+        k_turn : int
+            着手側の手番
 
         Returns
         -------
@@ -78,12 +81,20 @@ class EvaluationKkTable():
             raise ValueError(f"k_index:{k_index} out of range {EvaluationKMove.get_serial_number_size()}")
 
 
+        # 評価値テーブルは先手用の形なので、後手番は１８０°回転させる必要がある
+        if k_turn == cshogi.BLACK:
+            k_rotate = False
+            l_rotate = True
+        else:
+            k_rotate = True
+            l_rotate = False
+
         l_move_obj = EvaluationKMove.destructure_k_index(
                 k_index=l_index,
-                is_rotate=True)
+                is_rotate=l_rotate)
         k_move_obj = EvaluationKMove.destructure_k_index(
                 k_index=k_index,
-                is_rotate=False)
+                is_rotate=k_rotate)
 
         return (k_move_obj, l_move_obj)
 
@@ -300,7 +311,8 @@ if __name__ == '__main__':
 
     (k_move_obj_actual,
      l_move_obj_actual) = EvaluationKkTable.destructure_kl_index(
-            kl_index=kk_index)
+            kl_index=kk_index,
+            k_turn=k_turn)
 
     if k_move_obj_expected.as_usi != k_move_obj_actual.as_usi:
         raise ValueError(f"not match. k_turn:{Turn.to_string(k_turn)} K expected:`{k_move_obj_expected.as_usi}`  actual:`{k_move_obj_actual.as_usi}`")
