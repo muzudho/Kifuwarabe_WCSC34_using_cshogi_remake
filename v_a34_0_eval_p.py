@@ -322,7 +322,7 @@ class EvaluationPMove():
                     effect_index += 1
 
 
-        for drop in ['R', 'B', 'G', 'S', 'N', 'L', 'P']:
+        for drop in ['R*', 'B*', 'G*', 'S*', 'N*', 'L*', 'P*']:
 
             #
             # 移動先 to 通し番号
@@ -331,10 +331,10 @@ class EvaluationPMove():
 
             clazz._drop_to_dst_sq_index[drop] = dst_sq_to_index
 
-            if drop == 'N':
+            if drop == 'N*':
                 min_rank = 2
 
-            elif drop in ['L', 'P']:
+            elif drop in ['L*', 'P*']:
                 min_rank = 1
 
             else:
@@ -403,9 +403,8 @@ class EvaluationPMove():
         # 打か。打に成りはありません。したがって None にはなりません
         if p_move_obj.src_rank_th_or_none is None:
             try:
-                # 'R*' とかが入っていると想定して、 'R' の部分だけ取る
-                drop_char = p_move_obj.src_str[0:1]
-                dst_sq_to_index_dictionary = drop_to_dst_sq_index[drop_char]
+                # 'R*' とかが入っていると想定
+                dst_sq_to_index_dictionary = drop_to_dst_sq_index[p_move_obj.src_str]
 
             except KeyError as ex:
                 print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  src_str:{p_move_obj.src_str}  rotated:{is_rotate}  p_src_sq:{p_src_sq_or_none}  promoted:{p_move_obj.promoted}  ex:{ex}")
@@ -566,9 +565,9 @@ if __name__ == '__main__':
 
         # 打
         #
-        #   - 打は SFEN では駒種類毎に分かれている。 R, B, G, S, N, L, P
+        #   - 打は SFEN では駒種類毎に分かれている。 R*, B*, G*, S*, N*, L*, P*
         #
-        for drop in ['R', 'B', 'G', 'S', 'N', 'L', 'P']:
+        for drop in ['R*', 'B*', 'G*', 'S*', 'N*', 'L*', 'P*']:
             dst_sq_to_index_dictionary = drop_to_dst_sq_index[drop]
 
             label_table_for_drop = ['    '] * 81

@@ -249,21 +249,35 @@ class Move():
         Parameters
         ----------
         src_sq : str
-            移動元マス
+            移動元マス、または打の駒種類
         dst_sq : str
             移動先マス
         promoted : bool
             成ったか？
         """
 
-        # 筋と段は 1 から始まる整数（序数）とします
-        src_file_th = src_sq // 9 + 1
-        src_rank_th = src_sq % 9 + 1
+        #
+        # 移動元マス
+        #
 
+        # 打のケース
+        if src_sq in Move._src_drops:
+            src_str = src_sq
+            src_sq = None   # ナンにする
+            src_file_th_or_none = None
+            src_rank_th_or_none = None
+
+        else:
+            # 筋と段は 1 から始まる整数（序数）とします
+            src_file_th_or_none = src_sq // 9 + 1
+            src_rank_th_or_none = src_sq % 9 + 1
+            src_str = f"{src_file_th_or_none}{Move._rank_th_num_to_alphabet[src_rank_th_or_none]}"
+
+        #
+        # 移動先マス
+        #
         dst_file_th = dst_sq // 9 + 1
         dst_rank_th = dst_sq % 9 + 1
-
-        src_str = f"{src_file_th}{Move._rank_th_num_to_alphabet[src_rank_th]}"
         dst_str = f"{dst_file_th}{Move._rank_th_num_to_alphabet[dst_rank_th]}"
 
         if promoted:
@@ -275,8 +289,8 @@ class Move():
                 move_as_usi=f"{src_str}{dst_str}{pro_str}",
                 src_str=src_str,
                 dst_str=dst_str,
-                src_file_th_or_none=src_file_th,
-                src_rank_th_or_none=src_rank_th,
+                src_file_th_or_none=src_file_th_or_none,
+                src_rank_th_or_none=src_rank_th_or_none,
                 src_sq_or_none=src_sq,
                 dst_file_th=dst_file_th,
                 dst_rank_th=dst_rank_th,
