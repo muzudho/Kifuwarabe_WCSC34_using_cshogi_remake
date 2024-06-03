@@ -20,9 +20,9 @@ class EvaluationPkTable():
         Parameters
         ----------
         p_move_obj : Move
-            兵の指し手
+            兵の着手
         k_move_obj : Move
-            玉の指し手
+            玉の応手
         is_rotate : bool
             後手なら真。指し手を１８０°回転させます
         """
@@ -35,6 +35,48 @@ class EvaluationPkTable():
             raise ValueError(f"pk_index:{pk_index} out of range {EvaluationPMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size()}")
 
         return pk_index
+
+
+    @staticmethod
+    def destructure_pk_index(
+            pk_index):
+        """ＰＫインデックス分解
+
+        Parameter
+        ---------
+        pk_index : int
+            兵と玉の関係の通しインデックス
+
+        Returns
+        -------
+        - p_move_obj : Move
+            兵の着手
+        - k_move_obj : Move
+            玉の応手
+        """
+
+        rest = pk_index
+
+        k_index = rest % EvaluationKMove.get_serial_number_size()
+        rest //= EvaluationKMove.get_serial_number_size()
+
+        p_index = rest % EvaluationPMove.get_serial_number_size()
+
+        # assert
+        if EvaluationKMove.get_serial_number_size() <= k_index:
+            raise ValueError(f"k_index:{k_index} out of range {EvaluationKMove.get_serial_number_size()}")
+
+        # assert
+        if EvaluationPMove.get_serial_number_size() <= p_index:
+            raise ValueError(f"p_index:{p_index} out of range {EvaluationPMove.get_serial_number_size()}")
+
+
+        k_move_obj = EvaluationKMove.destructure_k_index(
+                k_index=k_index)
+        p_move_obj = EvaluationPMove.destructure_p_index(
+                p_index=p_index)
+
+        return (p_move_obj, k_move_obj)
 
 
     def __init__(
@@ -229,45 +271,3 @@ class EvaluationPkTable():
             relations[pk_index] = relation_bit
 
         return relations
-
-
-    @staticmethod
-    def destructure_pk_index(
-            pk_index):
-        """ＰＫインデックス分解
-
-        Parameter
-        ---------
-        pk_index : int
-            兵と玉の関係の通しインデックス
-
-        Returns
-        -------
-        - p_move_obj : Move
-            兵の着手
-        - k_move_obj : Move
-            玉の応手
-        """
-
-        rest = pk_index
-
-        k_index = rest % EvaluationKMove.get_serial_number_size()
-        rest //= EvaluationKMove.get_serial_number_size()
-
-        p_index = rest % EvaluationPMove.get_serial_number_size()
-
-        # assert
-        if EvaluationKMove.get_serial_number_size() <= k_index:
-            raise ValueError(f"k_index:{k_index} out of range {EvaluationKMove.get_serial_number_size()}")
-
-        # assert
-        if EvaluationPMove.get_serial_number_size() <= p_index:
-            raise ValueError(f"p_index:{p_index} out of range {EvaluationPMove.get_serial_number_size()}")
-
-
-        k_move_obj = EvaluationKMove.destructure_k_index(
-                k_index=k_index)
-        p_move_obj = EvaluationPMove.destructure_p_index(
-                p_index=p_index)
-
-        return (p_move_obj, k_move_obj)

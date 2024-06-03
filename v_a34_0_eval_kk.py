@@ -1,3 +1,4 @@
+# python v_a34_0_eval_kk.py
 import os
 import datetime
 from v_a34_0_lib import Turn, Move, EvalutionMmTable
@@ -19,9 +20,9 @@ class EvaluationKkTable():
         Parameters
         ----------
         k_move_obj : Move
-            自玉の指し手
+            自玉の着手
         l_move_obj : Move
-            敵玉の指し手
+            敵玉の応手
         is_rotate : bool
             後手なら真。指し手を１８０°回転させます
         """
@@ -34,6 +35,46 @@ class EvaluationKkTable():
             raise ValueError(f"kk_index:{kk_index} out of range {EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size()}")
 
         return kk_index
+
+
+    @staticmethod
+    def destructure_kl_index(
+            kl_index):
+        """ＫＬインデックス分解
+
+        Parameter
+        ---------
+        kl_index : int
+            自玉と敵玉の関係の通しインデックス
+
+        Returns
+        -------
+        - k_move_obj : Move
+            自玉の着手
+        - l_move_obj : Move
+            敵玉の応手
+        """
+
+        king_serial_number_size = EvaluationKMove.get_serial_number_size()
+
+        l_index = kl_index % king_serial_number_size
+        k_index = kl_index // king_serial_number_size
+
+        # assert
+        if EvaluationKMove.get_serial_number_size() <= l_index:
+            raise ValueError(f"l_index:{l_index} out of range {EvaluationKMove.get_serial_number_size()}")
+
+        # assert
+        if EvaluationKMove.get_serial_number_size() <= k_index:
+            raise ValueError(f"k_index:{k_index} out of range {EvaluationKMove.get_serial_number_size()}")
+
+
+        l_move_obj = EvaluationKMove.destructure_k_index(
+                k_index=l_index)
+        k_move_obj = EvaluationKMove.destructure_k_index(
+                k_index=k_index)
+
+        return (k_move_obj, l_move_obj)
 
 
     def __init__(
@@ -230,41 +271,27 @@ class EvaluationKkTable():
         return relations
 
 
-    @staticmethod
-    def destructure_kl_index(
-            kl_index):
-        """ＫＬインデックス分解
+########################################
+# スクリプト実行時
+########################################
 
-        Parameter
-        ---------
-        kl_index : int
-            自玉と敵玉の関係の通しインデックス
+if __name__ == '__main__':
+    """スクリプト実行時"""
 
-        Returns
-        -------
-        - k_move_obj : Move
-            自玉の着手
-        - l_move_obj : Move
-            敵玉の応手
-        """
+    k_move_obj_expected = Move.from_usi('5i5h')
+    l_move_obj_expected = Move.from_usi('5a5b')
 
-        king_serial_number_size = EvaluationKMove.get_serial_number_size()
+    kk_index = EvaluationKkTable.get_index_of_kk_table(
+            k_move_obj=k_move_obj_expected,
+            l_move_obj=l_move_obj_expected,
+            is_rotate=False)
 
-        l_index = kl_index % king_serial_number_size
-        k_index = kl_index // king_serial_number_size
+    (k_move_obj_actual,
+     l_move_obj_actual) = EvaluationKkTable.destructure_kl_index(
+            kl_index=kk_index)
 
-        # assert
-        if EvaluationKMove.get_serial_number_size() <= l_index:
-            raise ValueError(f"l_index:{l_index} out of range {EvaluationKMove.get_serial_number_size()}")
+    if k_move_obj_expected.as_usi != k_move_obj_actual.as_usi:
+        raise ValueError(f"not match. K expected:`{k_move_obj_expected.as_usi}`  actual:`{k_move_obj_actual.as_usi}`")
 
-        # assert
-        if EvaluationKMove.get_serial_number_size() <= k_index:
-            raise ValueError(f"k_index:{k_index} out of range {EvaluationKMove.get_serial_number_size()}")
-
-
-        l_move_obj = EvaluationKMove.destructure_k_index(
-                k_index=l_index)
-        k_move_obj = EvaluationKMove.destructure_k_index(
-                k_index=k_index)
-
-        return (k_move_obj, l_move_obj)
+    if l_move_obj_expected.as_usi != l_move_obj_actual.as_usi:
+        raise ValueError(f"not match. L expected:`{l_move_obj_expected.as_usi}`  actual:`{l_move_obj_actual.as_usi}`")

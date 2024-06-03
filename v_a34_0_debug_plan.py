@@ -3,6 +3,10 @@ class DebugPlan():
 
     _create_k_and_p_legal_moves = False
     _select_fo_move_u_and_policy_dictionary_no1 = True
+    _select_fo_move_u_and_policy_dictionary_no2 = True
+    _select_fo_move_u_and_policy_dictionary_no3 = False
+    _select_fo_move_u_and_policy_dictionary_no4 = True
+    _select_fo_move_u_and_policy_dictionary_no5 = True
     _select_fo_move_u_and_policy_dictionary = False
 
 
@@ -14,6 +18,26 @@ class DebugPlan():
     @classmethod
     def select_fo_move_u_and_policy_dictionary_no1(clazz):
         return clazz._select_fo_move_u_and_policy_dictionary_no1
+
+
+    @classmethod
+    def select_fo_move_u_and_policy_dictionary_no2(clazz):
+        return clazz._select_fo_move_u_and_policy_dictionary_no2
+
+
+    @classmethod
+    def select_fo_move_u_and_policy_dictionary_no3(clazz):
+        return clazz._select_fo_move_u_and_policy_dictionary_no3
+
+
+    @classmethod
+    def select_fo_move_u_and_policy_dictionary_no4(clazz):
+        return clazz._select_fo_move_u_and_policy_dictionary_no4
+
+
+    @classmethod
+    def select_fo_move_u_and_policy_dictionary_no5(clazz):
+        return clazz._select_fo_move_u_and_policy_dictionary_no5
 
 
     @classmethod

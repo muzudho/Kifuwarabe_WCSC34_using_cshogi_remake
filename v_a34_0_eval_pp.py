@@ -19,9 +19,9 @@ class EvaluationPpTable():
         Parameters
         ----------
         p1_move_obj : Move
-            兵１の指し手
+            兵１の着手
         p2_move_obj : Move
-            兵２の指し手
+            兵２の応手
         is_rotate : bool
             後手なら真。指し手を１８０°回転させます
         """
@@ -31,9 +31,51 @@ class EvaluationPpTable():
 
         # assert
         if EvaluationPMove.get_serial_number_size() * EvaluationPMove.get_serial_number_size() <= pp_index:
-            raise ValueError(f"pk_index:{pp_index} out of range {EvaluationPMove.get_serial_number_size() * EvaluationPMove.get_serial_number_size()}")
+            raise ValueError(f"pp_index:{pp_index} out of range {EvaluationPMove.get_serial_number_size() * EvaluationPMove.get_serial_number_size()}")
 
         return pp_index
+
+
+    @staticmethod
+    def destructure_pp_index(
+            pp_index):
+        """ＰＰインデックス分解
+
+        Parameter
+        ---------
+        pp_index : int
+            兵１と兵２の関係の通しインデックス
+
+        Returns
+        -------
+        - p1_move_obj : Move
+            兵１の着手
+        - p2_move_obj : Move
+            兵２の応手
+        """
+
+        rest = pp_index
+
+        p2_index = rest % EvaluationPMove.get_serial_number_size()
+        rest //= EvaluationPMove.get_serial_number_size()
+
+        p1_index = rest % EvaluationPMove.get_serial_number_size()
+
+        # assert
+        if EvaluationPMove.get_serial_number_size() <= p2_index:
+            raise ValueError(f"p2_index:{p2_index} out of range {EvaluationPMove.get_serial_number_size()}")
+
+        # assert
+        if EvaluationPMove.get_serial_number_size() <= p1_index:
+            raise ValueError(f"p1_index:{p1_index} out of range {EvaluationPMove.get_serial_number_size()}")
+
+
+        p2_move_obj = EvaluationPMove.destructure_p_index(
+                p_index=p2_index)
+        p1_move_obj = EvaluationPMove.destructure_p_index(
+                p_index=p1_index)
+
+        return (p1_move_obj, p2_move_obj)
 
 
     def __init__(
@@ -228,45 +270,3 @@ class EvaluationPpTable():
             relations[pp_index] = relation_bit
 
         return relations
-
-
-    @staticmethod
-    def destructure_pp_index(
-            pp_index):
-        """ＰＰインデックス分解
-
-        Parameter
-        ---------
-        pp_index : int
-            兵１と兵２の関係の通しインデックス
-
-        Returns
-        -------
-        - p1_move_obj : Move
-            兵１の着手
-        - p2_move_obj : Move
-            兵２の応手
-        """
-
-        rest = pp_index
-
-        p2_index = rest % EvaluationPMove.get_serial_number_size()
-        rest //= EvaluationPMove.get_serial_number_size()
-
-        p1_index = rest % EvaluationPMove.get_serial_number_size()
-
-        # assert
-        if EvaluationPMove.get_serial_number_size() <= p2_index:
-            raise ValueError(f"p2_index:{p2_index} out of range {EvaluationPMove.get_serial_number_size()}")
-
-        # assert
-        if EvaluationPMove.get_serial_number_size() <= p1_index:
-            raise ValueError(f"p1_index:{p1_index} out of range {EvaluationPMove.get_serial_number_size()}")
-
-
-        p2_move_obj = EvaluationPMove.destructure_p_index(
-                p_index=p2_index)
-        p1_move_obj = EvaluationPMove.destructure_p_index(
-                p_index=p1_index)
-
-        return (p1_move_obj, p2_move_obj)
