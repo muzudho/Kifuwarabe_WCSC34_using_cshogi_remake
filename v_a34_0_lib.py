@@ -3,6 +3,7 @@ import os
 import datetime
 
 from v_a34_0_bit_ope import BitOpe
+from v_a34_0_debug_plan import DebugPlan
 
 
 class Turn():
@@ -632,8 +633,8 @@ class MoveListHelper():
 
         k_sq = BoardHelper.get_king_square(board)
 
-        if is_debug:
-            print(f"[{datetime.datetime.now()}] [create k and p legal moves]  k_sq:{k_sq}")
+        if is_debug and DebugPlan.create_k_and_p_legal_moves():
+            print(f"[{datetime.datetime.now()}] [create k and p legal moves]  k_masu:{BoardHelper.sq_to_jsa(k_sq)}")
 
         # USIプロトコルでの符号表記に変換
         k_moves_u = []
@@ -642,7 +643,7 @@ class MoveListHelper():
         for move in legal_moves:
             move_u = cshogi.move_to_usi(move)
 
-            if is_debug:
+            if is_debug and DebugPlan.create_k_and_p_legal_moves():
                 print(f"[{datetime.datetime.now()}] [create k and p legal moves]  move_u:{move_u}")
 
             # 指し手の移動元を取得

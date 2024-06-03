@@ -3095,7 +3095,7 @@ class EvaluationFacade():
                 board,
                 is_debug=is_debug)
 
-        if is_debug and DebugPlan.select_fo_move_u_and_policy_dictionary():
+        if is_debug and DebugPlan.select_fo_move_u_and_policy_dictionary_no1():
             print(f"  自玉の着手の一覧：")
             for move_u in k_moves_u:
                 print(f"    turn:{Turn.to_string(board.turn)}  K:{move_u:5}  O:*****")
