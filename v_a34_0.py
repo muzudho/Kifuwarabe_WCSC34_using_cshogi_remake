@@ -3,11 +3,12 @@ import cshogi
 import datetime
 import random
 from decimal import Decimal, ROUND_HALF_UP
-from v_a34_0_lib import Turn, Move, MoveHelper, BoardHelper, MoveListHelper, PolicyHelper, GameResultFile
+from v_a34_0_debug_plan import DebugPlan
 from v_a34_0_eval_kk import EvaluationKkTable
 from v_a34_0_eval_kp import EvaluationKpTable
 from v_a34_0_eval_pk import EvaluationPkTable
 from v_a34_0_eval_pp import EvaluationPpTable
+from v_a34_0_lib import Turn, Move, MoveHelper, BoardHelper, MoveListHelper, PolicyHelper, GameResultFile
 
 
 ########################################
@@ -30,7 +31,7 @@ max_move_number = 512
 
 
 ########################################
-# USI ループ階層
+# USI ループ
 ########################################
 
 class Kifuwarabe():
@@ -3094,7 +3095,7 @@ class EvaluationFacade():
                 board,
                 is_debug=is_debug)
 
-        if is_debug:
+        if is_debug and DebugPlan.select_fo_move_u_and_policy_dictionary():
             print(f"  自玉の着手の一覧：")
             for move_u in k_moves_u:
                 print(f"    turn:{Turn.to_string(board.turn)}  K:{move_u:5}  O:*****")
@@ -3145,7 +3146,7 @@ class EvaluationFacade():
             l_move_u_for_p_set = l_move_u_for_p_set.union(temp_l_move_u_for_p_set)
             q_move_u_for_p_set = q_move_u_for_p_set.union(temp_q_move_u_for_p_set)
 
-        if is_debug:
+        if is_debug and DebugPlan.select_fo_move_u_and_policy_dictionary():
             print(f"  自玉に対する、敵玉の応手の一覧：")
             for move_u in l_move_u_for_k_set:
                 print(f"    [L for K]  turn:{Turn.to_string(board.turn)}  K:*****  L:{move_u}")
@@ -3182,7 +3183,7 @@ class EvaluationFacade():
                 turn=board.turn,
                 kifuwarabe=kifuwarabe)
 
-        if is_debug:
+        if is_debug and DebugPlan.select_fo_move_u_and_policy_dictionary():
             print(f"  自玉の着手と、敵玉の応手の、関係の一覧（キー：ｆｏ＿ｉｎｄｅｘ，　値：関係ビット）：")
             for fo_index, relation_bit in kl_index_and_relation_bit_dictionary.items():
 
@@ -3226,7 +3227,7 @@ class EvaluationFacade():
                 pq_index_and_relation_bit_dictionary)
 
 
-        if is_debug:
+        if is_debug and DebugPlan.select_fo_move_u_and_policy_dictionary():
             print(f"  自玉の着手と、敵玉の応手の、関係の一覧（キー：着手，　値：関係数）：")
             for f_move_u, relation_number in k_move_u_and_l_to_relation_number_dictionary.items():
                 print(f"    [K for L]  turn:{Turn.to_string(board.turn)}  K:{f_move_u:5}  L:*****  relation_number:{relation_number:3}")
@@ -3258,7 +3259,7 @@ class EvaluationFacade():
                 p_move_u_and_l_to_relation_number_dictionary=p_move_u_and_l_to_relation_number_dictionary,
                 p_move_u_and_q_to_relation_number_dictionary=p_move_u_and_q_to_relation_number_dictionary)
 
-        if is_debug:
+        if is_debug and DebugPlan.select_fo_move_u_and_policy_dictionary():
             print(f"  自玉の着手と、敵玉の応手の、関係の一覧（キー：着手，　値：ポリシー値）：")
             for f_move_u, policy in k_move_u_for_l_and_policy_dictionary.items():
                 print(f"    [K for L]  turn:{Turn.to_string(board.turn)}  K:{f_move_u:5}  L:*****  policy:{policy:3}")
