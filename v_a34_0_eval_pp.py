@@ -1,3 +1,4 @@
+import cshogi
 import os
 import datetime
 from v_a34_0_lib import Turn, Move, EvalutionMmTable
@@ -13,7 +14,7 @@ class EvaluationPpTable():
     def get_index_of_pp_table(
             p1_move_obj,
             p2_move_obj,
-            is_rotate):
+            p1_turn):
         """ＰＫ評価値テーブルのインデックスを算出
 
         Parameters
@@ -22,12 +23,20 @@ class EvaluationPpTable():
             兵１の着手
         p2_move_obj : Move
             兵２の応手
-        is_rotate : bool
-            後手なら真。指し手を１８０°回転させます
+        p1_turn : int
+            着手側の手番
         """
 
+        # 評価値テーブルは先手用の形なので、後手番は１８０°回転させる必要がある
+        if p1_turn == cshogi.BLACK:
+            p1_rotate = False
+            p2_rotate = True
+        else:
+            p1_rotate = True
+            p2_rotate = False
+
         # 0 ～ 14_542_781 =                                                   0 ～ 3812 *                                     3813 +                                                  0 ～ 3812
-        pp_index         = EvaluationPMove.get_index_by_p_move(p1_move_obj, is_rotate) * EvaluationPMove.get_serial_number_size() + EvaluationPMove.get_index_by_p_move(p2_move_obj, is_rotate)
+        pp_index         = EvaluationPMove.get_index_by_p_move(p1_move_obj, p1_rotate) * EvaluationPMove.get_serial_number_size() + EvaluationPMove.get_index_by_p_move(p2_move_obj, p2_rotate)
 
         # assert
         if EvaluationPMove.get_serial_number_size() * EvaluationPMove.get_serial_number_size() <= pp_index:
@@ -236,7 +245,7 @@ class EvaluationPpTable():
             self,
             p1_move_obj,
             p2_move_u_set,
-            is_rotate):
+            p1_turn):
         """兵１の指し手と、兵２の応手のリストを受け取ると、すべての関係の有無を辞書に入れて返します
         ＰＰ評価値テーブル用
 
@@ -246,8 +255,8 @@ class EvaluationPpTable():
             兵１の着手
         p2_move_u_set : List<str>
             兵２の応手のリスト
-        is_rotate : bool
-            後手なら真。指し手を１８０°回転させます
+        p1_turn : int
+            着手側の手番
 
         Returns
         -------
@@ -262,7 +271,7 @@ class EvaluationPpTable():
             pp_index = EvaluationPpTable.get_index_of_pp_table(
                 p1_move_obj=p1_move_obj,
                 p2_move_obj=Move.from_usi(p2_move_u),
-                is_rotate=is_rotate)
+                p1_turn=p1_turn)
 
             relation_bit = self.get_relation_esixts_by_index(
                     pp_index=pp_index)

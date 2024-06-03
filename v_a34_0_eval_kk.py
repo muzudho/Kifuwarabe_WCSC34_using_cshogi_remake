@@ -1,4 +1,5 @@
 # python v_a34_0_eval_kk.py
+import cshogi
 import os
 import datetime
 from v_a34_0_lib import Turn, Move, EvalutionMmTable
@@ -14,7 +15,7 @@ class EvaluationKkTable():
     def get_index_of_kk_table(
             k_move_obj,
             l_move_obj,
-            is_rotate):
+            k_turn):
         """ＫＫ評価値テーブルのインデックスを算出
 
         Parameters
@@ -23,12 +24,20 @@ class EvaluationKkTable():
             自玉の着手
         l_move_obj : Move
             敵玉の応手
-        is_rotate : bool
-            後手なら真。指し手を１８０°回転させます
+        k_turn : int
+            着手側の手番
         """
 
-        # 0 ～ 296_479 =                                                    0 ～ 543 *                                     544 +                                                   0 ～ 543
-        kk_index       = EvaluationKMove.get_index_by_k_move(k_move_obj, is_rotate) * EvaluationKMove.get_serial_number_size() + EvaluationKMove.get_index_by_k_move(l_move_obj, is_rotate)
+        # 評価値テーブルは先手用の形なので、後手番は１８０°回転させる必要がある
+        if k_turn == cshogi.BLACK:
+            k_rotate = False
+            l_rotate = True
+        else:
+            k_rotate = True
+            l_rotate = False
+
+        # 0 ～ 296_479 =                                                   0 ～ 543 *                                      544 +                                                 0 ～ 543
+        kk_index       = EvaluationKMove.get_index_by_k_move(k_move_obj, k_rotate) * EvaluationKMove.get_serial_number_size() + EvaluationKMove.get_index_by_k_move(l_move_obj, l_rotate)
 
         # assert
         if EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size() <= kk_index:
@@ -153,7 +162,7 @@ class EvaluationKkTable():
             self,
             k_move_obj,
             l_move_obj,
-            is_rotate):
+            k_turn):
         """自玉と敵玉の指し手を受け取って、関係の有無を返します
 
         Parameters
@@ -162,8 +171,8 @@ class EvaluationKkTable():
             自玉の指し手
         l_move_obj : Move
             敵玉の指し手
-        is_rotate : bool
-            後手なら真。指し手を１８０°回転させます
+        k_turn : int
+            着手側の手番
 
         Returns
         -------
@@ -174,7 +183,7 @@ class EvaluationKkTable():
                 kl_index=EvaluationKkTable.get_index_of_kk_table(
                         k_move_obj=k_move_obj,
                         l_move_obj=l_move_obj,
-                        is_rotate=is_rotate))
+                        k_turn=k_turn))
 
 
     def get_relation_esixts_by_index(
@@ -200,8 +209,8 @@ class EvaluationKkTable():
             self,
             k_move_obj,
             l_move_obj,
-            bit,
-            is_rotate):
+            k_turn,
+            bit):
         """自玉の着手と敵玉の応手を受け取って、関係の有無を設定します
 
         Parameters
@@ -210,10 +219,10 @@ class EvaluationKkTable():
             自玉の指し手
         l_move_obj : Move
             敵玉の指し手
+        k_turn : int
+            着手側の手番
         bit : int
             0 か 1
-        is_rotate : bool
-            後手なら真。指し手を１８０°回転させます
 
         Returns
         -------
@@ -224,7 +233,7 @@ class EvaluationKkTable():
                 index=EvaluationKkTable.get_index_of_kk_table(
                         k_move_obj=k_move_obj,
                         l_move_obj=l_move_obj,
-                        is_rotate=is_rotate),
+                        k_turn=k_turn),
                 bit=bit)
 
         return is_changed
@@ -235,7 +244,7 @@ class EvaluationKkTable():
             self,
             k_move_obj,
             l_move_u_set,
-            is_rotate):
+            k_turn):
         """自玉の指し手と、敵玉の応手のリストを受け取ると、すべての関係の有無を辞書に入れて返します
         ＫＫ評価値テーブル用
 
@@ -245,8 +254,8 @@ class EvaluationKkTable():
             自玉の着手
         l_move_u_set : List<str>
             敵玉の応手のリスト
-        is_rotate : bool
-            後手なら真。指し手を１８０°回転させます
+        k_turn : int
+            着手側の手番
 
         Returns
         -------
@@ -261,7 +270,7 @@ class EvaluationKkTable():
             kl_index = EvaluationKkTable.get_index_of_kk_table(
                     k_move_obj=k_move_obj,
                     l_move_obj=Move.from_usi(l_move_u),
-                    is_rotate=is_rotate)
+                    k_turn=k_turn)
 
             relation_bit = self.get_relation_esixts_by_index(
                     kl_index=kl_index)
@@ -280,18 +289,19 @@ if __name__ == '__main__':
 
     k_move_obj_expected = Move.from_usi('5i5h')
     l_move_obj_expected = Move.from_usi('5a5b')
+    k_turn = cshogi.BLACK
 
     kk_index = EvaluationKkTable.get_index_of_kk_table(
             k_move_obj=k_move_obj_expected,
             l_move_obj=l_move_obj_expected,
-            is_rotate=False)
+            k_turn=k_turn)
 
     (k_move_obj_actual,
      l_move_obj_actual) = EvaluationKkTable.destructure_kl_index(
             kl_index=kk_index)
 
     if k_move_obj_expected.as_usi != k_move_obj_actual.as_usi:
-        raise ValueError(f"not match. K expected:`{k_move_obj_expected.as_usi}`  actual:`{k_move_obj_actual.as_usi}`")
+        raise ValueError(f"not match. k_turn:{Turn.to_string(k_turn)} K expected:`{k_move_obj_expected.as_usi}`  actual:`{k_move_obj_actual.as_usi}`")
 
     if l_move_obj_expected.as_usi != l_move_obj_actual.as_usi:
-        raise ValueError(f"not match. L expected:`{l_move_obj_expected.as_usi}`  actual:`{l_move_obj_actual.as_usi}`")
+        raise ValueError(f"not match. k_turn:{Turn.to_string(k_turn)} L expected:`{l_move_obj_expected.as_usi}`  actual:`{l_move_obj_actual.as_usi}`")

@@ -947,8 +947,8 @@ class Kifuwarabe():
                         is_changed_temp = self._evaluation_kl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kl_moves(
                                 k_move_obj=k_move_obj,
                                 l_move_obj=l_move_obj,
-                                bit=0,
-                                is_rotate=self._board.turn==cshogi.WHITE)
+                                k_turn=self._board.turn,
+                                bit=0)
 
                         if is_changed_temp:
                             is_changed = True
@@ -975,8 +975,8 @@ class Kifuwarabe():
                         is_changed_temp = self._evaluation_kq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kp_moves(
                                 k_move_obj=k_move_obj,
                                 p_move_obj=q_move_obj,
-                                bit=0,
-                                is_rotate=self._board.turn==cshogi.WHITE)
+                                k_turn=self._board.turn,
+                                bit=0)
 
                         if is_changed_temp:
                             is_changed = True
@@ -1061,8 +1061,8 @@ class Kifuwarabe():
                         is_changed_temp = self._evaluation_pl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kp_moves(
                                 p_move_obj=p_move_obj,
                                 k_move_obj=l_move_obj,
-                                bit=0,
-                                is_rotate=self._board.turn==cshogi.WHITE)
+                                p_turn=self._board.turn,
+                                bit=0)
 
                         if is_changed_temp:
                             is_changed = True
@@ -1088,8 +1088,8 @@ class Kifuwarabe():
                         is_changed_temp = self._evaluation_pq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_pp_moves(
                                 p1_move_obj=p_move_obj,
                                 p2_move_obj=q_move_obj,
-                                bit=0,
-                                is_rotate=self._board.turn==cshogi.WHITE)
+                                p1_turn=self._board.turn,
+                                bit=0)
 
                         if is_changed_temp:
                             is_changed = True
@@ -1263,8 +1263,8 @@ class Kifuwarabe():
                         is_changed_temp = self._evaluation_kl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kl_moves(
                                 k_move_obj=k_move_obj,
                                 l_move_obj=l_move_obj,
-                                bit=1,
-                                is_rotate=self._board.turn==cshogi.WHITE)
+                                k_turn=self._board.turn,
+                                bit=1)
 
                         if is_changed_temp:
                             is_changed = True
@@ -2667,8 +2667,7 @@ class EvaluationFacade():
         def select_fo_index_and_relation_bit_local(
                 kind,
                 f_move_obj,
-                o_move_u_for_f_set,
-                is_rotate):
+                o_move_u_for_f_set):
             """指定の着手と、指定の応手のセットに対して、
 
             Parameters
@@ -2679,8 +2678,6 @@ class EvaluationFacade():
                 指定の着手
             o_move_u_for_f_set : set<str>
                 指定の応手のセット
-            is_rotate : bool
-                後手なら真。指し手を１８０°回転させます
             """
             fo_index_and_relation_bit_dictionary = {}
 
@@ -2696,28 +2693,28 @@ class EvaluationFacade():
                     fo_index = EvaluationKkTable.get_index_of_kk_table(
                             k_move_obj=f_move_obj,
                             l_move_obj=o_move_obj,
-                            is_rotate=is_rotate)
+                            k_turn=turn)
 
                 # ＫＱ
                 elif kind == 'KQ':
                     fo_index = EvaluationKpTable.get_index_of_kp_table(
                             k_move_obj=f_move_obj,
                             p_move_obj=o_move_obj,
-                            is_rotate=is_rotate)
+                            k_turn=turn)
 
                 # ＰＬ
                 elif kind == 'PL':
                     fo_index = EvaluationPkTable.get_index_of_pk_table(
                             p_move_obj=f_move_obj,
                             k_move_obj=o_move_obj,
-                            is_rotate=is_rotate)
+                            p_turn=turn)
 
                 # ＰＱ
                 elif kind == 'PQ':
                     fo_index = EvaluationPpTable.get_index_of_pp_table(
                             p1_move_obj=f_move_obj,
                             p2_move_obj=o_move_obj,
-                            is_rotate=is_rotate)
+                            p1_turn=turn)
 
                 else:
                     raise ValueError(f"unexpected kind:{kind}")
@@ -2767,8 +2764,7 @@ class EvaluationFacade():
             temp_dictionary = select_fo_index_and_relation_bit_local(
                     kind='KL',
                     f_move_obj=k_move_obj,
-                    o_move_u_for_f_set=l_move_u_for_k_set,
-                    is_rotate=turn==cshogi.WHITE)
+                    o_move_u_for_f_set=l_move_u_for_k_set)
 
             # 和集合
             kl_index_and_relation_bit_dictionary = kl_index_and_relation_bit_dictionary | temp_dictionary
@@ -2777,8 +2773,7 @@ class EvaluationFacade():
             temp_dictionary = select_fo_index_and_relation_bit_local(
                     kind='KQ',
                     f_move_obj=k_move_obj,
-                    o_move_u_for_f_set=q_move_u_for_k_set,
-                    is_rotate=turn==cshogi.WHITE)
+                    o_move_u_for_f_set=q_move_u_for_k_set)
 
             kq_index_and_relation_bit_dictionary = kq_index_and_relation_bit_dictionary | temp_dictionary
 
@@ -2789,8 +2784,7 @@ class EvaluationFacade():
             temp_dictionary = select_fo_index_and_relation_bit_local(
                     kind='PL',
                     f_move_obj=p_move_obj,
-                    o_move_u_for_f_set=l_move_u_for_p_set,
-                    is_rotate=turn==cshogi.WHITE)
+                    o_move_u_for_f_set=l_move_u_for_p_set)
 
             pl_index_and_relation_bit_dictionary = pl_index_and_relation_bit_dictionary | temp_dictionary
 
@@ -2798,8 +2792,7 @@ class EvaluationFacade():
             temp_dictionary = select_fo_index_and_relation_bit_local(
                     kind='PQ',
                     f_move_obj=p_move_obj,
-                    o_move_u_for_f_set=q_move_u_for_p_set,
-                    is_rotate=turn==cshogi.WHITE)
+                    o_move_u_for_f_set=q_move_u_for_p_set)
 
             pq_index_and_relation_bit_dictionary = pq_index_and_relation_bit_dictionary | temp_dictionary
 
@@ -3334,26 +3327,26 @@ class EvaluationFacade():
             kl_index_to_relation_exists_dic = kifuwarabe.evaluation_kl_table_obj_array[Turn.to_index(board.turn)].select_kl_index_and_relation_exists(
                     k_move_obj=move_obj,
                     l_move_u_set=l_move_u_set,
-                    is_rotate=board.turn==cshogi.WHITE)
+                    k_turn=board.turn)
 
             # 自玉の着手と、敵兵の応手の一覧から、ＫＱテーブルのインデックスと、関係の有無を格納した辞書を作成
             kq_index_to_relation_exists_dic = kifuwarabe.evaluation_kq_table_obj_array[Turn.to_index(board.turn)].select_kp_index_and_relation_exists(
                     k_move_obj=move_obj,
                     p_move_u_set=q_move_u_set,
-                    is_rotate=board.turn==cshogi.WHITE)
+                    k_turn=board.turn)
 
         else:
             # 自兵の着手と、敵玉の応手の一覧から、ＰＬテーブルのインデックスと、関係の有無を格納した辞書を作成
             pl_index_to_relation_exists_dic = kifuwarabe.evaluation_pl_table_obj_array[Turn.to_index(board.turn)].select_pk_index_and_relation_exists(
                     p_move_obj=move_obj,
                     k_move_u_set=l_move_u_set,
-                    is_rotate=board.turn==cshogi.WHITE)
+                    p_turn=board.turn)
 
             # 自兵の着手と、敵兵の応手の一覧から、ＰＱテーブルのインデックスと、関係の有無を格納した辞書を作成
             pq_index_to_relation_exists_dic = kifuwarabe.evaluation_pq_table_obj_array[Turn.to_index(board.turn)].select_pp_index_and_relation_exists(
                     p1_move_obj=move_obj,
                     p2_move_u_set=q_move_u_set,
-                    is_rotate=board.turn==cshogi.WHITE)
+                    p1_turn=board.turn)
 
         return (kl_index_to_relation_exists_dic,
                 kq_index_to_relation_exists_dic,

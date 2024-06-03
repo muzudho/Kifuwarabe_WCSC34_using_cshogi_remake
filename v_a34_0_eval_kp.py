@@ -1,3 +1,4 @@
+import cshogi
 import os
 import datetime
 from v_a34_0_lib import Turn, Move, EvalutionMmTable
@@ -14,7 +15,7 @@ class EvaluationKpTable():
     def get_index_of_kp_table(
             k_move_obj,
             p_move_obj,
-            is_rotate):
+            k_turn):
         """ＫＰ評価値テーブルのインデックスを算出
 
         Parameters
@@ -23,12 +24,20 @@ class EvaluationKpTable():
             玉の着手
         p_move_obj : Move
             兵の応手
-        is_rotate : bool
-            後手なら真。指し手を１８０°回転させます
+        k_turn : int
+            着手側の手番
         """
 
-        # 0 ～ 2_078_084 =                                                    0 ～ 543 *                                    3813 +                                                  0 ～ 3812
-        kp_index         = EvaluationKMove.get_index_by_k_move(k_move_obj, is_rotate) * EvaluationPMove.get_serial_number_size() + EvaluationPMove.get_index_by_p_move(p_move_obj, is_rotate)
+        # 評価値テーブルは先手用の形なので、後手番は１８０°回転させる必要がある
+        if k_turn == cshogi.BLACK:
+            k_rotate = False
+            l_rotate = True
+        else:
+            k_rotate = True
+            l_rotate = False
+
+        # 0 ～ 2_078_084 =                                                   0 ～ 543 *                                     3813 +                                                0 ～ 3812
+        kp_index         = EvaluationKMove.get_index_by_k_move(k_move_obj, k_rotate) * EvaluationPMove.get_serial_number_size() + EvaluationPMove.get_index_by_p_move(p_move_obj, l_rotate)
 
         # assert
         if EvaluationKMove.get_serial_number_size() * EvaluationPMove.get_serial_number_size() <= kp_index:
@@ -237,7 +246,7 @@ class EvaluationKpTable():
             self,
             k_move_obj,
             p_move_u_set,
-            is_rotate):
+            k_turn):
         """玉の指し手と、兵の応手のリストを受け取ると、すべての関係の有無を辞書に入れて返します
         ＫＰ評価値テーブル用
 
@@ -247,8 +256,8 @@ class EvaluationKpTable():
             玉の着手
         p_move_u_set : List<str>
             兵の応手のリスト
-        is_rotate : bool
-            後手なら真。指し手を１８０°回転させます
+        k_turn : int
+            着手側の手番
 
         Returns
         -------
@@ -263,7 +272,7 @@ class EvaluationKpTable():
             kp_index = EvaluationKpTable.get_index_of_kp_table(
                 k_move_obj=k_move_obj,
                 p_move_obj=Move.from_usi(p_move_u),
-                is_rotate=is_rotate)
+                k_turn=k_turn)
 
             relation_bit = self.get_relation_esixts_by_index(
                     kp_index=kp_index)

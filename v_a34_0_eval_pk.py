@@ -1,3 +1,4 @@
+import cshogi
 import os
 import datetime
 from v_a34_0_lib import Turn, Move, EvalutionMmTable
@@ -14,7 +15,7 @@ class EvaluationPkTable():
     def get_index_of_pk_table(
             p_move_obj,
             k_move_obj,
-            is_rotate):
+            p_turn):
         """ＰＫ評価値テーブルのインデックスを算出
 
         Parameters
@@ -23,12 +24,20 @@ class EvaluationPkTable():
             兵の着手
         k_move_obj : Move
             玉の応手
-        is_rotate : bool
-            後手なら真。指し手を１８０°回転させます
+        p_turn : int
+            着手側の手番
         """
 
-        # 0 ～ 2_074_815 =                                                   0 ～ 3812 *                                      544 +                                                  0 ～ 543
-        pk_index         = EvaluationPMove.get_index_by_p_move(p_move_obj, is_rotate) * EvaluationKMove.get_serial_number_size() + EvaluationKMove.get_index_by_k_move(k_move_obj, is_rotate)
+        # 評価値テーブルは先手用の形なので、後手番は１８０°回転させる必要がある
+        if p_turn == cshogi.BLACK:
+            p_rotate = False
+            k_rotate = True
+        else:
+            p_rotate = True
+            k_rotate = False
+
+        # 0 ～ 2_074_815 =                                                  0 ～ 3812 *                                      544 +                                                 0 ～ 543
+        pk_index         = EvaluationPMove.get_index_by_p_move(p_move_obj, p_rotate) * EvaluationKMove.get_serial_number_size() + EvaluationKMove.get_index_by_k_move(k_move_obj, k_rotate)
 
         # assert
         if EvaluationPMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size() <= pk_index:
@@ -237,7 +246,7 @@ class EvaluationPkTable():
             self,
             p_move_obj,
             k_move_u_set,
-            is_rotate):
+            p_turn):
         """兵の指し手と、玉の応手のリストを受け取ると、すべての関係の有無を辞書に入れて返します
         ＰＫ評価値テーブル用
 
@@ -247,8 +256,8 @@ class EvaluationPkTable():
             兵の着手
         k_move_u_set : List<str>
             玉の応手のリスト
-        is_rotate : bool
-            後手なら真。指し手を１８０°回転させます
+        p_turn : int
+            着手側の手番
 
         Returns
         -------
@@ -263,7 +272,7 @@ class EvaluationPkTable():
             pk_index = EvaluationPkTable.get_index_of_pk_table(
                 p_move_obj=p_move_obj,
                 k_move_obj=Move.from_usi(k_move_u),
-                is_rotate=is_rotate)
+                p_turn=p_turn)
 
             relation_bit = self.get_relation_esixts_by_index(
                     pk_index=pk_index)
