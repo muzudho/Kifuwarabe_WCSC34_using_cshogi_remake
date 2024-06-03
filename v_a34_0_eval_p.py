@@ -459,13 +459,16 @@ class EvaluationPMove():
 
     @staticmethod
     def destructure_p_index(
-            p_index):
+            p_index,
+            is_rotate):
         """Ｐインデックス分解
 
         Parameter
         ---------
         p_index : int
             兵の指し手のインデックス
+        is_rotate : bool
+            後手なら真。指し手を１８０°回転させます
 
         Returns
         -------
@@ -483,10 +486,18 @@ class EvaluationPMove():
          dst_sq,
          promoted) = index_to_src_sq_dst_sq_promotion_dictionary[p_index]
 
-        return Move.from_src_dst_pro(
+        p_move_obj = Move.from_src_dst_pro(
                 src_sq=src_sq,
                 dst_sq=dst_sq,
                 promoted=False)
+
+        if is_rotate:
+            p_move_obj = Move.from_src_dst_pro(
+                    src_sq=p_move_obj.rot_src_sq_or_none,
+                    dst_sq=p_move_obj.rot_dst_sq,
+                    promoted=False)
+
+        return p_move_obj
 
 
 ########################################

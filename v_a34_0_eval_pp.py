@@ -80,9 +80,11 @@ class EvaluationPpTable():
 
 
         p2_move_obj = EvaluationPMove.destructure_p_index(
-                p_index=p2_index)
+                p_index=p2_index,
+                is_rotate=True)
         p1_move_obj = EvaluationPMove.destructure_p_index(
-                p_index=p1_index)
+                p_index=p1_index,
+                is_rotate=False)
 
         return (p1_move_obj, p2_move_obj)
 

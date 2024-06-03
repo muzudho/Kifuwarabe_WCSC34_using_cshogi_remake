@@ -297,13 +297,16 @@ class EvaluationKMove():
 
     @staticmethod
     def destructure_k_index(
-            k_index):
+            k_index,
+            is_rotate):
         """Ｋインデックス分解
 
         Parameter
         ---------
         k_index : int
             玉の指し手のインデックス
+        is_rotate : bool
+            後手なら真。指し手を１８０°回転させます
 
         Returns
         -------
@@ -316,10 +319,18 @@ class EvaluationKMove():
 
         (src_sq, dst_sq) = index_to_src_dst_dictionary[k_index]
 
-        return Move.from_src_dst_pro(
+        k_move_obj = Move.from_src_dst_pro(
                 src_sq=src_sq,
                 dst_sq=dst_sq,
                 promoted=False)
+
+        if is_rotate:
+            k_move_obj = Move.from_src_dst_pro(
+                    src_sq=k_move_obj.rot_src_sq_or_none,
+                    dst_sq=k_move_obj.rot_dst_sq,
+                    promoted=False)
+
+        return k_move_obj
 
 
 ########################################

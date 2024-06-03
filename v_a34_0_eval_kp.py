@@ -81,9 +81,11 @@ class EvaluationKpTable():
 
 
         p_move_obj = EvaluationPMove.destructure_p_index(
-                p_index=p_index)
+                p_index=p_index,
+                is_rotate=True)
         k_move_obj = EvaluationKMove.destructure_k_index(
-                k_index=k_index)
+                k_index=k_index,
+                is_rotate=False)
 
         return (k_move_obj, p_move_obj)
 

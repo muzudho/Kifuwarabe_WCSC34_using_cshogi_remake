@@ -79,9 +79,11 @@ class EvaluationKkTable():
 
 
         l_move_obj = EvaluationKMove.destructure_k_index(
-                k_index=l_index)
+                k_index=l_index,
+                is_rotate=True)
         k_move_obj = EvaluationKMove.destructure_k_index(
-                k_index=k_index)
+                k_index=k_index,
+                is_rotate=False)
 
         return (k_move_obj, l_move_obj)
 
