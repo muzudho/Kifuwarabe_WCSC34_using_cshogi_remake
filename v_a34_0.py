@@ -2545,7 +2545,7 @@ class MoveAndPolicyHelper():
                 is_debug=is_debug)
 
 
-        if is_debug:
+        if is_debug and DebugPlan.select_good_f_move_u_set_power():
             for k_move_u, policy in k_move_u_for_l_and_policy_dictionary.items():
                 print(f"[select good f move u set power] k_move_u:{k_move_u:5} for l  policy:{policy}‰")
 
@@ -2568,7 +2568,7 @@ class MoveAndPolicyHelper():
                 is_debug=is_debug)
 
 
-        if is_debug:
+        if is_debug and DebugPlan.select_good_f_move_u_set_power():
             for k_move_u, policy in k_move_u_to_policy_dictionary.items():
                 print(f"[select good f move u set power] k_move_u:{k_move_u:5}  policy:{policy}‰")
 
