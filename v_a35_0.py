@@ -1492,6 +1492,9 @@ class Kifuwarabe():
                     board=self._board,
                     kifuwarabe=self)
 
+            if is_debug:
+                print(f"[{datetime.datetime.now()}] [playout] best_move:{best_move_str:5}")
+
             # 一手指す
             self._board.push_usi(best_move_str)
 

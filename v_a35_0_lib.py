@@ -2,8 +2,8 @@ import cshogi
 import os
 import datetime
 
-from v_a34_0_bit_ope import BitOpe
-from v_a34_0_debug_plan import DebugPlan
+from v_a35_0_bit_ope import BitOpe
+from v_a35_0_debug_plan import DebugPlan
 
 
 class Turn():
