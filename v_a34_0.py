@@ -165,7 +165,8 @@ class Kifuwarabe():
 
         # 思考開始～最善手返却
         elif head == 'go':
-            self.go()
+            self.go(
+                    is_debug=is_debug)
 
         # 中断
         elif head == 'stop':
@@ -421,14 +422,23 @@ class Kifuwarabe():
             print(f"[kifuwarabe > position] my turn is {Turn.to_string(self._my_turn)}")
 
 
-    def go(self):
-        """思考開始～最善手返却"""
+    def go(
+            self,
+            is_debug=False):
+        """思考開始～最善手返却
 
-        # 自分の手番と、局面の手番が一致なら自分のターン
-        if self._board.turn == self._my_turn:
-            print(f"[kifuwarabe > go] my turn.  board.turn:{Turn.to_string(self._board.turn)}  my turn:{Turn.to_string(self._my_turn)}")
-        else:
-            print(f"[kifuwarabe > go] opponent turn.  board.turn:{Turn.to_string(self._board.turn)}  my turn:{Turn.to_string(self._my_turn)}")
+        Parameters
+        ----------
+        is_debug : bool
+            デバッグモードか？
+        """
+
+        if is_debug:
+            # 自分の手番と、局面の手番が一致なら自分のターン
+            if self._board.turn == self._my_turn:
+                print(f"[{datetime.datetime.now()}] [kifuwarabe > go] my turn.  board.turn:{Turn.to_string(self._board.turn)}  my turn:{Turn.to_string(self._my_turn)}")
+            else:
+                print(f"[{datetime.datetime.now()}] [kifuwarabe > go] opponent turn.  board.turn:{Turn.to_string(self._board.turn)}  my turn:{Turn.to_string(self._my_turn)}")
 
         if self._board.is_game_over():
             """投了局面時"""
@@ -460,7 +470,8 @@ class Kifuwarabe():
         best_move_str = Lottery.choice_best(
                 legal_moves=list(self._board.legal_moves),
                 board=self._board,
-                kifuwarabe=self)
+                kifuwarabe=self,
+                is_debug=is_debug)
 
         print(f"info depth 0 seldepth 0 time 1 nodes 0 score cp 0 string I'm random move")
         print(f'bestmove {best_move_str}', flush=True)
@@ -2166,7 +2177,8 @@ class Lottery():
     def choice_best(
             legal_moves,
             board,
-            kifuwarabe):
+            kifuwarabe,
+            is_debug=False):
         """くじを引く
 
         Parameters
@@ -2177,6 +2189,8 @@ class Lottery():
             局面
         kifuwarabe : Kifuwarabe
             評価値テーブルを持っている
+        is_debug : bool
+            デバッグモードか？
         """
 
         #
@@ -2187,12 +2201,26 @@ class Lottery():
          bad_move_u_set) = MoveAndPolicyHelper.select_good_f_move_u_set_power(
                 legal_moves=legal_moves,
                 board=board,
-                kifuwarabe=kifuwarabe)
+                kifuwarabe=kifuwarabe,
+                is_debug=is_debug)
+
+        if is_debug:
+
+            print(f"[{datetime.datetime.now()}] [choice best] 好手一覧")
+
+            for good_move_u in good_move_u_set:
+                print(f"[{datetime.datetime.now()}]  good_move_u:{good_move_u:5}")
+
+            print(f"[{datetime.datetime.now()}] [choice best] 悪手一覧")
+
+            for bad_move_u in bad_move_u_set:
+                print(f"[{datetime.datetime.now()}]  bad_move_u:{bad_move_u:5}")
 
         # 候補手の中からランダムに選ぶ。USIの指し手の記法で返却
         move_u_list = list(good_move_u_set)
+
+        # 何も指さないよりはマシ
         if len(move_u_list) < 1:
-            # 何も指さないよりはマシ
             move_u_list = list(bad_move_u_set)
 
         return random.choice(move_u_list)
@@ -3063,7 +3091,8 @@ class EvaluationFacade():
         # 自軍の着手の集合を、自玉の着手の集合と、自兵の着手の集合に分ける
         k_moves_u, p_moves_u = MoveListHelper.create_k_and_p_legal_moves(
                 legal_moves,
-                board)
+                board,
+                is_debug=is_debug)
 
         if is_debug:
             print(f"  自玉の着手の一覧：")

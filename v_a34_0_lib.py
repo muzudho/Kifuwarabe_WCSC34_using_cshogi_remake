@@ -611,7 +611,8 @@ class MoveListHelper():
     @staticmethod
     def create_k_and_p_legal_moves(
             legal_moves,
-            board):
+            board,
+            is_debug=False):
         """自玉の合法手のリストと、自軍の玉以外の合法手のリストを作成
 
         Parameters
@@ -620,6 +621,8 @@ class MoveListHelper():
             合法手のリスト : cshogi の指し手整数
         board : Board
             局面
+        is_debug : bool
+            デバッグモードか？
 
         Returns
         -------
@@ -629,12 +632,18 @@ class MoveListHelper():
 
         k_sq = BoardHelper.get_king_square(board)
 
+        if is_debug:
+            print(f"[{datetime.datetime.now()}] [create k and p legal moves]  k_sq:{k_sq}")
+
         # USIプロトコルでの符号表記に変換
         k_moves_u = []
         p_moves_u = []
 
         for move in legal_moves:
             move_u = cshogi.move_to_usi(move)
+
+            if is_debug:
+                print(f"[{datetime.datetime.now()}] [create k and p legal moves]  move_u:{move_u}")
 
             # 指し手の移動元を取得
             move_obj = Move.from_usi(move_u)
