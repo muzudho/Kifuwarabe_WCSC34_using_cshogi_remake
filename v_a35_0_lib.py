@@ -533,7 +533,7 @@ class BoardHelper():
 
 
     @staticmethod
-    def sq_to_jsa(serial_sq):
+    def sq_to_jsa(serial_sq_or_none):
         """0 から始まるマスの通し番号は読みずらいので、
         十の位を筋、一の位を段になるよう変換します。
         これは将棋の棋士も棋譜に用いている記法です。
@@ -541,12 +541,15 @@ class BoardHelper():
 
         Parameters
         ----------
-        serial_sq : int
-            0 から始まるマスの通し番号
+        serial_sq_or_none : int
+            0 から始まるマスの通し番号。打のときは None
         """
 
+        if serial_sq_or_none is None:
+            return None
+
         (file,
-         rank) = BoardHelper.get_file_rank_by_sq(serial_sq)
+         rank) = BoardHelper.get_file_rank_by_sq(serial_sq_or_none)
 
         return 10 * (file + 1) + (rank + 1)
 

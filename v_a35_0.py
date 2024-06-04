@@ -1621,7 +1621,7 @@ class Kifuwarabe():
         good_num = len(good_move_u_set)
         bad_num = len(bad_move_u_set)
         total_num = good_num + bad_num
-        print(f'[{datetime.datetime.now()}] [learn > 詰める方]　作業量その１  好手数：{good_num}　悪手数：{bad_num}')
+        print(f'[{datetime.datetime.now()}] [learn > 詰める方]　作業量その１  好手数：{good_num}　悪手数：{bad_num}　※プレイアウトに時間がかかることがあります', flush=True)
 
         if is_debug:
             print(f'[{datetime.datetime.now()}] [learn > 詰める方]  現好手一覧：')
