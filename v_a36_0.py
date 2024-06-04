@@ -1689,7 +1689,7 @@ class Kifuwarabe():
 
             # 手数の上限に達した
             elif result_str == 'max_move':
-                log_progress(f"ignored:この学習は、手数の上限で終わった対局は、評価値を変動させないものとする")
+                log_progress(f"ignored:この学習では、手数の上限で終わった対局は、評価値を変動させないものとする")
 
             # プレイアウトの深さの上限に達した
             elif result_str == 'max_playout_depth':
@@ -1697,7 +1697,7 @@ class Kifuwarabe():
                 log_progress(f"fumble:１手詰めを逃して {max_playout_depth} 手以内に終局しなかった。好手の評価を取り下げる")
 
             else:
-                log_progress(f"ignored:好手の評価はそのまま result_str:{result_str}")
+                log_progress("ignored:好手の評価はそのまま")
 
             # 終局図の内部データに戻す
             restore_end_position()
@@ -1764,11 +1764,15 @@ class Kifuwarabe():
                 else:
                     log_progress("ignored:１手詰めの局面で、１手詰めを逃して負けたのだから、悪手の評価はそのまま")
 
+            # 手数の上限に達した
+            elif result_str == 'max_move':
+                log_progress(f"ignored:この学習では、手数の上限で終わった対局は、評価値を変動させないものとする")
+
             elif result_str == 'max_playout_depth':
                 log_progress(f"ignored:１手詰めの局面で、 {max_playout_depth} 手かけて終局しなかったので、悪手の評価はそのまま")
 
             else:
-                log_progress(f"ignored:悪手の評価はそのまま result_str:{result_str}")
+                log_progress("ignored:悪手の評価はそのまま")
 
             # 終局図の内部データに戻す
             restore_end_position()
@@ -1857,7 +1861,8 @@ class Kifuwarabe():
 
             # プレイアウトする
             result_str = self.playout(
-                    is_in_learn=True)
+                    is_in_learn=True,
+                    max_playout_depth=max_playout_depth)
 
             move_number_difference = self._board.move_number - move_number_at_end
 
@@ -1875,8 +1880,9 @@ class Kifuwarabe():
                 else:
                     log_progress("fumble:２手詰めが掛けられていて、２手詰めを避けたから、好手の評価はそのまま")
 
+            # 手数の上限に達した
             elif result_str == 'max_move':
-                log_progress("ignored:終局の２手前の局面から、２手後に手数上限に達した。良し悪し付かず、この好手の評価はそのまま")
+                log_progress(f"ignored:この学習では、手数の上限で終わった対局は、評価値を変動させないものとする")
 
             else:
                 log_progress("ignored:この好手の評価はそのまま")
@@ -1953,8 +1959,7 @@ class Kifuwarabe():
 
             # 手数の上限に達した
             elif result_str == 'max_move':
-                # 相手がわざと負けようとしたのかもしれない。無視しておく
-                log_progress("ignored:終局の２手前の局面から、上限手数に達してしまった。相手がヘボの可能性を除外できず、この悪手の評価はそのまま")
+                log_progress(f"ignored:この学習では、手数の上限で終わった対局は、評価値を変動させないものとする")
 
             else:
                 log_progress("ignored:この悪手の評価はそのまま")
