@@ -1,4 +1,5 @@
 # python v_a35_0_eval_k.py
+import datetime
 from v_a35_0_lib import Move, BoardHelper
 from v_a35_0_debug import DebugHelper
 
@@ -105,6 +106,8 @@ class EvaluationKMove():
 
         # 未生成なら生成
         if clazz._src_to_dst_index_dictionary == None:
+
+            print(f"[{datetime.datetime.now()}] [evaluation k move > get_src_sq_to_dst_sq_index_dictionary_tuple] ★重い処理は１回だけ")
 
             # 右
             right_file = - 1

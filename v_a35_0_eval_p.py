@@ -1,4 +1,5 @@
 # python v_a35_0_eval_p.py
+import datetime
 from v_a35_0_lib import Move, BoardHelper
 from v_a35_0_debug import DebugHelper
 
@@ -129,103 +130,164 @@ class EvaluationPMove():
     @classmethod
     def get_src_sq_to_dst_sq_index_dictionary_tuple(clazz):
 
-        # 先手成らず（no promote）　通しインデックス（serial index）
-        clazz._src_sq_to_dst_sq_to_index_for_npsi_dictionary = dict()
+        # 未生成なら生成
+        if clazz._src_sq_to_dst_sq_to_index_for_npsi_dictionary == None:
 
-        # 先手成り（promote）　通しインデックス（serial index）
-        clazz._src_sq_to_dst_sq_to_index_for_psi_dictionary = dict()
+            print(f"[{datetime.datetime.now()}] [evaluation p move > get_src_sq_to_dst_sq_index_dictionary_tuple] ★重い処理は１回だけ")
 
-        # 持ち駒 to （移動先 to 通し番号）
-        clazz._drop_to_dst_sq_index = dict()
+            # 先手成らず（no promote）　通しインデックス（serial index）
+            clazz._src_sq_to_dst_sq_to_index_for_npsi_dictionary = dict()
 
-        # 通しインデックスを渡すと、移動元、移動先、成りか、を返す辞書
-        clazz._index_to_src_sq_dst_sq_promotion_dictionary = dict()
+            # 先手成り（promote）　通しインデックス（serial index）
+            clazz._src_sq_to_dst_sq_to_index_for_psi_dictionary = dict()
 
-        # 通しのインデックス
-        effect_index = 0
+            # 持ち駒 to （移動先 to 通し番号）
+            clazz._drop_to_dst_sq_index = dict()
 
-        # 範囲外チェックを行いたいので、ループカウンタ―は sq ではなく file と rank の２重ループにする
-        for src_file in range(0,9):
-            for src_rank in range(0,9):
-                src_sq = BoardHelper.get_sq_by_file_rank(
-                        file=src_file,
-                        rank=src_rank)
+            # 通しインデックスを渡すと、移動元、移動先、成りか、を返す辞書
+            clazz._index_to_src_sq_dst_sq_promotion_dictionary = dict()
 
-                dst_sq_to_index_for_npsi_dictionary = dict()
-                dst_sq_to_index_for_b_dictionary = dict()
+            # 通しのインデックス
+            effect_index = 0
 
-                clazz._src_sq_to_dst_sq_to_index_for_npsi_dictionary[src_sq] = dst_sq_to_index_for_npsi_dictionary
-                clazz._src_sq_to_dst_sq_to_index_for_psi_dictionary[src_sq] = dst_sq_to_index_for_b_dictionary
+            # 範囲外チェックを行いたいので、ループカウンタ―は sq ではなく file と rank の２重ループにする
+            for src_file in range(0,9):
+                for src_rank in range(0,9):
+                    src_sq = BoardHelper.get_sq_by_file_rank(
+                            file=src_file,
+                            rank=src_rank)
 
-                # 成らないことができる移動先
-                no_pro_dst_sq_set = set()
+                    dst_sq_to_index_for_npsi_dictionary = dict()
+                    dst_sq_to_index_for_b_dictionary = dict()
 
-                # 成ることができる移動先
-                pro_dst_sq_set = set()
+                    clazz._src_sq_to_dst_sq_to_index_for_npsi_dictionary[src_sq] = dst_sq_to_index_for_npsi_dictionary
+                    clazz._src_sq_to_dst_sq_to_index_for_psi_dictionary[src_sq] = dst_sq_to_index_for_b_dictionary
 
-                #
-                # 飛車の動き
-                #
+                    # 成らないことができる移動先
+                    no_pro_dst_sq_set = set()
 
-                # 垂直
-                for delta_rank in range(1,9):
-                    # 上
-                    next_rank = src_rank-delta_rank
-                    if 0 <= next_rank:
-                        dst_sq = BoardHelper.get_sq_by_file_rank(
-                                file=src_file,
-                                rank=next_rank)
-                        no_pro_dst_sq_set.add(dst_sq)
+                    # 成ることができる移動先
+                    pro_dst_sq_set = set()
 
-                        # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
-                        if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
-                            pro_dst_sq_set.add(dst_sq)
+                    #
+                    # 飛車の動き
+                    #
 
-                    # 下
-                    next_rank = src_rank+delta_rank
-                    if next_rank < 9:
-                        dst_sq = BoardHelper.get_sq_by_file_rank(
-                                file=src_file,
-                                rank=next_rank)
-                        no_pro_dst_sq_set.add(dst_sq)
+                    # 垂直
+                    for delta_rank in range(1,9):
+                        # 上
+                        next_rank = src_rank-delta_rank
+                        if 0 <= next_rank:
+                            dst_sq = BoardHelper.get_sq_by_file_rank(
+                                    file=src_file,
+                                    rank=next_rank)
+                            no_pro_dst_sq_set.add(dst_sq)
 
-                        # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
-                        if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
-                            pro_dst_sq_set.add(dst_sq)
+                            # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
+                            if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
+                                pro_dst_sq_set.add(dst_sq)
 
-                # 水平
-                for delta_file in range(1,9):
-                    # 右
-                    next_file = src_file-delta_file
-                    if 0 <= next_file:
-                        dst_sq = BoardHelper.get_sq_by_file_rank(
-                                file=next_file,
-                                rank=src_rank)
-                        no_pro_dst_sq_set.add(dst_sq)
+                        # 下
+                        next_rank = src_rank+delta_rank
+                        if next_rank < 9:
+                            dst_sq = BoardHelper.get_sq_by_file_rank(
+                                    file=src_file,
+                                    rank=next_rank)
+                            no_pro_dst_sq_set.add(dst_sq)
 
-                        # １段目～３段目の水平の動きなら、成ることができる
-                        if 0 <= src_rank and src_rank < 3:
-                            pro_dst_sq_set.add(dst_sq)
+                            # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
+                            if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
+                                pro_dst_sq_set.add(dst_sq)
 
-                    # 左
-                    next_file = src_file+delta_file
-                    if next_file < 9:
-                        dst_sq = BoardHelper.get_sq_by_file_rank(
-                                file=next_file,
-                                rank=src_rank)
-                        no_pro_dst_sq_set.add(dst_sq)
+                    # 水平
+                    for delta_file in range(1,9):
+                        # 右
+                        next_file = src_file-delta_file
+                        if 0 <= next_file:
+                            dst_sq = BoardHelper.get_sq_by_file_rank(
+                                    file=next_file,
+                                    rank=src_rank)
+                            no_pro_dst_sq_set.add(dst_sq)
 
-                        # １段目～３段目の水平の動きなら、成ることができる
-                        if 0 <= src_rank and src_rank < 3:
-                            pro_dst_sq_set.add(dst_sq)
+                            # １段目～３段目の水平の動きなら、成ることができる
+                            if 0 <= src_rank and src_rank < 3:
+                                pro_dst_sq_set.add(dst_sq)
 
-                #
-                # 角の動き
-                #
-                for delta in range(1,9):
-                    # 右上
-                    next_file = src_file-delta
-                    next_rank = src_rank-delta
+                        # 左
+                        next_file = src_file+delta_file
+                        if next_file < 9:
+                            dst_sq = BoardHelper.get_sq_by_file_rank(
+                                    file=next_file,
+                                    rank=src_rank)
+                            no_pro_dst_sq_set.add(dst_sq)
+
+                            # １段目～３段目の水平の動きなら、成ることができる
+                            if 0 <= src_rank and src_rank < 3:
+                                pro_dst_sq_set.add(dst_sq)
+
+                    #
+                    # 角の動き
+                    #
+                    for delta in range(1,9):
+                        # 右上
+                        next_file = src_file-delta
+                        next_rank = src_rank-delta
+                        if 0 <= next_file and 0 <= next_rank:
+                            dst_sq = BoardHelper.get_sq_by_file_rank(
+                                    file=next_file,
+                                    rank=next_rank)
+                            no_pro_dst_sq_set.add(dst_sq)
+
+                            # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
+                            if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
+                                pro_dst_sq_set.add(dst_sq)
+
+                        # 右下
+                        next_file = src_file-delta
+                        next_rank = src_rank+delta
+                        if 0 <= next_file and next_rank < 9:
+                            dst_sq = BoardHelper.get_sq_by_file_rank(
+                                    file=next_file,
+                                    rank=next_rank)
+                            no_pro_dst_sq_set.add(dst_sq)
+
+                            # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
+                            if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
+                                pro_dst_sq_set.add(dst_sq)
+
+                        # 左上
+                        next_file = src_file+delta
+                        next_rank = src_rank-delta
+                        if next_file < 9 and 0 <= next_rank:
+                            dst_sq = BoardHelper.get_sq_by_file_rank(
+                                    file=next_file,
+                                    rank=next_rank)
+                            no_pro_dst_sq_set.add(dst_sq)
+
+                            # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
+                            if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
+                                pro_dst_sq_set.add(dst_sq)
+
+                        # 左下
+                        next_file = src_file+delta
+                        next_rank = src_rank+delta
+                        if next_file < 9 and next_rank < 9:
+                            dst_sq = BoardHelper.get_sq_by_file_rank(
+                                    file=next_file,
+                                    rank=next_rank)
+                            no_pro_dst_sq_set.add(dst_sq)
+
+                            # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
+                            if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
+                                pro_dst_sq_set.add(dst_sq)
+
+                    #
+                    # 桂馬の動き
+                    #
+
+                    # 先手右上
+                    next_file = src_file-1
+                    next_rank = src_rank-2
                     if 0 <= next_file and 0 <= next_rank:
                         dst_sq = BoardHelper.get_sq_by_file_rank(
                                 file=next_file,
@@ -236,22 +298,9 @@ class EvaluationPMove():
                         if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
                             pro_dst_sq_set.add(dst_sq)
 
-                    # 右下
-                    next_file = src_file-delta
-                    next_rank = src_rank+delta
-                    if 0 <= next_file and next_rank < 9:
-                        dst_sq = BoardHelper.get_sq_by_file_rank(
-                                file=next_file,
-                                rank=next_rank)
-                        no_pro_dst_sq_set.add(dst_sq)
-
-                        # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
-                        if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
-                            pro_dst_sq_set.add(dst_sq)
-
-                    # 左上
-                    next_file = src_file+delta
-                    next_rank = src_rank-delta
+                    # 先手左上
+                    next_file = src_file+1
+                    next_rank = src_rank-2
                     if next_file < 9 and 0 <= next_rank:
                         dst_sq = BoardHelper.get_sq_by_file_rank(
                                 file=next_file,
@@ -262,95 +311,52 @@ class EvaluationPMove():
                         if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
                             pro_dst_sq_set.add(dst_sq)
 
-                    # 左下
-                    next_file = src_file+delta
-                    next_rank = src_rank+delta
-                    if next_file < 9 and next_rank < 9:
+                    #
+                    # マス番号を昇順に並べ替える
+                    #
+                    no_pro_dst_sq_list = sorted(list(no_pro_dst_sq_set))
+                    pro_dst_sq_list = sorted(list(pro_dst_sq_set))
+
+                    for dst_sq in no_pro_dst_sq_list:
+                        dst_sq_to_index_for_npsi_dictionary[dst_sq] = effect_index
+                        clazz._index_to_src_sq_dst_sq_promotion_dictionary[effect_index] = (src_sq, dst_sq, False)
+                        effect_index += 1
+
+                    for dst_sq in pro_dst_sq_list:
+                        dst_sq_to_index_for_b_dictionary[dst_sq] = effect_index
+                        clazz._index_to_src_sq_dst_sq_promotion_dictionary[effect_index] = (src_sq, dst_sq, True)
+                        effect_index += 1
+
+
+            for drop in ['R*', 'B*', 'G*', 'S*', 'N*', 'L*', 'P*']:
+
+                #
+                # 移動先 to 通し番号
+                #
+                dst_sq_to_index = dict()
+
+                clazz._drop_to_dst_sq_index[drop] = dst_sq_to_index
+
+                if drop == 'N*':
+                    min_rank = 2
+
+                elif drop in ['L*', 'P*']:
+                    min_rank = 1
+
+                else:
+                    min_rank = 0
+
+
+                for dst_file in range(0,9):
+                    for dst_rank in range(min_rank,9):
                         dst_sq = BoardHelper.get_sq_by_file_rank(
-                                file=next_file,
-                                rank=next_rank)
-                        no_pro_dst_sq_set.add(dst_sq)
+                                file=dst_file,
+                                rank=dst_rank)
 
-                        # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
-                        if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
-                            pro_dst_sq_set.add(dst_sq)
-
-                #
-                # 桂馬の動き
-                #
-
-                # 先手右上
-                next_file = src_file-1
-                next_rank = src_rank-2
-                if 0 <= next_file and 0 <= next_rank:
-                    dst_sq = BoardHelper.get_sq_by_file_rank(
-                            file=next_file,
-                            rank=next_rank)
-                    no_pro_dst_sq_set.add(dst_sq)
-
-                    # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
-                    if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
-                        pro_dst_sq_set.add(dst_sq)
-
-                # 先手左上
-                next_file = src_file+1
-                next_rank = src_rank-2
-                if next_file < 9 and 0 <= next_rank:
-                    dst_sq = BoardHelper.get_sq_by_file_rank(
-                            file=next_file,
-                            rank=next_rank)
-                    no_pro_dst_sq_set.add(dst_sq)
-
-                    # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
-                    if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
-                        pro_dst_sq_set.add(dst_sq)
-
-                #
-                # マス番号を昇順に並べ替える
-                #
-                no_pro_dst_sq_list = sorted(list(no_pro_dst_sq_set))
-                pro_dst_sq_list = sorted(list(pro_dst_sq_set))
-
-                for dst_sq in no_pro_dst_sq_list:
-                    dst_sq_to_index_for_npsi_dictionary[dst_sq] = effect_index
-                    clazz._index_to_src_sq_dst_sq_promotion_dictionary[effect_index] = (src_sq, dst_sq, False)
-                    effect_index += 1
-
-                for dst_sq in pro_dst_sq_list:
-                    dst_sq_to_index_for_b_dictionary[dst_sq] = effect_index
-                    clazz._index_to_src_sq_dst_sq_promotion_dictionary[effect_index] = (src_sq, dst_sq, True)
-                    effect_index += 1
-
-
-        for drop in ['R*', 'B*', 'G*', 'S*', 'N*', 'L*', 'P*']:
-
-            #
-            # 移動先 to 通し番号
-            #
-            dst_sq_to_index = dict()
-
-            clazz._drop_to_dst_sq_index[drop] = dst_sq_to_index
-
-            if drop == 'N*':
-                min_rank = 2
-
-            elif drop in ['L*', 'P*']:
-                min_rank = 1
-
-            else:
-                min_rank = 0
-
-
-            for dst_file in range(0,9):
-                for dst_rank in range(min_rank,9):
-                    dst_sq = BoardHelper.get_sq_by_file_rank(
-                            file=dst_file,
-                            rank=dst_rank)
-
-                    # 格納
-                    dst_sq_to_index[dst_sq] = effect_index
-                    clazz._index_to_src_sq_dst_sq_promotion_dictionary[effect_index] = (drop, dst_sq, False)
-                    effect_index += 1
+                        # 格納
+                        dst_sq_to_index[dst_sq] = effect_index
+                        clazz._index_to_src_sq_dst_sq_promotion_dictionary[effect_index] = (drop, dst_sq, False)
+                        effect_index += 1
 
         return (clazz._src_sq_to_dst_sq_to_index_for_npsi_dictionary,
                 clazz._src_sq_to_dst_sq_to_index_for_psi_dictionary,
