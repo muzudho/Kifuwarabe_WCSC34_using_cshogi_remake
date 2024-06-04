@@ -2351,6 +2351,8 @@ class MoveAndPolicyHelper():
             デバッグか？
         """
 
+        print(f"[{datetime.datetime.now()}] [select good f move u set power no1] start...")
+
         # 合法手を、着手と応手に紐づくポリシー値を格納した辞書に変換します
         #
         #   ポリシー値は千分率の４桁の整数
@@ -2379,6 +2381,9 @@ class MoveAndPolicyHelper():
                 print(f"[select good f move u set power] p_move_u:{p_move_u:5} for q  policy:{policy}‰")
 
 
+        print(f"[{datetime.datetime.now()}] [select good f move u set power no2] start...")
+
+
         (k_move_u_to_policy_dictionary,
          p_move_u_to_policy_dictionary) = MoveAndPolicyHelper.seleft_f_move_u_add_l_and_q(
                 k_move_u_for_l_and_policy_dictionary=k_move_u_for_l_and_policy_dictionary,
@@ -2396,6 +2401,9 @@ class MoveAndPolicyHelper():
                 print(f"[select good f move u set power] p_move_u:{p_move_u:5}  policy:{policy}‰")
 
 
+        print(f"[{datetime.datetime.now()}] [select good f move u set power no3] start...")
+
+
         # ポリシー値は　分母の異なる集団の　投票数なので、
         # 絶対値に意味はなく、
         # 賛同か否定か（0.5 より高いか、低いか）ぐらいの判断にしか使えないと思うので、
@@ -2411,6 +2419,10 @@ class MoveAndPolicyHelper():
                 p_move_u_to_policy_dictionary=p_move_u_to_policy_dictionary,
                 turn=board.turn,
                 is_debug=is_debug)
+
+
+        print(f"[{datetime.datetime.now()}] [select good f move u set power] end")
+
 
         return (good_move_u_set,
                 bad_move_u_set)
@@ -2856,6 +2868,8 @@ class EvaluationFacade():
             自兵の着手と、敵兵の応手の、関係のポリシー値。ポリシー値は千分率の４桁の整数
         """
 
+        #print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no1] start...")
+
         # 自軍の着手の集合を、自玉の着手の集合と、自兵の着手の集合に分ける
         k_moves_u, p_moves_u = MoveListHelper.create_k_and_p_legal_moves(
                 legal_moves,
@@ -2871,12 +2885,18 @@ class EvaluationFacade():
             for move_u in p_moves_u:
                 print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no1]    turn:{Turn.to_string(board.turn)}  P:{move_u:5}  O:*****")
 
+
+        #print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no1] end")
+
+
         #
         # 相手が指せる手の集合
         # -----------------
         #
         #   ヌルムーブをしたいが、 `board.push_pass()` が機能しなかったので、合法手を全部指してみることにする
         #
+
+        #print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no2] start...")
 
         # 自玉の着手に対する、敵玉（Lord）の応手の集合
         l_move_u_for_k_set = set()
@@ -2929,6 +2949,10 @@ class EvaluationFacade():
             print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no2]  自兵に対する、敵兵の応手の一覧：")
             for q_move_u in q_move_u_for_p_set:
                 print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no2]    [Q for P]  turn:{Turn.to_string(board.turn)}  P:*****  Q:{q_move_u}")
+
+        #print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no2] end")
+
+        print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no3] start...")
 
         #
         # 着手と応手の関係を全部取得
@@ -3002,6 +3026,8 @@ class EvaluationFacade():
                 pq_index_and_relation_bit_dictionary,
                 turn=board.turn)
 
+        print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no3] end")
+        print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no4] start...")
 
         if is_debug and DebugPlan.select_fo_move_u_and_policy_dictionary_no4():
             print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no4]  自玉の着手と、敵玉の応手の、関係の一覧（キー：着手，　値：関係数）：")
@@ -3019,6 +3045,9 @@ class EvaluationFacade():
             print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no4]  自兵の着手と、敵兵の応手の、関係の一覧（キー：着手，　値：関係数）：")
             for f_move_u, relation_number in p_move_u_and_q_to_relation_number_dictionary.items():
                 print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no4]    [P for Q]  turn:{Turn.to_string(board.turn)}  P:{f_move_u:5}  Q:*****  relation_number:{relation_number:3}")
+
+        print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no4] end")
+        print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no5] start...")
 
         #
         # 評価値テーブルを参照し、各指し手にポリシー値を付ける
@@ -3052,8 +3081,12 @@ class EvaluationFacade():
             for f_move_u, policy in p_move_u_for_q_and_policy_dictionary.items():
                 print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no5]    [P for Q]  turn:{Turn.to_string(board.turn)}  P:{f_move_u:5}  Q:*****  policy:{policy:3}")
 
+        print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no5] end")
+
         # FIXME 同じ 5i4h でも、ＫＬとＫＱの２つあるといった状況になっているが、これでいいか？
         # TODO このあと、 good と bad に分けるときマージするか？
+
+        #print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary] end")
 
         return (k_move_u_for_l_and_policy_dictionary,
                 k_move_u_for_q_and_policy_dictionary,
