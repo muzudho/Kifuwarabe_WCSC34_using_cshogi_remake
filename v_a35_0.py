@@ -1504,32 +1504,31 @@ class Kifuwarabe():
         # 開始ログは出したい
         print(f'[{datetime.datetime.now()}] [learn] start...')
 
-        # 終局図の sfen を取得
+        # 終局図の sfen を取得。巻き戻せたかのチェックに利用
         end_position_sfen = self._board.sfen()
 
         # 終局図とその sfen はログに出したい
         print(f"[{datetime.datetime.now()}] [learn] 終局図：")
         print(self._board)
-        print(f"[{datetime.datetime.now()}] [learn]    end_position_sfen:`{end_position_sfen}`   board.move_number:{self._board.move_number}")
+
+        # 現局面の position コマンドを取得
+        position_command = BoardHelper.get_position_command(
+                board=self._board)
+        print(f"""[{datetime.datetime.now()}] [learn]
+    board.move_number:{self._board.move_number}
+    #{position_command}
+""")
+
+        # 戻せたかチェック
+        if self._board.sfen() != end_position_sfen:
+            # 終局図の表示
+            print(f"[{datetime.datetime.now()}] [learn] 局面巻き戻しエラー")
+            print(self._board)
+            print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
+            raise ValueError("局面巻き戻しエラー")
 
         # 本譜の指し手を覚えておく。ログにも出したい
         principal_history = self._board.history
-
-        # 開始局面を知りたいので、全部巻き戻す
-        while 1 < self._board.move_number:
-            self._board.pop()
-
-        # 開始局面
-        start_position = self._board.sfen()
-        print(f"#position sfen {start_position} moves", end='')
-
-        # 開始局面を取得したので、巻き戻したのを全部戻す
-        for move_id in principal_history:
-            self._board.push(move_id)
-            print(f" {cshogi.move_to_usi(move_id)}", end='')
-
-        # 改行
-        print("")
 
         # （あとで元の position の内部状態に戻すために）初期局面まで巻き戻し、初期局面を覚えておく
         while 1 < self._board.move_number:

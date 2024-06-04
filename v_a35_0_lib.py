@@ -509,8 +509,6 @@ class BoardHelper():
                 sq % 9)
 
 
-
-
     @staticmethod
     def jsa_to_sq(jsa_sq):
         """プロ棋士も使っているマス番号の書き方は
@@ -618,6 +616,38 @@ class BoardHelper():
 
         return (l_move_u_set, q_move_u_set)
 
+
+    @staticmethod
+    def get_position_command(
+            board):
+        """現局面から position コマンドを取得
+
+        Parameters
+        ----------
+        board : csohgi.Board
+            現局面
+        """
+        # 本譜の指し手を覚えておく
+        principal_history = board.history
+
+        # 開始局面を知りたいので、全部巻き戻す
+        while 1 < board.move_number:
+            board.pop()
+
+        # 開始局面
+        start_position = board.sfen()
+
+        if start_position == 'lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL':
+            position_command = "position startpos moves"
+        else:
+            position_command = f"position sfen {start_position} moves"
+
+        # 開始局面を取得したので、巻き戻したのを全部戻す
+        for move_id in principal_history:
+            board.push(move_id)
+            position_command += f" {cshogi.move_to_usi(move_id)}"
+
+        return position_command
 
 class MoveListHelper():
     """指し手のリストのヘルパー"""
