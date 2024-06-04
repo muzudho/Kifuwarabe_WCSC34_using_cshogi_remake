@@ -524,15 +524,15 @@ class Kifuwarabe():
         # 学習する
         if shall_we_learn:
             # 開始ログは出したい
-            print(f"[{datetime.datetime.now()}] [gameover] learn start...")
+            print(f"[{datetime.datetime.now()}] [gameover] learn start...", flush=True)
 
             self.learn()
 
             # 終了ログは出したい
-            print(f"[{datetime.datetime.now()}] [gameover] learn end")
+            print(f"[{datetime.datetime.now()}] [gameover] learn end", flush=True)
 
         # 終了ログは出したい
-        print(f"[{datetime.datetime.now()}] [gameover] end")
+        print(f"[{datetime.datetime.now()}] [gameover] end", flush=True)
 
 
     def do(self, cmd_tail):
