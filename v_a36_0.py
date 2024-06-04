@@ -449,12 +449,12 @@ class Kifuwarabe():
             print(f'bestmove win', flush=True)
             return
 
-        # 一手詰めを詰める
+        # １手詰めを詰める
         if not self._board.is_check():
             """自玉に王手がかかっていない時で"""
 
             if (matemove := self._board.mate_move_in_1ply()):
-                """一手詰めの指し手があれば、それを取得"""
+                """１手詰めの指し手があれば、それを取得"""
 
                 best_move = cshogi.move_to_usi(matemove)
                 print('info score mate 1 pv {}'.format(best_move), flush=True)
@@ -627,13 +627,13 @@ class Kifuwarabe():
             print(f'  # bestmove win', flush=True)
             return
 
-        # 一手詰めを詰める
+        # １手詰めを詰める
         #
         #   自玉に王手がかかっていない時で
         #
         if not self._board.is_check():
 
-            # 一手詰めの指し手があれば、それを取得
+            # １手詰めの指し手があれば、それを取得
             if (matemove := self._board.mate_move_in_1ply()):
 
                 best_move = cshogi.move_to_usi(matemove)
@@ -818,13 +818,13 @@ class Kifuwarabe():
         #        print(f'# failed to weaken (nyugyoku win)', flush=True)
         #    return
 
-        ## 一手詰めを詰める
+        ## １手詰めを詰める
         ##
         ##   自玉に王手がかかっていない時で
         ##
         #if not self._board.is_check():
         #
-        #    # 一手詰めの指し手があれば、それを取得
+        #    # １手詰めの指し手があれば、それを取得
         #    if (matemove := self._board.mate_move_in_1ply()):
         #
         #        best_move = cshogi.move_to_usi(matemove)
@@ -1147,13 +1147,13 @@ class Kifuwarabe():
         #        print(f'# failed to strengthen (nyugyoku win)', flush=True)
         #    return
 
-        ## 一手詰めを詰める
+        ## １手詰めを詰める
         ##
         ##   自玉に王手がかかっていない時で
         ##
         #if not self._board.is_check():
         #
-        #    # 一手詰めの指し手があれば、それを取得
+        #    # １手詰めの指し手があれば、それを取得
         #    if (matemove := self._board.mate_move_in_1ply()):
         #
         #        best_move = cshogi.move_to_usi(matemove)
@@ -1471,13 +1471,13 @@ class Kifuwarabe():
             if self._board.is_nyugyoku():
                 return 'nyugyoku_win'
 
-            # （評価値テーブルの内容だけで対局したい用途で使う想定なので）プレイアウト中は一手詰めルーチンを使わない
-            ## 一手詰めを詰める
+            # （評価値テーブルの内容だけで対局したい用途で使う想定なので）プレイアウト中は１手詰めルーチンを使わない
+            ## １手詰めを詰める
             #if not self._board.is_check():
             #    """自玉に王手がかかっていない時で"""
             #
             #    if (matemove := self._board.mate_move_in_1ply()):
-            #        """一手詰めの指し手があれば、それを取得"""
+            #        """１手詰めの指し手があれば、それを取得"""
             #
             #        best_move_u = cshogi.move_to_usi(matemove)
             #        print('# info score mate 1 pv {}'.format(best_move_u), flush=True)
@@ -1499,8 +1499,7 @@ class Kifuwarabe():
             self._board.push_usi(best_move_str)
 
         # プレイアウト深さ上限
-        if max_move_number <= self._board.move_number:
-            return 'max_playout_depth'
+        return 'max_playout_depth'
 
 
     def learn(
@@ -1598,7 +1597,7 @@ class Kifuwarabe():
             return
 
         # 終局図の内部データに戻っている
-        # １手戻す（一手詰めの局面に戻るはず）
+        # １手戻す（１手詰めの局面に戻るはず）
         self._board.pop()
 
         # １手前局面図と、その sfen は表示したい
@@ -1614,7 +1613,7 @@ class Kifuwarabe():
 
         # - アンドゥした局面は、投了局面ではないはず
         # - 入玉宣言局面は、とりあえず考慮から外す
-        # - 一手詰めはとりあえず、考慮から外す
+        # - １手詰めはとりあえず、考慮から外す
 
         #
         # 好手、悪手一覧
@@ -1675,18 +1674,18 @@ class Kifuwarabe():
                 # 自分の負け
                 if self._my_turn == self._board.turn:
                     is_weak_move = True
-                    log_progress(f"fumble:一手詰めを逃して {max_playout_depth} 手以内に負けた。すごく悪い手だ。好手の評価を取り下げる")
+                    log_progress(f"fumble:１手詰めを逃して {max_playout_depth} 手以内に負けた。すごく悪い手だ。好手の評価を取り下げる")
                 else:
-                    log_progress(f"ignored:一手詰めは逃したが {max_playout_depth} 手以内には勝ったからセーフとする。好手の評価はそのまま")
+                    log_progress(f"ignored:１手詰めは逃したが {max_playout_depth} 手以内には勝ったからセーフとする。好手の評価はそのまま")
 
             # どちらかが入玉勝ちした
             elif result_str == 'nyugyoku_win':
                 if self._my_turn == self._board.turn:
-                    log_progress(f"ignored:一手詰めは逃したが {max_playout_depth} 手以内には入玉宣言勝ちしたからセーフとする。好手の評価はそのまま")
+                    log_progress(f"ignored:１手詰めは逃したが {max_playout_depth} 手以内には入玉宣言勝ちしたからセーフとする。好手の評価はそのまま")
 
                 else:
                     is_weak_move = True
-                    log_progress(f"fumble:一手詰めを逃して、 {max_playout_depth} 手以内に入玉宣言されて負けた。すごく悪い手だ。好手の評価を取り下げる")
+                    log_progress(f"fumble:１手詰めを逃して、 {max_playout_depth} 手以内に入玉宣言されて負けた。すごく悪い手だ。好手の評価を取り下げる")
 
             # 手数の上限に達した
             elif result_str == 'max_move':
@@ -1695,7 +1694,7 @@ class Kifuwarabe():
             # プレイアウトの深さの上限に達した
             elif result_str == 'max_playout_depth':
                 is_weak_move = True
-                log_progress(f"fumble:一手詰めを逃して {max_playout_depth} 手以内に終局しなかった。好手の評価を取り下げる")
+                log_progress(f"fumble:１手詰めを逃して {max_playout_depth} 手以内に終局しなかった。好手の評価を取り下げる")
 
             else:
                 log_progress(f"ignored:好手の評価はそのまま result_str:{result_str}")
@@ -1753,13 +1752,20 @@ class Kifuwarabe():
 
             # どちらかが投了した
             if result_str == 'resign':
-                # 自分の勝ち。かかった手数１手
-                if self._my_turn != self._board.turn and move_number_at_end - self._board.move_number == 1:
-                    # 一手詰めの局面で、一手で詰めたのなら、すごく良い手だ。この手の評価を上げる
-                    is_strong_move = True
-                    log_progress("nice:一手詰めの局面で、１手詰めできたのだから、評価を上げよう")
+                # 自分の勝ち
+                if self._my_turn != self._board.turn:
+                    # かかった手数１手
+                    if move_number_at_end - self._board.move_number == 1:
+                        is_strong_move = True
+                        log_progress(f"nice:１手詰めの局面で、１手で勝ったので、評価を上げよう")
+                    else:
+                        log_progress(f"ignored:１手詰めの局面で、２手以上かけて {max_playout_depth} 手以内には勝ったが、相手がヘボ手を指した可能性を消せない。悪手の評価はこのまま")
+
                 else:
-                    log_progress("ignored:一手詰めの局面で、１手詰めを逃したのだから、悪手の評価はそのまま")
+                    log_progress("ignored:１手詰めの局面で、１手詰めを逃して負けたのだから、悪手の評価はそのまま")
+
+            elif result_str == 'max_playout_depth':
+                log_progress(f"ignored:１手詰めの局面で、 {max_playout_depth} 手かけて終局しなかったので、悪手の評価はそのまま")
 
             else:
                 log_progress(f"ignored:悪手の評価はそのまま result_str:{result_str}")
@@ -1797,7 +1803,7 @@ class Kifuwarabe():
 
         # 終局図の内部データに戻す
         restore_end_position()
-        # ２手戻す（このあと一手詰めされる側の局面に戻るはず）
+        # ２手戻す（このあと１手詰めされる側の局面に戻るはず）
         self._board.pop()
         self._board.pop()
 
@@ -1861,7 +1867,7 @@ class Kifuwarabe():
 
             # どちらかが投了した
             if result_str == 'resign':
-                # 自分の負け。かかった手数２手。つまり一手詰め
+                # 自分の負け。かかった手数２手。つまり１手詰め
                 if self._my_turn == self._board.turn and move_number_at_end - self._board.move_number == 2:
                     is_weak_move = True
                     log_progress("fumble:２手詰めが掛けられていて、２手詰めを避けられなかったから、好手の評価を取り下げる")
@@ -1877,7 +1883,7 @@ class Kifuwarabe():
 
             # 終局図の内部データに戻す
             restore_end_position()
-            # ２手戻す（このあと一手詰めされる側の局面に戻るはず）
+            # ２手戻す（このあと１手詰めされる側の局面に戻るはず）
             self._board.pop()
             self._board.pop()
             # 戻せたかチェック
@@ -1928,9 +1934,9 @@ class Kifuwarabe():
 
             # どちらかが投了した
             if result_str == 'resign':
-                # 相手を一手詰め
+                # 相手を１手詰め
                 if self._my_turn != self._board.turn and move_number_difference == 1:
-                    # 次に一手詰めの局面に掛けられるところを、その前に詰めたのだから、すごく良い手だ。この手の評価を上げる
+                    # 次に１手詰めの局面に掛けられるところを、その前に詰めたのだから、すごく良い手だ。この手の評価を上げる
                     is_strong_move = True
                     log_progress("nice:２手詰めを掛けられていて、逆に１手で勝ったのだから、この手の評価を上げる")
                 else:
@@ -1939,7 +1945,7 @@ class Kifuwarabe():
             # どちらかが入玉勝ちした
             elif result_str == 'nyugyoku_win':
                 if move_number_difference != 2:
-                    # 次に一手詰めの局面に掛けられるところを、その前に入玉宣言勝ちしたのだから、すごく良い手だ。この手の評価を上げる
+                    # 次に１手詰めの局面に掛けられるところを、その前に入玉宣言勝ちしたのだから、すごく良い手だ。この手の評価を上げる
                     is_strong_move = True
                     log_progress("nice:２手詰めを掛けられていて、逆に１手で入玉宣言勝ちしたのだから、この手の評価を上げる")
                 else:
@@ -1955,7 +1961,7 @@ class Kifuwarabe():
 
             # 終局図の内部データに戻す
             restore_end_position()
-            # ２手戻す（このあと一手詰めされる側の局面に戻るはず）
+            # ２手戻す（このあと１手詰めされる側の局面に戻るはず）
             self._board.pop()
             self._board.pop()
             # 戻せたかチェック
