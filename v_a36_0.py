@@ -1638,6 +1638,12 @@ class Kifuwarabe():
 
         choice_num = 0
 
+        # プレイアウトの深さ
+        #
+        #   １手詰め局面なのだから、１手指せば充分だが、必至も考えて３手ぐらい余裕を与える
+        #
+        max_playout_depth = 3
+
         for move_u in good_move_u_set:
             choice_num += 1
             is_weak_move = False
@@ -1653,12 +1659,6 @@ class Kifuwarabe():
             # （１手前局面図で）とりあえず一手指す
             self._board.push_usi(move_u)
 
-            # プレイアウトの深さ
-            #
-            #   １手詰め局面なのだから、１手指せば充分だが、必至も考えて３手ぐらい余裕を与える
-            #
-            max_playout_depth = 3
-
             # プレイアウトする
             result_str = self.playout(
                     is_in_learn=True,
@@ -1668,7 +1668,7 @@ class Kifuwarabe():
 
             # 進捗ログを出したい
             def log_progress(comment):
-                print(f'[{datetime.datetime.now()}] [learn > 詰める方]    ({choice_num:3} / {total_num:3}) [{self._board.move_number} moves / {Turn.to_string(self._board.turn)}]  F:{move_u:5}  O:*****  is good.  result:`{result_str}`  move_number_difference:{move_number_difference}  {comment}', flush=True)
+                print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 好手]    ({choice_num:3} / {total_num:3}) [{self._board.move_number} moves / {Turn.to_string(self._board.turn)}]  F:{move_u:5}  O:*****  is good.  result:`{result_str}`  move_number_difference:{move_number_difference}  {comment}', flush=True)
 
             # どちらかが投了した
             if result_str == 'resign':
@@ -1698,7 +1698,7 @@ class Kifuwarabe():
                 log_progress(f"fumble:一手詰めを逃して {max_playout_depth} 手以内に終局しなかった。好手の評価を取り下げる")
 
             else:
-                log_progress("ignored:好手の評価はそのまま")
+                log_progress(f"ignored:好手の評価はそのまま result_str:{result_str}")
 
             # 終局図の内部データに戻す
             restore_end_position()
@@ -1719,7 +1719,7 @@ class Kifuwarabe():
                         is_debug=is_debug)
 
                 # 変更はログに出したい
-                print(f'[{datetime.datetime.now()}] [learn > 詰める方]        weaken {move_u:5}  result:`{weaken_result_str}`')
+                print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 好手]        weaken {move_u:5}  result:`{weaken_result_str}`')
 
 
         if is_debug:
@@ -1742,13 +1742,14 @@ class Kifuwarabe():
 
             # プレイアウトする
             result_str = self.playout(
-                    is_in_learn=True)
+                    is_in_learn=True,
+                    max_playout_depth=max_playout_depth)
 
             move_number_difference = self._board.move_number - move_number_at_end
 
             # 進捗ログを出したい
             def log_progress(comment):
-                print(f'[{datetime.datetime.now()}] [learn > 詰める方]    ({choice_num:3} / {total_num:3}) [{self._board.move_number} moves / {Turn.to_string(self._board.turn)}]  F:{move_u:5}  O:*****  is bad.  result:`{result_str}`  move_number_difference:{move_number_difference}  {comment}', flush=True)
+                print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 悪手]    ({choice_num:3} / {total_num:3}) [{self._board.move_number} moves / {Turn.to_string(self._board.turn)}]  F:{move_u:5}  O:*****  is bad.  result:`{result_str}`  move_number_difference:{move_number_difference}  {comment}', flush=True)
 
             # どちらかが投了した
             if result_str == 'resign':
@@ -1761,7 +1762,7 @@ class Kifuwarabe():
                     log_progress("ignored:一手詰めの局面で、１手詰めを逃したのだから、悪手の評価はそのまま")
 
             else:
-                log_progress("ignored:悪手の評価はそのまま")
+                log_progress(f"ignored:悪手の評価はそのまま result_str:{result_str}")
 
             # 終局図の内部データに戻す
             restore_end_position()
@@ -1782,7 +1783,7 @@ class Kifuwarabe():
                         is_debug=is_debug)
 
                 # 変更はログに出したい
-                print(f'[{datetime.datetime.now()}] [learn > 詰める方]        strengthen {move_u:5}  result:`{strengthen_result_str}`')
+                print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 悪手]        strengthen {move_u:5}  result:`{strengthen_result_str}`')
 
         #
         # 逃げる方
@@ -1840,10 +1841,10 @@ class Kifuwarabe():
             # ２手前局面図かチェック
             if self._board.sfen() != sfen_2_previous:
                 # 局面図の表示
-                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > 好手] ２手前局面図エラー")
+                print(f"[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] ２手前局面図エラー")
                 print(self._board)
                 print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
-                raise ValueError("[learn > 詰める方 > 好手] ２手前局面図エラー")
+                raise ValueError("[learn > 逃げる方 > 好手] ２手前局面図エラー")
 
             # （２手前局面図で）とりあえず一手指す
             self._board.push_usi(move_u)
@@ -1856,7 +1857,7 @@ class Kifuwarabe():
 
             # 進捗ログを出したい
             def log_progress(comment):
-                print(f'[{datetime.datetime.now()}] [learn > 逃げる方]    ({choice_num:3} / {total_num:3})  [{self._board.move_number} moves / {Turn.to_string(self._board.turn)}]  F:{move_u:5}  O:*****  is good.  result:`{result_str}`  move_number_difference:{move_number_difference}  {comment}', flush=True)
+                print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手]    ({choice_num:3} / {total_num:3})  [{self._board.move_number} moves / {Turn.to_string(self._board.turn)}]  F:{move_u:5}  O:*****  is good.  result:`{result_str}`  move_number_difference:{move_number_difference}  {comment}', flush=True)
 
             # どちらかが投了した
             if result_str == 'resign':
@@ -1882,7 +1883,7 @@ class Kifuwarabe():
             # 戻せたかチェック
             if self._board.sfen() != sfen_2_previous:
                 # 局面図の表示
-                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > 悪手] 局面巻き戻しエラー")
+                print(f"[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] 局面巻き戻しエラー")
                 print(self._board)
                 print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
                 raise ValueError("局面巻き戻しエラー")
@@ -1894,7 +1895,7 @@ class Kifuwarabe():
                         is_debug=is_debug)
 
                 # 変更はログに出したい
-                print(f'[{datetime.datetime.now()}] [learn > 逃げる方]        weaken {move_u:5}  result:`{weaken_result_str}`')
+                print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手]        weaken {move_u:5}  result:`{weaken_result_str}`')
 
 
         if is_debug:
@@ -1907,10 +1908,10 @@ class Kifuwarabe():
             # ２手前局面図かチェック
             if self._board.sfen() != sfen_2_previous:
                 # 局面図の表示
-                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > 悪手] ２手前局面図エラー")
+                print(f"[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手] ２手前局面図エラー")
                 print(self._board)
                 print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
-                raise ValueError("[learn > 詰める方 > 悪手] ２手前局面図エラー")
+                raise ValueError("[learn > 逃げる方 > 悪手] ２手前局面図エラー")
 
             # （２手前局面図で）とりあえず一手指す
             self._board.push_usi(move_u)
@@ -1923,7 +1924,7 @@ class Kifuwarabe():
 
             # 進捗ログを出したい
             def log_progress(comment):
-                print(f'[{datetime.datetime.now()}] [learn > 逃げる方]    ({choice_num:3} / {total_num:3})  [{self._board.move_number} moves / {Turn.to_string(self._board.turn)}]  F:{move_u:5}  O:*****  is bad.  result:`{result_str}`  move_number_difference:{move_number_difference}  comment:{comment}', flush=True)
+                print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手]    ({choice_num:3} / {total_num:3})  [{self._board.move_number} moves / {Turn.to_string(self._board.turn)}]  F:{move_u:5}  O:*****  is bad.  result:`{result_str}`  move_number_difference:{move_number_difference}  comment:{comment}', flush=True)
 
             # どちらかが投了した
             if result_str == 'resign':
@@ -1960,7 +1961,7 @@ class Kifuwarabe():
             # 戻せたかチェック
             if self._board.sfen() != sfen_2_previous:
                 # 局面図の表示
-                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > 悪手] 局面巻き戻しエラー")
+                print(f"[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手] 局面巻き戻しエラー")
                 print(self._board)
                 print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
                 raise ValueError("局面巻き戻しエラー")
@@ -1972,7 +1973,7 @@ class Kifuwarabe():
                         is_debug=is_debug)
 
                 # 変更はログに出したい
-                print(f'[{datetime.datetime.now()}] [learn > 逃げる方]        strengthen {move_u:5}  result:`{strengthen_result_str}`')
+                print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手]        strengthen {move_u:5}  result:`{strengthen_result_str}`')
 
 
         #
