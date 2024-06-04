@@ -1510,13 +1510,26 @@ class Kifuwarabe():
         # 終局図とその sfen はログに出したい
         print(f"[{datetime.datetime.now()}] [learn] 終局図：")
         print(self._board)
-        print(f"  end_position_sfen:`{end_position_sfen}`   board.move_number:{self._board.move_number}")
+        print(f"[{datetime.datetime.now()}] [learn]    end_position_sfen:`{end_position_sfen}`   board.move_number:{self._board.move_number}")
 
-        # 本譜の指し手を覚えておく
+        # 本譜の指し手を覚えておく。ログにも出したい
         principal_history = self._board.history
-        #for move_id in principal_history:
-        #    if is_debug:
-        #        print(f"[{datetime.datetime.now()}] [learn] move_id:{move_id}")
+
+        # 開始局面を知りたいので、全部巻き戻す
+        while 1 < self._board.move_number:
+            self._board.pop()
+
+        # 開始局面
+        start_position = self._board.sfen()
+        print(f"#position sfen {start_position} moves", end='')
+
+        # 開始局面を取得したので、巻き戻したのを全部戻す
+        for move_id in principal_history:
+            self._board.push(move_id)
+            print(f" {cshogi.move_to_usi(move_id)}", end='')
+
+        # 改行
+        print("")
 
         # （あとで元の position の内部状態に戻すために）初期局面まで巻き戻し、初期局面を覚えておく
         while 1 < self._board.move_number:
