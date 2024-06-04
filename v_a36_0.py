@@ -1435,6 +1435,7 @@ class Kifuwarabe():
     def playout(
             self,
             is_in_learn=False,
+            max_playout_depth=None,
             is_debug=False):
         """プレイアウト
         現局面から、投了局面になるまで、適当に指します
@@ -1443,6 +1444,8 @@ class Kifuwarabe():
         ----------
         is_in_learn : bool
             学習中
+        max_playout_depth : int
+            プレイアウトする手数。無制限なら None
         is_debug : bool
             デバッグ中
         """
@@ -1451,7 +1454,10 @@ class Kifuwarabe():
         if not is_in_learn:
             print(f'[{datetime.datetime.now()}] [playout] start...')
 
-        while True:
+        if max_playout_depth is None:
+            max_playout_depth = max_move_number - self._board.move_number + 1
+
+        for _playout_depth in range(0, max_playout_depth):
 
             # 手数上限
             if max_move_number <= self._board.move_number:
@@ -1491,6 +1497,10 @@ class Kifuwarabe():
 
             # 一手指す
             self._board.push_usi(best_move_str)
+
+        # プレイアウト深さ上限
+        if max_move_number <= self._board.move_number:
+            return 'max_playout_depth'
 
 
     def learn(
@@ -1643,9 +1653,16 @@ class Kifuwarabe():
             # （１手前局面図で）とりあえず一手指す
             self._board.push_usi(move_u)
 
+            # プレイアウトの深さ
+            #
+            #   １手詰め局面なのだから、１手指せば充分だが、必至も考えて３手ぐらい余裕を与える
+            #
+            max_playout_depth = 3
+
             # プレイアウトする
             result_str = self.playout(
-                    is_in_learn=True)
+                    is_in_learn=True,
+                    max_playout_depth=max_playout_depth)
 
             move_number_difference = self._board.move_number - move_number_at_end
 
@@ -1657,29 +1674,28 @@ class Kifuwarabe():
             if result_str == 'resign':
                 # 自分の負け
                 if self._my_turn == self._board.turn:
-                    # 一手詰めの局面から負けたのなら、すごく悪い手だ。この手の評価を下げる
                     is_weak_move = True
-                    log_progress("fumble:一手詰めを逃して負けた。好手の評価を取り下げる")
+                    log_progress(f"fumble:一手詰めを逃して {max_playout_depth} 手以内に負けた。すごく悪い手だ。好手の評価を取り下げる")
                 else:
-                    log_progress("ignored:一手詰めは逃したが負けなかった。好手の評価はそのまま")
+                    log_progress(f"ignored:一手詰めは逃したが {max_playout_depth} 手以内には勝ったからセーフとする。好手の評価はそのまま")
 
             # どちらかが入玉勝ちした
             elif result_str == 'nyugyoku_win':
-                if move_number_difference != 0:
-                    # 一手詰めの局面から、一手以上かけて入玉勝ち宣言してるようなら、すごく悪い手だ。この手の評価を下げる
-                    is_weak_move = True
-                    log_progress("fumble:一手詰めを逃して、２手以上かけて入玉で決着が付いた。好手の評価を取り下げる")
+                if self._my_turn == self._board.turn:
+                    log_progress(f"ignored:一手詰めは逃したが {max_playout_depth} 手以内には入玉宣言勝ちしたからセーフとする。好手の評価はそのまま")
+
                 else:
-                    log_progress("ignored:一手詰めより、入玉宣言勝ちを選んだのでＯｋ。好手の評価はそのまま")
+                    is_weak_move = True
+                    log_progress(f"fumble:一手詰めを逃して、 {max_playout_depth} 手以内に入玉宣言されて負けた。すごく悪い手だ。好手の評価を取り下げる")
 
             # 手数の上限に達した
             elif result_str == 'max_move':
-                if move_number_difference != 0:
-                    # 一手詰めの局面から、一手以上かけて手数の上限に達しているようなら、すごく悪い手だ。この手の評価を下げる
-                    is_weak_move = True
-                    log_progress("fumble:一手詰めを逃して、２手以上かけて手数の上限に達した。好手の評価を取り下げる")
-                else:
-                    log_progress("ignored:一手詰めではなく、手数の上限だった。良し悪し付かず、好手の評価はそのまま")
+                log_progress(f"ignored:この学習は、手数の上限で終わった対局は、評価値を変動させないものとする")
+
+            # プレイアウトの深さの上限に達した
+            elif result_str == 'max_playout_depth':
+                is_weak_move = True
+                log_progress(f"fumble:一手詰めを逃して {max_playout_depth} 手以内に終局しなかった。好手の評価を取り下げる")
 
             else:
                 log_progress("ignored:好手の評価はそのまま")
