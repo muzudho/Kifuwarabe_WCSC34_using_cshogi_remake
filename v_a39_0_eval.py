@@ -1113,3 +1113,107 @@ class EvaluationFacade():
                 kq_index_to_relation_exists_dic,
                 pl_index_to_relation_exists_dic,
                 pq_index_to_relation_exists_dic)
+
+
+    @staticmethod
+    def get_number_of_connection_for_kl_kq(
+            kl_index_to_relation_exists_dictionary,
+            kq_index_to_relation_exists_dictionary,
+            board,
+            is_debug=False):
+        """ＫＬとＫＱの関係が有りのものの数
+
+        Parameters
+        ----------
+        kl_index_to_relation_exists_dictionary : dict
+            ＫＬ
+        kq_index_to_relation_exists_dictionary
+            ＫＱ
+        board : cshogi.Board
+            現局面
+        is_debug : bool
+            デバッグモードか？
+        """
+        number_of_connection = 0
+
+        # ＫＬ
+        for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
+
+            k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
+                    kl_index=kl_index,
+                    k_turn=board.turn)
+
+            if is_debug:
+                # 表示
+                print(f"[{datetime.datetime.now()}] [get number of connection for kl kq > kl]  kl_index:{kl_index:7}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+
+            if relation_exists == 1:
+                number_of_connection += 1
+
+        # ＫＱ
+        for kq_index, relation_exists in kq_index_to_relation_exists_dictionary.items():
+
+            k_move_obj, q_move_obj = EvaluationKpTable.destructure_kp_index(
+                    kp_index=kq_index,
+                    k_turn=board.turn)
+
+            # 表示
+            if is_debug:
+                print(f"[{datetime.datetime.now()}] [get number of connection for kl kq > kq]  kq_index:{kq_index:7}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+
+            if relation_exists == 1:
+                number_of_connection += 1
+
+        return number_of_connection
+
+
+    @staticmethod
+    def get_number_of_connection_for_pl_pq(
+            pl_index_to_relation_exists_dictionary,
+            pq_index_to_relation_exists_dictionary,
+            board,
+            is_debug):
+        """ＰＬとＰＱの関係が有りのものの数
+
+        Parameters
+        ----------
+        kl_index_to_relation_exists_dictionary : dict
+            ＫＬ
+        kq_index_to_relation_exists_dictionary
+            ＫＱ
+        board : cshogi.Board
+            現局面
+        is_debug : bool
+            デバッグモードか？
+        """
+        number_of_connection = 0
+
+        # ＰＬ
+        for pl_index, relation_exists in pl_index_to_relation_exists_dictionary.items():
+
+            p_move_obj, l_move_obj = EvaluationPkTable.destructure_pk_index(
+                    pk_index=pl_index,
+                    p_turn=board.turn)
+
+            if is_debug:
+                # 表示
+                print(f"[{datetime.datetime.now()}] [get number of connection for pl pq > pl]  pl_index:{pl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+
+            if relation_exists == 1:
+                number_of_connection += 1
+
+        # ＰＱ
+        for pq_index, relation_exists in pq_index_to_relation_exists_dictionary.items():
+
+            p_move_obj, q_move_obj = EvaluationPpTable.destructure_pp_index(
+                    pp_index=pq_index,
+                    p1_turn=board.turn)
+
+            if is_debug:
+                # 表示
+                print(f"[{datetime.datetime.now()}] [get number of connection for pl pq > pq]  pq_index:{pq_index:7}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+
+            if relation_exists == 1:
+                number_of_connection += 1
+
+        return number_of_connection
