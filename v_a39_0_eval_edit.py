@@ -60,7 +60,7 @@ class EvaluationEdit():
 
             if is_debug:
                 # 表示
-                print(f"[{datetime.datetime.now()}] [weaken > kl]  kl_index:{kl_index:7}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                print(f"[{datetime.datetime.now()}] [get_number_of_connection_for_kl_kq > kl]  kl_index:{kl_index:7}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
             if relation_exists == 1:
                 number_of_connection += 1
@@ -74,7 +74,59 @@ class EvaluationEdit():
 
             # 表示
             if is_debug:
-                print(f"[{datetime.datetime.now()}] [weaken > kq]  kq_index:{kq_index:7}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                print(f"[{datetime.datetime.now()}] [get_number_of_connection_for_kl_kq > kq]  kq_index:{kq_index:7}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+
+            if relation_exists == 1:
+                number_of_connection += 1
+
+        return number_of_connection
+
+
+    @staticmethod
+    def get_number_of_connection_for_pl_pq(
+            pl_index_to_relation_exists_dictionary,
+            pq_index_to_relation_exists_dictionary,
+            board,
+            is_debug):
+        """ＰＬとＰＱの関係が有りのものの数
+
+        Parameters
+        ----------
+        kl_index_to_relation_exists_dictionary : dict
+            ＫＬ
+        kq_index_to_relation_exists_dictionary
+            ＫＱ
+        board : cshogi.Board
+            現局面
+        is_debug : bool
+            デバッグモードか？
+        """
+        number_of_connection = 0
+
+        # ＰＬ
+        for pl_index, relation_exists in pl_index_to_relation_exists_dictionary.items():
+
+            p_move_obj, l_move_obj = EvaluationPkTable.destructure_pk_index(
+                    pk_index=pl_index,
+                    p_turn=board.turn)
+
+            if is_debug:
+                # 表示
+                print(f"[{datetime.datetime.now()}] [get_number_of_connection_for_pl_pq > pl]  pl_index:{pl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+
+            if relation_exists == 1:
+                number_of_connection += 1
+
+        # ＰＱ
+        for pq_index, relation_exists in pq_index_to_relation_exists_dictionary.items():
+
+            p_move_obj, q_move_obj = EvaluationPpTable.destructure_pp_index(
+                    pp_index=pq_index,
+                    p1_turn=board.turn)
+
+            if is_debug:
+                # 表示
+                print(f"[{datetime.datetime.now()}] [get_number_of_connection_for_pl_pq > pq]  pq_index:{pq_index:7}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
             if relation_exists == 1:
                 number_of_connection += 1
@@ -161,10 +213,10 @@ class EvaluationEdit():
 
             # ＫＬとＫＱの関係が有りのものの数
             number_of_connection_kl_kq = EvaluationEdit.get_number_of_connection_for_kl_kq(
-                kl_index_to_relation_exists_dictionary,
-                kq_index_to_relation_exists_dictionary,
-                board=self._board,
-                is_debug=False)
+                    kl_index_to_relation_exists_dictionary,
+                    kq_index_to_relation_exists_dictionary,
+                    board=self._board,
+                    is_debug=False)
 
             # ＫＬとＫＱの関係の有りのものの数が５割未満の内、最大の整数
             #
@@ -280,42 +332,12 @@ class EvaluationEdit():
             pl_pq_total = len(pl_index_to_relation_exists_dictionary) + len(pq_index_to_relation_exists_dictionary)
             print(f"[{datetime.datetime.now()}] [weaken > pl and pq]  pl_pq_total:{pl_pq_total}  =  len(pl_index_to_relation_exists_dictionary):{len(pl_index_to_relation_exists_dictionary)}  +  len(pq_index_to_relation_exists_dictionary):{len(pq_index_to_relation_exists_dictionary)}")
 
-            def get_number_of_connection_for_pl_pq():
-                """ＰＬとＰＱの関係が有りのものの数"""
-                number_of_connection = 0
-
-                # ＰＬ
-                for pl_index, relation_exists in pl_index_to_relation_exists_dictionary.items():
-
-                    p_move_obj, l_move_obj = EvaluationPkTable.destructure_pk_index(
-                            pk_index=pl_index,
-                            p_turn=self._board.turn)
-
-                    if is_debug:
-                        # 表示
-                        print(f"[{datetime.datetime.now()}] [weaken > pl]  pl_index:{pl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
-
-                    if relation_exists == 1:
-                        number_of_connection += 1
-
-                # ＰＱ
-                for pq_index, relation_exists in pq_index_to_relation_exists_dictionary.items():
-
-                    p_move_obj, q_move_obj = EvaluationPpTable.destructure_pp_index(
-                            pp_index=pq_index,
-                            p1_turn=self._board.turn)
-
-                    if is_debug:
-                        # 表示
-                        print(f"[{datetime.datetime.now()}] [weaken > pq]  pq_index:{pq_index:7}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
-
-                    if relation_exists == 1:
-                        number_of_connection += 1
-
-                return number_of_connection
-
             # ＰＬとＰＱの関係が有りのものの数
-            number_of_connection_pl_pq = get_number_of_connection_for_pl_pq()
+            number_of_connection_pl_pq = EvaluationEdit.get_number_of_connection_for_pl_pq(
+                    pl_index_to_relation_exists_dictionary,
+                    pq_index_to_relation_exists_dictionary,
+                    board=self._board,
+                    is_debug=is_debug)
 
             max_number_of_less_than_50_percent = Decimal(str(pl_pq_total / 2)).quantize(Decimal('0'), rounding=ROUND_HALF_UP) - 1
 
@@ -495,42 +517,13 @@ class EvaluationEdit():
             # ＫＬとＫＱの関係数
             kl_kq_total = len(kl_index_to_relation_exists_dictionary) + len(kq_index_to_relation_exists_dictionary)
 
-            def get_number_of_connection():
-                """ＫＬとＫＱの関係が有りのものの数"""
-                number_of_connection = 0
-
-                # ＫＬ
-                for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
-
-                    k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
-                            kl_index=kl_index,
-                            k_turn=self._board.turn)
-
-                    if is_debug:
-                        # 表示
-                        print(f"[{datetime.datetime.now()}] [strengthen > kl]  kl_index:{kl_index:7}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
-
-                    if relation_exists == 1:
-                        number_of_connection += 1
-
-                # ＫＱ
-                for kq_index, relation_exists in kq_index_to_relation_exists_dictionary.items():
-
-                    k_move_obj, q_move_obj = EvaluationKpTable.destructure_kp_index(
-                            kp_index=kq_index,
-                            k_turn=self._board.turn)
-
-                    if is_debug:
-                        # 表示
-                        print(f"[{datetime.datetime.now()}] [strengthen > kq]  kq_index:{kq_index:7}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
-
-                    if relation_exists == 1:
-                        number_of_connection += 1
-
-                return number_of_connection
 
             # ＫＬとＫＱの関係が有りのものの数
-            number_of_connection_kl_kq = get_number_of_connection()
+            number_of_connection_kl_kq = EvaluationEdit.get_number_of_connection_for_kl_kq(
+                    kl_index_to_relation_exists_dictionary,
+                    kq_index_to_relation_exists_dictionary,
+                    board=self._board,
+                    is_debug=False)
 
             # ＫＬの関係の有りのものの数が５割以上の内、最小の整数
             #
@@ -641,42 +634,12 @@ class EvaluationEdit():
             # ＰＬとＰＱの関係数
             pl_pq_total = len(pl_index_to_relation_exists_dictionary) + len(pq_index_to_relation_exists_dictionary)
 
-            def get_number_of_connection():
-                """ＰＬとＰＱの関係が有りのものの数"""
-                number_of_connection = 0
-
-                # ＰＬ
-                for pl_index, relation_exists in pl_index_to_relation_exists_dictionary.items():
-
-                    p_move_obj, l_move_obj = EvaluationPkTable.destructure_pk_index(
-                            pk_index=pl_index,
-                            p_turn=self._board.turn)
-
-                    if is_debug:
-                        # 表示
-                        print(f"[{datetime.datetime.now()}] [strengthen > pl]  pl_index:{pl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
-
-                    if relation_exists == 1:
-                        number_of_connection += 1
-
-                # ＰＱ
-                for pq_index, relation_exists in pq_index_to_relation_exists_dictionary.items():
-
-                    p_move_obj, q_move_obj = EvaluationPpTable.destructure_pp_index(
-                            pp_index=pq_index,
-                            p1_turn=self._board.turn)
-
-                    if is_debug:
-                        # 表示
-                        print(f"[{datetime.datetime.now()}] [strengthen > pq]  pq_index:{pq_index:7}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
-
-                    if relation_exists == 1:
-                        number_of_connection += 1
-
-                return number_of_connection
-
             # ＰＬとＰＱの関係が有りのものの数
-            number_of_connection_pl_pq = get_number_of_connection()
+            number_of_connection_pl_pq = EvaluationEdit.get_number_of_connection_for_pl_pq(
+                    pl_index_to_relation_exists_dictionary,
+                    pq_index_to_relation_exists_dictionary,
+                    board=self._board,
+                    is_debug=is_debug)
 
             max_number_of_less_than_50_percent = Decimal(str(pl_pq_total / 2)).quantize(Decimal('0'), rounding=ROUND_HALF_UP)
 
