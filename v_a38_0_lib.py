@@ -1,3 +1,4 @@
+# python v_a38_0_lib.py
 import cshogi
 import os
 import datetime
@@ -612,7 +613,6 @@ class BoardHelper():
         q_move_u_set = set()
 
         # assert
-        #previous_sfen_for_assert = board.sfen()
         previous_position_command = BoardHelper.get_position_command(board=board)
 
         # １手指す
@@ -1082,3 +1082,29 @@ sfen {board.sfen()}""")
 sfen {board.sfen()}""")
 
         print(f"[{datetime.datetime.now()}] {self.file_name} file saved", flush=True)
+
+
+########################################
+# スクリプト実行時
+########################################
+
+if __name__ == '__main__':
+    """スクリプト実行時"""
+
+    expected_move_u = '3h3i+'
+    move_obj = Move.from_usi(expected_move_u)
+    if move_obj.as_usi != expected_move_u:
+        raise ValueError(f'unexpected error. move_obj expected:`{expected_move_u}`  actual:`{move_obj.as_usi}`')
+
+    if not move_obj.promoted:
+        raise ValueError(f'unexpected error. move_obj.promoted expected:True  actual:`{move_obj.promoted}`')
+
+    move_obj = Move.from_src_dst_pro(
+            src_sq=BoardHelper.jsa_to_sq(38),
+            dst_sq=BoardHelper.jsa_to_sq(39),
+            promoted=True)
+    if move_obj.as_usi != expected_move_u:
+        raise ValueError(f'unexpected error. expected:`{expected_move_u}`  actual:`{move_obj.as_usi}`')
+
+    if not move_obj.promoted:
+        raise ValueError(f'unexpected error. move_obj.promoted expected:True  actual:`{move_obj.promoted}`')

@@ -1,13 +1,12 @@
 class DebugPlan():
     """デバッグ計画"""
 
-    _create_k_and_p_legal_moves = False
-    _select_fo_move_u_and_policy_dictionary_no1 = False
-    _select_fo_move_u_and_policy_dictionary_no2 = False
+    _create_k_and_p_legal_moves = True
+    _select_fo_move_u_and_policy_dictionary_no1 = True
+    _select_fo_move_u_and_policy_dictionary_no2 = True
     _select_fo_move_u_and_policy_dictionary_no3 = False
     _select_fo_move_u_and_policy_dictionary_no4 = False
     _select_fo_move_u_and_policy_dictionary_no5 = False
-    _select_fo_move_u_and_policy_dictionary = False
     _select_good_f_move_u_set_power = False
 
 
@@ -39,11 +38,6 @@ class DebugPlan():
     @classmethod
     def select_fo_move_u_and_policy_dictionary_no5(clazz):
         return clazz._select_fo_move_u_and_policy_dictionary_no5
-
-
-    @classmethod
-    def select_fo_move_u_and_policy_dictionary(clazz):
-        return clazz._select_fo_move_u_and_policy_dictionary
 
 
     @classmethod
