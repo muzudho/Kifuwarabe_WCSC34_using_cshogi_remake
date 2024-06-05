@@ -1,7 +1,7 @@
 # python v_a38_0_eval_p.py
 import datetime
-from v_a38_0_lib import Move, BoardHelper
 from v_a38_0_debug import DebugHelper
+from v_a38_0_lib import Move, BoardHelper
 
 
 class EvaluationPMove():
@@ -391,6 +391,10 @@ class EvaluationPMove():
         -------
             - 兵の指し手のインデックス
         """
+
+        # assert
+        if p_move_obj.as_usi in DebugHelper.get_illegal_moves_u():
+            raise ValueError(f'unexpected p_move_u:{p_move_obj.as_usi}')
 
         if is_rotate:
             p_src_sq_or_none = p_move_obj.rot_src_sq_or_none

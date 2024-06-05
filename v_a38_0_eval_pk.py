@@ -1,10 +1,11 @@
 import cshogi
 import os
 import datetime
-from v_a38_0_lib import Turn, Move, EvalutionMmTable
-from v_a38_0_eval_lib import EvaluationLib
+from v_a38_0_debug import DebugHelper
 from v_a38_0_eval_k import EvaluationKMove
+from v_a38_0_eval_lib import EvaluationLib
 from v_a38_0_eval_p import EvaluationPMove
+from v_a38_0_lib import Turn, Move, EvalutionMmTable
 
 
 class EvaluationPkTable():
@@ -27,6 +28,10 @@ class EvaluationPkTable():
         p_turn : int
             着手側の手番
         """
+
+        # assert
+        if p_move_obj.as_usi in DebugHelper.get_illegal_moves_u():
+            raise ValueError(f'unexpected p_move_u:{p_move_obj.as_usi}')
 
         # 評価値テーブルは先手用の形なので、後手番は１８０°回転させる必要がある
         if p_turn == cshogi.BLACK:

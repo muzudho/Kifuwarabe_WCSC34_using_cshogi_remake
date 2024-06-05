@@ -3,6 +3,7 @@ import os
 import datetime
 
 from v_a38_0_bit_ope import BitOpe
+from v_a38_0_debug import DebugHelper
 from v_a38_0_debug_plan import DebugPlan
 
 
@@ -32,6 +33,9 @@ class Turn():
 
     @classmethod
     def to_string(clazz, my_turn):
+        if my_turn is None:
+            return 'None'
+
         return clazz._turn_string[my_turn]
 
 
@@ -604,6 +608,16 @@ class BoardHelper():
 
         for counter_move_id in board.legal_moves:
             counter_move_u = cshogi.move_to_usi(counter_move_id)
+
+            # assert
+            if counter_move_u in DebugHelper.get_illegal_moves_u():
+                print(f"""[{datetime.datetime.now()}] illegal move:{counter_move_u}
+{board}
+    board.move_number:{board.move_number}
+    #{BoardHelper.get_position_command(board=board)}
+""")
+
+                raise ValueError(f'unexpected counter_move_u:{counter_move_u}')
 
             counter_move_obj = Move.from_usi(counter_move_u)
 

@@ -111,70 +111,51 @@ class Learn():
         if self._is_debug:
             print(f"[{datetime.datetime.now()}] move_number_at_end:{self._move_number_at_end}")
 
-        #
-        # 奇数：　詰める方
-        # --------------
-        #
-        self.at_odd(
-                mate=1,
-                # １手詰め局面なのだから、１手指せば充分だが、必至も考えて３手ぐらい余裕を与える
-                max_playout_depth=3)
+        mate = 1
 
-        #
-        # 偶数：　逃げる方
-        # --------------
-        #
-        self.at_even(
-                mate=2,
-                # ２手詰め局面なのだから、２手指せば充分だが、必至も考えて４手ぐらい余裕を与える
-                max_playout_depth=4)
+        while mate <= self._move_number_at_end:
 
-        #
-        # 奇数：　詰める方
-        # --------------
-        #
-        self.at_odd(
-                mate=3,
-                # ３手詰め局面なのだから、３手指せば充分だが、必至も考えて５手ぐらい余裕を与える
-                max_playout_depth=5)
+            #
+            # 奇数：　詰める方
+            # --------------
+            #
+            self.at_odd(
+                    mate=mate,
+                    # １手詰め局面なのだから、１手指せば充分だが、必至も考えて３手ぐらい余裕を与える
+                    max_playout_depth=mate+2)
 
-        #
-        # 偶数：　逃げる方
-        # --------------
-        #
-        self.at_even(
-                mate=4,
-                # ４手詰め局面なのだから、４手指せば充分だが、必至も考えて６手ぐらい余裕を与える
-                max_playout_depth=6)
+            mate += 1
 
-        #
-        # 奇数：　詰める方
-        # --------------
-        #
-        self.at_odd(
-                mate=5,
-                # ５手詰め局面なのだから、５手指せば充分だが、必至も考えて７手ぐらい余裕を与える
-                max_playout_depth=7)
+            if self._move_number_at_end < mate:
+                break
 
-        #
-        # 偶数：　逃げる方
-        # --------------
-        #
-        self.at_even(
-                mate=6,
-                # ６手詰め局面なのだから、６手指せば充分だが、必至も考えて８手ぐらい余裕を与える
-                max_playout_depth=8)
+            #
+            # 偶数：　逃げる方
+            # --------------
+            #
+            self.at_even(
+                    mate=mate,
+                    # ２手詰め局面なのだから、２手指せば充分だが、必至も考えて４手ぐらい余裕を与える
+                    max_playout_depth=mate+2)
+
+            mate += 1
+
+            # 全ての評価値テーブル［0:先手, 1:後手］の（変更があれば）保存
+            #
+            #   そんなに変更が起きないので、２手毎に保存してみる
+            #
+            self._kifuwarabe.save_eval_all_tables()
 
         #
         # おわり
         # -----
         #
 
-        # 終局図の内部データに戻す
-        self.restore_end_position()
-
         # 全ての評価値テーブル［0:先手, 1:後手］の（変更があれば）保存
         self._kifuwarabe.save_eval_all_tables()
+
+        # 終局図の内部データに戻す
+        self.restore_end_position()
 
         print(f"[{datetime.datetime.now()}] [learn] finished", flush=True)
 
@@ -316,14 +297,14 @@ class Learn():
                 print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
                 raise ValueError("局面巻き戻しエラー")
 
-            # 元の局面に戻してから weaken する
+            # ｎ手詰めの局面にしてから、評価値を下げる
             if is_weak_move:
-                weaken_result_str = self._kifuwarabe.weaken(
+                result_str = self._kifuwarabe.weaken(
                         cmd_tail=move_u,
                         is_debug=self._is_debug)
 
                 # 変更はログに出したい
-                print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 好手]        weaken {move_u:5}  result:`{weaken_result_str}`')
+                print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 好手]        weaken {move_u:5}  result:`{result_str}`')
 
 
         if self._is_debug:
@@ -395,14 +376,15 @@ class Learn():
                 print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
                 raise ValueError("局面巻き戻しエラー")
 
-            # 元の局面に戻してから strengthen する
+            # ｎ手詰めの局面にしてから、評価値を上げる
             if is_strong_move:
-                strengthen_result_str = self._kifuwarabe.strengthen(
+                result_str = self._kifuwarabe.strengthen(
                         cmd_tail=move_u,
-                        is_debug=self._is_debug)
+                        is_debug=True)
+                        #is_debug=self._is_debug)
 
                 # 変更はログに出したい
-                print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 悪手]        strengthen {move_u:5}  result:`{strengthen_result_str}`')
+                print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 悪手]        strengthen {move_u:5}  result:`{result_str}`')
 
 
     def at_even(
@@ -526,14 +508,15 @@ class Learn():
                 print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
                 raise ValueError("局面巻き戻しエラー")
 
-            # 元の局面に戻してから strengthen する
+            # ｎ手詰めの局面にしてから、評価値を下げる
             if is_weak_move:
-                weaken_result_str = self._kifuwarabe.weaken(
+                result_str = self._kifuwarabe.weaken(
                         cmd_tail=move_u,
-                        is_debug=self._is_debug)
+                        is_debug=True)
+                        #is_debug=self._is_debug)
 
                 # 変更はログに出したい
-                print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手]        weaken {move_u:5}  result:`{weaken_result_str}`')
+                print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手]        weaken {move_u:5}  result:`{result_str}`')
 
 
         if self._is_debug:
@@ -607,11 +590,12 @@ class Learn():
                 print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
                 raise ValueError("局面巻き戻しエラー")
 
-            # 元の局面に戻してから strengthen する
+            # ｎ手詰めの局面にしてから、評価値を上げる
             if is_strong_move:
-                strengthen_result_str = self._kifuwarabe.strengthen(
+                result_str = self._kifuwarabe.strengthen(
                         cmd_tail=move_u,
-                        is_debug=self._is_debug)
+                        is_debug=True)
+                        #is_debug=self._is_debug)
 
                 # 変更はログに出したい
-                print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手]        strengthen {move_u:5}  result:`{strengthen_result_str}`')
+                print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手]        strengthen {move_u:5}  result:`{result_str}`')

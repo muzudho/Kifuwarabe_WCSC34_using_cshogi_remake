@@ -2,6 +2,13 @@ class DebugHelper():
     """デバッグの助けに使う"""
 
 
+    def get_illegal_moves_u():
+        """非合法手のリスト
+
+        assert用"""
+        return ['1i2a', '2i3a', '3i4a', '4i5a', '5i6a', '6i7a', '7i8a', '8i9a']
+
+
     def stringify_3characters_board(squares):
         """１マスに３桁を表示できる表
 
