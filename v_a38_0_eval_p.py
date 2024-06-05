@@ -516,7 +516,29 @@ class EvaluationPMove():
 if __name__ == '__main__':
     """スクリプト実行時"""
 
+
+    #
+    # 後手の歩を９段目に突いて成る
+    #
+    expected_p_move_u = '3h3i+'
+    expected_p_move_obj = Move.from_usi(expected_p_move_u)
+
+    p_index = EvaluationPMove.get_index_by_p_move(
+            p_move_obj=expected_p_move_obj,
+            is_rotate=True)
+
+    actual_p_move_obj = EvaluationPMove.destructure_p_index(
+            p_index=p_index,
+            is_rotate=True)
+
+    if expected_p_move_obj.as_usi != actual_p_move_obj.as_usi:
+        raise ValueError(f'unexpected error. move_obj expected P:`{expected_p_move_obj.as_usi}`  actual P:`{actual_p_move_obj.as_usi}`')
+
+
+
+    #
     # 元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します
+    #
     (src_sq_to_dst_sq_to_index_for_npsi_dictionary,
      src_sq_to_dst_sq_to_index_for_psi_dictionary,
      drop_to_dst_sq_index,
