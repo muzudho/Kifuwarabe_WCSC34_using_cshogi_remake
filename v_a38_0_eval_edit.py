@@ -170,13 +170,13 @@ class EvaluationEdit():
 
             # デバッグ表示
             if is_debug:
-                print(f"[{datetime.datetime.now()}] [weaken > ko]  K:{move_obj.as_usi:5}  O:*****  number_of_connection_kl_kq:{number_of_connection_kl_kq} / kl_kq_total:{kl_kq_total}  max_number_of_less_than_50_percent:{max_number_of_less_than_50_percent}  difference:{difference}")
+                print(f"[{datetime.datetime.now()}] [weaken > kl and kq]  K:{move_obj.as_usi:5}  O:*****  有:{number_of_connection_kl_kq} / 総:{kl_kq_total}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
 
             # 既に悪手評価なので、弱化は不要です
             if difference < 1:
                 # デバッグ表示
                 if is_debug:
-                    print(f"[{datetime.datetime.now()}] [weaken > ko]  既に悪手評価なので、弱化は不要です")
+                    print(f"[{datetime.datetime.now()}] [weaken > kl and kq]  既に悪手評価なので、弱化は不要です")
 
                 return 'unnecessary'
 
@@ -307,7 +307,7 @@ class EvaluationEdit():
 
             if is_debug:
                 # デバッグ表示
-                print(f"[{datetime.datetime.now()}] [weaken > po]  P:{move_obj.as_usi:5}  O:*****  number_of_connection_pl_pq:{number_of_connection_pl_pq} / pl_pq_total:{pl_pq_total}  max_number_of_less_than_50_percent:{max_number_of_less_than_50_percent}  difference:{difference}")
+                print(f"[{datetime.datetime.now()}] [weaken > pl and pq]  P:{move_obj.as_usi:5}  O:*****  有:{number_of_connection_pl_pq} / 総:{pl_pq_total}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
 
             # 既に悪手評価なので、弱化は不要です
             if difference < 1:
@@ -531,13 +531,13 @@ class EvaluationEdit():
 
             # デバッグ表示
             if is_debug:
-                print(f"[{datetime.datetime.now()}] [strengthen > ko]  K:{move_obj.as_usi:5}  O:*****  number_of_connection_kl_kq:{number_of_connection_kl_kq} / kl_kq_total:{kl_kq_total}  max_number_of_less_than_50_percent:{max_number_of_less_than_50_percent}  difference:{difference}")
+                print(f"[{datetime.datetime.now()}] [strengthen > kl and kq]  K:{move_obj.as_usi:5}  O:*****  有:{number_of_connection_kl_kq} / 総:{kl_kq_total}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
 
             # 既に好手評価なので、強化は不要です
             if difference < 1:
                 # デバッグ表示
                 if is_debug:
-                    print(f"[{datetime.datetime.now()}] [strengthen > ko]  既に好手評価なので、強化は不要です")
+                    print(f"[{datetime.datetime.now()}] [strengthen > kl and kq]  既に好手評価なので、強化は不要です")
 
                 return 'unnecessary'
 
@@ -664,13 +664,13 @@ class EvaluationEdit():
 
             # デバッグ表示
             if is_debug:
-                print(f"[{datetime.datetime.now()}] [strengthen > po]  P:{move_obj.as_usi:5}  O:*****  number_of_connection_pl_pq:{number_of_connection_pl_pq} / pl_pq_total:{pl_pq_total}  max_number_of_less_than_50_percent:{max_number_of_less_than_50_percent}  difference:{difference}")
+                print(f"[{datetime.datetime.now()}] [strengthen > pl and pq]  P:{move_obj.as_usi:5}  O:*****  有:{number_of_connection_pl_pq} / 総:{pl_pq_total}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
 
             # 既に好手評価なので、強化は不要です
             if difference < 1:
                 # デバッグ表示
                 if is_debug:
-                    print(f"[{datetime.datetime.now()}] [strengthen > po]  既に好手評価なので、強化は不要です")
+                    print(f"[{datetime.datetime.now()}] [strengthen > pl and pq]  既に好手評価なので、強化は不要です")
 
                 return 'unnecessary'
 
