@@ -899,19 +899,26 @@ class EvaluationFacade():
                 if q_move_u in DebugHelper.get_illegal_moves_u():
                     raise ValueError(f'unexpected q_move_u:{q_move_u}')
 
-        if is_debug and DebugPlan.select_fo_move_u_and_policy_dictionary_no2():
+        if is_debug and DebugPlan.select_fo_move_u_and_policy_dictionary_no2_kl():
+            # ＫＬ
             print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no2]  自玉に対する、敵玉の応手の一覧：")
             for l_move_u in l_move_u_for_k_set:
                 print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no2]    [L for K]  turn:{Turn.to_string(board.turn)}  K:*****  L:{l_move_u}")
 
+        if is_debug and DebugPlan.select_fo_move_u_and_policy_dictionary_no2_kq():
+            # ＫＱ
             print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no2]  自玉に対する、敵兵の応手の一覧：")
             for q_move_u in q_move_u_for_k_set:
                 print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no2]    [Q for K]  turn:{Turn.to_string(board.turn)}  K:*****  Q:{q_move_u}")
 
+        if is_debug and DebugPlan.select_fo_move_u_and_policy_dictionary_no2_pl():
+            # ＰＬ
             print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no2]  自兵に対する、敵玉の応手の一覧：")
             for l_move_u in l_move_u_for_p_set:
                 print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no2]    [L for P]  turn:{Turn.to_string(board.turn)}  P:*****  L:{l_move_u}")
 
+        if is_debug and DebugPlan.select_fo_move_u_and_policy_dictionary_no2_pq():
+            # ＰＱ
             print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no2]  自兵に対する、敵兵の応手の一覧：")
             for q_move_u in q_move_u_for_p_set:
                 print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no2]    [Q for P]  turn:{Turn.to_string(board.turn)}  P:*****  Q:{q_move_u}")
@@ -952,7 +959,7 @@ class EvaluationFacade():
                         kl_index=fo_index,
                         k_turn=board.turn)
 
-                print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no3]      [KL]  turn:{Turn.to_string(board.turn)}  kl_index:{fo_index:6}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_bit:{relation_bit}")
+                print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no3]      [KL]  turn:{Turn.to_string(board.turn)}  kl_index:{fo_index:7}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_bit:{relation_bit}")
 
         if is_debug and DebugPlan.select_fo_move_u_and_policy_dictionary_no3_kq():
             # ＫＱ
@@ -964,7 +971,7 @@ class EvaluationFacade():
                         kp_index=fo_index,
                         k_turn=board.turn)
 
-                print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no3]      [KQ]  turn:{Turn.to_string(board.turn)}  kq_index:{fo_index:6}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_bit:{relation_bit}")
+                print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no3]      [KQ]  turn:{Turn.to_string(board.turn)}  kq_index:{fo_index:7}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_bit:{relation_bit}")
 
         if is_debug and DebugPlan.select_fo_move_u_and_policy_dictionary_no3_pl():
             # ＰＬ
@@ -976,7 +983,7 @@ class EvaluationFacade():
                         pk_index=fo_index,
                         p_turn=board.turn)
 
-                print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no3]      [PL]  turn:{Turn.to_string(board.turn)}  pl_index:{fo_index:6}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_bit:{relation_bit}")
+                print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no3]      [PL]  turn:{Turn.to_string(board.turn)}  pl_index:{fo_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_bit:{relation_bit}")
 
         if is_debug and DebugPlan.select_fo_move_u_and_policy_dictionary_no3_pq():
             # ＰＱ
@@ -988,7 +995,7 @@ class EvaluationFacade():
                         pp_index=fo_index,
                         p1_turn=board.turn)
 
-                print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no3]      [PQ]  turn:{Turn.to_string(board.turn)}  pq_index:{fo_index:6}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_bit:{relation_bit}")
+                print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no3]      [PQ]  turn:{Turn.to_string(board.turn)}  pq_index:{fo_index:7}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_bit:{relation_bit}")
 
         #print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no4] start")
 

@@ -754,7 +754,7 @@ class Kifuwarabe():
                         kl_index=kl_index,
                         k_turn=self._board.turn)
 
-                print(f"  turn:{Turn.to_string(self._board.turn)}  kl_index:{kl_index}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                print(f"  turn:{Turn.to_string(self._board.turn)}  kl_index:{kl_index:7}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
             # ＫＱ
             for kq_index, relation_exists in kq_index_to_relation_exists_dictionary.items():
@@ -763,7 +763,7 @@ class Kifuwarabe():
                         kp_index=kq_index,
                         k_turn=self._board.turn)
 
-                print(f"  turn:{Turn.to_string(self._board.turn)}  kq_index:{kq_index}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                print(f"  turn:{Turn.to_string(self._board.turn)}  kq_index:{kq_index:7}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
         else:
             # ＰＬ
@@ -773,7 +773,7 @@ class Kifuwarabe():
                         pk_index=pl_index,
                         p_turn=self._board.turn)
 
-                print(f"  turn:{Turn.to_string(self._board.turn)}  pl_index:{pl_index}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                print(f"  turn:{Turn.to_string(self._board.turn)}  pl_index:{pl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
             # ＰＱ
             for pq_index, relation_exists in pq_index_to_relation_exists_dictionary.items():
@@ -782,7 +782,7 @@ class Kifuwarabe():
                         pq_index=pq_index,
                         p1_turn=self._board.turn)
 
-                print(f"  turn:{Turn.to_string(self._board.turn)}  pq_index:{pq_index}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                print(f"  turn:{Turn.to_string(self._board.turn)}  pq_index:{pq_index:7}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
 
     def weaken(

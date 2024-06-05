@@ -1108,3 +1108,4 @@ if __name__ == '__main__':
 
     if not move_obj.promoted:
         raise ValueError(f'unexpected error. move_obj.promoted expected:True  actual:`{move_obj.promoted}`')
+
