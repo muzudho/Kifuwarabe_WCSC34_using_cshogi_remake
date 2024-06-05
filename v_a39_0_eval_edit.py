@@ -55,32 +55,7 @@ class EvaluationEdit():
                 print(f"[{datetime.datetime.now()}] [weaken] weaken command must be 1 move.  ex:`weaken 5i5h`  cmd_tail:`{cmd_tail}`")
             return 'failed'
 
-        ## 投了局面時
-        #if self._board.is_game_over():
-        #    if is_debug:
-        #        print(f'# failed to weaken (game over)', flush=True)
-        #    return
-
-        ## 入玉宣言局面時
-        #if self._board.is_nyugyoku():
-        #    if is_debug:
-        #        print(f'# failed to weaken (nyugyoku win)', flush=True)
-        #    return
-
-        ## １手詰めを詰める
-        ##
-        ##   自玉に王手がかかっていない時で
-        ##
-        #if not self._board.is_check():
-        #
-        #    # １手詰めの指し手があれば、それを取得
-        #    if (matemove := self._board.mate_move_in_1ply()):
-        #
-        #        best_move = cshogi.move_to_usi(matemove)
-        #        if is_debug:
-        #            print(f'# failed to weaken (mate {best_move})', flush=True)
-        #        return
-
+        # 投了局面時、入玉宣言局面時、１手詰めは省略
 
         move_u = cmd_tail
 
@@ -114,24 +89,8 @@ class EvaluationEdit():
                     board=self._board,
                     is_debug=False)
 
-            # ＫＬとＫＱの関係の有りのものの数が５割未満の内、最大の整数
-            #
-            #   総数が０なら、答えは０
-            #   総数が１なら、答えは０
-            #   総数が２なら、答えは０
-            #   総数が３なら、答えは１
-            #   総数が４なら、答えは１
-            #   総数が５なら、答えは２
-            #
-            # (1)   単純に kl_kq_total // 2 - 1 とすると、 kl_kq_total が３のときに答えが０になってしまう。
-            #       そこで総数の半分は四捨五入しておく
-            # (2)   総数が０のとき、答えはー１になってしまうので、最低の値は０にしておく
-            #
-            # (1)
-            max_number_of_less_than_50_percent = Decimal(str(kl_kq_total / 2)).quantize(Decimal('0'), rounding=ROUND_HALF_UP) - 1
-            # (2)
-            if max_number_of_less_than_50_percent < 0:
-                max_number_of_less_than_50_percent = 0
+            max_number_of_less_than_50_percent = EvaluationFacade.get_max_number_of_less_than_50_percent(
+                    total=kl_kq_total)
 
             # この着手に対する応手の関係を減らしたい
             #
@@ -235,10 +194,8 @@ class EvaluationEdit():
                     board=self._board,
                     is_debug=is_debug)
 
-            max_number_of_less_than_50_percent = Decimal(str(pl_pq_total / 2)).quantize(Decimal('0'), rounding=ROUND_HALF_UP) - 1
-
-            if max_number_of_less_than_50_percent < 0:
-                max_number_of_less_than_50_percent = 0
+            max_number_of_less_than_50_percent = EvaluationFacade.get_max_number_of_less_than_50_percent(
+                    total=pl_pq_total)
 
             # この着手に対する応手の関係を減らしたい
             #
@@ -362,32 +319,7 @@ class EvaluationEdit():
                 print(f"[{datetime.datetime.now()}] [strengthen] strengthen command must be 1 move.  ex:`strengthen 5i5h`  cmd_tail:`{cmd_tail}`")
             return 'failed'
 
-        ## 投了局面時
-        #if self._board.is_game_over():
-        #    if is_debug:
-        #        print(f'# failed to strengthen (game over)', flush=True)
-        #    return
-
-        ## 入玉宣言局面時
-        #if self._board.is_nyugyoku():
-        #    if is_debug:
-        #        print(f'# failed to strengthen (nyugyoku win)', flush=True)
-        #    return
-
-        ## １手詰めを詰める
-        ##
-        ##   自玉に王手がかかっていない時で
-        ##
-        #if not self._board.is_check():
-        #
-        #    # １手詰めの指し手があれば、それを取得
-        #    if (matemove := self._board.mate_move_in_1ply()):
-        #
-        #        best_move = cshogi.move_to_usi(matemove)
-        #        if is_debug:
-        #            print(f'# failed to strengthen (mate {best_move})', flush=True)
-        #        return
-
+        # 投了局面時、入玉宣言局面時、１手詰めは省略
 
         move_u = cmd_tail
 
@@ -413,7 +345,6 @@ class EvaluationEdit():
             # ＫＬとＫＱの関係数
             kl_kq_total = len(kl_index_to_relation_exists_dictionary) + len(kq_index_to_relation_exists_dictionary)
 
-
             # ＫＬとＫＱの関係が有りのものの数
             number_of_connection_kl_kq = EvaluationFacade.get_number_of_connection_for_kl_kq(
                     kl_index_to_relation_exists_dictionary,
@@ -421,20 +352,8 @@ class EvaluationEdit():
                     board=self._board,
                     is_debug=False)
 
-            # ＫＬの関係の有りのものの数が５割以上の内、最小の整数
-            #
-            #   総数が０なら、答えは０
-            #   総数が１なら、答えは１
-            #   総数が２なら、答えは１
-            #   総数が３なら、答えは２
-            #   総数が４なら、答えは２
-            #   総数が５なら、答えは３
-            #
-            # (1)   単純に kl_kq_total // 2 とすると、 kl_kq_total が３のときに答えが１になってしまう。
-            #       そこで総数の半分は四捨五入しておく
-            #
-            # (1)
-            max_number_of_less_than_50_percent = Decimal(str(kl_kq_total / 2)).quantize(Decimal('0'), rounding=ROUND_HALF_UP)
+            max_number_of_less_than_50_percent = EvaluationFacade.get_max_number_of_less_than_50_percent(
+                    total=kl_kq_total)
 
             # この着手に対する応手の関係を増やしたい
             #
@@ -537,7 +456,8 @@ class EvaluationEdit():
                     board=self._board,
                     is_debug=is_debug)
 
-            max_number_of_less_than_50_percent = Decimal(str(pl_pq_total / 2)).quantize(Decimal('0'), rounding=ROUND_HALF_UP)
+            max_number_of_less_than_50_percent = EvaluationFacade.get_max_number_of_less_than_50_percent(
+                    total=pl_pq_total)
 
             # この着手に対する応手の関係を増やしたい
             #
