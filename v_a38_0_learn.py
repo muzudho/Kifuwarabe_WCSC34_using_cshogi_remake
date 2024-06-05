@@ -113,7 +113,13 @@ class Learn():
 
         mate = 1
 
-        while mate <= self._move_number_at_end:
+        # 全ての着手をさかのぼると時間がかかるので、上限を８手としておく
+        max_depth = self._move_number_at_end
+
+        if 8 < max_depth:
+            max_depth = 8
+
+        while mate <= max_depth:
 
             #
             # 奇数：　詰める方

@@ -1,4 +1,5 @@
 import cshogi
+import datetime
 from decimal import Decimal, ROUND_HALF_UP
 from v_a38_0_eval import EvaluationFacade
 from v_a38_0_eval_kk import EvaluationKkTable
@@ -51,7 +52,7 @@ class EvaluationEdit():
 
         if cmd_tail.strip() == '':
             if is_debug:
-                print(f"weaken command must be 1 move.  ex:`weaken 5i5h`  cmd_tail:`{cmd_tail}`")
+                print(f"[{datetime.datetime.now()}] [weaken] weaken command must be 1 move.  ex:`weaken 5i5h`  cmd_tail:`{cmd_tail}`")
             return 'failed'
 
         ## 投了局面時
@@ -103,7 +104,7 @@ class EvaluationEdit():
 
             # ＫＬとＫＱの関係数
             kl_kq_total = len(kl_index_to_relation_exists_dictionary) + len(kq_index_to_relation_exists_dictionary)
-            print(f"  kl_kq_total:{kl_kq_total}  =  len(kl_index_to_relation_exists_dictionary):{len(kl_index_to_relation_exists_dictionary)}  +  len(kq_index_to_relation_exists_dictionary):{len(kq_index_to_relation_exists_dictionary)}")
+            print(f"[{datetime.datetime.now()}] [weaken > kl and kq]   kl_kq_total:{kl_kq_total}  =  len(kl_index_to_relation_exists_dictionary):{len(kl_index_to_relation_exists_dictionary)}  +  len(kq_index_to_relation_exists_dictionary):{len(kq_index_to_relation_exists_dictionary)}")
 
             def get_number_of_connection_for_kl_kq():
                 """ＫＬとＫＱの関係が有りのものの数"""
@@ -118,7 +119,7 @@ class EvaluationEdit():
 
                     if is_debug:
                         # 表示
-                        print(f"[weaken > kl]  kl_index:{kl_index:7}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                        print(f"[{datetime.datetime.now()}] [weaken > kl]  kl_index:{kl_index:7}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
                     if relation_exists == 1:
                         number_of_connection += 1
@@ -132,7 +133,7 @@ class EvaluationEdit():
 
                     # 表示
                     if is_debug:
-                        print(f"[weaken > kq]  kq_index:{kq_index:7}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                        print(f"[{datetime.datetime.now()}] [weaken > kq]  kq_index:{kq_index:7}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
                     if relation_exists == 1:
                         number_of_connection += 1
@@ -169,17 +170,22 @@ class EvaluationEdit():
 
             # デバッグ表示
             if is_debug:
-                print(f"[weaken > ko]  K:{move_obj.as_usi:5}  O:*****  number_of_connection_kl_kq:{number_of_connection_kl_kq} / kl_kq_total:{kl_kq_total}  max_number_of_less_than_50_percent:{max_number_of_less_than_50_percent}  difference:{difference}")
+                print(f"[{datetime.datetime.now()}] [weaken > ko]  K:{move_obj.as_usi:5}  O:*****  number_of_connection_kl_kq:{number_of_connection_kl_kq} / kl_kq_total:{kl_kq_total}  max_number_of_less_than_50_percent:{max_number_of_less_than_50_percent}  difference:{difference}")
 
             # 関係を difference 個削除
             rest = difference
 
+            #
             # ＫＬ
+            #
+
+            print(f"[{datetime.datetime.now()}] [weaken > kl]  rest:{rest}  len(kl_indexes):{len(kl_index_to_relation_exists_dictionary)}")
+
             for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
 
                 if rest < 1:
                     if is_debug:
-                        print(f"[weaken > kl]  rest:{rest}  break")
+                        print(f"[{datetime.datetime.now()}] [weaken > kl]  rest:{rest}  break")
 
                     break
 
@@ -191,7 +197,7 @@ class EvaluationEdit():
                     if relation_exists == 1:
 
                         if is_debug:
-                            print(f"[weaken > kl]  turn:{Turn.to_string(self._board.turn)}  kl_index:{kl_index:7}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  remove relation")
+                            print(f"[{datetime.datetime.now()}] [weaken > kl]  turn:{Turn.to_string(self._board.turn)}  kl_index:{kl_index:7}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  remove relation")
 
                         is_changed_temp = self._evaluation_kl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kl_moves(
                                 k_move_obj=k_move_obj,
@@ -203,12 +209,17 @@ class EvaluationEdit():
                             is_changed = True
                             rest -= 1
 
+            #
             # ＫＱ
+            #
+
+            print(f"[{datetime.datetime.now()}] [weaken > kq]  rest:{rest}  len(kq_indexes):{len(kq_index_to_relation_exists_dictionary)}")
+
             for kq_index, relation_exists in kq_index_to_relation_exists_dictionary.items():
 
                 if rest < 1:
                     if is_debug:
-                        print(f"[weaken > kq]  rest:{rest}  break")
+                        print(f"[{datetime.datetime.now()}] [weaken > kq]  rest:{rest}  break")
 
                     break
 
@@ -220,7 +231,7 @@ class EvaluationEdit():
                     if relation_exists == 1:
 
                         if is_debug:
-                            print(f"[weaken > kq]  turn:{Turn.to_string(self._board.turn)}  kq_index:{kq_index:7}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}  remove relation")
+                            print(f"[{datetime.datetime.now()}] [weaken > kq]  turn:{Turn.to_string(self._board.turn)}  kq_index:{kq_index:7}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}  remove relation")
 
                         is_changed_temp = self._evaluation_kq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kp_moves(
                                 k_move_obj=k_move_obj,
@@ -236,7 +247,7 @@ class EvaluationEdit():
 
             # ＰＬとＰＱの関係数
             pl_pq_total = len(pl_index_to_relation_exists_dictionary) + len(pq_index_to_relation_exists_dictionary)
-            print(f"  pl_pq_total:{pl_pq_total}  =  len(pl_index_to_relation_exists_dictionary):{len(pl_index_to_relation_exists_dictionary)}  +  len(pq_index_to_relation_exists_dictionary):{len(pq_index_to_relation_exists_dictionary)}")
+            print(f"[{datetime.datetime.now()}] [weaken > pl and pq]  pl_pq_total:{pl_pq_total}  =  len(pl_index_to_relation_exists_dictionary):{len(pl_index_to_relation_exists_dictionary)}  +  len(pq_index_to_relation_exists_dictionary):{len(pq_index_to_relation_exists_dictionary)}")
 
             def get_number_of_connection_for_pl_pq():
                 """ＰＬとＰＱの関係が有りのものの数"""
@@ -251,7 +262,7 @@ class EvaluationEdit():
 
                     if is_debug:
                         # 表示
-                        print(f"[weaken > kl]  pl_index:{pl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                        print(f"[{datetime.datetime.now()}] [weaken > kl]  pl_index:{pl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
                     if relation_exists == 1:
                         number_of_connection += 1
@@ -265,7 +276,7 @@ class EvaluationEdit():
 
                     if is_debug:
                         # 表示
-                        print(f"[weaken > kl]  pq_index:{pq_index:7}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                        print(f"[{datetime.datetime.now()}] [weaken > kl]  pq_index:{pq_index:7}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
                     if relation_exists == 1:
                         number_of_connection += 1
@@ -288,17 +299,22 @@ class EvaluationEdit():
 
             if is_debug:
                 # デバッグ表示
-                print(f"[weaken > po]  P:{move_obj.as_usi:5}  O:*****  number_of_connection_pl_pq:{number_of_connection_pl_pq} / pl_pq_total:{pl_pq_total}  max_number_of_less_than_50_percent:{max_number_of_less_than_50_percent}  difference:{difference}")
+                print(f"[{datetime.datetime.now()}] [weaken > po]  P:{move_obj.as_usi:5}  O:*****  number_of_connection_pl_pq:{number_of_connection_pl_pq} / pl_pq_total:{pl_pq_total}  max_number_of_less_than_50_percent:{max_number_of_less_than_50_percent}  difference:{difference}")
 
             # 関係を difference 個削除
             rest = difference
 
+            #
             # ＰＬ
+            #
+
+            print(f"[{datetime.datetime.now()}] [weaken > pl]  rest:{rest}  len(pl_indexes):{len(pl_index_to_relation_exists_dictionary)}")
+
             for pl_index, relation_exists in pl_index_to_relation_exists_dictionary.items():
 
                 if rest < 1:
                     if is_debug:
-                        print(f"[weaken > pl]  rest:{rest}  break")
+                        print(f"[{datetime.datetime.now()}] [weaken > pl]  rest:{rest}  break")
                     break
 
                 p_move_obj, l_move_obj = EvaluationPkTable.destructure_pk_index(
@@ -309,7 +325,7 @@ class EvaluationEdit():
                     if relation_exists == 1:
 
                         if is_debug:
-                            print(f"[weaken > pl]  turn:{Turn.to_string(self._board.turn)}  pl_index:{pl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  remove relation")
+                            print(f"[{datetime.datetime.now()}] [weaken > pl]  turn:{Turn.to_string(self._board.turn)}  pl_index:{pl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  remove relation")
 
                         is_changed_temp = self._evaluation_pl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kp_moves(
                                 p_move_obj=p_move_obj,
@@ -321,12 +337,17 @@ class EvaluationEdit():
                             is_changed = True
                             rest -= 1
 
+            #
             # ＰＱ
+            #
+
+            print(f"[{datetime.datetime.now()}] [weaken > pq]  rest:{rest}  len(pq_indexes):{len(pq_index_to_relation_exists_dictionary)}")
+
             for pq_index, relation_exists in pq_index_to_relation_exists_dictionary.items():
 
                 if rest < 1:
                     if is_debug:
-                        print(f"[weaken > pq]  rest:{rest}  break")
+                        print(f"[{datetime.datetime.now()}] [weaken > pq]  rest:{rest}  break")
                     break
 
                 p_move_obj, q_move_obj = EvaluationPpTable.destructure_pp_index(
@@ -337,7 +358,7 @@ class EvaluationEdit():
                     if relation_exists == 1:
 
                         if is_debug:
-                            print(f"[weaken > pq]  turn:{Turn.to_string(self._board.turn)}  pq_index:{pq_index:7}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}  remove relation")
+                            print(f"[{datetime.datetime.now()}] [weaken > pq]  turn:{Turn.to_string(self._board.turn)}  pq_index:{pq_index:7}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}  remove relation")
 
                         is_changed_temp = self._evaluation_pq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_pp_moves(
                                 p1_move_obj=p_move_obj,
@@ -381,7 +402,7 @@ class EvaluationEdit():
 
         if cmd_tail.strip() == '':
             if is_debug:
-                print(f"strengthen command must be 1 move.  ex:`strengthen 5i5h`  cmd_tail:`{cmd_tail}`")
+                print(f"[{datetime.datetime.now()}] [strengthen] strengthen command must be 1 move.  ex:`strengthen 5i5h`  cmd_tail:`{cmd_tail}`")
             return 'failed'
 
         ## 投了局面時
@@ -447,7 +468,7 @@ class EvaluationEdit():
 
                     if is_debug:
                         # 表示
-                        print(f"[strengthen > kl]  kl_index:{kl_index:7}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                        print(f"[{datetime.datetime.now()}] [strengthen > kl]  kl_index:{kl_index:7}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
                     if relation_exists == 1:
                         number_of_connection += 1
@@ -461,7 +482,7 @@ class EvaluationEdit():
 
                     if is_debug:
                         # 表示
-                        print(f"[strengthen > kq]  kq_index:{kq_index:7}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                        print(f"[{datetime.datetime.now()}] [strengthen > kq]  kq_index:{kq_index:7}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
                     if relation_exists == 1:
                         number_of_connection += 1
@@ -494,17 +515,22 @@ class EvaluationEdit():
 
             # デバッグ表示
             if is_debug:
-                print(f"[strengthen > ko]  K:{move_obj.as_usi:5}  O:*****  number_of_connection_kl_kq:{number_of_connection_kl_kq} / kl_kq_total:{kl_kq_total}  max_number_of_less_than_50_percent:{max_number_of_less_than_50_percent}  difference:{difference}")
+                print(f"[{datetime.datetime.now()}] [strengthen > ko]  K:{move_obj.as_usi:5}  O:*****  number_of_connection_kl_kq:{number_of_connection_kl_kq} / kl_kq_total:{kl_kq_total}  max_number_of_less_than_50_percent:{max_number_of_less_than_50_percent}  difference:{difference}")
 
             # 関係を difference 個追加
             rest = difference
 
+            #
             # ＫＬ
+            #
+
+            print(f"[{datetime.datetime.now()}] [strengthen > kl]  rest:{rest}  len(kl_indexes):{len(kl_index_to_relation_exists_dictionary)}")
+
             for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
 
                 if rest < 1:
                     if is_debug:
-                        print(f"[strengthen > kl]  rest:{rest}  break")
+                        print(f"[{datetime.datetime.now()}] [strengthen > kl]  rest:{rest}  break")
 
                     break
 
@@ -516,7 +542,7 @@ class EvaluationEdit():
                     if relation_exists == 0:
 
                         if is_debug:
-                            print(f"[strengthen > kl]  turn:{Turn.to_string(self._board.turn)}  kl_index:{kl_index:7}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
+                            print(f"[{datetime.datetime.now()}] [strengthen > kl]  turn:{Turn.to_string(self._board.turn)}  kl_index:{kl_index:7}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
 
                         is_changed_temp = self._evaluation_kl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kl_moves(
                                 k_move_obj=k_move_obj,
@@ -528,12 +554,17 @@ class EvaluationEdit():
                             is_changed = True
                             rest -= 1
 
+            #
             # ＫＱ
+            #
+
+            print(f"[{datetime.datetime.now()}] [strengthen > kq]  rest:{rest}  len(kq_indexes):{len(kq_index_to_relation_exists_dictionary)}")
+
             for kq_index, relation_exists in kq_index_to_relation_exists_dictionary.items():
 
                 if rest < 1:
                     if is_debug:
-                        print(f"[strengthen > kq]  rest:{rest}  break")
+                        print(f"[{datetime.datetime.now()}] [strengthen > kq]  rest:{rest}  break")
 
                     break
 
@@ -545,7 +576,7 @@ class EvaluationEdit():
                     if relation_exists == 0:
 
                         if is_debug:
-                            print(f"[strengthen > kq]  turn:{Turn.to_string(self._board.turn)}  kq_index:{kq_index:7}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
+                            print(f"[{datetime.datetime.now()}] [strengthen > kq]  turn:{Turn.to_string(self._board.turn)}  kq_index:{kq_index:7}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
 
                         is_changed_temp = self._evaluation_kq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kp_moves(
                                 k_move_obj=k_move_obj,
@@ -575,7 +606,7 @@ class EvaluationEdit():
 
                     if is_debug:
                         # 表示
-                        print(f"[strengthen > pl]  pl_index:{pl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                        print(f"[{datetime.datetime.now()}] [strengthen > pl]  pl_index:{pl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
                     if relation_exists == 1:
                         number_of_connection += 1
@@ -589,7 +620,7 @@ class EvaluationEdit():
 
                     if is_debug:
                         # 表示
-                        print(f"[strengthen > pq]  pq_index:{pq_index:7}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                        print(f"[{datetime.datetime.now()}] [strengthen > pq]  pq_index:{pq_index:7}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
                     if relation_exists == 1:
                         number_of_connection += 1
@@ -609,17 +640,22 @@ class EvaluationEdit():
 
             # デバッグ表示
             if is_debug:
-                print(f"[strengthen > po]  P:{move_obj.as_usi:5}  O:*****  number_of_connection_pl_pq:{number_of_connection_pl_pq} / pl_pq_total:{pl_pq_total}  max_number_of_less_than_50_percent:{max_number_of_less_than_50_percent}  difference:{difference}")
+                print(f"[{datetime.datetime.now()}] [strengthen > po]  P:{move_obj.as_usi:5}  O:*****  number_of_connection_pl_pq:{number_of_connection_pl_pq} / pl_pq_total:{pl_pq_total}  max_number_of_less_than_50_percent:{max_number_of_less_than_50_percent}  difference:{difference}")
 
             # 関係を difference 個追加
             rest = difference
 
+            #
             # ＰＬ
+            #
+
+            print(f"[{datetime.datetime.now()}] [strengthen > pl]  rest:{rest}  len(pl_indexes):{len(pl_index_to_relation_exists_dictionary)}")
+
             for pl_index, relation_exists in pl_index_to_relation_exists_dictionary.items():
 
                 if rest < 1:
                     if is_debug:
-                        print(f"[strengthen > pl]  rest:{rest}  break")
+                        print(f"[{datetime.datetime.now()}] [strengthen > pl]  rest:{rest}  break")
 
                     break
 
@@ -631,7 +667,7 @@ class EvaluationEdit():
                     if relation_exists == 0:
 
                         if is_debug:
-                            print(f"[strengthen > pl]  turn:{Turn.to_string(self._board.turn)}  pl_index:{pl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
+                            print(f"[{datetime.datetime.now()}] [strengthen > pl]  turn:{Turn.to_string(self._board.turn)}  pl_index:{pl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
 
                         is_changed_temp = self._evaluation_pl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kp_moves(
                                 p_move_obj=p_move_obj,
@@ -643,12 +679,17 @@ class EvaluationEdit():
                             is_changed = True
                             rest -= 1
 
+            #
             # ＰＱ
+            #
+
+            print(f"[{datetime.datetime.now()}] [strengthen > pq]  rest:{rest}  len(pq_indexes):{len(pq_index_to_relation_exists_dictionary)}")
+
             for pq_index, relation_exists in pq_index_to_relation_exists_dictionary.items():
 
                 if rest < 1:
                     if is_debug:
-                        print(f"[strengthen > pq]  rest:{rest}  break")
+                        print(f"[{datetime.datetime.now()}] [strengthen > pq]  rest:{rest}  break")
 
                     break
 
@@ -660,7 +701,7 @@ class EvaluationEdit():
                     if relation_exists == 0:
 
                         if is_debug:
-                            print(f"[strengthen > pq]  turn:{Turn.to_string(self._board.turn)}  pq_index:{pq_index:7}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
+                            print(f"[{datetime.datetime.now()}] [strengthen > pq]  turn:{Turn.to_string(self._board.turn)}  pq_index:{pq_index:7}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
 
                         is_changed_temp = self._evaluation_pq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kp_moves(
                                 p1_move_obj=p_move_obj,
