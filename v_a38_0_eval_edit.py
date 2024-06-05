@@ -84,18 +84,19 @@ class EvaluationEdit():
 
         move_u = cmd_tail
 
-        # 着手と応手をキー、関係の有無を値とする辞書を作成します
+        move_obj = Move.from_usi(move_u)
+
+        # １つの着手には、０～複数の着手がある木構造をしています。
+        # その木構造のパスをキーとし、そのパスが持つ有無のビット値を値とする辞書を作成します
         (kl_index_to_relation_exists_dictionary,
          kq_index_to_relation_exists_dictionary,
          pl_index_to_relation_exists_dictionary,
          pq_index_to_relation_exists_dictionary) = EvaluationFacade.select_fo_index_to_relation_exists(
-                move_obj=Move.from_usi(move_u),
+                move_obj=move_obj,
                 board=self._board,
                 kifuwarabe=self._kifuwarabe)
 
         k_sq = BoardHelper.get_king_square(self._board)
-
-        move_obj = Move.from_usi(move_u)
 
         # 自玉の指し手か？
         is_king_move = MoveHelper.is_king(k_sq, move_obj)
@@ -450,18 +451,19 @@ class EvaluationEdit():
 
         move_u = cmd_tail
 
-        # 着手と応手をキー、関係の有無を値とする辞書を作成します
+        move_obj = Move.from_usi(move_u)
+
+        # １つの着手には、０～複数の着手がある木構造をしています。
+        # その木構造のパスをキーとし、そのパスが持つ有無のビット値を値とする辞書を作成します
         (kl_index_to_relation_exists_dictionary,
          kq_index_to_relation_exists_dictionary,
          pl_index_to_relation_exists_dictionary,
          pq_index_to_relation_exists_dictionary) = EvaluationFacade.select_fo_index_to_relation_exists(
-                move_obj=Move.from_usi(move_u),
+                move_obj=move_obj,
                 board=self._board,
                 kifuwarabe=self._kifuwarabe)
 
         k_sq = BoardHelper.get_king_square(self._board)
-
-        move_obj = Move.from_usi(move_u)
 
         # 自玉の指し手か？
         is_king_move = MoveHelper.is_king(k_sq, move_obj)

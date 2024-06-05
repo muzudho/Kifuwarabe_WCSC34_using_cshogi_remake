@@ -147,18 +147,19 @@ class MoveAndPolicyHelper():
             p_move_u_for_l_and_policy_dictionary,
             p_move_u_for_q_and_policy_dictionary,
             is_debug=False):
-        """ＫＬとＫＱをマージしてＫにし、ＰＬとＰＱをマージしてＰにする
+        """［Ｋ for Ｌ］と［Ｋ for Ｑ］をマージしてＫにし、
+        ［Ｐ for Ｌ］と［Ｐ for Ｑ］をマージしてＰにする
 
         Parameters
         ----------
         k_move_u_for_l_and_policy_dictionary :
-            ＫＬ
+            ［Ｋ for Ｌ］
         k_move_u_for_q_and_policy_dictionary :
-            ＫＱ
+            ［Ｋ for Ｑ］
         p_move_u_for_l_and_policy_dictionary :
-            ＰＬ
+            ［Ｐ for Ｌ］
         p_move_u_for_q_and_policy_dictionary :
-            ＰＱ
+            ［Ｐ for Ｑ］
         is_debug : bool
             デバッグか？
         """
@@ -601,8 +602,7 @@ class EvaluationFacade():
         def select_f_move_u_and_policy(
                 f_move_u_and_o_to_relation_number_dictionary,
                 label_f,
-                label_o
-        ):
+                label_o):
             f_move_u_and_o_to_policy_dictionary = {}
             counter_move_size = len(f_move_u_and_o_to_relation_number_dictionary)
 
@@ -1045,7 +1045,8 @@ class EvaluationFacade():
             move_obj,
             board,
             kifuwarabe):
-        """１つの着手と全ての応手をキー、関係の有無を値とする辞書を作成します
+        """１つの着手には、０～複数の着手がある木構造をしています。
+        その木構造のパスをキーとし、そのパスが持つ有無のビット値を値とする辞書を作成します
 
         Parameters
         ----------
