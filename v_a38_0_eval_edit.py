@@ -172,6 +172,14 @@ class EvaluationEdit():
             if is_debug:
                 print(f"[{datetime.datetime.now()}] [weaken > ko]  K:{move_obj.as_usi:5}  O:*****  number_of_connection_kl_kq:{number_of_connection_kl_kq} / kl_kq_total:{kl_kq_total}  max_number_of_less_than_50_percent:{max_number_of_less_than_50_percent}  difference:{difference}")
 
+            # 既に悪手評価なので、弱化は不要です
+            if difference < 1:
+                # デバッグ表示
+                if is_debug:
+                    print(f"[{datetime.datetime.now()}] [weaken > ko]  既に悪手評価なので、弱化は不要です")
+
+                return 'unnecessary'
+
             # 関係を difference 個削除
             rest = difference
 
@@ -300,6 +308,14 @@ class EvaluationEdit():
             if is_debug:
                 # デバッグ表示
                 print(f"[{datetime.datetime.now()}] [weaken > po]  P:{move_obj.as_usi:5}  O:*****  number_of_connection_pl_pq:{number_of_connection_pl_pq} / pl_pq_total:{pl_pq_total}  max_number_of_less_than_50_percent:{max_number_of_less_than_50_percent}  difference:{difference}")
+
+            # 既に悪手評価なので、弱化は不要です
+            if difference < 1:
+                if is_debug:
+                    # デバッグ表示
+                    print(f"[{datetime.datetime.now()}] [weaken > po]  既に悪手評価なので、弱化は不要です")
+
+                return 'unnecessary'
 
             # 関係を difference 個削除
             rest = difference
@@ -517,6 +533,14 @@ class EvaluationEdit():
             if is_debug:
                 print(f"[{datetime.datetime.now()}] [strengthen > ko]  K:{move_obj.as_usi:5}  O:*****  number_of_connection_kl_kq:{number_of_connection_kl_kq} / kl_kq_total:{kl_kq_total}  max_number_of_less_than_50_percent:{max_number_of_less_than_50_percent}  difference:{difference}")
 
+            # 既に好手評価なので、強化は不要です
+            if difference < 1:
+                # デバッグ表示
+                if is_debug:
+                    print(f"[{datetime.datetime.now()}] [strengthen > ko]  既に好手評価なので、強化は不要です")
+
+                return 'unnecessary'
+
             # 関係を difference 個追加
             rest = difference
 
@@ -641,6 +665,14 @@ class EvaluationEdit():
             # デバッグ表示
             if is_debug:
                 print(f"[{datetime.datetime.now()}] [strengthen > po]  P:{move_obj.as_usi:5}  O:*****  number_of_connection_pl_pq:{number_of_connection_pl_pq} / pl_pq_total:{pl_pq_total}  max_number_of_less_than_50_percent:{max_number_of_less_than_50_percent}  difference:{difference}")
+
+            # 既に好手評価なので、強化は不要です
+            if difference < 1:
+                # デバッグ表示
+                if is_debug:
+                    print(f"[{datetime.datetime.now()}] [strengthen > po]  既に好手評価なので、強化は不要です")
+
+                return 'unnecessary'
 
             # 関係を difference 個追加
             rest = difference
