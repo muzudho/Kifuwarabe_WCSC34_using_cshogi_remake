@@ -30,6 +30,58 @@ class EvaluationEdit():
         self._kifuwarabe=kifuwarabe
 
 
+    @staticmethod
+    def get_number_of_connection_for_kl_kq(
+            kl_index_to_relation_exists_dictionary,
+            kq_index_to_relation_exists_dictionary,
+            board,
+            is_debug=False):
+        """ＫＬとＫＱの関係が有りのものの数
+
+        Parameters
+        ----------
+        kl_index_to_relation_exists_dictionary : dict
+            ＫＬ
+        kq_index_to_relation_exists_dictionary
+            ＫＱ
+        board : cshogi.Board
+            現局面
+        is_debug : bool
+            デバッグモードか？
+        """
+        number_of_connection = 0
+
+        # ＫＬ
+        for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
+
+            k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
+                    kl_index=kl_index,
+                    k_turn=board.turn)
+
+            if is_debug:
+                # 表示
+                print(f"[{datetime.datetime.now()}] [weaken > kl]  kl_index:{kl_index:7}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+
+            if relation_exists == 1:
+                number_of_connection += 1
+
+        # ＫＱ
+        for kq_index, relation_exists in kq_index_to_relation_exists_dictionary.items():
+
+            k_move_obj, q_move_obj = EvaluationKpTable.destructure_kp_index(
+                    kp_index=kq_index,
+                    k_turn=board.turn)
+
+            # 表示
+            if is_debug:
+                print(f"[{datetime.datetime.now()}] [weaken > kq]  kq_index:{kq_index:7}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+
+            if relation_exists == 1:
+                number_of_connection += 1
+
+        return number_of_connection
+
+
     def weaken(
             self,
             cmd_tail,
@@ -84,18 +136,19 @@ class EvaluationEdit():
 
         move_u = cmd_tail
 
-        # 着手と応手をキー、関係の有無を値とする辞書を作成します
+        move_obj = Move.from_usi(move_u)
+
+        # １つの着手には、０～複数の着手がある木構造をしています。
+        # その木構造のパスをキーとし、そのパスが持つ有無のビット値を値とする辞書を作成します
         (kl_index_to_relation_exists_dictionary,
          kq_index_to_relation_exists_dictionary,
          pl_index_to_relation_exists_dictionary,
          pq_index_to_relation_exists_dictionary) = EvaluationFacade.select_fo_index_to_relation_exists(
-                move_obj=Move.from_usi(move_u),
+                move_obj=move_obj,
                 board=self._board,
                 kifuwarabe=self._kifuwarabe)
 
         k_sq = BoardHelper.get_king_square(self._board)
-
-        move_obj = Move.from_usi(move_u)
 
         # 自玉の指し手か？
         is_king_move = MoveHelper.is_king(k_sq, move_obj)
@@ -106,42 +159,12 @@ class EvaluationEdit():
             kl_kq_total = len(kl_index_to_relation_exists_dictionary) + len(kq_index_to_relation_exists_dictionary)
             print(f"[{datetime.datetime.now()}] [weaken > kl and kq]   kl_kq_total:{kl_kq_total}  =  len(kl_index_to_relation_exists_dictionary):{len(kl_index_to_relation_exists_dictionary)}  +  len(kq_index_to_relation_exists_dictionary):{len(kq_index_to_relation_exists_dictionary)}")
 
-            def get_number_of_connection_for_kl_kq():
-                """ＫＬとＫＱの関係が有りのものの数"""
-                number_of_connection = 0
-
-                # ＫＬ
-                for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
-
-                    k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
-                            kl_index=kl_index,
-                            k_turn=self._board.turn)
-
-                    if is_debug:
-                        # 表示
-                        print(f"[{datetime.datetime.now()}] [weaken > kl]  kl_index:{kl_index:7}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
-
-                    if relation_exists == 1:
-                        number_of_connection += 1
-
-                # ＫＱ
-                for kq_index, relation_exists in kq_index_to_relation_exists_dictionary.items():
-
-                    k_move_obj, q_move_obj = EvaluationKpTable.destructure_kp_index(
-                            kp_index=kq_index,
-                            k_turn=self._board.turn)
-
-                    # 表示
-                    if is_debug:
-                        print(f"[{datetime.datetime.now()}] [weaken > kq]  kq_index:{kq_index:7}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
-
-                    if relation_exists == 1:
-                        number_of_connection += 1
-
-                return number_of_connection
-
             # ＫＬとＫＱの関係が有りのものの数
-            number_of_connection_kl_kq = get_number_of_connection_for_kl_kq()
+            number_of_connection_kl_kq = EvaluationEdit.get_number_of_connection_for_kl_kq(
+                kl_index_to_relation_exists_dictionary,
+                kq_index_to_relation_exists_dictionary,
+                board=self._board,
+                is_debug=False)
 
             # ＫＬとＫＱの関係の有りのものの数が５割未満の内、最大の整数
             #
@@ -450,18 +473,19 @@ class EvaluationEdit():
 
         move_u = cmd_tail
 
-        # 着手と応手をキー、関係の有無を値とする辞書を作成します
+        move_obj = Move.from_usi(move_u)
+
+        # １つの着手には、０～複数の着手がある木構造をしています。
+        # その木構造のパスをキーとし、そのパスが持つ有無のビット値を値とする辞書を作成します
         (kl_index_to_relation_exists_dictionary,
          kq_index_to_relation_exists_dictionary,
          pl_index_to_relation_exists_dictionary,
          pq_index_to_relation_exists_dictionary) = EvaluationFacade.select_fo_index_to_relation_exists(
-                move_obj=Move.from_usi(move_u),
+                move_obj=move_obj,
                 board=self._board,
                 kifuwarabe=self._kifuwarabe)
 
         k_sq = BoardHelper.get_king_square(self._board)
-
-        move_obj = Move.from_usi(move_u)
 
         # 自玉の指し手か？
         is_king_move = MoveHelper.is_king(k_sq, move_obj)
