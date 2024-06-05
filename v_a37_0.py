@@ -1517,10 +1517,10 @@ class Kifuwarabe():
         """
 
         # 学習する
-        Learn.learn_it(
+        Learn(
                 board=self._board,
                 kifuwarabe=self,
-                is_debug=is_debug)
+                is_debug=is_debug).learn_it()
 
 
     def print_board(self):
