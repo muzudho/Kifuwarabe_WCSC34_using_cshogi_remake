@@ -70,12 +70,10 @@ class Learn():
         print(f"[{datetime.datetime.now()}] [learn] 終局図：")
         print(self._board)
 
-        # 現局面の position コマンドを取得
-        position_command = BoardHelper.get_position_command(
-                board=self._board)
+        # 現局面の position コマンドを表示
         print(f"""[{datetime.datetime.now()}] [learn]
     board.move_number:{self._board.move_number}
-    #{position_command}
+    #{BoardHelper.get_position_command(board=self._board)}
 """)
 
         # 戻せたかチェック
@@ -118,6 +116,7 @@ class Learn():
         # --------------
         #
         self.at_odd(
+                mate=1,
                 # １手詰め局面なのだから、１手指せば充分だが、必至も考えて３手ぐらい余裕を与える
                 max_playout_depth=3)
 
@@ -126,8 +125,27 @@ class Learn():
         # --------------
         #
         self.at_even(
+                mate=2,
                 # ２手詰め局面なのだから、２手指せば充分だが、必至も考えて４手ぐらい余裕を与える
                 max_playout_depth=4)
+
+        #
+        # 奇数：　詰める方
+        # --------------
+        #
+        self.at_odd(
+                mate=3,
+                # ３手詰め局面なのだから、３手指せば充分だが、必至も考えて５手ぐらい余裕を与える
+                max_playout_depth=5)
+
+        #
+        # 偶数：　逃げる方
+        # --------------
+        #
+        self.at_even(
+                mate=4,
+                # ４手詰め局面なのだから、４手指せば充分だが、必至も考えて６手ぐらい余裕を与える
+                max_playout_depth=6)
 
         #
         # おわり
@@ -145,28 +163,37 @@ class Learn():
 
     def at_odd(
             self,
+            mate,
             max_playout_depth):
         """奇数。詰める方
 
         Parameters
         ----------
+        mate : int
+            ｎ手詰め
         max_playout_depth : int
             プレイアウト最大深さ
         """
-        # 棋譜の初手から学ぶことはできません
-        if self._board.move_number < 2:
-            print(f'[{datetime.datetime.now()}] [learn > 詰める方] You cannot learn from the first move of the game record.')
+        # 棋譜を巻き戻せないなら、学ぶことはできません
+        if self._board.move_number < mate + 1:
+            print(f'[{datetime.datetime.now()}] [learn > 詰める方] ignored. you cannot learn. short moves. board.move_number:{self._board.move_number}')
             return
 
-        # 終局図の内部データに戻っている
-        # １手戻す（１手詰めの局面に戻るはず）
-        self._board.pop()
+        # 終局図の内部データに戻す
+        self.restore_end_position()
 
-        # １手前局面図と、その sfen は表示したい
-        sfen_1_previous = self._board.sfen()
-        print(f"[{datetime.datetime.now()}] [learn > 詰める方] １手前局面図：")
-        print(self._board)
-        print(f"  sfen:`{sfen_1_previous}`  board.move_number:{self._board.move_number}")
+        # ｎ手詰めの局面まで戻す
+        for _i in range(0, mate):
+            self._board.pop()
+
+        # ｎ手詰めの局面図の sfen
+        sfen_at_mate = self._board.sfen()
+
+        # 現局面の position コマンドを表示
+        print(f"""[{datetime.datetime.now()}] [learn]
+    board.move_number:{self._board.move_number}
+    #{BoardHelper.get_position_command(board=self._board)}
+""")
 
         # 終局局面までの手数
         self._move_number_to_end = self._move_number_at_end - self._board.move_number
@@ -203,21 +230,22 @@ class Learn():
             choice_num += 1
             is_weak_move = False
 
-            # １手前局面図かチェック
-            if self._board.sfen() != sfen_1_previous:
+            # ｎ手詰め局面図かチェック
+            if self._board.sfen() != sfen_at_mate:
                 # 局面図の表示
-                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > 好手] １手前局面図エラー")
+                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > 好手] {mate}手詰め局面図エラー")
                 print(self._board)
                 print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
-                raise ValueError("[learn > 詰める方 > 好手] １手前局面図エラー")
+                raise ValueError(f"[learn > 詰める方 > 好手] {mate}手詰め局面図エラー")
 
-            # （１手前局面図で）とりあえず一手指す
+            # （ｎ手詰め局面図で）とりあえず一手指す
             self._board.push_usi(move_u)
 
             # プレイアウトする
             result_str = self._kifuwarabe.playout(
                     is_in_learn=True,
-                    max_playout_depth=max_playout_depth)
+                    # １手指した分引く
+                    max_playout_depth=max_playout_depth - 1)
 
             move_number_difference = self._board.move_number - self._move_number_at_end
 
@@ -230,18 +258,18 @@ class Learn():
                 # 自分の負け
                 if self._kifuwarabe._my_turn == self._board.turn:
                     is_weak_move = True
-                    log_progress(f"fumble:１手詰めを逃して {max_playout_depth} 手以内に負けた。すごく悪い手だ。好手の評価を取り下げる")
+                    log_progress(f"fumble:{mate}手詰めを逃して {max_playout_depth} 手以内に負けた。すごく悪い手だ。好手の評価を取り下げる")
                 else:
-                    log_progress(f"ignored:１手詰めは逃したが {max_playout_depth} 手以内には勝ったからセーフとする。好手の評価はそのまま")
+                    log_progress(f"ignored:{mate}手詰めは逃したが {max_playout_depth} 手以内には勝ったからセーフとする。好手の評価はそのまま")
 
             # どちらかが入玉勝ちした
             elif result_str == 'nyugyoku_win':
                 if self._kifuwarabe._my_turn == self._board.turn:
-                    log_progress(f"ignored:１手詰めは逃したが {max_playout_depth} 手以内には入玉宣言勝ちしたからセーフとする。好手の評価はそのまま")
+                    log_progress(f"ignored:{mate}手詰めは逃したが {max_playout_depth} 手以内には入玉宣言勝ちしたからセーフとする。好手の評価はそのまま")
 
                 else:
                     is_weak_move = True
-                    log_progress(f"fumble:１手詰めを逃して、 {max_playout_depth} 手以内に入玉宣言されて負けた。すごく悪い手だ。好手の評価を取り下げる")
+                    log_progress(f"fumble:{mate}手詰めを逃して、 {max_playout_depth} 手以内に入玉宣言されて負けた。すごく悪い手だ。好手の評価を取り下げる")
 
             # 手数の上限に達した
             elif result_str == 'max_move':
@@ -250,17 +278,20 @@ class Learn():
             # プレイアウトの深さの上限に達した
             elif result_str == 'max_playout_depth':
                 is_weak_move = True
-                log_progress(f"fumble:１手詰めを逃して {max_playout_depth} 手以内に終局しなかった。好手の評価を取り下げる")
+                log_progress(f"fumble:{mate}手詰めを逃して {max_playout_depth} 手以内に終局しなかった。好手の評価を取り下げる")
 
             else:
                 log_progress("ignored:好手の評価はそのまま")
 
             # 終局図の内部データに戻す
             self.restore_end_position()
-            # １手戻す（一手前局面図に戻るはず）
-            self._board.pop()
+
+            # ｎ手詰めの局面まで戻す
+            for _i in range(0, mate):
+                self._board.pop()
+
             # 戻せたかチェック
-            if self._board.sfen() != sfen_1_previous:
+            if self._board.sfen() != sfen_at_mate:
                 # 終局図の表示
                 print(f"[{datetime.datetime.now()}] [learn > 詰める方 > 好手] 局面巻き戻しエラー")
                 print(self._board)
@@ -284,21 +315,22 @@ class Learn():
             choice_num += 1
             is_strong_move = False
 
-            # １手前局面図かチェック
-            if self._board.sfen() != sfen_1_previous:
+            # ｎ手詰め局面図かチェック
+            if self._board.sfen() != sfen_at_mate:
                 # 局面図の表示
-                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > 悪手] １手前局面図エラー")
+                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > 悪手] {mate}手詰め局面図エラー")
                 print(self._board)
                 print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
-                raise ValueError("１手前局面図エラー")
+                raise ValueError(f"[learn > 詰める方 > 悪手] {mate}手詰め局面図エラー")
 
-            # （１手前局面図で）とりあえず一手指す
+            # （ｎ手詰め局面図で）とりあえず一手指す
             self._board.push_usi(move_u)
 
             # プレイアウトする
             result_str = self._kifuwarabe.playout(
                     is_in_learn=True,
-                    max_playout_depth=max_playout_depth)
+                    # １手指しているので、１つ引く
+                    max_playout_depth=max_playout_depth - 1)
 
             move_number_difference = self._board.move_number - self._move_number_at_end
 
@@ -310,32 +342,35 @@ class Learn():
             if result_str == 'resign':
                 # 自分の勝ち
                 if self._kifuwarabe._my_turn != self._board.turn:
-                    # かかった手数１手
-                    if self._move_number_at_end - self._board.move_number == 1:
+                    # かかった手数ｎ手
+                    if self._move_number_at_end - self._board.move_number == mate:
                         is_strong_move = True
-                        log_progress(f"nice:１手詰めの局面で、１手で勝ったので、評価を上げよう")
+                        log_progress(f"nice:{mate}手詰めの局面で、{mate}手で勝ったので、評価を上げよう")
                     else:
-                        log_progress(f"ignored:１手詰めの局面で、２手以上かけて {max_playout_depth} 手以内には勝ったが、相手がヘボ手を指した可能性を消せない。悪手の評価はこのまま")
+                        log_progress(f"ignored:{mate}手詰めの局面で、{mate + 1}手以上かけて {max_playout_depth} 手以内には勝ったが、相手がヘボ手を指した可能性を消せない。悪手の評価はこのまま")
 
                 else:
-                    log_progress("ignored:１手詰めの局面で、１手詰めを逃して負けたのだから、悪手の評価はそのまま")
+                    log_progress(f"ignored:{mate}手詰めの局面で、{mate}手詰めを逃して負けたのだから、悪手の評価はそのまま")
 
             # 手数の上限に達した
             elif result_str == 'max_move':
                 log_progress(f"ignored:この学習では、手数の上限で終わった対局は、評価値を変動させないものとする")
 
             elif result_str == 'max_playout_depth':
-                log_progress(f"ignored:１手詰めの局面で、 {max_playout_depth} 手かけて終局しなかったので、悪手の評価はそのまま")
+                log_progress(f"ignored:{mate}手詰めの局面で、 {max_playout_depth} 手かけて終局しなかったので、悪手の評価はそのまま")
 
             else:
                 log_progress("ignored:悪手の評価はそのまま")
 
             # 終局図の内部データに戻す
             self.restore_end_position()
-            # １手戻す（一手前局面図に戻るはず）
-            self._board.pop()
+
+            # ｎ手詰めの局面まで戻す
+            for _i in range(0, mate):
+                self._board.pop()
+
             # 戻せたかチェック
-            if self._board.sfen() != sfen_1_previous:
+            if self._board.sfen() != sfen_at_mate:
                 # 局面図の表示
                 print(f"[{datetime.datetime.now()}] [learn > 詰める方 > 悪手] 局面巻き戻しエラー")
                 print(self._board)
@@ -354,31 +389,38 @@ class Learn():
 
     def at_even(
             self,
+            mate,
             max_playout_depth):
         """偶数。逃げる方
 
         Parameters
         ----------
+        mate : int
+            ｎ手詰め
         max_playout_depth : int
             プレイアウトの最大深さ
         """
 
-        # ２手戻せない場合
-        if self._board.move_number < 3:
-            print(f'[{datetime.datetime.now()}] [learn > 逃げる方] igonred.  board.move_number:{self._board.move_number}')
+        # 棋譜を巻き戻せないなら、学ぶことはできません
+        if self._board.move_number < mate + 1:
+            print(f'[{datetime.datetime.now()}] [learn > 逃げる方] ignored. you cannot learn. short moves. board.move_number:{self._board.move_number}')
             return
 
         # 終局図の内部データに戻す
         self.restore_end_position()
-        # ２手戻す（このあと１手詰めされる側の局面に戻るはず）
-        self._board.pop()
-        self._board.pop()
 
-        # ２手前局面図と、その sfen は表示したい
-        sfen_2_previous = self._board.sfen()
-        print(f"[{datetime.datetime.now()}] [learn > 逃げる方] ２手前局面図：")
-        print(self._board)
-        print(f"  sfen:`{sfen_2_previous}`  board.move_number:{self._board.move_number}")
+        # ｎ手詰めの局面まで戻す
+        for _i in range(0, mate):
+            self._board.pop()
+
+        # ｎ手詰めの局面図の sfen
+        sfen_at_mate = self._board.sfen()
+
+        # 現局面の position コマンドを表示
+        print(f"""[{datetime.datetime.now()}] [learn]
+    board.move_number:{self._board.move_number}
+    #{BoardHelper.get_position_command(board=self._board)}
+""")
 
         # 終局局面までの手数
         self._move_number_to_end = self._move_number_at_end - self._board.move_number
@@ -411,21 +453,22 @@ class Learn():
             choice_num += 1
             is_weak_move = False
 
-            # ２手前局面図かチェック
-            if self._board.sfen() != sfen_2_previous:
+            # ｎ手詰め局面図かチェック
+            if self._board.sfen() != sfen_at_mate:
                 # 局面図の表示
-                print(f"[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] ２手前局面図エラー")
+                print(f"[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] {mate}手詰め局面図エラー")
                 print(self._board)
                 print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
-                raise ValueError("[learn > 逃げる方 > 好手] ２手前局面図エラー")
+                raise ValueError(f"[learn > 逃げる方 > 好手] {mate}手詰め局面図エラー")
 
-            # （２手前局面図で）とりあえず一手指す
+            # （ｎ手詰め局面図で）とりあえず一手指す
             self._board.push_usi(move_u)
 
             # プレイアウトする
             result_str = self._kifuwarabe.playout(
                     is_in_learn=True,
-                    max_playout_depth=max_playout_depth)
+                    # １手指した分引く
+                    max_playout_depth=max_playout_depth - 1)
 
             move_number_difference = self._board.move_number - self._move_number_at_end
 
@@ -438,10 +481,10 @@ class Learn():
                 # 自分の負け。かかった手数２手。つまり１手詰め
                 if self._kifuwarabe._my_turn == self._board.turn and self._move_number_at_end - self._board.move_number == 2:
                     is_weak_move = True
-                    log_progress("fumble:２手詰めが掛けられていて、２手詰めを避けられなかったから、好手の評価を取り下げる")
+                    log_progress(f"fumble:{mate}手詰めが掛けられていて、{mate}手詰めを避けられなかったから、好手の評価を取り下げる")
 
                 else:
-                    log_progress("fumble:２手詰めが掛けられていて、２手詰めを避けたから、好手の評価はそのまま")
+                    log_progress(f"fumble:{mate}手詰めが掛けられていて、{mate}手詰めを避けたから、好手の評価はそのまま")
 
             # 手数の上限に達した
             elif result_str == 'max_move':
@@ -452,11 +495,13 @@ class Learn():
 
             # 終局図の内部データに戻す
             self.restore_end_position()
-            # ２手戻す（このあと１手詰めされる側の局面に戻るはず）
-            self._board.pop()
-            self._board.pop()
+
+            # ｎ手詰めの局面まで戻す
+            for _i in range(0, mate):
+                self._board.pop()
+
             # 戻せたかチェック
-            if self._board.sfen() != sfen_2_previous:
+            if self._board.sfen() != sfen_at_mate:
                 # 局面図の表示
                 print(f"[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] 局面巻き戻しエラー")
                 print(self._board)
@@ -480,20 +525,22 @@ class Learn():
             choice_num += 1
             is_strong_move = False
 
-            # ２手前局面図かチェック
-            if self._board.sfen() != sfen_2_previous:
+            # ｎ手詰め局面図かチェック
+            if self._board.sfen() != sfen_at_mate:
                 # 局面図の表示
-                print(f"[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手] ２手前局面図エラー")
+                print(f"[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手] {mate}手詰め局面図エラー")
                 print(self._board)
                 print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
-                raise ValueError("[learn > 逃げる方 > 悪手] ２手前局面図エラー")
+                raise ValueError(f"[learn > 逃げる方 > 悪手] {mate}手詰め局面図エラー")
 
-            # （２手前局面図で）とりあえず一手指す
+            # （ｎ手詰め局面図で）とりあえず一手指す
             self._board.push_usi(move_u)
 
             # プレイアウトする
             result_str = self._kifuwarabe.playout(
-                    is_in_learn=True)
+                    is_in_learn=True,
+                    # １手指しているので、１つ引く
+                    max_playout_depth=max_playout_depth - 1)
 
             move_number_difference = self._board.move_number - self._move_number_at_end
 
@@ -503,22 +550,22 @@ class Learn():
 
             # どちらかが投了した
             if result_str == 'resign':
-                # 相手を１手詰め
-                if self._kifuwarabe._my_turn != self._board.turn and move_number_difference == 1:
-                    # 次に１手詰めの局面に掛けられるところを、その前に詰めたのだから、すごく良い手だ。この手の評価を上げる
+                # 相手をｎ手詰め
+                if self._kifuwarabe._my_turn != self._board.turn and move_number_difference == mate:
+                    # 次にｎ手詰めの局面に掛けられるところを、その前に詰めたのだから、すごく良い手だ。この手の評価を上げる
                     is_strong_move = True
-                    log_progress("nice:２手詰めを掛けられていて、逆に１手で勝ったのだから、この手の評価を上げる")
+                    log_progress(f"nice:{mate}手詰めを掛けられていて、逆に{mate - 1}手で勝ったのだから、この手の評価を上げる")
                 else:
-                    log_progress("nice:２手詰めを掛けられていて、ここで１手で勝てなかったから、この悪手の評価はそのまま")
+                    log_progress(f"nice:{mate}手詰めを掛けられていて、ここで１手で勝てなかったから、この悪手の評価はそのまま")
 
             # どちらかが入玉勝ちした
             elif result_str == 'nyugyoku_win':
-                if move_number_difference != 2:
-                    # 次に１手詰めの局面に掛けられるところを、その前に入玉宣言勝ちしたのだから、すごく良い手だ。この手の評価を上げる
+                if move_number_difference != mate:
+                    # 次にｎ手詰めの局面に掛けられるところを、その前に入玉宣言勝ちしたのだから、すごく良い手だ。この手の評価を上げる
                     is_strong_move = True
-                    log_progress("nice:２手詰めを掛けられていて、逆に１手で入玉宣言勝ちしたのだから、この手の評価を上げる")
+                    log_progress(f"nice:{mate}手詰めを掛けられていて、逆に{mate - 1}手で入玉宣言勝ちしたのだから、この手の評価を上げる")
                 else:
-                    log_progress("nice:２手詰めを掛けられていて、ここで２手以上掛けて入玉したから、この悪手の評価はそのまま")
+                    log_progress(f"nice:{mate}手詰めを掛けられていて、ここで{mate}手以上掛けて入玉したから、この悪手の評価はそのまま")
 
             # 手数の上限に達した
             elif result_str == 'max_move':
@@ -529,11 +576,13 @@ class Learn():
 
             # 終局図の内部データに戻す
             self.restore_end_position()
-            # ２手戻す（このあと１手詰めされる側の局面に戻るはず）
-            self._board.pop()
-            self._board.pop()
+
+            # ｎ手詰めの局面まで戻す
+            for _i in range(0, mate):
+                self._board.pop()
+
             # 戻せたかチェック
-            if self._board.sfen() != sfen_2_previous:
+            if self._board.sfen() != sfen_at_mate:
                 # 局面図の表示
                 print(f"[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手] 局面巻き戻しエラー")
                 print(self._board)
