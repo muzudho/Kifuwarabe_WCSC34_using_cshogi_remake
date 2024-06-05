@@ -392,10 +392,6 @@ class EvaluationPMove():
             - 兵の指し手のインデックス
         """
 
-        # assert
-        if p_move_obj.as_usi in DebugHelper.get_illegal_moves_u():
-            raise ValueError(f'unexpected p_move_u:{p_move_obj.as_usi}')
-
         if is_rotate:
             p_src_sq_or_none = p_move_obj.rot_src_sq_or_none
             p_dst_sq = p_move_obj.rot_dst_sq

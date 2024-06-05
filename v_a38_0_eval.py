@@ -443,11 +443,6 @@ class EvaluationFacade():
             fo_index_and_relation_bit_dictionary = {}
 
             for o_move_u in o_move_u_for_f_set:
-
-                # assert
-                if o_move_u in DebugHelper.get_illegal_moves_u():
-                    raise ValueError(f'unexpected o_move_u:{o_move_u}')
-
                 o_move_obj = Move.from_usi(o_move_u)
 
                 #
@@ -843,11 +838,6 @@ class EvaluationFacade():
 
         # 自玉に対する、敵玉の応手の一覧と、敵兵の応手の一覧を作成
         for move_u in k_moves_u:
-
-            # assert
-            if move_u in DebugHelper.get_illegal_moves_u():
-                raise ValueError(f'unexpected move_u:{move_u}')
-
             move_obj = Move.from_usi(move_u)
 
             (temp_l_move_u_for_k_set,
@@ -861,11 +851,6 @@ class EvaluationFacade():
 
         # 自兵に対する、敵玉の応手の一覧と、敵兵の応手の一覧を作成
         for move_u in p_moves_u:
-
-            # assert
-            if move_u in DebugHelper.get_illegal_moves_u():
-                raise ValueError(f'unexpected move_u:{move_u}')
-
             move_obj = Move.from_usi(move_u)
 
             (temp_l_move_u_for_p_set,
@@ -877,27 +862,6 @@ class EvaluationFacade():
             l_move_u_for_p_set = l_move_u_for_p_set.union(temp_l_move_u_for_p_set)
             q_move_u_for_p_set = q_move_u_for_p_set.union(temp_q_move_u_for_p_set)
 
-        # assert
-        if True:
-            print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no2 > assert]  自玉に対する、敵玉の応手の一覧：")
-            for l_move_u in l_move_u_for_k_set:
-                if l_move_u in DebugHelper.get_illegal_moves_u():
-                    raise ValueError(f'unexpected l_move_u:{l_move_u}')
-
-            print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no2 > assert]  自玉に対する、敵兵の応手の一覧：")
-            for q_move_u in q_move_u_for_k_set:
-                if q_move_u in DebugHelper.get_illegal_moves_u():
-                    raise ValueError(f'unexpected q_move_u:{q_move_u}')
-
-            print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no2 > assert]  自兵に対する、敵玉の応手の一覧：")
-            for l_move_u in l_move_u_for_p_set:
-                if l_move_u in DebugHelper.get_illegal_moves_u():
-                    raise ValueError(f'unexpected l_move_u:{l_move_u}')
-
-            print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no2 > assert]  自兵に対する、敵兵の応手の一覧：")
-            for q_move_u in q_move_u_for_p_set:
-                if q_move_u in DebugHelper.get_illegal_moves_u():
-                    raise ValueError(f'unexpected q_move_u:{q_move_u}')
 
         if is_debug and DebugPlan.select_fo_move_u_and_policy_dictionary_no2_kl():
             # ＫＬ

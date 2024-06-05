@@ -29,10 +29,6 @@ class EvaluationKpTable():
             着手側の手番
         """
 
-        # assert
-        if p_move_obj.as_usi in DebugHelper.get_illegal_moves_u():
-            raise ValueError(f'unexpected p_move_u:{p_move_obj.as_usi}')
-
         # 評価値テーブルは先手用の形なので、後手番は１８０°回転させる必要がある
         if k_turn == cshogi.BLACK:
             k_rotate = False

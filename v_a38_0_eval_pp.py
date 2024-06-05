@@ -28,14 +28,6 @@ class EvaluationPpTable():
             着手側の手番
         """
 
-        # assert
-        if True:
-            if p1_move_obj.as_usi in DebugHelper.get_illegal_moves_u():
-                raise ValueError(f'unexpected p1_move_u:{p1_move_obj.as_usi}')
-
-            if p2_move_obj.as_usi in DebugHelper.get_illegal_moves_u():
-                raise ValueError(f'unexpected p2_move_u:{p2_move_obj.as_usi}')
-
         # 評価値テーブルは先手用の形なので、後手番は１８０°回転させる必要がある
         if p1_turn == cshogi.BLACK:
             p1_rotate = False
