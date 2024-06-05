@@ -804,7 +804,7 @@ class Kifuwarabe():
             'failed', 'changed', 'keep'
         """
 
-        EvaluationEdit(
+        return EvaluationEdit(
                 board=self._board,
                 kifuwarabe=self
         ).weaken(
@@ -831,7 +831,7 @@ class Kifuwarabe():
             'failed', 'changed', 'keep'
         """
 
-        EvaluationEdit(
+        return EvaluationEdit(
                 board=self._board,
                 kifuwarabe=self
         ).strengthen(
