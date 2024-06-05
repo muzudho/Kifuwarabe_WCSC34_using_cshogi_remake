@@ -114,10 +114,45 @@ class Learn():
             print(f"[{datetime.datetime.now()}] move_number_at_end:{self._move_number_at_end}")
 
         #
-        # 詰める方
-        # -------
+        # 奇数：　詰める方
+        # --------------
+        #
+        self.at_odd(
+                # １手詰め局面なのだから、１手指せば充分だが、必至も考えて３手ぐらい余裕を与える
+                max_playout_depth=3)
+
+        #
+        # 偶数：　逃げる方
+        # --------------
+        #
+        self.at_even(
+                # ２手詰め局面なのだから、２手指せば充分だが、必至も考えて４手ぐらい余裕を与える
+                max_playout_depth=4)
+
+        #
+        # おわり
+        # -----
         #
 
+        # 終局図の内部データに戻す
+        self.restore_end_position()
+
+        # 全ての評価値テーブル［0:先手, 1:後手］の（変更があれば）保存
+        self._kifuwarabe.save_eval_all_tables()
+
+        print(f"[{datetime.datetime.now()}] [learn] finished", flush=True)
+
+
+    def at_odd(
+            self,
+            max_playout_depth):
+        """奇数。詰める方
+
+        Parameters
+        ----------
+        max_playout_depth : int
+            プレイアウト最大深さ
+        """
         # 棋譜の初手から学ぶことはできません
         if self._board.move_number < 2:
             print(f'[{datetime.datetime.now()}] [learn > 詰める方] You cannot learn from the first move of the game record.')
@@ -164,12 +199,6 @@ class Learn():
 
         choice_num = 0
 
-        # プレイアウトの深さ
-        #
-        #   １手詰め局面なのだから、１手指せば充分だが、必至も考えて３手ぐらい余裕を与える
-        #
-        self._max_playout_depth = 3
-
         for move_u in good_move_u_set:
             choice_num += 1
             is_weak_move = False
@@ -188,7 +217,7 @@ class Learn():
             # プレイアウトする
             result_str = self._kifuwarabe.playout(
                     is_in_learn=True,
-                    max_playout_depth=self._max_playout_depth)
+                    max_playout_depth=max_playout_depth)
 
             move_number_difference = self._board.move_number - self._move_number_at_end
 
@@ -201,18 +230,18 @@ class Learn():
                 # 自分の負け
                 if self._kifuwarabe._my_turn == self._board.turn:
                     is_weak_move = True
-                    log_progress(f"fumble:１手詰めを逃して {self._max_playout_depth} 手以内に負けた。すごく悪い手だ。好手の評価を取り下げる")
+                    log_progress(f"fumble:１手詰めを逃して {max_playout_depth} 手以内に負けた。すごく悪い手だ。好手の評価を取り下げる")
                 else:
-                    log_progress(f"ignored:１手詰めは逃したが {self._max_playout_depth} 手以内には勝ったからセーフとする。好手の評価はそのまま")
+                    log_progress(f"ignored:１手詰めは逃したが {max_playout_depth} 手以内には勝ったからセーフとする。好手の評価はそのまま")
 
             # どちらかが入玉勝ちした
             elif result_str == 'nyugyoku_win':
                 if self._kifuwarabe._my_turn == self._board.turn:
-                    log_progress(f"ignored:１手詰めは逃したが {self._max_playout_depth} 手以内には入玉宣言勝ちしたからセーフとする。好手の評価はそのまま")
+                    log_progress(f"ignored:１手詰めは逃したが {max_playout_depth} 手以内には入玉宣言勝ちしたからセーフとする。好手の評価はそのまま")
 
                 else:
                     is_weak_move = True
-                    log_progress(f"fumble:１手詰めを逃して、 {self._max_playout_depth} 手以内に入玉宣言されて負けた。すごく悪い手だ。好手の評価を取り下げる")
+                    log_progress(f"fumble:１手詰めを逃して、 {max_playout_depth} 手以内に入玉宣言されて負けた。すごく悪い手だ。好手の評価を取り下げる")
 
             # 手数の上限に達した
             elif result_str == 'max_move':
@@ -221,7 +250,7 @@ class Learn():
             # プレイアウトの深さの上限に達した
             elif result_str == 'max_playout_depth':
                 is_weak_move = True
-                log_progress(f"fumble:１手詰めを逃して {self._max_playout_depth} 手以内に終局しなかった。好手の評価を取り下げる")
+                log_progress(f"fumble:１手詰めを逃して {max_playout_depth} 手以内に終局しなかった。好手の評価を取り下げる")
 
             else:
                 log_progress("ignored:好手の評価はそのまま")
@@ -269,7 +298,7 @@ class Learn():
             # プレイアウトする
             result_str = self._kifuwarabe.playout(
                     is_in_learn=True,
-                    max_playout_depth=self._max_playout_depth)
+                    max_playout_depth=max_playout_depth)
 
             move_number_difference = self._board.move_number - self._move_number_at_end
 
@@ -286,7 +315,7 @@ class Learn():
                         is_strong_move = True
                         log_progress(f"nice:１手詰めの局面で、１手で勝ったので、評価を上げよう")
                     else:
-                        log_progress(f"ignored:１手詰めの局面で、２手以上かけて {self._max_playout_depth} 手以内には勝ったが、相手がヘボ手を指した可能性を消せない。悪手の評価はこのまま")
+                        log_progress(f"ignored:１手詰めの局面で、２手以上かけて {max_playout_depth} 手以内には勝ったが、相手がヘボ手を指した可能性を消せない。悪手の評価はこのまま")
 
                 else:
                     log_progress("ignored:１手詰めの局面で、１手詰めを逃して負けたのだから、悪手の評価はそのまま")
@@ -296,7 +325,7 @@ class Learn():
                 log_progress(f"ignored:この学習では、手数の上限で終わった対局は、評価値を変動させないものとする")
 
             elif result_str == 'max_playout_depth':
-                log_progress(f"ignored:１手詰めの局面で、 {self._max_playout_depth} 手かけて終局しなかったので、悪手の評価はそのまま")
+                log_progress(f"ignored:１手詰めの局面で、 {max_playout_depth} 手かけて終局しなかったので、悪手の評価はそのまま")
 
             else:
                 log_progress("ignored:悪手の評価はそのまま")
@@ -322,37 +351,16 @@ class Learn():
                 # 変更はログに出したい
                 print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 悪手]        strengthen {move_u:5}  result:`{strengthen_result_str}`')
 
-        #
-        # 逃げる方
-        # -------
-        #
-        self.at_even()
 
-        #
-        # おわり
-        # -----
-        #
-
-        # 終局図の内部データに戻す
-        self.restore_end_position()
-
-        # 全ての評価値テーブル［0:先手, 1:後手］の（変更があれば）保存
-        self._kifuwarabe.save_eval_all_tables()
-
-        print(f"[{datetime.datetime.now()}] [learn] finished", flush=True)
-
-
-    def at_even(self):
+    def at_even(
+            self,
+            max_playout_depth):
         """偶数。逃げる方
 
         Parameters
         ----------
-        board : cshogi.Board
-            現局面
-        kifuwarabe:
-            きふわらべ
-        is_debug : bool
-            デバッグモードか？
+        max_playout_depth : int
+            プレイアウトの最大深さ
         """
 
         # ２手戻せない場合
@@ -417,7 +425,7 @@ class Learn():
             # プレイアウトする
             result_str = self._kifuwarabe.playout(
                     is_in_learn=True,
-                    max_playout_depth=self._max_playout_depth)
+                    max_playout_depth=max_playout_depth)
 
             move_number_difference = self._board.move_number - self._move_number_at_end
 
