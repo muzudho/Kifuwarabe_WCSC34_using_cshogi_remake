@@ -588,6 +588,17 @@ class BoardHelper():
         move_obj : Move
             着手
         """
+
+        # assert
+        if move_obj in DebugHelper.get_illegal_moves_u():
+            print(f"""[{datetime.datetime.now()}] move:{move_obj}
+{board}
+    board.move_number:{board.move_number}
+    #{BoardHelper.get_position_command(board=board)}
+""")
+
+            raise ValueError(f'unexpected move_obj:{move_obj}')
+
         #
         # 相手が指せる手の集合
         # -----------------
@@ -600,6 +611,10 @@ class BoardHelper():
         # 敵玉を除く敵軍の指し手の集合（Quaffer；ゴクゴク飲む人。Pの次の文字Qを頭文字にした単語）
         q_move_u_set = set()
 
+        # assert
+        #previous_sfen_for_assert = board.sfen()
+        previous_position_command = BoardHelper.get_position_command(board=board)
+
         # １手指す
         board.push_usi(move_obj.as_usi)
 
@@ -611,10 +626,11 @@ class BoardHelper():
 
             # assert
             if counter_move_u in DebugHelper.get_illegal_moves_u():
-                print(f"""[{datetime.datetime.now()}] illegal move:{counter_move_u}
+                print(f"""[{datetime.datetime.now()}] move:{move_obj.as_usi} ----> illegal move:{counter_move_u}
 {board}
     board.move_number:{board.move_number}
-    #{BoardHelper.get_position_command(board=board)}
+    #current :{BoardHelper.get_position_command(board=board)}
+    #previous:{previous_position_command}
 """)
 
                 raise ValueError(f'unexpected counter_move_u:{counter_move_u}')
