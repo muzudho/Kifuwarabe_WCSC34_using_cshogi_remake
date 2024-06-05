@@ -942,7 +942,8 @@ class EvaluationFacade():
 
         #print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no3] end")
 
-        if is_debug and DebugPlan.select_fo_move_u_and_policy_dictionary_no3():
+        if is_debug and DebugPlan.select_fo_move_u_and_policy_dictionary_no3_kl():
+            # ＫＬ
             print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no3]  自玉の着手と、敵玉の応手の、関係の一覧（キー：ｆｏ＿ｉｎｄｅｘ，　値：関係ビット）：")
             for fo_index, relation_bit in kl_index_and_relation_bit_dictionary.items():
 
@@ -953,6 +954,8 @@ class EvaluationFacade():
 
                 print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no3]      [KL]  turn:{Turn.to_string(board.turn)}  kl_index:{fo_index:6}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_bit:{relation_bit}")
 
+        if is_debug and DebugPlan.select_fo_move_u_and_policy_dictionary_no3_kq():
+            # ＫＱ
             print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no3]    自玉の着手と、敵兵の応手の、関係の一覧：")
             for fo_index, relation_bit in kq_index_and_relation_bit_dictionary.items():
 
@@ -963,6 +966,8 @@ class EvaluationFacade():
 
                 print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no3]      [KQ]  turn:{Turn.to_string(board.turn)}  kq_index:{fo_index:6}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_bit:{relation_bit}")
 
+        if is_debug and DebugPlan.select_fo_move_u_and_policy_dictionary_no3_pl():
+            # ＰＬ
             print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no3]    自兵の着手と、敵玉の応手の、関係の一覧：")
             for fo_index, relation_bit in pl_index_and_relation_bit_dictionary.items():
 
@@ -973,6 +978,8 @@ class EvaluationFacade():
 
                 print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no3]      [PL]  turn:{Turn.to_string(board.turn)}  pl_index:{fo_index:6}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_bit:{relation_bit}")
 
+        if is_debug and DebugPlan.select_fo_move_u_and_policy_dictionary_no3_pq():
+            # ＰＱ
             print(f"[{datetime.datetime.now()}] [select fo move u and policy dictionary no3]    自兵の着手と、敵兵の応手の、関係の一覧：")
             for fo_index, relation_bit in pq_index_and_relation_bit_dictionary.items():
 
