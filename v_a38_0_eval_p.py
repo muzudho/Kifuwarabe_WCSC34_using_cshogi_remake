@@ -498,13 +498,13 @@ class EvaluationPMove():
         p_move_obj = Move.from_src_dst_pro(
                 src_sq=src_sq,
                 dst_sq=dst_sq,
-                promoted=False)
+                promoted=promoted)
 
         if is_rotate:
             p_move_obj = Move.from_src_dst_pro(
                     src_sq=p_move_obj.rot_src_sq_or_none,
                     dst_sq=p_move_obj.rot_dst_sq,
-                    promoted=False)
+                    promoted=promoted)
 
         return p_move_obj
 
