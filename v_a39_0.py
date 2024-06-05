@@ -805,11 +805,16 @@ class Kifuwarabe():
             'failed', 'changed', 'keep'
         """
 
+        if cmd_tail.strip() == '':
+            if is_debug:
+                print(f"[{datetime.datetime.now()}] [weaken] weaken command must be 1 move.  ex:`weaken 5i5h`  cmd_tail:`{cmd_tail}`")
+            return 'failed'
+
         return EvaluationEdit(
                 board=self._board,
                 kifuwarabe=self
         ).weaken(
-                cmd_tail=cmd_tail,
+                move_u=cmd_tail,
                 is_debug=is_debug)
 
 
@@ -832,11 +837,16 @@ class Kifuwarabe():
             'failed', 'changed', 'keep'
         """
 
+        if cmd_tail.strip() == '':
+            if is_debug:
+                print(f"[{datetime.datetime.now()}] [strengthen] strengthen command must be 1 move.  ex:`strengthen 5i5h`  cmd_tail:`{cmd_tail}`")
+            return 'failed'
+
         return EvaluationEdit(
                 board=self._board,
                 kifuwarabe=self
         ).strengthen(
-                cmd_tail=cmd_tail,
+                move_u=cmd_tail,
                 is_debug=is_debug)
 
 

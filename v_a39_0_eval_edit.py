@@ -32,7 +32,7 @@ class EvaluationEdit():
 
     def weaken(
             self,
-            cmd_tail,
+            move_u,
             is_debug=False):
         """評価値テーブルの調整。
         指定の着手のポリシー値が 0.5 未満になるよう価値値テーブルを調整する。
@@ -40,8 +40,8 @@ class EvaluationEdit():
 
         Parameters
         ----------
-        cmd_tail : str
-            コマンドの名前以外
+        move_u : str
+            着手
 
         Returns
         -------
@@ -50,14 +50,7 @@ class EvaluationEdit():
         """
         is_changed = False
 
-        if cmd_tail.strip() == '':
-            if is_debug:
-                print(f"[{datetime.datetime.now()}] [weaken] weaken command must be 1 move.  ex:`weaken 5i5h`  cmd_tail:`{cmd_tail}`")
-            return 'failed'
-
         # 投了局面時、入玉宣言局面時、１手詰めは省略
-
-        move_u = cmd_tail
 
         move_obj = Move.from_usi(move_u)
 
@@ -295,7 +288,7 @@ class EvaluationEdit():
 
     def strengthen(
             self,
-            cmd_tail,
+            move_u,
             is_debug=False):
         """評価値テーブルの調整。
         指定の着手のポリシー値が 0.5 以上になるよう評価値テーブルを調整する。
@@ -303,8 +296,8 @@ class EvaluationEdit():
 
         Parameters
         ----------
-        cmd_tail : str
-            コマンドの名前以外
+        move_u : str
+            着手
 
         Returns
         -------
@@ -314,14 +307,7 @@ class EvaluationEdit():
 
         is_changed = False
 
-        if cmd_tail.strip() == '':
-            if is_debug:
-                print(f"[{datetime.datetime.now()}] [strengthen] strengthen command must be 1 move.  ex:`strengthen 5i5h`  cmd_tail:`{cmd_tail}`")
-            return 'failed'
-
         # 投了局面時、入玉宣言局面時、１手詰めは省略
-
-        move_u = cmd_tail
 
         move_obj = Move.from_usi(move_u)
 
