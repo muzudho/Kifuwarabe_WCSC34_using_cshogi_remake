@@ -19,6 +19,10 @@ class DebugPlan():
     _select_good_f_move_u_set_power = False
 
 
+    _learn_at_odd_log_progress = False
+    _learn_at_even_log_progress = False
+
+
     @classmethod
     def create_k_and_p_legal_moves(clazz):
         return clazz._create_k_and_p_legal_moves
@@ -82,3 +86,13 @@ class DebugPlan():
     @classmethod
     def select_good_f_move_u_set_power(clazz):
         return clazz._select_good_f_move_u_set_power
+
+
+    @classmethod
+    def learn_at_odd_log_progress(clazz):
+        return clazz._learn_at_odd_log_progress
+
+
+    @classmethod
+    def learn_at_even_log_progress(clazz):
+        return clazz._learn_at_even_log_progress

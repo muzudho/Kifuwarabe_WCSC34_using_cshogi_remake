@@ -1,4 +1,5 @@
 import datetime
+from v_a38_0_debug_plan import DebugPlan
 from v_a38_0_eval import MoveAndPolicyHelper
 from v_a38_0_lib import Turn, BoardHelper
 
@@ -256,7 +257,8 @@ class Learn():
 
             # 進捗ログを出したい
             def log_progress(comment):
-                print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 好手]    ({choice_num:3} / {total_num:3}) [{self._board.move_number} moves / {Turn.to_string(self._board.turn)}]  F:{move_u:5}  O:*****  is good.  result:`{result_str}`  move_number_difference:{move_number_difference}  {comment}', flush=True)
+                if DebugPlan.learn_at_odd_log_progress():
+                    print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 好手]    ({choice_num:3} / {total_num:3}) [{self._board.move_number} moves / {Turn.to_string(self._board.turn)}]  F:{move_u:5}  O:*****  is good.  result:`{result_str}`  move_number_difference:{move_number_difference}  {comment}', flush=True)
 
             # どちらかが投了した
             if result_str == 'resign':
@@ -341,7 +343,8 @@ class Learn():
 
             # 進捗ログを出したい
             def log_progress(comment):
-                print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 悪手]    ({choice_num:3} / {total_num:3}) [{self._board.move_number} moves / {Turn.to_string(self._board.turn)}]  F:{move_u:5}  O:*****  is bad.  result:`{result_str}`  move_number_difference:{move_number_difference}  {comment}', flush=True)
+                if DebugPlan.learn_at_odd_log_progress():
+                    print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 悪手]    ({choice_num:3} / {total_num:3}) [{self._board.move_number} moves / {Turn.to_string(self._board.turn)}]  F:{move_u:5}  O:*****  is bad.  result:`{result_str}`  move_number_difference:{move_number_difference}  {comment}', flush=True)
 
             # どちらかが投了した
             if result_str == 'resign':
@@ -480,7 +483,8 @@ class Learn():
 
             # 進捗ログを出したい
             def log_progress(comment):
-                print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手]    ({choice_num:3} / {total_num:3})  [{self._board.move_number} moves / {Turn.to_string(self._board.turn)}]  F:{move_u:5}  O:*****  is good.  result:`{result_str}`  move_number_difference:{move_number_difference}  {comment}', flush=True)
+                if DebugPlan.learn_at_even_log_progress():
+                    print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手]    ({choice_num:3} / {total_num:3})  [{self._board.move_number} moves / {Turn.to_string(self._board.turn)}]  F:{move_u:5}  O:*****  is good.  result:`{result_str}`  move_number_difference:{move_number_difference}  {comment}', flush=True)
 
             # どちらかが投了した
             if result_str == 'resign':
@@ -553,7 +557,8 @@ class Learn():
 
             # 進捗ログを出したい
             def log_progress(comment):
-                print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手]    ({choice_num:3} / {total_num:3})  [{self._board.move_number} moves / {Turn.to_string(self._board.turn)}]  F:{move_u:5}  O:*****  is bad.  result:`{result_str}`  move_number_difference:{move_number_difference}  comment:{comment}', flush=True)
+                if DebugPlan.learn_at_even_log_progress():
+                    print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手]    ({choice_num:3} / {total_num:3})  [{self._board.move_number} moves / {Turn.to_string(self._board.turn)}]  F:{move_u:5}  O:*****  is bad.  result:`{result_str}`  move_number_difference:{move_number_difference}  comment:{comment}', flush=True)
 
             # どちらかが投了した
             if result_str == 'resign':

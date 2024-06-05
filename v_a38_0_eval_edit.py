@@ -270,7 +270,7 @@ class EvaluationEdit():
 
                     if is_debug:
                         # 表示
-                        print(f"[{datetime.datetime.now()}] [weaken > kl]  pl_index:{pl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                        print(f"[{datetime.datetime.now()}] [weaken > pl]  pl_index:{pl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
                     if relation_exists == 1:
                         number_of_connection += 1
@@ -284,7 +284,7 @@ class EvaluationEdit():
 
                     if is_debug:
                         # 表示
-                        print(f"[{datetime.datetime.now()}] [weaken > kl]  pq_index:{pq_index:7}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                        print(f"[{datetime.datetime.now()}] [weaken > pq]  pq_index:{pq_index:7}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
                     if relation_exists == 1:
                         number_of_connection += 1
