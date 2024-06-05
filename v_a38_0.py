@@ -530,7 +530,8 @@ class Kifuwarabe():
             # 開始ログは出したい
             print(f"[{datetime.datetime.now()}] [gameover] learn start...", flush=True)
 
-            self.learn()
+            self.learn(
+                    is_debug=is_debug)
 
             # 終了ログは出したい
             print(f"[{datetime.datetime.now()}] [gameover] learn end", flush=True)

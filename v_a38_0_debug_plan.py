@@ -1,17 +1,17 @@
 class DebugPlan():
     """デバッグ計画"""
 
-    _create_k_and_p_legal_moves = True
-    _select_fo_move_u_and_policy_dictionary_no1 = True
+    _create_k_and_p_legal_moves = False
+    _select_fo_move_u_and_policy_dictionary_no1 = False
 
     _select_fo_move_u_and_policy_dictionary_no2_kl = False
     _select_fo_move_u_and_policy_dictionary_no2_kq = False
-    _select_fo_move_u_and_policy_dictionary_no2_pl = True
+    _select_fo_move_u_and_policy_dictionary_no2_pl = False
     _select_fo_move_u_and_policy_dictionary_no2_pq = False
 
     _select_fo_move_u_and_policy_dictionary_no3_kl = False
     _select_fo_move_u_and_policy_dictionary_no3_kq = False
-    _select_fo_move_u_and_policy_dictionary_no3_pl = True
+    _select_fo_move_u_and_policy_dictionary_no3_pl = False
     _select_fo_move_u_and_policy_dictionary_no3_pq = False
 
     _select_fo_move_u_and_policy_dictionary_no4 = False
