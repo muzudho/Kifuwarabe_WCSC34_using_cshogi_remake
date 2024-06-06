@@ -915,6 +915,7 @@ class EvaluationFacade():
     #select_fl_index_to_relation_exists
     def select_fo_index_to_relation_exists(
             move_obj,
+            is_king_move,
             board,
             kifuwarabe):
         """１つの着手と全ての応手をキー、関係の有無を値とする辞書を作成します
@@ -923,6 +924,8 @@ class EvaluationFacade():
         ----------
         move_obj : Move
             着手
+        is_king_move : bool
+            自玉の指し手か？
         board : Board
             局面
         kifuwarabe : Kifuwarabe
@@ -939,17 +942,6 @@ class EvaluationFacade():
         pq_index_to_relation_exists_dic
             自兵の着手と、敵兵の応手の関係の有無を格納した辞書
         """
-
-        kl_index_to_relation_exists_dic = {}
-        kq_index_to_relation_exists_dic = {}
-        pl_index_to_relation_exists_dic = {}
-        pq_index_to_relation_exists_dic = {}
-
-        # 自玉のマス番号
-        k_sq = BoardHelper.get_king_square(board)
-
-        # 自玉の指し手か？
-        is_king_move = MoveHelper.is_king(k_sq, move_obj)
 
         # 応手の一覧を作成
         l_move_u_set, q_move_u_set = BoardHelper.create_counter_move_u_set(
@@ -969,6 +961,11 @@ class EvaluationFacade():
                     p_move_u_set=q_move_u_set,
                     k_turn=board.turn)
 
+            return (kl_index_to_relation_exists_dic,
+                    kq_index_to_relation_exists_dic,
+                    None,
+                    None)
+
         else:
             # 自兵の着手と、敵玉の応手の一覧から、ＰＬテーブルのインデックスと、関係の有無を格納した辞書を作成
             pl_index_to_relation_exists_dic = kifuwarabe.evaluation_pl_table_obj_array[Turn.to_index(board.turn)].select_pk_index_and_relation_exists(
@@ -982,10 +979,10 @@ class EvaluationFacade():
                     p2_move_u_set=q_move_u_set,
                     p1_turn=board.turn)
 
-        return (kl_index_to_relation_exists_dic,
-                kq_index_to_relation_exists_dic,
-                pl_index_to_relation_exists_dic,
-                pq_index_to_relation_exists_dic)
+            return (None,
+                    None,
+                    pl_index_to_relation_exists_dic,
+                    pq_index_to_relation_exists_dic)
 
 
     @staticmethod

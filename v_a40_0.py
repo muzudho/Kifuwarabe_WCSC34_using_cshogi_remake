@@ -654,21 +654,22 @@ class Kifuwarabe():
 
         move_u = cmd_tail
 
+        move_obj = Move.from_usi(move_u)
+
+        k_sq = BoardHelper.get_king_square(self._board)
+
+        # 自玉の指し手か？
+        is_king_move = MoveHelper.is_king(k_sq, move_obj)
+
         # 着手と応手をキー、関係の有無を値とする辞書を作成します
         (kl_index_to_relation_exists_dictionary,
          kq_index_to_relation_exists_dictionary,
          pl_index_to_relation_exists_dictionary,
          pq_index_to_relation_exists_dictionary) = EvaluationFacade.select_fo_index_to_relation_exists(
                 move_obj=Move.from_usi(move_u),
+                is_king_move=is_king_move,
                 board=self._board,
                 kifuwarabe=self._kifuwarabe)
-
-        k_sq = BoardHelper.get_king_square(self._board)
-
-        move_obj = Move.from_usi(move_u)
-
-        # 自玉の指し手か？
-        is_king_move = MoveHelper.is_king(k_sq, move_obj)
 
         #
         # 表示

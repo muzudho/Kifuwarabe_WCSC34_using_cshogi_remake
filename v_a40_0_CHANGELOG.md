@@ -1,4 +1,4 @@
-* 
+* weaken と strengthen の共通部分をモジュール化した
 * TODO good/bad の判定方法が統一されてない
   * EvaluationEdit.weaken(...) では、EvaluationFacade.select_fo_index_to_relation_exists(...) を使って数を数えている
   * MoveAndPolicyHelper.select_good_f_move_u_set_power(...) では MoveAndPolicyHelper.seleft_f_move_u_add_l_and_q(...) を使って policy 値を作ってる

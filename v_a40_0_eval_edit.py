@@ -29,6 +29,88 @@ class EvaluationEdit():
         self._kifuwarabe=kifuwarabe
 
 
+    def get_summary(
+            self,
+            move_obj,
+            is_debug=False):
+        """集計を取得
+
+        Parameters
+        ----------
+        move_obj : Move
+            着手オブジェクト
+        is_debug : bool
+            デバッグモードか？
+        """
+
+        # 投了局面時、入玉宣言局面時、１手詰めは無視
+
+        k_sq = BoardHelper.get_king_square(self._board)
+
+        # 自玉の指し手か？
+        is_king_move = MoveHelper.is_king(k_sq, move_obj)
+
+        if is_king_move:
+
+            # １つの着手には、０～複数の着手がある木構造をしています。
+            # その木構造のパスをキーとし、そのパスが持つ有無のビット値を値とする辞書を作成します
+            (kl_index_to_relation_exists_dictionary,
+             kq_index_to_relation_exists_dictionary,
+             _,
+             _) = EvaluationFacade.select_fo_index_to_relation_exists(
+                    move_obj=move_obj,
+                    is_king_move=is_king_move,
+                    board=self._board,
+                    kifuwarabe=self._kifuwarabe)
+
+            # ＫＬとＫＱの関係数
+            total_of_relation = len(kl_index_to_relation_exists_dictionary) + len(kq_index_to_relation_exists_dictionary)
+            print(f"[{datetime.datetime.now()}] [weaken > kl and kq]   total_of_relation:{total_of_relation}  =  len(kl_index_to_relation_exists_dictionary):{len(kl_index_to_relation_exists_dictionary)}  +  len(kq_index_to_relation_exists_dictionary):{len(kq_index_to_relation_exists_dictionary)}")
+
+            # ＫＬとＫＱの関係が有りのものの数
+            positive_of_relation = EvaluationFacade.get_number_of_connection_for_kl_kq(
+                    kl_index_to_relation_exists_dictionary,
+                    kq_index_to_relation_exists_dictionary,
+                    board=self._board,
+                    is_debug=False)
+
+            return (kl_index_to_relation_exists_dictionary,
+                    kq_index_to_relation_exists_dictionary,
+                    is_king_move,
+                    positive_of_relation,
+                    total_of_relation)
+
+        else:
+
+            # １つの着手には、０～複数の着手がある木構造をしています。
+            # その木構造のパスをキーとし、そのパスが持つ有無のビット値を値とする辞書を作成します
+            (_,
+             _,
+             pl_index_to_relation_exists_dictionary,
+             pq_index_to_relation_exists_dictionary) = EvaluationFacade.select_fo_index_to_relation_exists(
+                    move_obj=move_obj,
+                    is_king_move=is_king_move,
+                    board=self._board,
+                    kifuwarabe=self._kifuwarabe)
+
+            # ＰＬとＰＱの関係数
+            total_of_relation = len(pl_index_to_relation_exists_dictionary) + len(pq_index_to_relation_exists_dictionary)
+            print(f"[{datetime.datetime.now()}] [weaken > pl and pq]  total_of_relation:{total_of_relation}  =  len(pl_index_to_relation_exists_dictionary):{len(pl_index_to_relation_exists_dictionary)}  +  len(pq_index_to_relation_exists_dictionary):{len(pq_index_to_relation_exists_dictionary)}")
+
+            # ＰＬとＰＱの関係が有りのものの数
+            positive_of_relation = EvaluationFacade.get_number_of_connection_for_pl_pq(
+                    pl_index_to_relation_exists_dictionary,
+                    pq_index_to_relation_exists_dictionary,
+                    board=self._board,
+                    is_debug=is_debug)
+
+            return (pl_index_to_relation_exists_dictionary,
+                    pq_index_to_relation_exists_dictionary,
+                    is_king_move,
+                    positive_of_relation,
+                    total_of_relation)
+
+
     def weaken(
             self,
             move_u,
@@ -41,61 +123,52 @@ class EvaluationEdit():
         ----------
         move_u : str
             着手
+        is_debug : bool
+            デバッグモードか？
 
         Returns
         -------
         result_str : str
             'failed', 'changed', 'keep'
         """
-        is_changed = False
 
         # 投了局面時、入玉宣言局面時、１手詰めは省略
 
         move_obj = Move.from_usi(move_u)
 
-        # １つの着手には、０～複数の着手がある木構造をしています。
-        # その木構造のパスをキーとし、そのパスが持つ有無のビット値を値とする辞書を作成します
-        (kl_index_to_relation_exists_dictionary,
-         kq_index_to_relation_exists_dictionary,
-         pl_index_to_relation_exists_dictionary,
-         pq_index_to_relation_exists_dictionary) = EvaluationFacade.select_fo_index_to_relation_exists(
+        # 自駒と敵玉に対する関係の辞書
+        (fl_index_to_relation_exists_dictionary,
+         # 自駒と敵兵に対する関係の辞書
+         fq_index_to_relation_exists_dictionary,
+         # 玉の指し手か？
+         is_king_move,
+         # 関係が陽性の総数
+         positive_of_relation,
+         # 関係の総数
+         total_of_relation) = self.get_summary(
                 move_obj=move_obj,
-                board=self._board,
-                kifuwarabe=self._kifuwarabe)
+                is_debug=is_debug)
 
-        k_sq = BoardHelper.get_king_square(self._board)
+        # ポリシー値（千分率）
+        policy = EvaluationFacade.round_half_up(positive_of_relation * 1000 / total_of_relation)
 
-        # 自玉の指し手か？
-        is_king_move = MoveHelper.is_king(k_sq, move_obj)
+        # 関係の数の半分未満のうち、最大の数
+        max_number_of_less_than_50_percent = EvaluationFacade.get_max_number_of_less_than_50_percent(
+                total=total_of_relation)
+
+        is_changed = False
 
         if is_king_move:
-
-            # ＫＬとＫＱの関係数
-            kl_kq_total = len(kl_index_to_relation_exists_dictionary) + len(kq_index_to_relation_exists_dictionary)
-            print(f"[{datetime.datetime.now()}] [weaken > kl and kq]   kl_kq_total:{kl_kq_total}  =  len(kl_index_to_relation_exists_dictionary):{len(kl_index_to_relation_exists_dictionary)}  +  len(kq_index_to_relation_exists_dictionary):{len(kq_index_to_relation_exists_dictionary)}")
-
-            # ＫＬとＫＱの関係が有りのものの数
-            number_of_connection_kl_kq = EvaluationFacade.get_number_of_connection_for_kl_kq(
-                    kl_index_to_relation_exists_dictionary,
-                    kq_index_to_relation_exists_dictionary,
-                    board=self._board,
-                    is_debug=False)
-
-            # ポリシー値（千分率）
-            policy = EvaluationFacade.round_half_up(number_of_connection_kl_kq * 1000 / kl_kq_total)
-
-            max_number_of_less_than_50_percent = EvaluationFacade.get_max_number_of_less_than_50_percent(
-                    total=kl_kq_total)
 
             # この着手に対する応手の関係を減らしたい
             #
             #   差を埋めればよい
             #
-            difference = number_of_connection_kl_kq - max_number_of_less_than_50_percent
+            difference = positive_of_relation - max_number_of_less_than_50_percent
 
             # デバッグ表示
             if is_debug:
-                print(f"[{datetime.datetime.now()}] [weaken > kl and kq]  K:{move_obj.as_usi:5}  O:*****  policy:{policy}‰  =  有:{number_of_connection_kl_kq}  /  総:{kl_kq_total}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
+                print(f"[{datetime.datetime.now()}] [weaken > kl and kq]  K:{move_obj.as_usi:5}  O:*****  policy:{policy}‰  =  陽性:{positive_of_relation}  /  総:{total_of_relation}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
 
             # 既に悪手評価なので、弱化は不要です
             if difference < 1:
@@ -112,9 +185,9 @@ class EvaluationEdit():
             # ＫＬ
             #
 
-            print(f"[{datetime.datetime.now()}] [weaken > kl]  rest:{rest}  len(kl_indexes):{len(kl_index_to_relation_exists_dictionary)}")
+            print(f"[{datetime.datetime.now()}] [weaken > kl]  rest:{rest}  len(kl_indexes):{len(fl_index_to_relation_exists_dictionary)}")
 
-            for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
+            for kl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
 
                 if rest < 1:
                     if is_debug:
@@ -146,9 +219,9 @@ class EvaluationEdit():
             # ＫＱ
             #
 
-            print(f"[{datetime.datetime.now()}] [weaken > kq]  rest:{rest}  len(kq_indexes):{len(kq_index_to_relation_exists_dictionary)}")
+            print(f"[{datetime.datetime.now()}] [weaken > kq]  rest:{rest}  len(kq_indexes):{len(fq_index_to_relation_exists_dictionary)}")
 
-            for kq_index, relation_exists in kq_index_to_relation_exists_dictionary.items():
+            for kq_index, relation_exists in fq_index_to_relation_exists_dictionary.items():
 
                 if rest < 1:
                     if is_debug:
@@ -178,32 +251,15 @@ class EvaluationEdit():
 
         else:
 
-            # ＰＬとＰＱの関係数
-            pl_pq_total = len(pl_index_to_relation_exists_dictionary) + len(pq_index_to_relation_exists_dictionary)
-            print(f"[{datetime.datetime.now()}] [weaken > pl and pq]  pl_pq_total:{pl_pq_total}  =  len(pl_index_to_relation_exists_dictionary):{len(pl_index_to_relation_exists_dictionary)}  +  len(pq_index_to_relation_exists_dictionary):{len(pq_index_to_relation_exists_dictionary)}")
-
-            # ＰＬとＰＱの関係が有りのものの数
-            number_of_connection_pl_pq = EvaluationFacade.get_number_of_connection_for_pl_pq(
-                    pl_index_to_relation_exists_dictionary,
-                    pq_index_to_relation_exists_dictionary,
-                    board=self._board,
-                    is_debug=is_debug)
-
-            # ポリシー値（千分率）
-            policy = EvaluationFacade.round_half_up(number_of_connection_pl_pq * 1000 / pl_pq_total)
-
-            max_number_of_less_than_50_percent = EvaluationFacade.get_max_number_of_less_than_50_percent(
-                    total=pl_pq_total)
-
             # この着手に対する応手の関係を減らしたい
             #
             #   差を埋めればよい
             #
-            difference = number_of_connection_pl_pq - max_number_of_less_than_50_percent
+            difference = positive_of_relation - max_number_of_less_than_50_percent
 
             if is_debug:
                 # デバッグ表示
-                print(f"[{datetime.datetime.now()}] [weaken > pl and pq]  P:{move_obj.as_usi:5}  O:*****  policy:{policy}‰  有:{number_of_connection_pl_pq}  /  総:{pl_pq_total}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
+                print(f"[{datetime.datetime.now()}] [weaken > pl and pq]  P:{move_obj.as_usi:5}  O:*****  policy:{policy}‰  陽性:{positive_of_relation}  /  総:{total_of_relation}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
 
             # 既に悪手評価なので、弱化は不要です
             if difference < 1:
@@ -220,9 +276,9 @@ class EvaluationEdit():
             # ＰＬ
             #
 
-            print(f"[{datetime.datetime.now()}] [weaken > pl]  rest:{rest}  len(pl_indexes):{len(pl_index_to_relation_exists_dictionary)}")
+            print(f"[{datetime.datetime.now()}] [weaken > pl]  rest:{rest}  len(fl_indexes):{len(fl_index_to_relation_exists_dictionary)}")
 
-            for pl_index, relation_exists in pl_index_to_relation_exists_dictionary.items():
+            for pl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
 
                 if rest < 1:
                     if is_debug:
@@ -253,9 +309,9 @@ class EvaluationEdit():
             # ＰＱ
             #
 
-            print(f"[{datetime.datetime.now()}] [weaken > pq]  rest:{rest}  len(pq_indexes):{len(pq_index_to_relation_exists_dictionary)}")
+            print(f"[{datetime.datetime.now()}] [weaken > pq]  rest:{rest}  len(fq_indexes):{len(fq_index_to_relation_exists_dictionary)}")
 
-            for pq_index, relation_exists in pq_index_to_relation_exists_dictionary.items():
+            for pq_index, relation_exists in fq_index_to_relation_exists_dictionary.items():
 
                 if rest < 1:
                     if is_debug:
@@ -310,54 +366,43 @@ class EvaluationEdit():
             'failed', 'changed', 'keep'
         """
 
-        is_changed = False
-
         # 投了局面時、入玉宣言局面時、１手詰めは省略
 
         move_obj = Move.from_usi(move_u)
 
-        # １つの着手には、０～複数の着手がある木構造をしています。
-        # その木構造のパスをキーとし、そのパスが持つ有無のビット値を値とする辞書を作成します
-        (kl_index_to_relation_exists_dictionary,
-         kq_index_to_relation_exists_dictionary,
-         pl_index_to_relation_exists_dictionary,
-         pq_index_to_relation_exists_dictionary) = EvaluationFacade.select_fo_index_to_relation_exists(
+        # 自駒と敵玉に対する関係の辞書
+        (fl_index_to_relation_exists_dictionary,
+         # 自駒と敵兵に対する関係の辞書
+         fq_index_to_relation_exists_dictionary,
+         # 玉の指し手か？
+         is_king_move,
+         # 関係が陽性の総数
+         positive_of_relation,
+         # 関係の総数
+         total_of_relation) = self.get_summary(
                 move_obj=move_obj,
-                board=self._board,
-                kifuwarabe=self._kifuwarabe)
+                is_debug=is_debug)
 
-        k_sq = BoardHelper.get_king_square(self._board)
+        # ポリシー値（千分率）
+        policy = EvaluationFacade.round_half_up(positive_of_relation * 1000 / total_of_relation)
 
-        # 自玉の指し手か？
-        is_king_move = MoveHelper.is_king(k_sq, move_obj)
+        # 関係の数の半分未満のうち、最大の数
+        max_number_of_less_than_50_percent = EvaluationFacade.get_max_number_of_less_than_50_percent(
+                total=total_of_relation)
+
+        is_changed = False
 
         if is_king_move:
-
-            # ＫＬとＫＱの関係数
-            kl_kq_total = len(kl_index_to_relation_exists_dictionary) + len(kq_index_to_relation_exists_dictionary)
-
-            # ＫＬとＫＱの関係が有りのものの数
-            number_of_connection_kl_kq = EvaluationFacade.get_number_of_connection_for_kl_kq(
-                    kl_index_to_relation_exists_dictionary,
-                    kq_index_to_relation_exists_dictionary,
-                    board=self._board,
-                    is_debug=False)
-
-            # ポリシー値（千分率）
-            policy = EvaluationFacade.round_half_up(number_of_connection_kl_kq * 1000 / kl_kq_total)
-
-            max_number_of_less_than_50_percent = EvaluationFacade.get_max_number_of_less_than_50_percent(
-                    total=kl_kq_total)
 
             # この着手に対する応手の関係を増やしたい
             #
             #   差を埋めればよい
             #
-            difference = max_number_of_less_than_50_percent - number_of_connection_kl_kq
+            difference = max_number_of_less_than_50_percent - positive_of_relation
 
             # デバッグ表示
             if is_debug:
-                print(f"[{datetime.datetime.now()}] [strengthen > kl and kq]  K:{move_obj.as_usi:5}  O:*****  policy:{policy}  有:{number_of_connection_kl_kq}  /  総:{kl_kq_total}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
+                print(f"[{datetime.datetime.now()}] [strengthen > kl and kq]  K:{move_obj.as_usi:5}  O:*****  policy:{policy}  有:{positive_of_relation}  /  総:{total_of_relation}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
 
             # 既に好手評価なので、強化は不要です
             if difference < 1:
@@ -374,9 +419,9 @@ class EvaluationEdit():
             # ＫＬ
             #
 
-            print(f"[{datetime.datetime.now()}] [strengthen > kl]  rest:{rest}  len(kl_indexes):{len(kl_index_to_relation_exists_dictionary)}")
+            print(f"[{datetime.datetime.now()}] [strengthen > kl]  rest:{rest}  len(kl_indexes):{len(fl_index_to_relation_exists_dictionary)}")
 
-            for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
+            for kl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
 
                 if rest < 1:
                     if is_debug:
@@ -408,9 +453,9 @@ class EvaluationEdit():
             # ＫＱ
             #
 
-            print(f"[{datetime.datetime.now()}] [strengthen > kq]  rest:{rest}  len(kq_indexes):{len(kq_index_to_relation_exists_dictionary)}")
+            print(f"[{datetime.datetime.now()}] [strengthen > kq]  rest:{rest}  len(kq_indexes):{len(fq_index_to_relation_exists_dictionary)}")
 
-            for kq_index, relation_exists in kq_index_to_relation_exists_dictionary.items():
+            for kq_index, relation_exists in fq_index_to_relation_exists_dictionary.items():
 
                 if rest < 1:
                     if is_debug:
@@ -440,31 +485,15 @@ class EvaluationEdit():
 
         else:
 
-            # ＰＬとＰＱの関係数
-            pl_pq_total = len(pl_index_to_relation_exists_dictionary) + len(pq_index_to_relation_exists_dictionary)
-
-            # ＰＬとＰＱの関係が有りのものの数
-            number_of_connection_pl_pq = EvaluationFacade.get_number_of_connection_for_pl_pq(
-                    pl_index_to_relation_exists_dictionary,
-                    pq_index_to_relation_exists_dictionary,
-                    board=self._board,
-                    is_debug=is_debug)
-
-            # ポリシー値（千分率）
-            policy = EvaluationFacade.round_half_up(number_of_connection_pl_pq * 1000 / pl_pq_total)
-
-            max_number_of_less_than_50_percent = EvaluationFacade.get_max_number_of_less_than_50_percent(
-                    total=pl_pq_total)
-
             # この着手に対する応手の関係を増やしたい
             #
             #   差を埋めればよい
             #
-            difference = max_number_of_less_than_50_percent - number_of_connection_pl_pq
+            difference = max_number_of_less_than_50_percent - positive_of_relation
 
             # デバッグ表示
             if is_debug:
-                print(f"[{datetime.datetime.now()}] [strengthen > pl and pq]  P:{move_obj.as_usi:5}  O:*****  policy:{policy}‰  有:{number_of_connection_pl_pq}  /  総:{pl_pq_total}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
+                print(f"[{datetime.datetime.now()}] [strengthen > pl and pq]  P:{move_obj.as_usi:5}  O:*****  policy:{policy}‰  有:{positive_of_relation}  /  総:{total_of_relation}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
 
             # 既に好手評価なので、強化は不要です
             if difference < 1:
@@ -481,9 +510,9 @@ class EvaluationEdit():
             # ＰＬ
             #
 
-            print(f"[{datetime.datetime.now()}] [strengthen > pl]  rest:{rest}  len(pl_indexes):{len(pl_index_to_relation_exists_dictionary)}")
+            print(f"[{datetime.datetime.now()}] [strengthen > pl]  rest:{rest}  len(pl_indexes):{len(fl_index_to_relation_exists_dictionary)}")
 
-            for pl_index, relation_exists in pl_index_to_relation_exists_dictionary.items():
+            for pl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
 
                 if rest < 1:
                     if is_debug:
@@ -515,9 +544,9 @@ class EvaluationEdit():
             # ＰＱ
             #
 
-            print(f"[{datetime.datetime.now()}] [strengthen > pq]  rest:{rest}  len(pq_indexes):{len(pq_index_to_relation_exists_dictionary)}")
+            print(f"[{datetime.datetime.now()}] [strengthen > pq]  rest:{rest}  len(pq_indexes):{len(fq_index_to_relation_exists_dictionary)}")
 
-            for pq_index, relation_exists in pq_index_to_relation_exists_dictionary.items():
+            for pq_index, relation_exists in fq_index_to_relation_exists_dictionary.items():
 
                 if rest < 1:
                     if is_debug:
