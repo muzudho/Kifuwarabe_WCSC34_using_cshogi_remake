@@ -1173,7 +1173,7 @@ class EvaluationFacade():
 
             # ＫＬとＫＱの関係数
             total_of_relation = len(kl_index_to_relation_exists_dictionary) + len(kq_index_to_relation_exists_dictionary)
-            print(f"[{datetime.datetime.now()}] [weaken > kl and kq]   total_of_relation:{total_of_relation}  =  len(kl_index_to_relation_exists_dictionary):{len(kl_index_to_relation_exists_dictionary)}  +  len(kq_index_to_relation_exists_dictionary):{len(kq_index_to_relation_exists_dictionary)}")
+            #print(f"[{datetime.datetime.now()}] [get_summary > kl and kq]   total_of_relation:{total_of_relation}  =  len(kl_index_to_relation_exists_dictionary):{len(kl_index_to_relation_exists_dictionary)}  +  len(kq_index_to_relation_exists_dictionary):{len(kq_index_to_relation_exists_dictionary)}")
 
             # ＫＬとＫＱの関係が有りのものの数
             positive_of_relation = EvaluationFacade.get_number_of_connection_for_kl_kq(
@@ -1203,7 +1203,7 @@ class EvaluationFacade():
 
             # ＰＬとＰＱの関係数
             total_of_relation = len(pl_index_to_relation_exists_dictionary) + len(pq_index_to_relation_exists_dictionary)
-            print(f"[{datetime.datetime.now()}] [weaken > pl and pq]  total_of_relation:{total_of_relation}  =  len(pl_index_to_relation_exists_dictionary):{len(pl_index_to_relation_exists_dictionary)}  +  len(pq_index_to_relation_exists_dictionary):{len(pq_index_to_relation_exists_dictionary)}")
+            #print(f"[{datetime.datetime.now()}] [get_summary > pl and pq]  total_of_relation:{total_of_relation}  =  len(pl_index_to_relation_exists_dictionary):{len(pl_index_to_relation_exists_dictionary)}  +  len(pq_index_to_relation_exists_dictionary):{len(pq_index_to_relation_exists_dictionary)}")
 
             # ＰＬとＰＱの関係が有りのものの数
             positive_of_relation = EvaluationFacade.get_number_of_connection_for_pl_pq(
