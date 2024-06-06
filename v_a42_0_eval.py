@@ -202,17 +202,17 @@ class MoveAndPolicyHelper():
                 bad_move_u_set.add(move_u)
 
 
-        if is_debug:
+        if is_debug and DebugPlan.select_good_f_move_u_set_facade:
 
-            print(f"[{datetime.datetime.now()}] [choice best] 好手一覧")
+            print(f"[{datetime.datetime.now()}] [select good f move u set facade] 好手一覧")
 
             for good_move_u in good_move_u_set:
-                print(f"[{datetime.datetime.now()}]  good_move_u:{good_move_u:5}")
+                print(f"[{datetime.datetime.now()}] [select good f move u set facade]    good:{good_move_u:5}")
 
-            print(f"[{datetime.datetime.now()}] [choice best] 悪手一覧")
+            print(f"[{datetime.datetime.now()}] [select good f move u set facade] 悪手一覧")
 
             for bad_move_u in bad_move_u_set:
-                print(f"[{datetime.datetime.now()}]  bad_move_u:{bad_move_u:5}")
+                print(f"[{datetime.datetime.now()}] [select good f move u set facade]    bad :{bad_move_u:5}")
 
 
         return (good_move_u_set,

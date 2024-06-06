@@ -224,20 +224,20 @@ class EvaluationKpTable():
             self,
             k_move_obj,
             p_move_obj,
-            bit,
-            is_rotate):
+            k_turn,
+            bit):
         """玉の着手と兵の応手を受け取って、関係の有無を設定します
 
         Parameters
         ----------
         k_move_obj : Move
-            玉の指し手
+            玉の着手
         p_move_obj : Move
-            兵の指し手
+            兵の応手
+        k_turn : int
+            着手側の手番
         bit : int
             0 か 1
-        is_rotate : bool
-            後手なら真。指し手を１８０°回転させます
 
         Returns
         -------
@@ -248,7 +248,7 @@ class EvaluationKpTable():
                 index=EvaluationKpTable.get_index_of_kp_table(
                     k_move_obj=k_move_obj,
                     p_move_obj=p_move_obj,
-                    is_rotate=is_rotate),
+                    k_turn=k_turn),
                 bit=bit)
 
         return is_changed

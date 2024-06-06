@@ -8,6 +8,13 @@ class DebugPlan():
     get_number_of_connection_for_kl_kq = False
     get_number_of_connection_for_pl_pq = False
 
+    # L
+    _learn_at_odd_log_progress = False
+    _learn_at_even_log_progress = False
+
+    # S
+    select_good_f_move_u_set_facade = False
+
     _select_fo_move_u_and_policy_dictionary_no1 = False
 
     _select_fo_move_u_and_policy_dictionary_no2_kl = False
@@ -22,10 +29,6 @@ class DebugPlan():
 
     _select_fo_move_u_and_policy_dictionary_no4 = False
     _select_fo_move_u_and_policy_dictionary_no5 = False
-
-
-    _learn_at_odd_log_progress = False
-    _learn_at_even_log_progress = False
 
 
     @classmethod

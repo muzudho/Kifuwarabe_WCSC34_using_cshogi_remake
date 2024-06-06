@@ -107,15 +107,12 @@ class EvaluationEdit():
             #
             # ＫＬ
             #
-
-            print(f"[{datetime.datetime.now()}] [weaken > kl]  rest:{rest}  len(kl_indexes):{len(fl_index_to_relation_exists_dictionary)}")
-
             for kl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
 
-                if rest < 1:
-                    if is_debug:
-                        print(f"[{datetime.datetime.now()}] [weaken > kl]  rest:{rest}  break")
+                if is_debug:
+                    print(f"[{datetime.datetime.now()}] [weaken > kl]  rest:{rest} / {len(fl_index_to_relation_exists_dictionary)}")
 
+                if rest < 1:
                     break
 
                 k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
@@ -141,15 +138,12 @@ class EvaluationEdit():
             #
             # ＫＱ
             #
-
-            print(f"[{datetime.datetime.now()}] [weaken > kq]  rest:{rest}  len(kq_indexes):{len(fq_index_to_relation_exists_dictionary)}")
-
             for kq_index, relation_exists in fq_index_to_relation_exists_dictionary.items():
 
-                if rest < 1:
-                    if is_debug:
-                        print(f"[{datetime.datetime.now()}] [weaken > kq]  rest:{rest}  break")
+                if is_debug:
+                    print(f"[{datetime.datetime.now()}] [weaken > kq]  rest:{rest} / {len(fq_index_to_relation_exists_dictionary)}")
 
+                if rest < 1:
                     break
 
                 k_move_obj, q_move_obj = EvaluationKpTable.destructure_kp_index(
@@ -198,14 +192,12 @@ class EvaluationEdit():
             #
             # ＰＬ
             #
-
-            print(f"[{datetime.datetime.now()}] [weaken > pl]  rest:{rest}  len(fl_indexes):{len(fl_index_to_relation_exists_dictionary)}")
-
             for pl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
 
+                if is_debug:
+                    print(f"[{datetime.datetime.now()}] [weaken > pl]  rest:{rest} / {len(fl_index_to_relation_exists_dictionary)}")
+
                 if rest < 1:
-                    if is_debug:
-                        print(f"[{datetime.datetime.now()}] [weaken > pl]  rest:{rest}  break")
                     break
 
                 p_move_obj, l_move_obj = EvaluationPkTable.destructure_pk_index(
@@ -218,7 +210,7 @@ class EvaluationEdit():
                         if is_debug:
                             print(f"[{datetime.datetime.now()}] [weaken > pl]  turn:{Turn.to_string(self._board.turn)}  pl_index:{pl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  remove relation")
 
-                        is_changed_temp = self._kifuwarabe._evaluation_pl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kp_moves(
+                        is_changed_temp = self._kifuwarabe._evaluation_pl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_pk_moves(
                                 p_move_obj=p_move_obj,
                                 k_move_obj=l_move_obj,
                                 p_turn=self._board.turn,
@@ -231,14 +223,12 @@ class EvaluationEdit():
             #
             # ＰＱ
             #
-
-            print(f"[{datetime.datetime.now()}] [weaken > pq]  rest:{rest}  len(fq_indexes):{len(fq_index_to_relation_exists_dictionary)}")
-
             for pq_index, relation_exists in fq_index_to_relation_exists_dictionary.items():
 
+                if is_debug:
+                    print(f"[{datetime.datetime.now()}] [weaken > pq]  rest:{rest} / {len(fq_index_to_relation_exists_dictionary)}")
+
                 if rest < 1:
-                    if is_debug:
-                        print(f"[{datetime.datetime.now()}] [weaken > pq]  rest:{rest}  break")
                     break
 
                 p_move_obj, q_move_obj = EvaluationPpTable.destructure_pp_index(
@@ -346,15 +336,12 @@ class EvaluationEdit():
             #
             # ＫＬ
             #
-
-            print(f"[{datetime.datetime.now()}] [strengthen > kl]  rest:{rest}  len(kl_indexes):{len(fl_index_to_relation_exists_dictionary)}")
-
             for kl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
 
-                if rest < 1:
-                    if is_debug:
-                        print(f"[{datetime.datetime.now()}] [strengthen > kl]  rest:{rest}  break")
+                if is_debug:
+                    print(f"[{datetime.datetime.now()}] [strengthen > kl]  rest:{rest} / {len(fl_index_to_relation_exists_dictionary)}")
 
+                if rest < 1:
                     break
 
                 k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
@@ -380,15 +367,12 @@ class EvaluationEdit():
             #
             # ＫＱ
             #
-
-            print(f"[{datetime.datetime.now()}] [strengthen > kq]  rest:{rest}  len(kq_indexes):{len(fq_index_to_relation_exists_dictionary)}")
-
             for kq_index, relation_exists in fq_index_to_relation_exists_dictionary.items():
 
-                if rest < 1:
-                    if is_debug:
-                        print(f"[{datetime.datetime.now()}] [strengthen > kq]  rest:{rest}  break")
+                if is_debug:
+                    print(f"[{datetime.datetime.now()}] [strengthen > kq]  rest:{rest} / {len(fq_index_to_relation_exists_dictionary)}")
 
+                if rest < 1:
                     break
 
                 k_move_obj, q_move_obj = EvaluationKpTable.destructure_kp_index(
@@ -404,8 +388,8 @@ class EvaluationEdit():
                         is_changed_temp = self._kifuwarabe._evaluation_kq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kp_moves(
                                 k_move_obj=k_move_obj,
                                 p_move_obj=q_move_obj,
-                                bit=1,
-                                is_rotate=self._board.turn==cshogi.WHITE)
+                                k_turn=self._board.turn,
+                                bit=1)
 
                         if is_changed_temp:
                             is_changed = True
@@ -437,15 +421,12 @@ class EvaluationEdit():
             #
             # ＰＬ
             #
-
-            print(f"[{datetime.datetime.now()}] [strengthen > pl]  rest:{rest}  len(pl_indexes):{len(fl_index_to_relation_exists_dictionary)}")
-
             for pl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
 
-                if rest < 1:
-                    if is_debug:
-                        print(f"[{datetime.datetime.now()}] [strengthen > pl]  rest:{rest}  break")
+                if is_debug:
+                    print(f"[{datetime.datetime.now()}] [strengthen > pl]  rest:{rest} / {len(fl_index_to_relation_exists_dictionary)}")
 
+                if rest < 1:
                     break
 
                 p_move_obj, l_move_obj = EvaluationPkTable.destructure_pl_index(
@@ -458,11 +439,11 @@ class EvaluationEdit():
                         if is_debug:
                             print(f"[{datetime.datetime.now()}] [strengthen > pl]  turn:{Turn.to_string(self._board.turn)}  pl_index:{pl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
 
-                        is_changed_temp = self._kifuwarabe._evaluation_pl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kp_moves(
+                        is_changed_temp = self._kifuwarabe._evaluation_pl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_pk_moves(
                                 p_move_obj=p_move_obj,
                                 k_move_obj=l_move_obj,
-                                bit=1,
-                                is_rotate=self._board.turn==cshogi.WHITE)
+                                p_turn=self._board.turn,
+                                bit=1)
 
                         if is_changed_temp:
                             is_changed = True
@@ -471,15 +452,12 @@ class EvaluationEdit():
             #
             # ＰＱ
             #
-
-            print(f"[{datetime.datetime.now()}] [strengthen > pq]  rest:{rest}  len(pq_indexes):{len(fq_index_to_relation_exists_dictionary)}")
-
             for pq_index, relation_exists in fq_index_to_relation_exists_dictionary.items():
 
-                if rest < 1:
-                    if is_debug:
-                        print(f"[{datetime.datetime.now()}] [strengthen > pq]  rest:{rest}  break")
+                if is_debug:
+                    print(f"[{datetime.datetime.now()}] [strengthen > pq]  rest:{rest} / {len(fq_index_to_relation_exists_dictionary)}")
 
+                if rest < 1:
                     break
 
                 p_move_obj, q_move_obj = EvaluationPpTable.destructure_pp_index(
@@ -492,11 +470,11 @@ class EvaluationEdit():
                         if is_debug:
                             print(f"[{datetime.datetime.now()}] [strengthen > pq]  turn:{Turn.to_string(self._board.turn)}  pq_index:{pq_index:7}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
 
-                        is_changed_temp = self._kifuwarabe._evaluation_pq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kp_moves(
+                        is_changed_temp = self._kifuwarabe._evaluation_pq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_pp_moves(
                                 p1_move_obj=p_move_obj,
                                 p2_move_obj=q_move_obj,
-                                bit=1,
-                                is_rotate=self._board.turn==cshogi.WHITE)
+                                p1_turn=self._board.turn,
+                                bit=1)
 
                         if is_changed_temp:
                             is_changed = True
