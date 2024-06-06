@@ -204,16 +204,6 @@ class Kifuwarabe():
             self.policy(
                     is_debug=is_debug)
 
-        # 現局面の最弱手を確認する
-        #       code: weakest
-        elif head == 'weakest':
-            self.weakest()
-
-        # 現局面の最強手を確認する
-        #       code: strongest
-        elif head == 'strongest':
-            self.strongest()
-
         # 指定の手の評価値テーブルの関係を全て表示する
         #       code: relation 7g7f
         elif head == 'relation':
@@ -564,22 +554,6 @@ class Kifuwarabe():
         self._board.pop()
 
 
-    def get_weakest_moves(self):
-        """最弱手の取得"""
-        return MoveAndPolicyHelper.get_best_moves(
-                weakest0_strongest1 = 0,
-                board=self._board,
-                kifuwarabe=self)
-
-
-    def get_strongest_moves(self):
-        """最強手の取得"""
-        return MoveAndPolicyHelper.get_best_moves(
-                weakest0_strongest1 = 1,
-                board=self._board,
-                kifuwarabe=self)
-
-
     def policy(
             self,
             is_debug=False):
@@ -663,54 +637,6 @@ class Kifuwarabe():
         print(f'  悪手一覧：')
         for move_u in bad_move_u_set:
             print(f'    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is bad')
-
-
-    def weakest(self):
-        """現局面の最弱手を返す"""
-        (kl_move_u_and_policy_dictionary,
-         kq_move_u_and_policy_dictionary,
-         pl_move_u_and_policy_dictionary,
-         pq_move_u_and_policy_dictionary) = self.get_weakest_moves()
-
-        print(f'最弱手一覧（ＫＬ）：', flush=True)
-        for move_u, policy in kl_move_u_and_policy_dictionary.items():
-            print(f'  K:{move_u:5} L:***** : {policy:4}', flush=True)
-
-        print(f'最弱手一覧（ＫＱ）：', flush=True)
-        for move_u, policy in kq_move_u_and_policy_dictionary.items():
-            print(f'  K:{move_u:5} Q:***** : {policy:4}', flush=True)
-
-        print(f'最弱手一覧（ＰＬ）：', flush=True)
-        for move_u, policy in pl_move_u_and_policy_dictionary.items():
-            print(f'  P:{move_u:5} L:***** : {policy:3}', flush=True)
-
-        print(f'最弱手一覧（ＰＱ）：', flush=True)
-        for move_u, policy in pq_move_u_and_policy_dictionary.items():
-            print(f'  P:{move_u:5} Q:***** : {policy:3}', flush=True)
-
-
-    def strongest(self):
-        """現局面の最強手を返す"""
-        (kl_move_u_and_policy_dictionary,
-         kq_move_u_and_policy_dictionary,
-         pl_move_u_and_policy_dictionary,
-         pq_move_u_and_policy_dictionary) = self.get_strongest_moves()
-
-        print(f'最強手一覧（ＫＬ）：', flush=True)
-        for move_u, policy in kl_move_u_and_policy_dictionary.items():
-            print(f'  K:{move_u:5} L:***** : {policy:4}', flush=True)
-
-        print(f'最強手一覧（ＫＱ）：', flush=True)
-        for move_u, policy in kq_move_u_and_policy_dictionary.items():
-            print(f'  K:{move_u:5} Q:***** : {policy:4}', flush=True)
-
-        print(f'最強手一覧（ＰＬ）：', flush=True)
-        for move_u, policy in pl_move_u_and_policy_dictionary.items():
-            print(f'  P:{move_u:5} L:***** : {policy:4}', flush=True)
-
-        print(f'最強手一覧（ＰＱ）：', flush=True)
-        for move_u, policy in pq_move_u_and_policy_dictionary.items():
-            print(f'  P:{move_u:5} Q:***** : {policy:4}', flush=True)
 
 
     def relation(self, cmd_tail):
