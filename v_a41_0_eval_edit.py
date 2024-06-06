@@ -5,7 +5,7 @@ from v_a41_0_eval_kk import EvaluationKkTable
 from v_a41_0_eval_kp import EvaluationKpTable
 from v_a41_0_eval_pk import EvaluationPkTable
 from v_a41_0_eval_pp import EvaluationPpTable
-from v_a41_0_lib import Turn, Move, MoveHelper, BoardHelper
+from v_a41_0_lib import Turn, Move
 
 
 class EvaluationEdit():
@@ -27,88 +27,6 @@ class EvaluationEdit():
         """
         self._board=board
         self._kifuwarabe=kifuwarabe
-
-
-    def get_summary(
-            self,
-            move_obj,
-            is_debug=False):
-        """集計を取得
-
-        Parameters
-        ----------
-        move_obj : Move
-            着手オブジェクト
-        is_debug : bool
-            デバッグモードか？
-        """
-
-        # 投了局面時、入玉宣言局面時、１手詰めは無視
-
-        k_sq = BoardHelper.get_king_square(self._board)
-
-        # 自玉の指し手か？
-        is_king_move = MoveHelper.is_king(k_sq, move_obj)
-
-        if is_king_move:
-
-            # １つの着手には、０～複数の着手がある木構造をしています。
-            # その木構造のパスをキーとし、そのパスが持つ有無のビット値を値とする辞書を作成します
-            (kl_index_to_relation_exists_dictionary,
-             kq_index_to_relation_exists_dictionary,
-             _,
-             _) = EvaluationFacade.select_fo_index_to_relation_exists(
-                    move_obj=move_obj,
-                    is_king_move=is_king_move,
-                    board=self._board,
-                    kifuwarabe=self._kifuwarabe)
-
-            # ＫＬとＫＱの関係数
-            total_of_relation = len(kl_index_to_relation_exists_dictionary) + len(kq_index_to_relation_exists_dictionary)
-            print(f"[{datetime.datetime.now()}] [weaken > kl and kq]   total_of_relation:{total_of_relation}  =  len(kl_index_to_relation_exists_dictionary):{len(kl_index_to_relation_exists_dictionary)}  +  len(kq_index_to_relation_exists_dictionary):{len(kq_index_to_relation_exists_dictionary)}")
-
-            # ＫＬとＫＱの関係が有りのものの数
-            positive_of_relation = EvaluationFacade.get_number_of_connection_for_kl_kq(
-                    kl_index_to_relation_exists_dictionary,
-                    kq_index_to_relation_exists_dictionary,
-                    board=self._board,
-                    is_debug=False)
-
-            return (kl_index_to_relation_exists_dictionary,
-                    kq_index_to_relation_exists_dictionary,
-                    is_king_move,
-                    positive_of_relation,
-                    total_of_relation)
-
-        else:
-
-            # １つの着手には、０～複数の着手がある木構造をしています。
-            # その木構造のパスをキーとし、そのパスが持つ有無のビット値を値とする辞書を作成します
-            (_,
-             _,
-             pl_index_to_relation_exists_dictionary,
-             pq_index_to_relation_exists_dictionary) = EvaluationFacade.select_fo_index_to_relation_exists(
-                    move_obj=move_obj,
-                    is_king_move=is_king_move,
-                    board=self._board,
-                    kifuwarabe=self._kifuwarabe)
-
-            # ＰＬとＰＱの関係数
-            total_of_relation = len(pl_index_to_relation_exists_dictionary) + len(pq_index_to_relation_exists_dictionary)
-            print(f"[{datetime.datetime.now()}] [weaken > pl and pq]  total_of_relation:{total_of_relation}  =  len(pl_index_to_relation_exists_dictionary):{len(pl_index_to_relation_exists_dictionary)}  +  len(pq_index_to_relation_exists_dictionary):{len(pq_index_to_relation_exists_dictionary)}")
-
-            # ＰＬとＰＱの関係が有りのものの数
-            positive_of_relation = EvaluationFacade.get_number_of_connection_for_pl_pq(
-                    pl_index_to_relation_exists_dictionary,
-                    pq_index_to_relation_exists_dictionary,
-                    board=self._board,
-                    is_debug=is_debug)
-
-            return (pl_index_to_relation_exists_dictionary,
-                    pq_index_to_relation_exists_dictionary,
-                    is_king_move,
-                    positive_of_relation,
-                    total_of_relation)
 
 
     def weaken(
@@ -145,12 +63,17 @@ class EvaluationEdit():
          # 関係が陽性の総数
          positive_of_relation,
          # 関係の総数
-         total_of_relation) = self.get_summary(
+         total_of_relation) = EvaluationFacade.get_summary(
                 move_obj=move_obj,
+                board=self._board,
+                kifuwarabe=self._kifuwarabe,
                 is_debug=is_debug)
 
         # ポリシー値（千分率）
-        policy = EvaluationFacade.round_half_up(positive_of_relation * 1000 / total_of_relation)
+        if 0 < total_of_relation:
+            policy = EvaluationFacade.round_half_up(positive_of_relation * 1000 / total_of_relation)
+        else:
+            policy = 0
 
         # 関係の数の半分未満のうち、最大の数
         max_number_of_less_than_50_percent = EvaluationFacade.get_max_number_of_less_than_50_percent(
@@ -379,12 +302,17 @@ class EvaluationEdit():
          # 関係が陽性の総数
          positive_of_relation,
          # 関係の総数
-         total_of_relation) = self.get_summary(
+         total_of_relation) = EvaluationFacade.get_summary(
                 move_obj=move_obj,
+                board=self._board,
+                kifuwarabe=self._kifuwarabe,
                 is_debug=is_debug)
 
         # ポリシー値（千分率）
-        policy = EvaluationFacade.round_half_up(positive_of_relation * 1000 / total_of_relation)
+        if 0 < total_of_relation:
+            policy = EvaluationFacade.round_half_up(positive_of_relation * 1000 / total_of_relation)
+        else:
+            policy = 0
 
         # 関係の数の半分未満のうち、最大の数
         max_number_of_less_than_50_percent = EvaluationFacade.get_max_number_of_less_than_50_percent(

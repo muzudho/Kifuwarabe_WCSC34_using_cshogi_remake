@@ -920,16 +920,45 @@ class Lottery():
             デバッグモードか？
         """
 
-        #
-        # 好手、悪手一覧
-        # ------------
-        #
-        (good_move_u_set,
-         bad_move_u_set) = MoveAndPolicyHelper.select_good_f_move_u_set_power(
-                legal_moves=legal_moves,
-                board=board,
-                kifuwarabe=kifuwarabe,
-                is_debug=is_debug)
+        # 好手の集合
+        good_move_u_set = set()
+
+        # 悪手の集合
+        bad_move_u_set = set()
+
+        for move_id in legal_moves:
+            move_u = cshogi.move_to_usi(move_id)
+
+            # 着手オブジェクト
+            move_obj = Move.from_usi(move_u)
+
+            # 自駒と敵玉に対する関係の辞書
+            (fl_index_to_relation_exists_dictionary,
+            # 自駒と敵兵に対する関係の辞書
+            fq_index_to_relation_exists_dictionary,
+            # 玉の指し手か？
+            is_king_move,
+            # 関係が陽性の総数
+            positive_of_relation,
+            # 関係の総数
+            total_of_relation) = EvaluationFacade.get_summary(
+                    move_obj=move_obj,
+                    board=board,
+                    kifuwarabe=kifuwarabe,
+                    is_debug=is_debug)
+
+            # ポリシー値（千分率）
+            if 0 < total_of_relation:
+                policy = EvaluationFacade.round_half_up(positive_of_relation * 1000 / total_of_relation)
+            else:
+                policy = 0
+
+            if 500 <= policy:
+                good_move_u_set.add(move_u)
+
+            else:
+                bad_move_u_set.add(move_u)
+
 
         if is_debug:
 
