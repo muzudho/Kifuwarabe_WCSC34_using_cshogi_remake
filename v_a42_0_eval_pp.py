@@ -130,7 +130,7 @@ class EvaluationPpTable():
         turn : int
             手番
         """
-        file_name=f'n1_eval_pk_{Turn.to_string(turn)}_{self._engine_version_str}.bin'
+        file_name=f'data[{self._engine_version_str}]_n1_eval_pk_{Turn.to_string(turn)}.bin'
 
         print(f"[{datetime.datetime.now()}] {file_name} file exists check ...", flush=True)
         is_file_exists = os.path.isfile(file_name)
