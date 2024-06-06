@@ -82,6 +82,9 @@ class EvaluationEdit():
                     board=self._board,
                     is_debug=False)
 
+            # ポリシー値（千分率）
+            policy = EvaluationFacade.round_half_up(number_of_connection_kl_kq * 1000 / kl_kq_total)
+
             max_number_of_less_than_50_percent = EvaluationFacade.get_max_number_of_less_than_50_percent(
                     total=kl_kq_total)
 
@@ -93,7 +96,7 @@ class EvaluationEdit():
 
             # デバッグ表示
             if is_debug:
-                print(f"[{datetime.datetime.now()}] [weaken > kl and kq]  K:{move_obj.as_usi:5}  O:*****  有:{number_of_connection_kl_kq} / 総:{kl_kq_total}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
+                print(f"[{datetime.datetime.now()}] [weaken > kl and kq]  K:{move_obj.as_usi:5}  O:*****  policy:{policy}‰  =  有:{number_of_connection_kl_kq}  /  総:{kl_kq_total}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
 
             # 既に悪手評価なので、弱化は不要です
             if difference < 1:
@@ -187,6 +190,9 @@ class EvaluationEdit():
                     board=self._board,
                     is_debug=is_debug)
 
+            # ポリシー値（千分率）
+            policy = EvaluationFacade.round_half_up(number_of_connection_pl_pq * 1000 / pl_pq_total)
+
             max_number_of_less_than_50_percent = EvaluationFacade.get_max_number_of_less_than_50_percent(
                     total=pl_pq_total)
 
@@ -198,7 +204,7 @@ class EvaluationEdit():
 
             if is_debug:
                 # デバッグ表示
-                print(f"[{datetime.datetime.now()}] [weaken > pl and pq]  P:{move_obj.as_usi:5}  O:*****  有:{number_of_connection_pl_pq} / 総:{pl_pq_total}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
+                print(f"[{datetime.datetime.now()}] [weaken > pl and pq]  P:{move_obj.as_usi:5}  O:*****  policy:{policy}‰  有:{number_of_connection_pl_pq}  /  総:{pl_pq_total}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
 
             # 既に悪手評価なので、弱化は不要です
             if difference < 1:
@@ -338,6 +344,9 @@ class EvaluationEdit():
                     board=self._board,
                     is_debug=False)
 
+            # ポリシー値（千分率）
+            policy = EvaluationFacade.round_half_up(number_of_connection_kl_kq * 1000 / kl_kq_total)
+
             max_number_of_less_than_50_percent = EvaluationFacade.get_max_number_of_less_than_50_percent(
                     total=kl_kq_total)
 
@@ -349,7 +358,7 @@ class EvaluationEdit():
 
             # デバッグ表示
             if is_debug:
-                print(f"[{datetime.datetime.now()}] [strengthen > kl and kq]  K:{move_obj.as_usi:5}  O:*****  有:{number_of_connection_kl_kq} / 総:{kl_kq_total}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
+                print(f"[{datetime.datetime.now()}] [strengthen > kl and kq]  K:{move_obj.as_usi:5}  O:*****  policy:{policy}  有:{number_of_connection_kl_kq}  /  総:{kl_kq_total}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
 
             # 既に好手評価なので、強化は不要です
             if difference < 1:
@@ -442,6 +451,9 @@ class EvaluationEdit():
                     board=self._board,
                     is_debug=is_debug)
 
+            # ポリシー値（千分率）
+            policy = EvaluationFacade.round_half_up(number_of_connection_pl_pq * 1000 / pl_pq_total)
+
             max_number_of_less_than_50_percent = EvaluationFacade.get_max_number_of_less_than_50_percent(
                     total=pl_pq_total)
 
@@ -453,7 +465,7 @@ class EvaluationEdit():
 
             # デバッグ表示
             if is_debug:
-                print(f"[{datetime.datetime.now()}] [strengthen > pl and pq]  P:{move_obj.as_usi:5}  O:*****  有:{number_of_connection_pl_pq} / 総:{pl_pq_total}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
+                print(f"[{datetime.datetime.now()}] [strengthen > pl and pq]  P:{move_obj.as_usi:5}  O:*****  policy:{policy}‰  有:{number_of_connection_pl_pq}  /  総:{pl_pq_total}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
 
             # 既に好手評価なので、強化は不要です
             if difference < 1:

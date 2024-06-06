@@ -1093,6 +1093,16 @@ class EvaluationFacade():
 
 
     @staticmethod
+    def round_half_up(real):
+        """小数点以下第１位を四捨五入します
+
+        real : number
+            実数
+        """
+        return Decimal(str(real)).quantize(Decimal('0'), rounding=ROUND_HALF_UP)
+
+
+    @staticmethod
     def get_max_number_of_less_than_50_percent(
             total):
         """ＫＬとＫＱ（または、ＰＬとＰＱ）の関係の有りのものの数が５割未満の内、最大の整数
@@ -1115,7 +1125,7 @@ class EvaluationFacade():
         """
 
         # (1)
-        max_number_of_less_than_50_percent = Decimal(str(total / 2)).quantize(Decimal('0'), rounding=ROUND_HALF_UP) - 1
+        max_number_of_less_than_50_percent = EvaluationFacade.round_half_up(total / 2) - 1
 
         # (2)
         if max_number_of_less_than_50_percent < 0:
