@@ -219,21 +219,22 @@ class EvaluationPpTable():
                 index=pp_index)
 
 
-    # 使ってない？
     def set_relation_esixts_by_pp_moves(
             self,
             p1_move_obj,
             p2_move_obj,
-            bit,
-            is_rotate):
+            p1_turn,
+            bit):
         """玉の着手と兵の応手を受け取って、関係の有無を設定します
 
         Parameters
         ----------
         p1_move_obj : Move
-            兵１の指し手
+            兵１の着手
         p2_move_obj : Move
-            兵２の指し手
+            兵２の応手
+        p1_turn : int
+            着手側の手番
         bit : int
             0 か 1
         is_rotate : bool
@@ -248,7 +249,7 @@ class EvaluationPpTable():
                 index=EvaluationPpTable.get_index_of_pp_table(
                     p1_move_obj=p1_move_obj,
                     p2_move_obj=p2_move_obj,
-                    is_rotate=is_rotate),
+                    p1_turn=p1_turn),
                 bit=bit)
 
         return is_changed

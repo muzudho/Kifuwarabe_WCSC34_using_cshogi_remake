@@ -1,3 +1,4 @@
+import cshogi
 import datetime
 from decimal import Decimal, ROUND_HALF_UP
 from v_a42_0_debug_plan import DebugPlan
@@ -137,7 +138,7 @@ class MoveAndPolicyHelper():
 
 
     @staticmethod
-    def select_good_f_move_u_set_power(
+    def select_good_f_move_u_set_facade(
             legal_moves,
             board,
             kifuwarabe,
@@ -154,79 +155,64 @@ class MoveAndPolicyHelper():
             きふわらべ
         is_debug : bool
             デバッグか？
+
+        Returns
+        -------
+         (good_move_u_set,
+          bad_move_u_set)
         """
 
-        #print(f"[{datetime.datetime.now()}] [select good f move u set power no1] start...")
+        # 好手の集合
+        good_move_u_set = set()
 
-        # 合法手を、着手と応手に紐づくポリシー値を格納した辞書に変換します
-        #
-        #   ポリシー値は千分率の４桁の整数
-        #
-        (k_move_u_for_l_and_policy_dictionary,
-         k_move_u_for_q_and_policy_dictionary,
-         p_move_u_for_l_and_policy_dictionary,
-         p_move_u_for_q_and_policy_dictionary) = EvaluationFacade.select_fo_move_u_and_policy_dictionary(
-                legal_moves=legal_moves,
-                board=board,
-                kifuwarabe=kifuwarabe,
-                is_debug=is_debug)
+        # 悪手の集合
+        bad_move_u_set = set()
 
+        for move_id in legal_moves:
+            move_u = cshogi.move_to_usi(move_id)
 
-        if is_debug and DebugPlan.select_good_f_move_u_set_power():
-            for k_move_u, policy in k_move_u_for_l_and_policy_dictionary.items():
-                print(f"[select good f move u set power] k_move_u:{k_move_u:5} for l  policy:{policy}‰")
+            # 着手オブジェクト
+            move_obj = Move.from_usi(move_u)
 
-            for k_move_u, policy in k_move_u_for_q_and_policy_dictionary.items():
-                print(f"[select good f move u set power] k_move_u:{k_move_u:5} for q  policy:{policy}‰")
+            # 自駒と敵玉に対する関係の辞書
+            (fl_index_to_relation_exists_dictionary,
+            # 自駒と敵兵に対する関係の辞書
+            fq_index_to_relation_exists_dictionary,
+            # 玉の指し手か？
+            is_king_move,
+            # 関係が陽性の総数
+            positive_of_relation,
+            # 関係の総数
+            total_of_relation) = EvaluationFacade.get_summary(
+                    move_obj=move_obj,
+                    board=board,
+                    kifuwarabe=kifuwarabe,
+                    is_debug=is_debug)
 
-            for p_move_u, policy in p_move_u_for_l_and_policy_dictionary.items():
-                print(f"[select good f move u set power] p_move_u:{p_move_u:5} for l  policy:{policy}‰")
+            # ポリシー値（千分率）
+            if 0 < total_of_relation:
+                policy = EvaluationFacade.round_half_up(positive_of_relation * 1000 / total_of_relation)
+            else:
+                policy = 0
 
-            for p_move_u, policy in p_move_u_for_q_and_policy_dictionary.items():
-                print(f"[select good f move u set power] p_move_u:{p_move_u:5} for q  policy:{policy}‰")
+            if 500 <= policy:
+                good_move_u_set.add(move_u)
 
-
-        #print(f"[{datetime.datetime.now()}] [select good f move u set power no2] start...")
-
-
-        (k_move_u_to_policy_dictionary,
-         p_move_u_to_policy_dictionary) = MoveAndPolicyHelper.seleft_f_move_u_add_l_and_q(
-                k_move_u_for_l_and_policy_dictionary=k_move_u_for_l_and_policy_dictionary,
-                k_move_u_for_q_and_policy_dictionary=k_move_u_for_q_and_policy_dictionary,
-                p_move_u_for_l_and_policy_dictionary=p_move_u_for_l_and_policy_dictionary,
-                p_move_u_for_q_and_policy_dictionary=p_move_u_for_q_and_policy_dictionary,
-                is_debug=is_debug)
+            else:
+                bad_move_u_set.add(move_u)
 
 
-        if is_debug and DebugPlan.select_good_f_move_u_set_power():
-            for k_move_u, policy in k_move_u_to_policy_dictionary.items():
-                print(f"[select good f move u set power] k_move_u:{k_move_u:5}  policy:{policy}‰")
+        if is_debug:
 
-            for p_move_u, policy in p_move_u_to_policy_dictionary.items():
-                print(f"[select good f move u set power] p_move_u:{p_move_u:5}  policy:{policy}‰")
+            print(f"[{datetime.datetime.now()}] [choice best] 好手一覧")
 
+            for good_move_u in good_move_u_set:
+                print(f"[{datetime.datetime.now()}]  good_move_u:{good_move_u:5}")
 
-        #print(f"[{datetime.datetime.now()}] [select good f move u set power no3] start...")
+            print(f"[{datetime.datetime.now()}] [choice best] 悪手一覧")
 
-
-        # ポリシー値は　分母の異なる集団の　投票数なので、
-        # 絶対値に意味はなく、
-        # 賛同か否定か（0.5 より高いか、低いか）ぐらいの判断にしか使えないと思うので、
-        # そのようにします
-
-        #
-        # 好手、悪手一覧
-        # ------------
-        #
-        (good_move_u_set,
-         bad_move_u_set) = MoveAndPolicyHelper.select_good_f_move_u_set_pipe(
-                k_move_u_to_policy_dictionary=k_move_u_to_policy_dictionary,
-                p_move_u_to_policy_dictionary=p_move_u_to_policy_dictionary,
-                turn=board.turn,
-                is_debug=is_debug)
-
-
-        #print(f"[{datetime.datetime.now()}] [select good f move u set power] end")
+            for bad_move_u in bad_move_u_set:
+                print(f"[{datetime.datetime.now()}]  bad_move_u:{bad_move_u:5}")
 
 
         return (good_move_u_set,
@@ -1013,8 +999,8 @@ class EvaluationFacade():
                     kl_index=kl_index,
                     k_turn=board.turn)
 
-            if is_debug:
-                # 表示
+            # デバッグ表示
+            if is_debug and DebugPlan.get_number_of_connection_for_kl_kq:
                 print(f"[{datetime.datetime.now()}] [get number of connection for kl kq > kl]  kl_index:{kl_index:7}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
             if relation_exists == 1:
@@ -1027,8 +1013,8 @@ class EvaluationFacade():
                     kp_index=kq_index,
                     k_turn=board.turn)
 
-            # 表示
-            if is_debug:
+            # デバッグ表示
+            if is_debug and DebugPlan.get_number_of_connection_for_kl_kq:
                 print(f"[{datetime.datetime.now()}] [get number of connection for kl kq > kq]  kq_index:{kq_index:7}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
             if relation_exists == 1:
@@ -1065,8 +1051,8 @@ class EvaluationFacade():
                     pk_index=pl_index,
                     p_turn=board.turn)
 
-            if is_debug:
-                # 表示
+            # デバッグ表示
+            if is_debug and DebugPlan.get_number_of_connection_for_pl_pq:
                 print(f"[{datetime.datetime.now()}] [get number of connection for pl pq > pl]  pl_index:{pl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
             if relation_exists == 1:
@@ -1079,8 +1065,8 @@ class EvaluationFacade():
                     pp_index=pq_index,
                     p1_turn=board.turn)
 
-            if is_debug:
-                # 表示
+            # デバッグ表示
+            if is_debug and DebugPlan.get_number_of_connection_for_pl_pq:
                 print(f"[{datetime.datetime.now()}] [get number of connection for pl pq > pq]  pq_index:{pq_index:7}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
             if relation_exists == 1:

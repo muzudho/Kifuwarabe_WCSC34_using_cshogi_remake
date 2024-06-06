@@ -215,7 +215,7 @@ class Learn():
         # ------------
         #
         (good_move_u_set,
-         bad_move_u_set) = MoveAndPolicyHelper.select_good_f_move_u_set_power(
+         bad_move_u_set) = MoveAndPolicyHelper.select_good_f_move_u_set_facade(
                 legal_moves=list(self._board.legal_moves),
                 board=self._board,
                 kifuwarabe=self._kifuwarabe,
@@ -441,7 +441,7 @@ class Learn():
         # ------------
         #
         (good_move_u_set,
-         bad_move_u_set) = MoveAndPolicyHelper.select_good_f_move_u_set_power(
+         bad_move_u_set) = MoveAndPolicyHelper.select_good_f_move_u_set_facade(
                 legal_moves=list(self._board.legal_moves),
                 board=self._board,
                 kifuwarabe=self._kifuwarabe,

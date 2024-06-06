@@ -1,4 +1,5 @@
-* 
+* MoveAndPolicyHelper.select_good_f_move_u_set_power(...) を削除
+* MoveAndPolicyHelper.select_good_f_move_u_set_facade(...) を新規作成
 * TODO good/bad の判定方法が統一されてない
   * EvaluationEdit.weaken(...) では、EvaluationFacade.select_fo_index_to_relation_exists(...) を使って数を数えている
   * MoveAndPolicyHelper.select_good_f_move_u_set_power(...) では MoveAndPolicyHelper.seleft_f_move_u_add_l_and_q(...) を使って policy 値を作ってる
