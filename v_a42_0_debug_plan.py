@@ -1,18 +1,36 @@
 class DebugPlan():
     """デバッグ計画"""
 
-    # C
+    #####
+    # C #
+    #####
     _create_k_and_p_legal_moves = False
 
-    # G
+    #####
+    # E #
+    #####
+    evaluation_edit_weaken = False
+    evaluation_edit_strengthen = False
+
+    #####
+    # G #
+    #####
     get_number_of_connection_for_kl_kq = False
     get_number_of_connection_for_pl_pq = False
 
-    # L
-    _learn_at_odd_log_progress = False
-    _learn_at_even_log_progress = False
+    #####
+    # L #
+    #####
 
-    # S
+    # 学習の進捗を表示するものだから、表示したい
+    _learn_at_odd_log_progress = True
+
+    # 学習の進捗を表示するものだから、表示したい
+    _learn_at_even_log_progress = True
+
+    #####
+    # S #
+    #####
     select_good_f_move_u_set_facade = False
 
     _select_fo_move_u_and_policy_dictionary_no1 = False

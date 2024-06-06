@@ -1,5 +1,5 @@
-import cshogi
 import datetime
+from v_a42_0_debug_plan import DebugPlan
 from v_a42_0_eval import EvaluationFacade
 from v_a42_0_eval_kk import EvaluationKkTable
 from v_a42_0_eval_kp import EvaluationKpTable
@@ -109,7 +109,8 @@ class EvaluationEdit():
             #
             for kl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
 
-                if is_debug:
+                # デバッグ表示
+                if is_debug and DebugPlan.evaluation_edit_weaken:
                     print(f"[{datetime.datetime.now()}] [weaken > kl]  rest:{rest} / {len(fl_index_to_relation_exists_dictionary)}")
 
                 if rest < 1:
@@ -122,7 +123,8 @@ class EvaluationEdit():
                 if k_move_obj.as_usi == move_u:
                     if relation_exists == 1:
 
-                        if is_debug:
+                        # デバッグ表示
+                        if is_debug and DebugPlan.evaluation_edit_weaken:
                             print(f"[{datetime.datetime.now()}] [weaken > kl]  turn:{Turn.to_string(self._board.turn)}  kl_index:{kl_index:7}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  remove relation")
 
                         is_changed_temp = self._kifuwarabe._evaluation_kl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kl_moves(
@@ -140,7 +142,8 @@ class EvaluationEdit():
             #
             for kq_index, relation_exists in fq_index_to_relation_exists_dictionary.items():
 
-                if is_debug:
+                # デバッグ表示
+                if is_debug and DebugPlan.evaluation_edit_weaken:
                     print(f"[{datetime.datetime.now()}] [weaken > kq]  rest:{rest} / {len(fq_index_to_relation_exists_dictionary)}")
 
                 if rest < 1:
@@ -153,7 +156,8 @@ class EvaluationEdit():
                 if k_move_obj.as_usi == move_u:
                     if relation_exists == 1:
 
-                        if is_debug:
+                        # デバッグ表示
+                        if is_debug and DebugPlan.evaluation_edit_weaken:
                             print(f"[{datetime.datetime.now()}] [weaken > kq]  turn:{Turn.to_string(self._board.turn)}  kq_index:{kq_index:7}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}  remove relation")
 
                         is_changed_temp = self._kifuwarabe._evaluation_kq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kp_moves(
@@ -174,15 +178,15 @@ class EvaluationEdit():
             #
             difference = positive_of_relation - max_number_of_less_than_50_percent
 
-            if is_debug:
-                # デバッグ表示
+            # デバッグ表示
+            if is_debug and DebugPlan.evaluation_edit_weaken:
                 print(f"[{datetime.datetime.now()}] [weaken > pl and pq]  P:{move_obj.as_usi:5}  O:*****  policy:{policy}‰  陽性:{positive_of_relation}  /  総:{total_of_relation}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
 
             # 既に悪手評価なので、弱化は不要です
             if difference < 1:
-                if is_debug:
-                    # デバッグ表示
-                    print(f"[{datetime.datetime.now()}] [weaken > po]  既に悪手評価なので、弱化は不要です")
+                # デバッグ表示
+                if is_debug and DebugPlan.evaluation_edit_weaken:
+                    print(f"[{datetime.datetime.now()}] [weaken > pl and pg]  既に悪手評価なので、弱化は不要です")
 
                 return 'unnecessary'
 
@@ -194,7 +198,8 @@ class EvaluationEdit():
             #
             for pl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
 
-                if is_debug:
+                # デバッグ表示
+                if is_debug and DebugPlan.evaluation_edit_weaken:
                     print(f"[{datetime.datetime.now()}] [weaken > pl]  rest:{rest} / {len(fl_index_to_relation_exists_dictionary)}")
 
                 if rest < 1:
@@ -207,7 +212,8 @@ class EvaluationEdit():
                 if p_move_obj.as_usi == move_u:
                     if relation_exists == 1:
 
-                        if is_debug:
+                        # デバッグ表示
+                        if is_debug and DebugPlan.evaluation_edit_weaken:
                             print(f"[{datetime.datetime.now()}] [weaken > pl]  turn:{Turn.to_string(self._board.turn)}  pl_index:{pl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  remove relation")
 
                         is_changed_temp = self._kifuwarabe._evaluation_pl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_pk_moves(
@@ -225,7 +231,8 @@ class EvaluationEdit():
             #
             for pq_index, relation_exists in fq_index_to_relation_exists_dictionary.items():
 
-                if is_debug:
+                # デバッグ表示
+                if is_debug and DebugPlan.evaluation_edit_weaken:
                     print(f"[{datetime.datetime.now()}] [weaken > pq]  rest:{rest} / {len(fq_index_to_relation_exists_dictionary)}")
 
                 if rest < 1:
@@ -238,7 +245,8 @@ class EvaluationEdit():
                 if p_move_obj.as_usi == move_u:
                     if relation_exists == 1:
 
-                        if is_debug:
+                        # デバッグ表示
+                        if is_debug and DebugPlan.evaluation_edit_weaken:
                             print(f"[{datetime.datetime.now()}] [weaken > pq]  turn:{Turn.to_string(self._board.turn)}  pq_index:{pq_index:7}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}  remove relation")
 
                         is_changed_temp = self._kifuwarabe._evaluation_pq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_pp_moves(
@@ -319,13 +327,13 @@ class EvaluationEdit():
             difference = max_number_of_less_than_50_percent - positive_of_relation
 
             # デバッグ表示
-            if is_debug:
+            if is_debug and DebugPlan.evaluation_edit_weaken:
                 print(f"[{datetime.datetime.now()}] [strengthen > kl and kq]  K:{move_obj.as_usi:5}  O:*****  policy:{policy}  有:{positive_of_relation}  /  総:{total_of_relation}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
 
             # 既に好手評価なので、強化は不要です
             if difference < 1:
                 # デバッグ表示
-                if is_debug:
+                if is_debug and DebugPlan.evaluation_edit_weaken:
                     print(f"[{datetime.datetime.now()}] [strengthen > kl and kq]  既に好手評価なので、強化は不要です")
 
                 return 'unnecessary'
@@ -338,7 +346,7 @@ class EvaluationEdit():
             #
             for kl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
 
-                if is_debug:
+                if is_debug and DebugPlan.evaluation_edit_weaken:
                     print(f"[{datetime.datetime.now()}] [strengthen > kl]  rest:{rest} / {len(fl_index_to_relation_exists_dictionary)}")
 
                 if rest < 1:
@@ -351,7 +359,7 @@ class EvaluationEdit():
                 if k_move_obj.as_usi == move_u:
                     if relation_exists == 0:
 
-                        if is_debug:
+                        if is_debug and DebugPlan.evaluation_edit_weaken:
                             print(f"[{datetime.datetime.now()}] [strengthen > kl]  turn:{Turn.to_string(self._board.turn)}  kl_index:{kl_index:7}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
 
                         is_changed_temp = self._kifuwarabe._evaluation_kl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kl_moves(
@@ -369,7 +377,7 @@ class EvaluationEdit():
             #
             for kq_index, relation_exists in fq_index_to_relation_exists_dictionary.items():
 
-                if is_debug:
+                if is_debug and DebugPlan.evaluation_edit_weaken:
                     print(f"[{datetime.datetime.now()}] [strengthen > kq]  rest:{rest} / {len(fq_index_to_relation_exists_dictionary)}")
 
                 if rest < 1:
@@ -382,7 +390,7 @@ class EvaluationEdit():
                 if k_move_obj.as_usi == move_u:
                     if relation_exists == 0:
 
-                        if is_debug:
+                        if is_debug and DebugPlan.evaluation_edit_weaken:
                             print(f"[{datetime.datetime.now()}] [strengthen > kq]  turn:{Turn.to_string(self._board.turn)}  kq_index:{kq_index:7}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
 
                         is_changed_temp = self._kifuwarabe._evaluation_kq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kp_moves(
@@ -404,13 +412,13 @@ class EvaluationEdit():
             difference = max_number_of_less_than_50_percent - positive_of_relation
 
             # デバッグ表示
-            if is_debug:
+            if is_debug and DebugPlan.evaluation_edit_weaken:
                 print(f"[{datetime.datetime.now()}] [strengthen > pl and pq]  P:{move_obj.as_usi:5}  O:*****  policy:{policy}‰  有:{positive_of_relation}  /  総:{total_of_relation}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
 
             # 既に好手評価なので、強化は不要です
             if difference < 1:
                 # デバッグ表示
-                if is_debug:
+                if is_debug and DebugPlan.evaluation_edit_weaken:
                     print(f"[{datetime.datetime.now()}] [strengthen > pl and pq]  既に好手評価なので、強化は不要です")
 
                 return 'unnecessary'
@@ -423,7 +431,7 @@ class EvaluationEdit():
             #
             for pl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
 
-                if is_debug:
+                if is_debug and DebugPlan.evaluation_edit_weaken:
                     print(f"[{datetime.datetime.now()}] [strengthen > pl]  rest:{rest} / {len(fl_index_to_relation_exists_dictionary)}")
 
                 if rest < 1:
@@ -436,7 +444,7 @@ class EvaluationEdit():
                 if p_move_obj.as_usi == move_u:
                     if relation_exists == 0:
 
-                        if is_debug:
+                        if is_debug and DebugPlan.evaluation_edit_weaken:
                             print(f"[{datetime.datetime.now()}] [strengthen > pl]  turn:{Turn.to_string(self._board.turn)}  pl_index:{pl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
 
                         is_changed_temp = self._kifuwarabe._evaluation_pl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_pk_moves(
@@ -454,7 +462,7 @@ class EvaluationEdit():
             #
             for pq_index, relation_exists in fq_index_to_relation_exists_dictionary.items():
 
-                if is_debug:
+                if is_debug and DebugPlan.evaluation_edit_weaken:
                     print(f"[{datetime.datetime.now()}] [strengthen > pq]  rest:{rest} / {len(fq_index_to_relation_exists_dictionary)}")
 
                 if rest < 1:
@@ -467,7 +475,7 @@ class EvaluationEdit():
                 if p_move_obj.as_usi == move_u:
                     if relation_exists == 0:
 
-                        if is_debug:
+                        if is_debug and DebugPlan.evaluation_edit_weaken:
                             print(f"[{datetime.datetime.now()}] [strengthen > pq]  turn:{Turn.to_string(self._board.turn)}  pq_index:{pq_index:7}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
 
                         is_changed_temp = self._kifuwarabe._evaluation_pq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_pp_moves(
