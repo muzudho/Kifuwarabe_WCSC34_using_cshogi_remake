@@ -267,14 +267,9 @@ class Learn():
 
             # 検討を間引く
             if not Learn.is_learn_by_rate():
-                print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 好手]  ★間引く')
                 continue
 
-            print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 好手]  ★間引かなかった')
-
             is_weak_move = False
-
-            print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 好手]  ★ｎ手詰め局面図かチェックする前')
 
             # ｎ手詰め局面図かチェック
             if self._board.sfen() != sfen_at_mate:
@@ -284,12 +279,8 @@ class Learn():
                 print(f"#  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
                 raise ValueError(f"[learn > 詰める方 > 好手] {mate}手詰め局面図エラー")
 
-            print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 好手]  ★一手指す前')
-
             # （ｎ手詰め局面図で）とりあえず一手指す
             self._board.push_usi(move_u)
-
-            print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 好手]  ★プレイアウトする前')
 
             # プレイアウトする
             result_str = self._kifuwarabe.playout(
@@ -309,7 +300,7 @@ class Learn():
                 # 自分の負け
                 if self._kifuwarabe._my_turn == self._board.turn:
                     is_weak_move = True
-                    log_progress(f"[⤵] {mate}手詰めを逃して {max_playout_depth} 手以内に負けた。すごく悪い手だ。好手の評価を取り下げる")
+                    log_progress(f"[↓] {mate}手詰めを逃して {max_playout_depth} 手以内に負けた。すごく悪い手だ。好手の評価を取り下げる")
                 else:
                     log_progress(f"[　] {mate}手詰めは逃したが {max_playout_depth} 手以内には勝ったからセーフとする。好手の評価はそのまま")
 
@@ -320,7 +311,7 @@ class Learn():
 
                 else:
                     is_weak_move = True
-                    log_progress(f"[⤵] {mate}手詰めを逃して、 {max_playout_depth} 手以内に入玉宣言されて負けた。すごく悪い手だ。好手の評価を取り下げる")
+                    log_progress(f"[↓] {mate}手詰めを逃して、 {max_playout_depth} 手以内に入玉宣言されて負けた。すごく悪い手だ。好手の評価を取り下げる")
 
             # 手数の上限に達した
             elif result_str == 'max_move':
@@ -329,7 +320,7 @@ class Learn():
             # プレイアウトの深さの上限に達した
             elif result_str == 'max_playout_depth':
                 is_weak_move = True
-                log_progress(f"[⤵] 攻めてる間にプレイアウトが打ち切られた。（評価値テーブルを動かしたいので）好手の評価を取り下げる")
+                log_progress(f"[↓] 攻めてる間にプレイアウトが打ち切られた。（評価値テーブルを動かしたいので）好手の評価を取り下げる")
 
             else:
                 log_progress("[　] 好手の評価はそのまま")
@@ -361,8 +352,6 @@ class Learn():
                 if result_str == 'changed':
                     changed_count += 1
 
-            print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 好手]  ★次の指し手へ')
-
 
         if self._is_debug:
             print(f'[{datetime.datetime.now()}] [learn > 詰める方]  現悪手一覧：')
@@ -374,10 +363,7 @@ class Learn():
 
             # 検討を間引く
             if not Learn.is_learn_by_rate():
-                print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 悪手]  ★間引いた')
                 continue
-
-            print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 悪手]  ★間引かなかった')
 
             is_strong_move = False
 
@@ -412,7 +398,7 @@ class Learn():
                     # かかった手数ｎ手
                     if self._move_number_at_end - self._board.move_number == mate:
                         is_strong_move = True
-                        log_progress(f"[⤴] {mate}手詰めの局面で、{mate}手で勝ったので、評価を上げよう")
+                        log_progress(f"[↑] {mate}手詰めの局面で、{mate}手で勝ったので、評価を上げよう")
                     else:
                         log_progress(f"[　] {mate}手詰めの局面で、{mate + 1}手以上かけて {max_playout_depth} 手以内には勝ったが、相手がヘボ手を指した可能性を消せない。悪手の評価はこのまま")
 
@@ -456,8 +442,6 @@ class Learn():
 
                 if result_str == 'changed':
                     changed_count += 1
-
-            print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 悪手]  ★次の指し手へ')
 
 
         return ('ok', changed_count)
@@ -532,14 +516,9 @@ class Learn():
             # カウンターは事前に進める
             choice_num += 1
 
-            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手]  ★choice_num:{choice_num}')
-
             # 検討を間引く
             if not Learn.is_learn_by_rate():
-                print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手]  ★間引く')
                 continue
-
-            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手]  ★間引かなかった')
 
             is_weak_move = False
 
@@ -551,12 +530,8 @@ class Learn():
                 print(f"#  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
                 raise ValueError(f"[learn > 逃げる方 > 好手] {mate}手詰め局面図エラー")
 
-            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手]  ★一手指す前')
-
             # （ｎ手詰め局面図で）とりあえず一手指す
             self._board.push_usi(move_u)
-
-            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手]  ★プレイアウトする前')
 
             # プレイアウトする
             result_str = self._kifuwarabe.playout(
@@ -576,7 +551,7 @@ class Learn():
                 # 自分の負け。かかった手数２手。つまり１手詰め
                 if self._kifuwarabe._my_turn == self._board.turn and self._move_number_at_end - self._board.move_number == 2:
                     is_weak_move = True
-                    log_progress(f"[⤵] {mate}手詰めが掛けられていて、{mate}手詰めを避けられなかったから、好手の評価を取り下げる")
+                    log_progress(f"[↓] {mate}手詰めが掛けられていて、{mate}手詰めを避けられなかったから、好手の評価を取り下げる")
 
                 else:
                     log_progress(f"[　] {mate}手詰めが掛けられていて、{mate}手詰めを避けたから、好手の評価はそのまま")
@@ -592,18 +567,12 @@ class Learn():
             else:
                 log_progress("[　] この好手の評価はそのまま")
 
-            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手]  ★終局図に進める前')
-
             # 終局図の内部データに進める
             self.restore_end_position()
-
-            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手]  ★ｎ手詰めの局面に戻す前')
 
             # ｎ手詰めの局面まで戻す
             for _i in range(0, mate):
                 self._board.pop()
-
-            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手]  ★戻せたかチェックする前')
 
             # 戻せたかチェック
             if self._board.sfen() != sfen_at_mate:
@@ -612,8 +581,6 @@ class Learn():
                 print(self._board)
                 print(f"#  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
                 raise ValueError("局面巻き戻しエラー")
-
-            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手]  ★評価値を下げる前')
 
             # ｎ手詰めの局面にしてから、評価値を下げる
             if is_weak_move:
@@ -628,8 +595,6 @@ class Learn():
                 if result_str == 'changed':
                     changed_count += 1
 
-            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手]  ★次の指し手へ')
-
 
         if self._is_debug:
             print(f'[{datetime.datetime.now()}] [learn > 逃げる方]  現悪手一覧：')
@@ -641,10 +606,7 @@ class Learn():
 
             # 検討を間引く
             if not Learn.is_learn_by_rate():
-                print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手]  ★間引く')
                 continue
-
-            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手]  ★間引かなかった')
 
             is_strong_move = False
 
@@ -656,20 +618,14 @@ class Learn():
                 print(f"#  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
                 raise ValueError(f"[learn > 逃げる方 > 悪手] {mate}手詰め局面図エラー")
 
-            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手]  ★一手指す前')
-
             # （ｎ手詰め局面図で）とりあえず一手指す
             self._board.push_usi(move_u)
-
-            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手]  ★プレイアウトする前')
 
             # プレイアウトする
             result_str = self._kifuwarabe.playout(
                     is_in_learn=True,
                     # １手指しているので、１つ引く
                     max_playout_depth=max_playout_depth - 1)
-
-            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手]  ★プレイアウトした後')
 
             move_number_difference = self._board.move_number - self._move_number_at_end
 
@@ -684,7 +640,7 @@ class Learn():
                 if self._kifuwarabe._my_turn != self._board.turn and move_number_difference == mate:
                     # 次にｎ手詰めの局面に掛けられるところを、その前に詰めたのだから、すごく良い手だ。この手の評価を上げる
                     is_strong_move = True
-                    log_progress(f"[⤴] {mate}手詰めを掛けられていて、逆に{mate - 1}手で勝ったのだから、この手の評価を上げる")
+                    log_progress(f"[↑] {mate}手詰めを掛けられていて、逆に{mate - 1}手で勝ったのだから、この手の評価を上げる")
                 else:
                     log_progress(f"[　] {mate}手詰めを掛けられていて、ここで１手で勝てなかったから、この悪手の評価はそのまま")
 
@@ -693,7 +649,7 @@ class Learn():
                 if move_number_difference != mate:
                     # 次にｎ手詰めの局面に掛けられるところを、その前に入玉宣言勝ちしたのだから、すごく良い手だ。この手の評価を上げる
                     is_strong_move = True
-                    log_progress(f"[⤴] {mate}手詰めを掛けられていて、逆に{mate - 1}手で入玉宣言勝ちしたのだから、この手の評価を上げる")
+                    log_progress(f"[↑] {mate}手詰めを掛けられていて、逆に{mate - 1}手で入玉宣言勝ちしたのだから、この手の評価を上げる")
                 else:
                     log_progress(f"[　] {mate}手詰めを掛けられていて、ここで{mate}手以上掛けて入玉したから、この悪手の評価はそのまま")
 
@@ -704,23 +660,18 @@ class Learn():
             # プレイアウトの深さの上限に達した
             elif result_str == 'max_playout_depth':
                 is_strong_move = True
-                log_progress(f"[⤴] プレイアウトが打ち切られるまで逃げ切った。（評価値テーブルを動かしたいので）悪手の評価を取り下げる")
+                log_progress(f"[↑] プレイアウトが打ち切られるまで逃げ切った。（評価値テーブルを動かしたいので）悪手の評価を取り下げる")
 
             else:
                 log_progress("[　] この悪手の評価はそのまま")
 
-            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手]  ★終局図に進める前')
 
             # 終局図の内部データに進める
             self.restore_end_position()
 
-            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手]  ★ｎ手詰めの局面まで戻す前')
-
             # ｎ手詰めの局面まで戻す
             for _i in range(0, mate):
                 self._board.pop()
-
-            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手]  ★戻せたかチェックする前')
 
             # 戻せたかチェック
             if self._board.sfen() != sfen_at_mate:
@@ -729,8 +680,6 @@ class Learn():
                 print(self._board)
                 print(f"#  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
                 raise ValueError("局面巻き戻しエラー")
-
-            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手]  ★評価値を上げる前')
 
             # ｎ手詰めの局面にしてから、評価値を上げる
             if is_strong_move:
@@ -745,6 +694,5 @@ class Learn():
                 if result_str == 'changed':
                     changed_count += 1
 
-            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手]  ★次の指し手へ')
 
         return ('ok', changed_count)

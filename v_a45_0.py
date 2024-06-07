@@ -853,8 +853,6 @@ class Kifuwarabe():
         if max_playout_depth is None:
             max_playout_depth = max_move_number - self._board.move_number + 1
 
-        print(f'[{datetime.datetime.now()}] [kifuwarabe > playout]  ★ループに入る前')
-
         for _playout_depth in range(0, max_playout_depth):
 
             # 手数上限
@@ -871,8 +869,6 @@ class Kifuwarabe():
 
             # （評価値テーブルの内容だけで対局したい用途で使う想定なので）プレイアウト中は１手詰めルーチンを使わない
 
-            print(f'[{datetime.datetime.now()}] [kifuwarabe > playout]  ★くじを引く前')
-
             # くじを引く（投了のケースは対応済みなので、ここで対応しなくていい）
             best_move_str = Lottery.choice_best(
                     legal_moves=list(self._board.legal_moves),
@@ -882,12 +878,9 @@ class Kifuwarabe():
             if is_debug:
                 print(f"[{datetime.datetime.now()}] [playout] best_move:{best_move_str:5}")
 
-            print(f'[{datetime.datetime.now()}] [kifuwarabe > playout]  ★一手指す前')
-
             # 一手指す
             self._board.push_usi(best_move_str)
 
-            print(f'[{datetime.datetime.now()}] [kifuwarabe > playout]  ★次の深さへ')
 
         # プレイアウト深さ上限
         return 'max_playout_depth'
