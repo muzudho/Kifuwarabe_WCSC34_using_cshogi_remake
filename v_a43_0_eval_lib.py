@@ -126,13 +126,18 @@ class EvaluationLib():
 
                 f.write(sum.to_bytes(1))
 
-        print(f"[{datetime.datetime.now()}] remove ./{file_name_obj.base_name} file...", flush=True)
+        try:
+            print(f"[{datetime.datetime.now()}] remove ./{file_name_obj.base_name} file...", flush=True)
 
-        os.remove(
-                path=f'./{file_name_obj.file_name}')
+            os.remove(
+                    path=f'./{file_name_obj.base_name}')
+
+        # ファイルが見つからないのは好都合なので無視します
+        except FileNotFoundError:
+            pass
 
         print(f"[{datetime.datetime.now()}] rename {file_name_obj.temporary_base_name} file to {file_name_obj.base_name}...", flush=True)
 
         os.rename(
-                source=file_name_obj.temporary_file_name,
-                destination=file_name_obj.file_name)
+                src=file_name_obj.temporary_base_name,
+                dst=file_name_obj.base_name)

@@ -133,8 +133,8 @@ class EvaluationPkTable():
             手番
         """
         file_name_obj = FileName(
-                file_stem = f'data[{self._engine_version_str}]_n1_eval_pk_{Turn.to_string(turn)}',
-                file_extension = '.bin')
+                file_stem=f'data[{self._engine_version_str}]_n1_eval_pk_{Turn.to_string(turn)}',
+                file_extension='.bin')
 
         print(f"[{datetime.datetime.now()}] {file_name_obj.base_name} file exists check ...", flush=True)
         is_file_exists = os.path.isfile(file_name_obj.base_name)

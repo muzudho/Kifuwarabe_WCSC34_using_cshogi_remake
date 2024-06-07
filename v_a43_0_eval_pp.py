@@ -3,7 +3,7 @@ import os
 import datetime
 from v_a43_0_eval_lib import EvaluationLib
 from v_a43_0_eval_p import EvaluationPMove
-from v_a43_0_lib import FileName, Move, EvalutionMmTable
+from v_a43_0_lib import FileName, Turn, Move, EvalutionMmTable
 
 
 class EvaluationPpTable():
@@ -131,8 +131,8 @@ class EvaluationPpTable():
             手番
         """
         file_name_obj = FileName(
-                file_stem = 'data[{self._engine_version_str}]_n1_eval_pp_{Turn.to_string(turn)}',
-                file_extension = f'.bin')
+                file_stem=f'data[{self._engine_version_str}]_n1_eval_pp_{Turn.to_string(turn)}',
+                file_extension='.bin')
 
         print(f"[{datetime.datetime.now()}] {file_name_obj.base_name} file exists check ...", flush=True)
         is_file_exists = os.path.isfile(file_name_obj.base_name)
