@@ -1,6 +1,6 @@
 import datetime
 from v_a44_0_debug_plan import DebugPlan
-from v_a44_0_eval import MoveAndPolicyHelper
+from v_a44_0_eval import EvaluationFacade
 from v_a44_0_lib import Turn, BoardHelper
 
 
@@ -215,7 +215,7 @@ class Learn():
         # ------------
         #
         (good_move_u_set,
-         bad_move_u_set) = MoveAndPolicyHelper.select_good_f_move_u_set_facade(
+         bad_move_u_set) = EvaluationFacade.select_good_f_move_u_set_facade(
                 legal_moves=list(self._board.legal_moves),
                 board=self._board,
                 kifuwarabe=self._kifuwarabe,
@@ -441,7 +441,7 @@ class Learn():
         # ------------
         #
         (good_move_u_set,
-         bad_move_u_set) = MoveAndPolicyHelper.select_good_f_move_u_set_facade(
+         bad_move_u_set) = EvaluationFacade.select_good_f_move_u_set_facade(
                 legal_moves=list(self._board.legal_moves),
                 board=self._board,
                 kifuwarabe=self._kifuwarabe,
