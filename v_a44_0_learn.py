@@ -14,8 +14,8 @@ class Learn():
         """全ての指し手の良し悪しを検討していると、全体を見る時間がなくなるから、
         間引くのに使う"""
 
-        # 平均合法手が 80 手と仮定して、 8分の1 にすれば、１手当たり８つの合法手を検討するだろう
-        return random.randint(0,8) == 0
+        # 平均合法手が 80 手と仮定して、 20分の1 にすれば、１手当たり 4 つの合法手を検討するだろう
+        return random.randint(0,20) == 0
 
 
     def __init__(
@@ -130,8 +130,10 @@ class Learn():
         #if 16 < max_depth:
         #    max_depth = 16
 
-        # ３手詰めを３手で詰める必要はなく、５手必至でも良い手と言えるので、そのような場合 5-3 で、 extension=2 とします
-        extension = 100
+        # ３手詰めを３手で詰める必要はなく、５手必至でも良い手と言えるので、そのような場合 5-3 で、 attack_extension=2 とします
+        attack_extension = 10
+        # ２手詰めを４手詰めまで引き延ばせれば、逃げるのが上手くなったと言えるので、そのような場合 4-2 で、 escape_extension=2 とします
+        escape_extension = 100
 
         while mate <= max_depth:
 
@@ -139,24 +141,27 @@ class Learn():
             # 奇数：　詰める方
             # --------------
             #
-            self.at_odd(
+            result_str = self.at_odd(
                     mate=mate,
-                    max_playout_depth=mate+extension)
+                    max_playout_depth=mate+attack_extension)
 
             mate += 1
 
-            if self._move_number_at_end < mate:
+            if self._move_number_at_end < mate or result_str == 'can not rewind':
                 break
 
             #
             # 偶数：　逃げる方
             # --------------
             #
-            self.at_even(
+            result_str = self.at_even(
                     mate=mate,
-                    max_playout_depth=mate+extension)
+                    max_playout_depth=mate+escape_extension)
 
             mate += 1
+
+            if self._move_number_at_end < mate or result_str == 'can not rewind':
+                break
 
             # 全ての評価値テーブル［0:先手, 1:後手］の（変更があれば）保存
             #
@@ -194,7 +199,7 @@ class Learn():
         # 棋譜を巻き戻せないなら、学ぶことはできません
         if self._board.move_number < mate + 1:
             print(f'[{datetime.datetime.now()}] [learn > 詰める方] ignored. you cannot learn. short moves. board.move_number:{self._board.move_number}')
-            return
+            return 'can not rewind'
 
         # 終局図の内部データに戻す
         self.restore_end_position()
@@ -420,6 +425,8 @@ class Learn():
                 # 変更はログに出したい
                 print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 悪手]        strengthen {move_u:5}  result:`{result_str}`')
 
+        return 'ok'
+
 
     def at_even(
             self,
@@ -438,7 +445,7 @@ class Learn():
         # 棋譜を巻き戻せないなら、学ぶことはできません
         if self._board.move_number < mate + 1:
             print(f'[{datetime.datetime.now()}] [learn > 逃げる方] ignored. you cannot learn. short moves. board.move_number:{self._board.move_number}')
-            return
+            return 'can not rewind'
 
         # 終局図の内部データに戻す
         self.restore_end_position()
@@ -534,7 +541,7 @@ class Learn():
 
             # プレイアウトの深さの上限に達した
             elif result_str == 'max_playout_depth':
-                log_progress(f"[　] 逃げてる間にプレイアウトが打ち切られた。好手の評価はそのまま")
+                log_progress(f"[　] プレイアウトが打ち切られるまで逃げ切った。好手の評価はそのまま")
 
             else:
                 log_progress("[　] この好手の評価はそのまま")
@@ -629,7 +636,7 @@ class Learn():
             # プレイアウトの深さの上限に達した
             elif result_str == 'max_playout_depth':
                 is_strong_move = True
-                log_progress(f"[⤴] 逃げてる間にプレイアウトが打ち切られた。（評価値テーブルを動かしたいので）悪手の評価を取り下げる")
+                log_progress(f"[⤴] プレイアウトが打ち切られるまで逃げ切った。（評価値テーブルを動かしたいので）悪手の評価を取り下げる")
 
             else:
                 log_progress("[　] この悪手の評価はそのまま")
@@ -658,3 +665,5 @@ class Learn():
 
                 # 変更はログに出したい
                 print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手]        strengthen {move_u:5}  result:`{result_str}`')
+
+        return 'ok'
