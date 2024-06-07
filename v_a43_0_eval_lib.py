@@ -8,16 +8,22 @@ class EvaluationLib():
 
     @staticmethod
     def read_evaluation_table_as_array_from_file(
-            file_name):
-        """評価値テーブル・ファイルの読込"""
+            file_name_obj):
+        """評価値テーブル・ファイルの読込
+
+        Parameters
+        ----------
+        file_name_obj : FileName
+            ファイル名オブジェクト
+        """
 
         # ロードする。数分ほどかかる
-        print(f"[{datetime.datetime.now()}] read {file_name} file ...", flush=True)
+        print(f"[{datetime.datetime.now()}] read {file_name_obj.base_name} file ...", flush=True)
 
         table_as_array = []
 
         try:
-            with open(file_name, 'rb') as f:
+            with open(file_name_obj.base_name, 'rb') as f:
 
                 one_byte_binary = f.read(1)
 
@@ -36,10 +42,10 @@ class EvaluationLib():
 
                     one_byte_binary = f.read(1)
 
-            print(f"[{datetime.datetime.now()}] '{file_name}' file loaded. evaluation table size: {len(table_as_array)}", flush=True)
+            print(f"[{datetime.datetime.now()}] '{file_name_obj.base_name}' file loaded. evaluation table size: {len(table_as_array)}", flush=True)
 
         except FileNotFoundError as ex:
-            print(f"[evaluation table / load from file] [{file_name}] file error. {ex}")
+            print(f"[evaluation table / load from file] [{file_name_obj.base_name}] file error. {ex}")
             raise
 
         return table_as_array
@@ -74,14 +80,20 @@ class EvaluationLib():
 
     @staticmethod
     def save_evaluation_table_file(
-            file_name,
+            file_name_obj,
             table_as_array):
-        """ファイルへ保存します"""
+        """ファイルへ保存します
 
-        print(f"[{datetime.datetime.now()}] save {file_name} file ...", flush=True)
+        Parameters
+        ----------
+        file_name_obj : FileName
+            ファイル名オブジェクト
+        """
+
+        print(f"[{datetime.datetime.now()}] save {file_name_obj.base_name} file ...", flush=True)
 
         # バイナリ・ファイルに出力する
-        with open(file_name, 'wb') as f:
+        with open(file_name_obj.base_name, 'wb') as f:
 
             length = 0
             sum = 0
@@ -113,4 +125,4 @@ class EvaluationLib():
 
                 f.write(sum.to_bytes(1))
 
-        print(f"[{datetime.datetime.now()}] {file_name} file saved", flush=True)
+        print(f"[{datetime.datetime.now()}] {file_name_obj.base_name} file saved", flush=True)

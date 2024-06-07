@@ -4,7 +4,7 @@ import datetime
 from v_a43_0_eval_lib import EvaluationLib
 from v_a43_0_eval_k import EvaluationKMove
 from v_a43_0_eval_p import EvaluationPMove
-from v_a43_0_lib import Turn, Move, EvalutionMmTable
+from v_a43_0_lib import FileName, Turn, Move, EvalutionMmTable
 
 
 class EvaluationKpTable():
@@ -131,15 +131,17 @@ class EvaluationKpTable():
         turn : int
             手番
         """
-        file_name=f'data[{self._engine_version_str}]_n1_eval_kp_{Turn.to_string(turn)}.bin'
+        file_name_obj = FileName(
+            file_stem=f'data[{self._engine_version_str}]_n1_eval_kp_{Turn.to_string(turn)}',
+            file_extension=f'.bin')
 
-        print(f"[{datetime.datetime.now()}] {file_name} file exists check ...", flush=True)
-        is_file_exists = os.path.isfile(file_name)
+        print(f"[{datetime.datetime.now()}] {file_name_obj.base_name} file exists check ...", flush=True)
+        is_file_exists = os.path.isfile(file_name_obj.base_name)
 
         if is_file_exists:
             # 読込
             table_as_array = EvaluationLib.read_evaluation_table_as_array_from_file(
-                    file_name=file_name)
+                    file_name_obj=file_name_obj)
         else:
             table_as_array = None
 
@@ -156,7 +158,7 @@ class EvaluationKpTable():
 
 
         self._mm_table_obj = EvalutionMmTable(
-                file_name=file_name,
+                file_name_obj=file_name_obj,
                 table_as_array=table_as_array,
                 is_file_modified=is_file_modified)
 
@@ -168,7 +170,7 @@ class EvaluationKpTable():
         保存するかどうかは先に判定しておくこと
         """
         EvaluationLib.save_evaluation_table_file(
-                file_name=self.mm_table_obj.file_name,
+                file_name_obj=self.mm_table_obj.file_name_obj,
                 table_as_array=self.mm_table_obj.table_as_array)
 
 

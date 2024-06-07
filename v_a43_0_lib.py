@@ -7,6 +7,46 @@ from v_a43_0_bit_ope import BitOpe
 from v_a43_0_debug_plan import DebugPlan
 
 
+class FileName():
+    """ファイル名"""
+
+
+    def __init__(
+            self,
+            file_stem,
+            file_extension):
+        """初期化
+
+        Parameters
+        ----------
+        file_stem : str
+            ファイル名の幹
+        file_extension : str
+            ドット付きファイル拡張子
+        """
+        self._file_stem = file_stem
+        self._file_extension = file_extension
+
+
+    @property
+    def file_stem(self):
+        """ファイル名の幹"""
+        return self._file_stem
+
+
+    @property
+    def file_extension(self):
+        """ファイル拡張子"""
+        return self._file_extension
+
+
+    @property
+    def base_name(self):
+        """ベース名"""
+        return f'{self._file_stem}{self._file_extension}'
+
+
+
 class Turn():
     """手番"""
 
@@ -744,30 +784,30 @@ class EvalutionMmTable():
 
     def __init__(
             self,
-            file_name,
+            file_name_obj,
             table_as_array,
             is_file_modified):
         """初期化
 
         Parameters
         ----------
-        file_name : str
-            ファイル名
+        file_name_obj : FileName
+            ファイル名オブジェクト
         table_as_array : []
             評価値テーブルの配列
         is_file_modified : bool
             このテーブルが変更されて、保存されていなければ真
         """
 
-        self._file_name = file_name
+        self._file_name_obj = file_name_obj
         self._table_as_array = table_as_array
         self._is_file_modified = is_file_modified
 
 
     @property
-    def file_name(self):
-        """ファイル名"""
-        return self._file_name
+    def file_name_obj(self):
+        """ファイル名オブジェクト"""
+        return self._file_name_obj
 
 
     @property
@@ -918,27 +958,29 @@ class GameResultFile():
         engine_version_str : str
             将棋エンジンのバージョン
         """
-        self._file_name = f'n1_game_result_{engine_version_str}.txt'
+        self._file_name_obj = FileName(
+            file_stem = f'n1_game_result_{engine_version_str}',
+            file_extension = '.txt')
 
 
     @property
-    def file_name(self):
-        """ファイル名"""
-        return self._file_name
+    def file_name_obj(self):
+        """ファイル名オブジェクト"""
+        return self._file_name_obj
 
 
     def exists(self):
         """ファイルの存在確認"""
-        return os.path.isfile(self.file_name)
+        return os.path.isfile(self.file_name_obj.base_name)
 
 
     def delete(self):
         """ファイルの削除"""
 
         try:
-            print(f"[{datetime.datetime.now()}] {self.file_name} file delete...", flush=True)
-            os.remove(self.file_name)
-            print(f"[{datetime.datetime.now()}] {self.file_name} file deleted", flush=True)
+            print(f"[{datetime.datetime.now()}] {self.file_name_obj.base_name} file delete...", flush=True)
+            os.remove(self.file_name_obj.base_name)
+            print(f"[{datetime.datetime.now()}] {self.file_name_obj.base_name} file deleted", flush=True)
 
         except FileNotFoundError:
             # ファイルが無いのなら、削除に失敗しても問題ない
@@ -948,14 +990,14 @@ class GameResultFile():
     def read_lines(self):
         """結果の読込"""
         try:
-            print(f"[{datetime.datetime.now()}] {self.file_name} file read ...", flush=True)
+            print(f"[{datetime.datetime.now()}] {self.file_name_obj.base_name} file read ...", flush=True)
 
-            with open(self.file_name, 'r', encoding="utf-8") as f:
+            with open(self.file_name_obj.base_name, 'r', encoding="utf-8") as f:
                 text = f.read()
 
             # 改行で分割
             lines = text.splitlines()
-            print(f"[{datetime.datetime.now()}] {self.file_name} file read", flush=True)
+            print(f"[{datetime.datetime.now()}] {self.file_name_obj.base_name} file read", flush=True)
 
             return lines
 
@@ -979,12 +1021,12 @@ class GameResultFile():
         print(f"あ～あ、 {turn_text} 番で負けたぜ（＞＿＜）", flush=True)
 
         # ファイルに出力する
-        print(f"[{datetime.datetime.now()}] {self.file_name} file save ...", flush=True)
-        with open(self.file_name, 'w', encoding="utf-8") as f:
+        print(f"[{datetime.datetime.now()}] {self.file_name_obj.base_name} file save ...", flush=True)
+        with open(self.file_name_obj.base_name, 'w', encoding="utf-8") as f:
             f.write(f"""lose {turn_text}
 sfen {board.sfen()}""")
 
-        print(f"[{datetime.datetime.now()}] {self.file_name} file saved", flush=True)
+        print(f"[{datetime.datetime.now()}] {self.file_name_obj.base_name} file saved", flush=True)
 
 
     def save_win(self, my_turn, board):
@@ -1002,12 +1044,12 @@ sfen {board.sfen()}""")
         print(f"やったぜ {turn_text} 番で勝ったぜ（＾ｑ＾）", flush=True)
 
         # ファイルに出力する
-        print(f"[{datetime.datetime.now()}] {self.file_name} file save ...", flush=True)
-        with open(self.file_name, 'w', encoding="utf-8") as f:
+        print(f"[{datetime.datetime.now()}] {self.file_name_obj.base_name} file save ...", flush=True)
+        with open(self.file_name_obj.base_name, 'w', encoding="utf-8") as f:
             f.write(f"""win {turn_text}
 sfen {board.sfen()}""")
 
-        print(f"[{datetime.datetime.now()}] {self.file_name} file saved", flush=True)
+        print(f"[{datetime.datetime.now()}] {self.file_name_obj.base_name} file saved", flush=True)
 
 
     def save_draw(self, my_turn, board):
@@ -1025,12 +1067,12 @@ sfen {board.sfen()}""")
         print(f"持将棋か～（ー＿ー） turn: {turn_text}", flush=True)
 
         # ファイルに出力する
-        print(f"[{datetime.datetime.now()}] {self.file_name} file save ...", flush=True)
-        with open(self.file_name, 'w', encoding="utf-8") as f:
+        print(f"[{datetime.datetime.now()}] {self.file_name_obj.base_name} file save ...", flush=True)
+        with open(self.file_name_obj.base_name, 'w', encoding="utf-8") as f:
             f.write(f"""draw {turn_text}
 sfen {board.sfen()}""")
 
-        print(f"[{datetime.datetime.now()}] {self.file_name} file saved", flush=True)
+        print(f"[{datetime.datetime.now()}] {self.file_name_obj.base_name} file saved", flush=True)
 
 
     def save_otherwise(self, result_text, my_turn, board):
@@ -1050,12 +1092,12 @@ sfen {board.sfen()}""")
         print(f"なんだろな（・＿・）？　'{result_text}', turn: '{turn_text}'", flush=True)
 
         # ファイルに出力する
-        print(f"[{datetime.datetime.now()}] {self.file_name} file save ...", flush=True)
-        with open(self.file_name, 'w', encoding="utf-8") as f:
+        print(f"[{datetime.datetime.now()}] {self.file_name_obj.base_name} file save ...", flush=True)
+        with open(self.file_name_obj.base_name, 'w', encoding="utf-8") as f:
             f.write(f"""{result_text} {turn_text}
 sfen {board.sfen()}""")
 
-        print(f"[{datetime.datetime.now()}] {self.file_name} file saved", flush=True)
+        print(f"[{datetime.datetime.now()}] {self.file_name_obj.base_name} file saved", flush=True)
 
 
 ########################################
