@@ -226,7 +226,7 @@ class Learn():
         good_num = len(good_move_u_set)
         bad_num = len(bad_move_u_set)
         total_num = good_num + bad_num
-        print(f'[{datetime.datetime.now()}] [learn > 詰める方]  好手数：{good_num}  悪手数：{bad_num}', flush=True)
+        print(f'[{datetime.datetime.now()}] [learn > 詰める方]  mate:{mate}  好手数：{good_num}  悪手数：{bad_num}', flush=True)
 
         if self._is_debug:
             print(f'[{datetime.datetime.now()}] [learn > 詰める方]  現好手一覧：')
@@ -259,37 +259,37 @@ class Learn():
             # 進捗ログを出したい
             def log_progress(comment):
                 if DebugPlan.learn_at_odd_log_progress():
-                    print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 好手] ({choice_num:3}/{total_num:3}) [{self._board.move_number}手 {Turn.to_symbol(self._board.turn)}]  {move_u:5}:{result_str}  手数差:{move_number_difference}  {comment}', flush=True)
+                    print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 好手] ({choice_num:3}/{total_num:3})  {move_u:5}  [{self._board.move_number}手 {Turn.to_symbol(self._board.turn)}]  手数差:{move_number_difference}  {result_str}  {comment}', flush=True)
 
             # どちらかが投了した
             if result_str == 'resign':
                 # 自分の負け
                 if self._kifuwarabe._my_turn == self._board.turn:
                     is_weak_move = True
-                    log_progress(f"fumble:{mate}手詰めを逃して {max_playout_depth} 手以内に負けた。すごく悪い手だ。好手の評価を取り下げる")
+                    log_progress(f"[⤵] {mate}手詰めを逃して {max_playout_depth} 手以内に負けた。すごく悪い手だ。好手の評価を取り下げる")
                 else:
-                    log_progress(f"ignored:{mate}手詰めは逃したが {max_playout_depth} 手以内には勝ったからセーフとする。好手の評価はそのまま")
+                    log_progress(f"[　] {mate}手詰めは逃したが {max_playout_depth} 手以内には勝ったからセーフとする。好手の評価はそのまま")
 
             # どちらかが入玉勝ちした
             elif result_str == 'nyugyoku_win':
                 if self._kifuwarabe._my_turn == self._board.turn:
-                    log_progress(f"ignored:{mate}手詰めは逃したが {max_playout_depth} 手以内には入玉宣言勝ちしたからセーフとする。好手の評価はそのまま")
+                    log_progress(f"[　] {mate}手詰めは逃したが {max_playout_depth} 手以内には入玉宣言勝ちしたからセーフとする。好手の評価はそのまま")
 
                 else:
                     is_weak_move = True
-                    log_progress(f"fumble:{mate}手詰めを逃して、 {max_playout_depth} 手以内に入玉宣言されて負けた。すごく悪い手だ。好手の評価を取り下げる")
+                    log_progress(f"[⤵] {mate}手詰めを逃して、 {max_playout_depth} 手以内に入玉宣言されて負けた。すごく悪い手だ。好手の評価を取り下げる")
 
             # 手数の上限に達した
             elif result_str == 'max_move':
-                log_progress(f"ignored:この学習では、手数の上限で終わった対局は、評価値を変動させないものとする")
+                log_progress(f"[　] この学習では、手数の上限で終わった対局は、評価値を変動させないものとする")
 
             # プレイアウトの深さの上限に達した
             elif result_str == 'max_playout_depth':
                 is_weak_move = True
-                log_progress(f"fumble:{mate}手詰めを逃して {max_playout_depth} 手以内に終局しなかった。好手の評価を取り下げる")
+                log_progress(f"[⤵] {mate}手詰めを逃して {max_playout_depth} 手以内に終局しなかった。好手の評価を取り下げる")
 
             else:
-                log_progress("ignored:好手の評価はそのまま")
+                log_progress("[　] 好手の評価はそのまま")
 
             # 終局図の内部データに戻す
             self.restore_end_position()
@@ -345,7 +345,7 @@ class Learn():
             # 進捗ログを出したい
             def log_progress(comment):
                 if DebugPlan.learn_at_odd_log_progress():
-                    print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 悪手] ({choice_num:3}/{total_num:3}) [{self._board.move_number}手 {Turn.to_symbol(self._board.turn)}]  {move_u:5}:{result_str}  手数差:{move_number_difference}  {comment}', flush=True)
+                    print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 悪手] ({choice_num:3}/{total_num:3})  {move_u:5}  [{self._board.move_number}手 {Turn.to_symbol(self._board.turn)}]  手数差:{move_number_difference}  {result_str}  {comment}', flush=True)
 
             # どちらかが投了した
             if result_str == 'resign':
@@ -354,22 +354,22 @@ class Learn():
                     # かかった手数ｎ手
                     if self._move_number_at_end - self._board.move_number == mate:
                         is_strong_move = True
-                        log_progress(f"nice:{mate}手詰めの局面で、{mate}手で勝ったので、評価を上げよう")
+                        log_progress(f"[⤴] {mate}手詰めの局面で、{mate}手で勝ったので、評価を上げよう")
                     else:
-                        log_progress(f"ignored:{mate}手詰めの局面で、{mate + 1}手以上かけて {max_playout_depth} 手以内には勝ったが、相手がヘボ手を指した可能性を消せない。悪手の評価はこのまま")
+                        log_progress(f"[　] {mate}手詰めの局面で、{mate + 1}手以上かけて {max_playout_depth} 手以内には勝ったが、相手がヘボ手を指した可能性を消せない。悪手の評価はこのまま")
 
                 else:
-                    log_progress(f"ignored:{mate}手詰めの局面で、{mate}手詰めを逃して負けたのだから、悪手の評価はそのまま")
+                    log_progress(f"[　] {mate}手詰めの局面で、{mate}手詰めを逃して負けたのだから、悪手の評価はそのまま")
 
             # 手数の上限に達した
             elif result_str == 'max_move':
-                log_progress(f"ignored:この学習では、手数の上限で終わった対局は、評価値を変動させないものとする")
+                log_progress(f"[　] この学習では、手数の上限で終わった対局は、評価値を変動させないものとする")
 
             elif result_str == 'max_playout_depth':
-                log_progress(f"ignored:{mate}手詰めの局面で、 {max_playout_depth} 手かけて終局しなかったので、悪手の評価はそのまま")
+                log_progress(f"[　] {mate}手詰めの局面で、 {max_playout_depth} 手かけて終局しなかったので、悪手の評価はそのまま")
 
             else:
-                log_progress("ignored:悪手の評価はそのまま")
+                log_progress("[　] 悪手の評価はそのまま")
 
             # 終局図の内部データに戻す
             self.restore_end_position()
@@ -452,7 +452,7 @@ class Learn():
         good_num = len(good_move_u_set)
         bad_num = len(bad_move_u_set)
         total_num = good_num + bad_num
-        print(f'[{datetime.datetime.now()}] [learn > 逃げる方]  好手数：{good_num}  悪手数：{bad_num}')
+        print(f'[{datetime.datetime.now()}] [learn > 逃げる方]  mate:{mate}  好手数：{good_num}  悪手数：{bad_num}')
 
         if self._is_debug:
             print(f'[{datetime.datetime.now()}] [learn > 逃げる方]  現好手一覧：')
@@ -485,24 +485,24 @@ class Learn():
             # 進捗ログを出したい
             def log_progress(comment):
                 if DebugPlan.learn_at_even_log_progress():
-                    print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] ({choice_num:3}/{total_num:3})  [{self._board.move_number}手 {Turn.to_symbol(self._board.turn)}]  {move_u:5}:{result_str}  手数差:{move_number_difference}  {comment}', flush=True)
+                    print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] ({choice_num:3}/{total_num:3})  {move_u:5}  [{self._board.move_number}手 {Turn.to_symbol(self._board.turn)}]  手数差:{move_number_difference}  {result_str}  {comment}', flush=True)
 
             # どちらかが投了した
             if result_str == 'resign':
                 # 自分の負け。かかった手数２手。つまり１手詰め
                 if self._kifuwarabe._my_turn == self._board.turn and self._move_number_at_end - self._board.move_number == 2:
                     is_weak_move = True
-                    log_progress(f"fumble:{mate}手詰めが掛けられていて、{mate}手詰めを避けられなかったから、好手の評価を取り下げる")
+                    log_progress(f"[⤵] {mate}手詰めが掛けられていて、{mate}手詰めを避けられなかったから、好手の評価を取り下げる")
 
                 else:
-                    log_progress(f"fumble:{mate}手詰めが掛けられていて、{mate}手詰めを避けたから、好手の評価はそのまま")
+                    log_progress(f"[　] {mate}手詰めが掛けられていて、{mate}手詰めを避けたから、好手の評価はそのまま")
 
             # 手数の上限に達した
             elif result_str == 'max_move':
-                log_progress(f"ignored:この学習では、手数の上限で終わった対局は、評価値を変動させないものとする")
+                log_progress(f"[　] この学習では、手数の上限で終わった対局は、評価値を変動させないものとする")
 
             else:
-                log_progress("ignored:この好手の評価はそのまま")
+                log_progress("[　] この好手の評価はそのまま")
 
             # 終局図の内部データに戻す
             self.restore_end_position()
@@ -559,7 +559,7 @@ class Learn():
             # 進捗ログを出したい
             def log_progress(comment):
                 if DebugPlan.learn_at_even_log_progress():
-                    print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手] ({choice_num:3}/{total_num:3})  [{self._board.move_number}手 {Turn.to_symbol(self._board.turn)}]  {move_u:5}:{result_str}  手数差:{move_number_difference}  comment:{comment}', flush=True)
+                    print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手] ({choice_num:3}/{total_num:3})  {move_u:5}  [{self._board.move_number}手 {Turn.to_symbol(self._board.turn)}]  手数差:{move_number_difference}  {result_str}  {comment}', flush=True)
 
             # どちらかが投了した
             if result_str == 'resign':
@@ -567,25 +567,25 @@ class Learn():
                 if self._kifuwarabe._my_turn != self._board.turn and move_number_difference == mate:
                     # 次にｎ手詰めの局面に掛けられるところを、その前に詰めたのだから、すごく良い手だ。この手の評価を上げる
                     is_strong_move = True
-                    log_progress(f"nice:{mate}手詰めを掛けられていて、逆に{mate - 1}手で勝ったのだから、この手の評価を上げる")
+                    log_progress(f"[⤴] {mate}手詰めを掛けられていて、逆に{mate - 1}手で勝ったのだから、この手の評価を上げる")
                 else:
-                    log_progress(f"nice:{mate}手詰めを掛けられていて、ここで１手で勝てなかったから、この悪手の評価はそのまま")
+                    log_progress(f"[　] {mate}手詰めを掛けられていて、ここで１手で勝てなかったから、この悪手の評価はそのまま")
 
             # どちらかが入玉勝ちした
             elif result_str == 'nyugyoku_win':
                 if move_number_difference != mate:
                     # 次にｎ手詰めの局面に掛けられるところを、その前に入玉宣言勝ちしたのだから、すごく良い手だ。この手の評価を上げる
                     is_strong_move = True
-                    log_progress(f"nice:{mate}手詰めを掛けられていて、逆に{mate - 1}手で入玉宣言勝ちしたのだから、この手の評価を上げる")
+                    log_progress(f"[⤴] {mate}手詰めを掛けられていて、逆に{mate - 1}手で入玉宣言勝ちしたのだから、この手の評価を上げる")
                 else:
-                    log_progress(f"nice:{mate}手詰めを掛けられていて、ここで{mate}手以上掛けて入玉したから、この悪手の評価はそのまま")
+                    log_progress(f"[　] {mate}手詰めを掛けられていて、ここで{mate}手以上掛けて入玉したから、この悪手の評価はそのまま")
 
             # 手数の上限に達した
             elif result_str == 'max_move':
-                log_progress(f"ignored:この学習では、手数の上限で終わった対局は、評価値を変動させないものとする")
+                log_progress(f"[　] この学習では、手数の上限で終わった対局は、評価値を変動させないものとする")
 
             else:
-                log_progress("ignored:この悪手の評価はそのまま")
+                log_progress("[　] この悪手の評価はそのまま")
 
             # 終局図の内部データに戻す
             self.restore_end_position()
