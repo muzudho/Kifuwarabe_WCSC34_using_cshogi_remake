@@ -117,8 +117,8 @@ class Learn():
         max_depth = self._move_number_at_end
 
         # プレイアウトが遅いので仕方なく、全ての着手をさかのぼると時間がかかるので、上限を決めておく
-        if 16 < max_depth:
-            max_depth = 16
+        #if 16 < max_depth:
+        #    max_depth = 16
 
         # ３手詰めを３手で詰める必要はなく、５手必至でも良い手と言えるので、そのような場合 5-3 で、 extension=2 とします
         extension = 14
@@ -259,7 +259,7 @@ class Learn():
             # 進捗ログを出したい
             def log_progress(comment):
                 if DebugPlan.learn_at_odd_log_progress():
-                    print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 好手] ({choice_num:3}/{total_num:3})  {move_u:5}  [{self._board.move_number}手 {Turn.to_symbol(self._board.turn)}]  手数差:{move_number_difference}  {result_str}  {comment}', flush=True)
+                    print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 好手] ({choice_num:3}/{total_num:3})  {move_u:5}  [{self._board.move_number}手（差{move_number_difference}） {Turn.to_symbol(self._board.turn)}]  {result_str}  {comment}', flush=True)
 
             # どちらかが投了した
             if result_str == 'resign':
@@ -345,7 +345,7 @@ class Learn():
             # 進捗ログを出したい
             def log_progress(comment):
                 if DebugPlan.learn_at_odd_log_progress():
-                    print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 悪手] ({choice_num:3}/{total_num:3})  {move_u:5}  [{self._board.move_number}手 {Turn.to_symbol(self._board.turn)}]  手数差:{move_number_difference}  {result_str}  {comment}', flush=True)
+                    print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 悪手] ({choice_num:3}/{total_num:3})  {move_u:5}  [{self._board.move_number}手（差{move_number_difference}） {Turn.to_symbol(self._board.turn)}]  {result_str}  {comment}', flush=True)
 
             # どちらかが投了した
             if result_str == 'resign':
@@ -485,7 +485,7 @@ class Learn():
             # 進捗ログを出したい
             def log_progress(comment):
                 if DebugPlan.learn_at_even_log_progress():
-                    print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] ({choice_num:3}/{total_num:3})  {move_u:5}  [{self._board.move_number}手 {Turn.to_symbol(self._board.turn)}]  手数差:{move_number_difference}  {result_str}  {comment}', flush=True)
+                    print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] ({choice_num:3}/{total_num:3})  {move_u:5}  [{self._board.move_number}手（差{move_number_difference}） {Turn.to_symbol(self._board.turn)}]  {result_str}  {comment}', flush=True)
 
             # どちらかが投了した
             if result_str == 'resign':
@@ -559,7 +559,7 @@ class Learn():
             # 進捗ログを出したい
             def log_progress(comment):
                 if DebugPlan.learn_at_even_log_progress():
-                    print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手] ({choice_num:3}/{total_num:3})  {move_u:5}  [{self._board.move_number}手 {Turn.to_symbol(self._board.turn)}]  手数差:{move_number_difference}  {result_str}  {comment}', flush=True)
+                    print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手] ({choice_num:3}/{total_num:3})  {move_u:5}  [{self._board.move_number}手（差{move_number_difference}） {Turn.to_symbol(self._board.turn)}]  {result_str}  {comment}', flush=True)
 
             # どちらかが投了した
             if result_str == 'resign':
