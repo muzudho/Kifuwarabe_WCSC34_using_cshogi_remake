@@ -1,3 +1,4 @@
+import os
 import datetime
 import random
 
@@ -90,10 +91,10 @@ class EvaluationLib():
             ファイル名オブジェクト
         """
 
-        print(f"[{datetime.datetime.now()}] save {file_name_obj.base_name} file ...", flush=True)
+        print(f"[{datetime.datetime.now()}] save {file_name_obj.temporary_base_name} file ...", flush=True)
 
-        # バイナリ・ファイルに出力する
-        with open(file_name_obj.base_name, 'wb') as f:
+        # ファイルにバイナリ形式で出力する
+        with open(file_name_obj.temporary_base_name, 'wb') as f:
 
             length = 0
             sum = 0
@@ -125,4 +126,13 @@ class EvaluationLib():
 
                 f.write(sum.to_bytes(1))
 
-        print(f"[{datetime.datetime.now()}] {file_name_obj.base_name} file saved", flush=True)
+        print(f"[{datetime.datetime.now()}] remove ./{file_name_obj.base_name} file...", flush=True)
+
+        os.remove(
+                path=f'./{file_name_obj.file_name}')
+
+        print(f"[{datetime.datetime.now()}] rename {file_name_obj.temporary_base_name} file to {file_name_obj.base_name}...", flush=True)
+
+        os.rename(
+                source=file_name_obj.temporary_file_name,
+                destination=file_name_obj.file_name)

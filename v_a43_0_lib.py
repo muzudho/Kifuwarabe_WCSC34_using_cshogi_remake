@@ -36,7 +36,7 @@ class FileName():
 
     @property
     def file_extension(self):
-        """ファイル拡張子"""
+        """ドット付きファイル拡張子"""
         return self._file_extension
 
 
@@ -44,6 +44,12 @@ class FileName():
     def base_name(self):
         """ベース名"""
         return f'{self._file_stem}{self._file_extension}'
+
+
+    @property
+    def temporary_base_name(self):
+        """一時的なベース名"""
+        return f'{self._file_stem}_temp{self._file_extension}'
 
 
 
