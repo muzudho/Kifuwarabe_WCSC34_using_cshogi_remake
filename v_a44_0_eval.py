@@ -109,31 +109,31 @@ class EvaluationFacade():
 
         # ＫＬ
         for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
-
-            k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
-                    kl_index=kl_index,
-                    k_turn=board.turn)
-
-            # デバッグ表示
-            if is_debug and DebugPlan.get_number_of_connection_for_kl_kq:
-                print(f"[{datetime.datetime.now()}] [get number of connection for kl kq > kl]  kl_index:{kl_index:7}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
-
             if relation_exists == 1:
                 number_of_connection += 1
 
         # ＫＱ
         for kq_index, relation_exists in kq_index_to_relation_exists_dictionary.items():
-
-            k_move_obj, q_move_obj = EvaluationKpTable.destructure_kp_index(
-                    kp_index=kq_index,
-                    k_turn=board.turn)
-
-            # デバッグ表示
-            if is_debug and DebugPlan.get_number_of_connection_for_kl_kq:
-                print(f"[{datetime.datetime.now()}] [get number of connection for kl kq > kq]  kq_index:{kq_index:7}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
-
             if relation_exists == 1:
                 number_of_connection += 1
+
+        # デバッグ表示
+        if is_debug:
+            # ＫＬ
+            for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
+                if DebugPlan.get_number_of_connection_for_kl_kq:
+                    k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
+                            kl_index=kl_index,
+                            k_turn=board.turn)
+                    print(f"[{datetime.datetime.now()}] [get number of connection for kl kq > kl]  kl_index:{kl_index:7}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+
+            # ＫＱ
+            for kq_index, relation_exists in kq_index_to_relation_exists_dictionary.items():
+                if DebugPlan.get_number_of_connection_for_kl_kq:
+                    k_move_obj, q_move_obj = EvaluationKpTable.destructure_kp_index(
+                            kp_index=kq_index,
+                            k_turn=board.turn)
+                    print(f"[{datetime.datetime.now()}] [get number of connection for kl kq > kq]  kq_index:{kq_index:7}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
         return number_of_connection
 
@@ -161,31 +161,31 @@ class EvaluationFacade():
 
         # ＰＬ
         for pl_index, relation_exists in pl_index_to_relation_exists_dictionary.items():
-
-            p_move_obj, l_move_obj = EvaluationPkTable.destructure_pk_index(
-                    pk_index=pl_index,
-                    p_turn=board.turn)
-
-            # デバッグ表示
-            if is_debug and DebugPlan.get_number_of_connection_for_pl_pq:
-                print(f"[{datetime.datetime.now()}] [get number of connection for pl pq > pl]  pl_index:{pl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
-
             if relation_exists == 1:
                 number_of_connection += 1
 
         # ＰＱ
         for pq_index, relation_exists in pq_index_to_relation_exists_dictionary.items():
-
-            p_move_obj, q_move_obj = EvaluationPpTable.destructure_pp_index(
-                    pp_index=pq_index,
-                    p1_turn=board.turn)
-
-            # デバッグ表示
-            if is_debug and DebugPlan.get_number_of_connection_for_pl_pq:
-                print(f"[{datetime.datetime.now()}] [get number of connection for pl pq > pq]  pq_index:{pq_index:7}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
-
             if relation_exists == 1:
                 number_of_connection += 1
+
+        # デバッグ表示
+        if is_debug:
+            # ＰＬ
+            for pl_index, relation_exists in pl_index_to_relation_exists_dictionary.items():
+                if is_debug and DebugPlan.get_number_of_connection_for_pl_pq:
+                    p_move_obj, l_move_obj = EvaluationPkTable.destructure_pk_index(
+                            pk_index=pl_index,
+                            p_turn=board.turn)
+                    print(f"[{datetime.datetime.now()}] [get number of connection for pl pq > pl]  pl_index:{pl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+
+            # ＰＱ
+            for pq_index, relation_exists in pq_index_to_relation_exists_dictionary.items():
+                if is_debug and DebugPlan.get_number_of_connection_for_pl_pq:
+                    p_move_obj, q_move_obj = EvaluationPpTable.destructure_pp_index(
+                            pp_index=pq_index,
+                            p1_turn=board.turn)
+                    print(f"[{datetime.datetime.now()}] [get number of connection for pl pq > pq]  pq_index:{pq_index:7}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
         return number_of_connection
 
@@ -250,6 +250,14 @@ class EvaluationFacade():
             きふわらべ
         is_debug : bool
             デバッグモードか？
+
+        Returns
+        -------
+        - fl_index_to_relation_exists_dictionary
+        - fq_index_to_relation_exists_dictionary
+        - is_king_move
+        - positive_of_relation
+        - total_of_relation
         """
 
         # 投了局面時、入玉宣言局面時、１手詰めは無視

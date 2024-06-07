@@ -58,8 +58,16 @@ class Turn():
 
 
     _turn_string = {
+        None: 'None',
         cshogi.BLACK: 'black',
         cshogi.WHITE: 'white',
+    }
+
+
+    _turn_symbol = {
+        None: 'None',
+        cshogi.BLACK: '▲',
+        cshogi.WHITE: '▽',
     }
 
 
@@ -79,10 +87,12 @@ class Turn():
 
     @classmethod
     def to_string(clazz, my_turn):
-        if my_turn is None:
-            return 'None'
-
         return clazz._turn_string[my_turn]
+
+
+    @classmethod
+    def to_symbol(clazz, my_turn):
+        return clazz._turn_symbol[my_turn]
 
 
 class Move():
