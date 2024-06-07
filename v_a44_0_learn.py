@@ -14,8 +14,8 @@ class Learn():
         """全ての指し手の良し悪しを検討していると、全体を見る時間がなくなるから、
         間引くのに使う"""
 
-        # 100分の1の指し手だけ検討
-        return random.randint(0,100) == 0
+        # 平均合法手が 80 手と仮定して、 8分の1 にすれば、１手当たり８つの合法手を検討するだろう
+        return random.randint(0,8) == 0
 
 
     def __init__(
@@ -131,7 +131,7 @@ class Learn():
         #    max_depth = 16
 
         # ３手詰めを３手で詰める必要はなく、５手必至でも良い手と言えるので、そのような場合 5-3 で、 extension=2 とします
-        extension = 14
+        extension = 100
 
         while mate <= max_depth:
 
@@ -245,11 +245,13 @@ class Learn():
 
         for move_u in good_move_u_set:
 
+            # カウンターは事前に進める
+            choice_num += 1
+
             # 検討を間引く
             if not Learn.is_learn_by_rate():
                 continue
 
-            choice_num += 1
             is_weak_move = False
 
             # ｎ手詰め局面図かチェック
@@ -336,11 +338,13 @@ class Learn():
 
         for move_u in bad_move_u_set:
 
+            # カウンターは事前に進める
+            choice_num += 1
+
             # 検討を間引く
             if not Learn.is_learn_by_rate():
                 continue
 
-            choice_num += 1
             is_strong_move = False
 
             # ｎ手詰め局面図かチェック
@@ -481,11 +485,13 @@ class Learn():
 
         for move_u in good_move_u_set:
 
+            # カウンターは事前に進める
+            choice_num += 1
+
             # 検討を間引く
             if not Learn.is_learn_by_rate():
                 continue
 
-            choice_num += 1
             is_weak_move = False
 
             # ｎ手詰め局面図かチェック
@@ -564,11 +570,13 @@ class Learn():
 
         for move_u in bad_move_u_set:
 
+            # カウンターは事前に進める
+            choice_num += 1
+
             # 検討を間引く
             if not Learn.is_learn_by_rate():
                 continue
 
-            choice_num += 1
             is_strong_move = False
 
             # ｎ手詰め局面図かチェック
