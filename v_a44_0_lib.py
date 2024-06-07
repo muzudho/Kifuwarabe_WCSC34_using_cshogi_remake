@@ -984,7 +984,7 @@ class GameResultFile():
             将棋エンジンのバージョン
         """
         self._file_name_obj = FileName(
-            file_stem = f'n1_game_result_{engine_version_str}',
+            file_stem = f'data[{engine_version_str}]_n1_game_result',
             file_extension = '.txt')
 
 

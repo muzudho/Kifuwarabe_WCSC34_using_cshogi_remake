@@ -117,6 +117,8 @@ class Kifuwarabe():
             if result_str == 'quit':
                 break
 
+        print(f"[{datetime.datetime.now()}] end of USI loop")
+
 
     def usi_sequence(
             self,
