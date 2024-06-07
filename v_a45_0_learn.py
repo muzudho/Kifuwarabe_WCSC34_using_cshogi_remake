@@ -18,8 +18,8 @@ class Learn():
         #return random.randint(0,20) == 0
 
         # 次の対局の usinewgame のタイミングで、前の対局の棋譜をトレーニングデータにして機械学習を走らせるから、持ち時間を消費してしまう。
-        # 平均合法手が 80 手と仮定して、 40分の1 にすれば、 1 手当たり 2 つの合法手を検討する間隔になって早く終わるだろう
-        return random.randint(0,40) == 0
+        # 平均合法手が 80 手と仮定して、 80分の1 にすれば、 1 手当たり 1 つの合法手を検討する間隔になって早く終わるだろう
+        return random.randint(0,80) == 0
 
 
     def __init__(
@@ -145,27 +145,37 @@ class Learn():
             # 奇数：　詰める方
             # --------------
             #
-            result_str = self.at_odd(
+            (result_str,
+             changed_count) = self.at_odd(
                     mate=mate,
                     max_playout_depth=mate+attack_extension)
 
             mate += 1
 
-            if self._move_number_at_end < mate or result_str == 'can not rewind':
+            if self._move_number_at_end < mate or result_str == 'can not rewind' or 30 <= changed_count:
                 break
 
             #
             # 偶数：　逃げる方
             # --------------
             #
-            result_str = self.at_even(
+            (result_str,
+             changed_count) = self.at_even(
                     mate=mate,
                     max_playout_depth=mate+escape_extension)
 
             mate += 1
 
-            if self._move_number_at_end < mate or result_str == 'can not rewind':
+            if self._move_number_at_end < mate or result_str == 'can not rewind' or 30 <= changed_count:
                 break
+
+            ##
+            ## ２０手毎にコマメに保存する
+            ##
+            #if mate % 20 == 0:
+            #    # 全ての評価値テーブル［0:先手, 1:後手］の（変更があれば）保存
+            #    self._kifuwarabe.save_eval_all_tables(
+            #            is_debug=self._is_debug)
 
         #
         # おわり
@@ -195,10 +205,13 @@ class Learn():
         max_playout_depth : int
             プレイアウト最大深さ
         """
+
+        changed_count = 0
+
         # 棋譜を巻き戻せないなら、学ぶことはできません
         if self._board.move_number < mate + 1:
             print(f'[{datetime.datetime.now()}] [learn > 詰める方] ignored. you cannot learn. short moves. board.move_number:{self._board.move_number}')
-            return 'can not rewind'
+            return ('can not rewind', changed_count)
 
         # 終局図の内部データに戻す
         self.restore_end_position()
@@ -336,6 +349,9 @@ class Learn():
                 # 変更はログに出したい
                 print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 好手]        weaken {move_u:5}  result:`{result_str}`')
 
+                if result_str == 'changed':
+                    changed_count += 1
+
 
         if self._is_debug:
             print(f'[{datetime.datetime.now()}] [learn > 詰める方]  現悪手一覧：')
@@ -424,7 +440,10 @@ class Learn():
                 # 変更はログに出したい
                 print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 悪手]        strengthen {move_u:5}  result:`{result_str}`')
 
-        return 'ok'
+                if result_str == 'changed':
+                    changed_count += 1
+
+        return ('ok', changed_count)
 
 
     def at_even(
@@ -441,10 +460,12 @@ class Learn():
             プレイアウトの最大深さ
         """
 
+        changed_count = 0
+
         # 棋譜を巻き戻せないなら、学ぶことはできません
         if self._board.move_number < mate + 1:
             print(f'[{datetime.datetime.now()}] [learn > 逃げる方] ignored. you cannot learn. short moves. board.move_number:{self._board.move_number}')
-            return 'can not rewind'
+            return ('can not rewind', changed_count)
 
         # 終局図の内部データに戻す
         self.restore_end_position()
@@ -570,6 +591,9 @@ class Learn():
                 # 変更はログに出したい
                 print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手]        weaken {move_u:5}  result:`{result_str}`')
 
+                if result_str == 'changed':
+                    changed_count += 1
+
 
         if self._is_debug:
             print(f'[{datetime.datetime.now()}] [learn > 逃げる方]  現悪手一覧：')
@@ -665,4 +689,7 @@ class Learn():
                 # 変更はログに出したい
                 print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手]        strengthen {move_u:5}  result:`{result_str}`')
 
-        return 'ok'
+                if result_str == 'changed':
+                    changed_count += 1
+
+        return ('ok', changed_count)
