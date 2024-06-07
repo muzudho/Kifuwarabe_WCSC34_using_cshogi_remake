@@ -286,7 +286,7 @@ class Learn():
             # プレイアウトの深さの上限に達した
             elif result_str == 'max_playout_depth':
                 is_weak_move = True
-                log_progress(f"[⤵] {mate}手詰めを逃して {max_playout_depth} 手以内に終局しなかった。好手の評価を取り下げる")
+                log_progress(f"[⤵] 攻めてる間にプレイアウトが打ち切られた。（評価値テーブルを動かしたいので）好手の評価を取り下げる")
 
             else:
                 log_progress("[　] 好手の評価はそのまま")
@@ -366,7 +366,7 @@ class Learn():
                 log_progress(f"[　] この学習では、手数の上限で終わった対局は、評価値を変動させないものとする")
 
             elif result_str == 'max_playout_depth':
-                log_progress(f"[　] {mate}手詰めの局面で、 {max_playout_depth} 手かけて終局しなかったので、悪手の評価はそのまま")
+                log_progress(f"[　] 攻めてる間にプレイアウトが打ち切られた。悪手の評価はそのまま")
 
             else:
                 log_progress("[　] 悪手の評価はそのまま")
@@ -501,6 +501,10 @@ class Learn():
             elif result_str == 'max_move':
                 log_progress(f"[　] この学習では、手数の上限で終わった対局は、評価値を変動させないものとする")
 
+            # プレイアウトの深さの上限に達した
+            elif result_str == 'max_playout_depth':
+                log_progress(f"[　] 逃げてる間にプレイアウトが打ち切られた。好手の評価はそのまま")
+
             else:
                 log_progress("[　] この好手の評価はそのまま")
 
@@ -583,6 +587,11 @@ class Learn():
             # 手数の上限に達した
             elif result_str == 'max_move':
                 log_progress(f"[　] この学習では、手数の上限で終わった対局は、評価値を変動させないものとする")
+
+            # プレイアウトの深さの上限に達した
+            elif result_str == 'max_playout_depth':
+                is_strong_move = True
+                log_progress(f"[⤴] 逃げてる間にプレイアウトが打ち切られた。（評価値テーブルを動かしたいので）悪手の評価を取り下げる")
 
             else:
                 log_progress("[　] この悪手の評価はそのまま")
