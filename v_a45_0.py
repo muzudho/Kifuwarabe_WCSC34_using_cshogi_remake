@@ -239,10 +239,14 @@ class Kifuwarabe():
             result_str = self.playout(
                     is_debug=is_debug)
 
+            position_command = BoardHelper.get_position_command(
+                    board=self._board)
+
             print(f"""\
 [{datetime.datetime.now()}] [playout] result:`{result_str}`
-#   move_number:{self._board.move_number} / max_move_number:{max_move_number}
-#   sfen {self._board.sfen()}
+{self._board}
+#move_number:{self._board.move_number} / max_move_number:{max_move_number}
+#{position_command}
 """,
                     flush=True)
 

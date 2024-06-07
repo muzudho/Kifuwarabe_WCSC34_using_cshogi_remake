@@ -1043,13 +1043,17 @@ class GameResultFile():
         """
 
         turn_text = Turn.to_string(my_turn)
+        position_command = BoardHelper.get_position_command(
+                board=board)
+
         print(f"あ～あ、 {turn_text} 番で負けたぜ（＞＿＜）", flush=True)
 
         # ファイルに出力する
         print(f"[{datetime.datetime.now()}] {self.file_name_obj.base_name} file save ...", flush=True)
+
         with open(self.file_name_obj.base_name, 'w', encoding="utf-8") as f:
             f.write(f"""lose {turn_text}
-sfen {board.sfen()}""")
+{position_command}""")
 
         print(f"[{datetime.datetime.now()}] {self.file_name_obj.base_name} file saved", flush=True)
 
@@ -1066,13 +1070,16 @@ sfen {board.sfen()}""")
         """
 
         turn_text = Turn.to_string(my_turn)
+        position_command = BoardHelper.get_position_command(
+                board=board)
+
         print(f"やったぜ {turn_text} 番で勝ったぜ（＾ｑ＾）", flush=True)
 
         # ファイルに出力する
         print(f"[{datetime.datetime.now()}] {self.file_name_obj.base_name} file save ...", flush=True)
         with open(self.file_name_obj.base_name, 'w', encoding="utf-8") as f:
             f.write(f"""win {turn_text}
-sfen {board.sfen()}""")
+{position_command}""")
 
         print(f"[{datetime.datetime.now()}] {self.file_name_obj.base_name} file saved", flush=True)
 
@@ -1089,13 +1096,16 @@ sfen {board.sfen()}""")
         """
 
         turn_text = Turn.to_string(my_turn)
+        position_command = BoardHelper.get_position_command(
+                board=board)
+
         print(f"持将棋か～（ー＿ー） turn: {turn_text}", flush=True)
 
         # ファイルに出力する
         print(f"[{datetime.datetime.now()}] {self.file_name_obj.base_name} file save ...", flush=True)
         with open(self.file_name_obj.base_name, 'w', encoding="utf-8") as f:
             f.write(f"""draw {turn_text}
-sfen {board.sfen()}""")
+{position_command}""")
 
         print(f"[{datetime.datetime.now()}] {self.file_name_obj.base_name} file saved", flush=True)
 
@@ -1114,13 +1124,16 @@ sfen {board.sfen()}""")
         """
 
         turn_text = Turn.to_string(my_turn)
+        position_command = BoardHelper.get_position_command(
+                board=board)
+
         print(f"なんだろな（・＿・）？　'{result_text}', turn: '{turn_text}'", flush=True)
 
         # ファイルに出力する
         print(f"[{datetime.datetime.now()}] {self.file_name_obj.base_name} file save ...", flush=True)
         with open(self.file_name_obj.base_name, 'w', encoding="utf-8") as f:
             f.write(f"""{result_text} {turn_text}
-sfen {board.sfen()}""")
+{position_command}""")
 
         print(f"[{datetime.datetime.now()}] {self.file_name_obj.base_name} file saved", flush=True)
 
