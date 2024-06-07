@@ -65,7 +65,7 @@ class Learn():
             # 終局図の表示
             print(f"[{datetime.datetime.now()}] [learn] 局面巻き戻しエラー")
             print(self._board)
-            print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
+            print(f"#  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
             raise ValueError("局面巻き戻しエラー")
 
         #if is_debug:
@@ -87,7 +87,7 @@ class Learn():
 
         # 現局面の position コマンドを表示
         print(f"""[{datetime.datetime.now()}] [learn]
-    board.move_number:{self._board.move_number}
+    #board.move_number:{self._board.move_number}
     #{BoardHelper.get_position_command(board=self._board)}
 """)
 
@@ -96,7 +96,7 @@ class Learn():
             # 終局図の表示
             print(f"[{datetime.datetime.now()}] [learn] 局面巻き戻しエラー")
             print(self._board)
-            print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
+            print(f"#  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
             raise ValueError("局面巻き戻しエラー")
 
         # 本譜の指し手を覚えておく。ログにも出したい
@@ -116,7 +116,7 @@ class Learn():
         # 初期局面と、その sfen はログに出したい
         print(f"[{datetime.datetime.now()}] [learn] 初期局面図：")
         print(self._board)
-        print(f"  init_position_sfen:`{self._init_position_sfen}`   board.move_number:{self._board.move_number}")
+        print(f"#  init_position_sfen:`{self._init_position_sfen}`   board.move_number:{self._board.move_number}")
 
         # 終局図の内部データに戻す
         self.restore_end_position()
@@ -225,7 +225,7 @@ class Learn():
 
         # 現局面の position コマンドを表示
         print(f"""[{datetime.datetime.now()}] [learn]
-    board.move_number:{self._board.move_number}
+    #board.move_number:{self._board.move_number}
     #{BoardHelper.get_position_command(board=self._board)}
 """)
 
@@ -276,7 +276,7 @@ class Learn():
                 # 局面図の表示
                 print(f"[{datetime.datetime.now()}] [learn > 詰める方 > 好手] {mate}手詰め局面図エラー")
                 print(self._board)
-                print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
+                print(f"#  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
                 raise ValueError(f"[learn > 詰める方 > 好手] {mate}手詰め局面図エラー")
 
             # （ｎ手詰め局面図で）とりあえず一手指す
@@ -337,7 +337,7 @@ class Learn():
                 # 終局図の表示
                 print(f"[{datetime.datetime.now()}] [learn > 詰める方 > 好手] 局面巻き戻しエラー")
                 print(self._board)
-                print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
+                print(f"#  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
                 raise ValueError("局面巻き戻しエラー")
 
             # ｎ手詰めの局面にしてから、評価値を下げる
@@ -372,7 +372,7 @@ class Learn():
                 # 局面図の表示
                 print(f"[{datetime.datetime.now()}] [learn > 詰める方 > 悪手] {mate}手詰め局面図エラー")
                 print(self._board)
-                print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
+                print(f"#  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
                 raise ValueError(f"[learn > 詰める方 > 悪手] {mate}手詰め局面図エラー")
 
             # （ｎ手詰め局面図で）とりあえず一手指す
@@ -427,7 +427,7 @@ class Learn():
                 # 局面図の表示
                 print(f"[{datetime.datetime.now()}] [learn > 詰める方 > 悪手] 局面巻き戻しエラー")
                 print(self._board)
-                print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
+                print(f"#  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
                 raise ValueError("局面巻き戻しエラー")
 
             # ｎ手詰めの局面にしてから、評価値を上げる
@@ -479,7 +479,7 @@ class Learn():
 
         # 現局面の position コマンドを表示
         print(f"""[{datetime.datetime.now()}] [learn]
-    board.move_number:{self._board.move_number}
+    #board.move_number:{self._board.move_number}
     #{BoardHelper.get_position_command(board=self._board)}
 """)
 
@@ -526,7 +526,7 @@ class Learn():
                 # 局面図の表示
                 print(f"[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] {mate}手詰め局面図エラー")
                 print(self._board)
-                print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
+                print(f"#  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
                 raise ValueError(f"[learn > 逃げる方 > 好手] {mate}手詰め局面図エラー")
 
             # （ｎ手詰め局面図で）とりあえず一手指す
@@ -578,7 +578,7 @@ class Learn():
                 # 局面図の表示
                 print(f"[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] 局面巻き戻しエラー")
                 print(self._board)
-                print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
+                print(f"#  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
                 raise ValueError("局面巻き戻しエラー")
 
             # ｎ手詰めの局面にしてから、評価値を下げる
@@ -614,7 +614,7 @@ class Learn():
                 # 局面図の表示
                 print(f"[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手] {mate}手詰め局面図エラー")
                 print(self._board)
-                print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
+                print(f"#  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
                 raise ValueError(f"[learn > 逃げる方 > 悪手] {mate}手詰め局面図エラー")
 
             # （ｎ手詰め局面図で）とりあえず一手指す
@@ -676,7 +676,7 @@ class Learn():
                 # 局面図の表示
                 print(f"[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手] 局面巻き戻しエラー")
                 print(self._board)
-                print(f"  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
+                print(f"#  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
                 raise ValueError("局面巻き戻しエラー")
 
             # ｎ手詰めの局面にしてから、評価値を上げる
