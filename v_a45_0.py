@@ -386,6 +386,32 @@ class Kifuwarabe():
         self._game_result_file = GameResultFile(
                 engine_version_str=engine_version_str)
 
+        # 読取
+        game_result_lines = self._game_result_file.read_lines()
+
+        if is_debug:
+            for line in game_result_lines:
+                print(f"[{datetime.datetime.now()}] [usinewgame] game result line:[{line}]")
+
+        if 2 <= len(game_result_lines):
+            #(win_lose_etc, result_turn) = game_result_lines[0].split(' ')
+            position_command = game_result_lines[1]
+            head_tail = position_command.split(' ', 1)
+
+            self.position(
+                    cmd_tail=head_tail[1],
+                    is_debug=is_debug)
+
+            # 学習する。
+            # 開始ログは出したい
+            print(f"[{datetime.datetime.now()}] [usinewgame] learn start...", flush=True)
+
+            self.learn(
+                    is_debug=is_debug)
+
+            # 終了ログは出したい
+            print(f"[{datetime.datetime.now()}] [usinewgame] learn end", flush=True)
+
 
     def position(
             self,
@@ -519,9 +545,6 @@ class Kifuwarabe():
         # 開始ログは出したい
         print(f"[{datetime.datetime.now()}] [gameover] start...")
 
-        # 学習する
-        shall_we_learn = False
-
         if cmd_tail.strip() == '':
             print(f"`do` command must be result.  ex:`gameover lose`  cmd_tail:`{cmd_tail}`")
             return
@@ -533,13 +556,11 @@ class Kifuwarabe():
 
             # ［対局結果］　常に記憶する
             self._game_result_file.save_lose(self._my_turn, self._board)
-            shall_we_learn = True
 
         # 勝ち
         elif cmd_tail == 'win':
             # ［対局結果］　常に記憶する
             self._game_result_file.save_win(self._my_turn, self._board)
-            shall_we_learn = True
 
         # 持将棋
         elif cmd_tail == 'draw':
@@ -550,17 +571,6 @@ class Kifuwarabe():
         else:
             # ［対局結果］　常に記憶する
             self._game_result_file.save_otherwise(cmd_tail, self._my_turn, self._board)
-
-        # 学習する
-        if shall_we_learn:
-            # 開始ログは出したい
-            print(f"[{datetime.datetime.now()}] [gameover] learn start...", flush=True)
-
-            self.learn(
-                    is_debug=is_debug)
-
-            # 終了ログは出したい
-            print(f"[{datetime.datetime.now()}] [gameover] learn end", flush=True)
 
         # 終了ログは出したい
         print(f"[{datetime.datetime.now()}] [gameover] end", flush=True)
