@@ -643,6 +643,11 @@ class BoardHelper():
             局面
         move_obj : Move
             着手
+
+        Returns
+        -------
+        - l_move_u_set
+        - q_move_u_set
         """
 
         #
@@ -875,12 +880,14 @@ class EvalutionMmTable():
 
         bit_value = BitOpe.get_bit_at(byte_value, right_shift)
 
+        # デバッグ
         if is_debug:
             # format `:08b` - 0 supply, 8 left shift, binary
             print(f"[evalution mm table > get_bit_by_index]  index:{index}  byte_index:{byte_index}  bit_index:{bit_index}  right_shift:{right_shift}  byte_value:0x{self._table_as_array[byte_index]:08b}  bit_value:{bit_value}")
 
-        if bit_value < 0 or 1 < bit_value:
-            raise ValueError(f"bit must be 0 or 1. bit:{bit_value}")
+            # assert
+            if bit_value < 0 or 1 < bit_value:
+                raise ValueError(f"bit must be 0 or 1. bit:{bit_value}")
 
         return bit_value
 
@@ -907,9 +914,6 @@ class EvalutionMmTable():
             変更が有ったか？
         """
 
-        if bit < 0 or 1 < bit:
-            raise ValueError(f"bit must be 0 or 1. bit:{bit}")
-
         # ビット・インデックスを、バイトとビットに変換
         bit_index = index % 8
         byte_index = index // 8
@@ -930,9 +934,14 @@ class EvalutionMmTable():
 
         old_byte_value = self._table_as_array[byte_index]
 
+        # デバッグ
         if is_debug:
             # format `:08b` - 0 supply, 8 left shift, binary
             print(f"[evalution mm table > set_bit_by_index]  index:{index}  byte_index:{byte_index}  bit_index:{bit_index}  left_shift:{left_shift}  bit:{bit}  old byte value:0x{old_byte_value:08b}")
+
+            # assert
+            if bit < 0 or 1 < bit:
+                raise ValueError(f"bit must be 0 or 1. bit:{bit}")
 
         # ビットはめんどくさい。ビッグエンディアン
         if bit == 1:
