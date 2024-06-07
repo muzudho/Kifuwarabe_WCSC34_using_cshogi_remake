@@ -175,7 +175,8 @@ class Learn():
         #
 
         # 全ての評価値テーブル［0:先手, 1:後手］の（変更があれば）保存
-        self._kifuwarabe.save_eval_all_tables()
+        self._kifuwarabe.save_eval_all_tables(
+                is_debug=self._is_debug)
 
         # 終局図の内部データに戻す
         self.restore_end_position()

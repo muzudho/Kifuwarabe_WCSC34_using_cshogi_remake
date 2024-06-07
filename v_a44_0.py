@@ -158,7 +158,8 @@ class Kifuwarabe():
 
         # 新しい対局
         elif head == 'usinewgame':
-            self.usinewgame()
+            self.usinewgame(
+                    is_debug=is_debug)
 
         # 局面データ解析
         elif head == 'position':
@@ -290,38 +291,66 @@ class Kifuwarabe():
         print('readyok', flush=True)
 
 
-    def save_eval_all_tables(self):
-        """（変更があれば）ＫＬ評価値テーブル［0:先手, 1:後手］の保存"""
+    def save_eval_all_tables(
+            self,
+            is_debug=False):
+        """（変更があれば）ＫＬ評価値テーブル［0:先手, 1:後手］の保存
+
+        Parameters
+        ----------
+        is_debug : bool
+            デバッグモードか？
+        """
         for turn in [cshogi.BLACK, cshogi.WHITE]:
             turn_index = Turn.to_index(turn)
 
             # ＫＬ
             if self._evaluation_kl_table_obj_array[turn_index].mm_table_obj.is_file_modified:
-                self._evaluation_kl_table_obj_array[turn_index].save_kk_evaluation_table_file()
+                print(f"[{datetime.datetime.now()}] kl file save...  turn:{Turn.to_string(turn)}", flush=True)
+                self._evaluation_kl_table_obj_array[turn_index].save_kk_evaluation_table_file(
+                        is_debug=is_debug)
+
             else:
                 print(f"[{datetime.datetime.now()}] kl file not changed.  turn:{Turn.to_string(turn)}", flush=True)
 
             # ＫＱ
             if self._evaluation_kq_table_obj_array[turn_index].mm_table_obj.is_file_modified:
-                self._evaluation_kq_table_obj_array[turn_index].save_kp_evaluation_table_file()
+                print(f"[{datetime.datetime.now()}] kq file save...  turn:{Turn.to_string(turn)}", flush=True)
+                self._evaluation_kq_table_obj_array[turn_index].save_kp_evaluation_table_file(
+                        is_debug=is_debug)
+
             else:
                 print(f"[{datetime.datetime.now()}] kq file not changed.  turn:{Turn.to_string(turn)}", flush=True)
 
             # ＰＬ
             if self._evaluation_pl_table_obj_array[turn_index].mm_table_obj.is_file_modified:
-                self._evaluation_pl_table_obj_array[turn_index].save_pk_evaluation_table_file()
+                print(f"[{datetime.datetime.now()}] pl file save...  turn:{Turn.to_string(turn)}", flush=True)
+                self._evaluation_pl_table_obj_array[turn_index].save_pk_evaluation_table_file(
+                        is_debug=is_debug)
+
             else:
                 print(f"[{datetime.datetime.now()}] pl file not changed.  turn:{Turn.to_string(turn)}", flush=True)
 
             # ＰＱ
             if self._evaluation_pq_table_obj_array[turn_index].mm_table_obj.is_file_modified:
-                self._evaluation_pq_table_obj_array[turn_index].save_pp_evaluation_table_file()
+                print(f"[{datetime.datetime.now()}] pp file save...  turn:{Turn.to_string(turn)}", flush=True)
+                self._evaluation_pq_table_obj_array[turn_index].save_pp_evaluation_table_file(
+                        is_debug=is_debug)
+
             else:
                 print(f"[{datetime.datetime.now()}] pp file not changed.  turn:{Turn.to_string(turn)}", flush=True)
 
 
-    def usinewgame(self):
-        """新しい対局"""
+    def usinewgame(
+            self,
+            is_debug=False):
+        """新しい対局
+
+        Parameters
+        ----------
+        is_debug : bool
+            デバッグモードか？
+        """
 
         # 評価値テーブル［0:先手, 1:後手］の読込
         for turn in [cshogi.BLACK, cshogi.WHITE]:
@@ -344,7 +373,8 @@ class Kifuwarabe():
                     turn=turn)
 
         # 全ての評価値テーブル［0:先手, 1:後手］の（変更があれば）保存
-        self.save_eval_all_tables()
+        self.save_eval_all_tables(
+                is_debug=is_debug)
 
         # 対局結果ファイル（デフォルト）
         self._game_result_file = GameResultFile(

@@ -82,16 +82,24 @@ class EvaluationLib():
     @staticmethod
     def save_evaluation_table_file(
             file_name_obj,
-            table_as_array):
+            table_as_array,
+            is_debug=False):
         """ファイルへ保存します
+
+        保存するかどうかは先に判定しておくこと
 
         Parameters
         ----------
         file_name_obj : FileName
             ファイル名オブジェクト
+        table_as_array : []
+            配列
+        is_debug : bool
+            デバッグモードか？
         """
 
-        print(f"[{datetime.datetime.now()}] save {file_name_obj.temporary_base_name} file ...", flush=True)
+        if is_debug:
+            print(f"[{datetime.datetime.now()}] save {file_name_obj.temporary_base_name} file ...", flush=True)
 
         # ファイルにバイナリ形式で出力する
         with open(file_name_obj.temporary_base_name, 'wb') as f:
@@ -127,7 +135,8 @@ class EvaluationLib():
                 f.write(sum.to_bytes(1))
 
         try:
-            print(f"[{datetime.datetime.now()}] remove ./{file_name_obj.base_name} file...", flush=True)
+            if is_debug:
+                print(f"[{datetime.datetime.now()}] remove ./{file_name_obj.base_name} file...", flush=True)
 
             os.remove(
                     path=f'./{file_name_obj.base_name}')
@@ -136,7 +145,8 @@ class EvaluationLib():
         except FileNotFoundError:
             pass
 
-        print(f"[{datetime.datetime.now()}] rename {file_name_obj.temporary_base_name} file to {file_name_obj.base_name}...", flush=True)
+        if is_debug:
+            print(f"[{datetime.datetime.now()}] rename {file_name_obj.temporary_base_name} file to {file_name_obj.base_name}...", flush=True)
 
         os.rename(
                 src=file_name_obj.temporary_base_name,

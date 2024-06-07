@@ -165,14 +165,21 @@ class EvaluationPkTable():
 
 
     def save_pk_evaluation_table_file(
-            self):
+            self,
+            is_debug=False):
         """ファイルへの保存
+
+        Parameters
+        ----------
+        is_debug : bool
+            デバッグモードか？
 
         保存するかどうかは先に判定しておくこと
         """
         EvaluationLib.save_evaluation_table_file(
                 file_name_obj=self.mm_table_obj.file_name_obj,
-                table_as_array=self.mm_table_obj.table_as_array)
+                table_as_array=self.mm_table_obj.table_as_array,
+                is_debug=is_debug)
 
 
     # 使ってない？
