@@ -49,7 +49,7 @@ class Learn():
 
 
     def restore_end_position(self):
-        """終局図の内部データに戻す"""
+        """終局図の内部データに進める"""
 
         #if is_debug:
         #    print(f"[{datetime.datetime.now()}] [learn] restore_end_position start...")
@@ -118,7 +118,7 @@ class Learn():
         print(self._board)
         print(f"#  init_position_sfen:`{self._init_position_sfen}`   board.move_number:{self._board.move_number}")
 
-        # 終局図の内部データに戻す
+        # 終局図の内部データに進める
         self.restore_end_position()
 
         # 終局局面の手数
@@ -186,7 +186,7 @@ class Learn():
         self._kifuwarabe.save_eval_all_tables(
                 is_debug=self._is_debug)
 
-        # 終局図の内部データに戻す
+        # 終局図の内部データに進める
         self.restore_end_position()
 
         print(f"[{datetime.datetime.now()}] [learn] finished", flush=True)
@@ -213,7 +213,7 @@ class Learn():
             print(f'[{datetime.datetime.now()}] [learn > 詰める方] ignored. you cannot learn. short moves. board.move_number:{self._board.move_number}')
             return ('can not rewind', changed_count)
 
-        # 終局図の内部データに戻す
+        # 終局図の内部データに進める
         self.restore_end_position()
 
         # ｎ手詰めの局面まで戻す
@@ -267,9 +267,14 @@ class Learn():
 
             # 検討を間引く
             if not Learn.is_learn_by_rate():
+                print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 好手]  ★間引く')
                 continue
 
+            print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 好手]  ★間引かなかった')
+
             is_weak_move = False
+
+            print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 好手]  ★ｎ手詰め局面図かチェックする前')
 
             # ｎ手詰め局面図かチェック
             if self._board.sfen() != sfen_at_mate:
@@ -279,8 +284,12 @@ class Learn():
                 print(f"#  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
                 raise ValueError(f"[learn > 詰める方 > 好手] {mate}手詰め局面図エラー")
 
+            print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 好手]  ★一手指す前')
+
             # （ｎ手詰め局面図で）とりあえず一手指す
             self._board.push_usi(move_u)
+
+            print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 好手]  ★プレイアウトする前')
 
             # プレイアウトする
             result_str = self._kifuwarabe.playout(
@@ -325,7 +334,7 @@ class Learn():
             else:
                 log_progress("[　] 好手の評価はそのまま")
 
-            # 終局図の内部データに戻す
+            # 終局図の内部データに進める
             self.restore_end_position()
 
             # ｎ手詰めの局面まで戻す
@@ -352,6 +361,8 @@ class Learn():
                 if result_str == 'changed':
                     changed_count += 1
 
+            print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 好手]  ★次の指し手へ')
+
 
         if self._is_debug:
             print(f'[{datetime.datetime.now()}] [learn > 詰める方]  現悪手一覧：')
@@ -363,7 +374,10 @@ class Learn():
 
             # 検討を間引く
             if not Learn.is_learn_by_rate():
+                print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 悪手]  ★間引いた')
                 continue
+
+            print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 悪手]  ★間引かなかった')
 
             is_strong_move = False
 
@@ -415,7 +429,7 @@ class Learn():
             else:
                 log_progress("[　] 悪手の評価はそのまま")
 
-            # 終局図の内部データに戻す
+            # 終局図の内部データに進める
             self.restore_end_position()
 
             # ｎ手詰めの局面まで戻す
@@ -443,6 +457,9 @@ class Learn():
                 if result_str == 'changed':
                     changed_count += 1
 
+            print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 悪手]  ★次の指し手へ')
+
+
         return ('ok', changed_count)
 
 
@@ -467,7 +484,7 @@ class Learn():
             print(f'[{datetime.datetime.now()}] [learn > 逃げる方] ignored. you cannot learn. short moves. board.move_number:{self._board.move_number}')
             return ('can not rewind', changed_count)
 
-        # 終局図の内部データに戻す
+        # 終局図の内部データに進める
         self.restore_end_position()
 
         # ｎ手詰めの局面まで戻す
@@ -515,9 +532,14 @@ class Learn():
             # カウンターは事前に進める
             choice_num += 1
 
+            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手]  ★choice_num:{choice_num}')
+
             # 検討を間引く
             if not Learn.is_learn_by_rate():
+                print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手]  ★間引く')
                 continue
+
+            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手]  ★間引かなかった')
 
             is_weak_move = False
 
@@ -529,8 +551,12 @@ class Learn():
                 print(f"#  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
                 raise ValueError(f"[learn > 逃げる方 > 好手] {mate}手詰め局面図エラー")
 
+            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手]  ★一手指す前')
+
             # （ｎ手詰め局面図で）とりあえず一手指す
             self._board.push_usi(move_u)
+
+            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手]  ★プレイアウトする前')
 
             # プレイアウトする
             result_str = self._kifuwarabe.playout(
@@ -566,12 +592,18 @@ class Learn():
             else:
                 log_progress("[　] この好手の評価はそのまま")
 
-            # 終局図の内部データに戻す
+            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手]  ★終局図に進める前')
+
+            # 終局図の内部データに進める
             self.restore_end_position()
+
+            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手]  ★ｎ手詰めの局面に戻す前')
 
             # ｎ手詰めの局面まで戻す
             for _i in range(0, mate):
                 self._board.pop()
+
+            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手]  ★戻せたかチェックする前')
 
             # 戻せたかチェック
             if self._board.sfen() != sfen_at_mate:
@@ -580,6 +612,8 @@ class Learn():
                 print(self._board)
                 print(f"#  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
                 raise ValueError("局面巻き戻しエラー")
+
+            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手]  ★評価値を下げる前')
 
             # ｎ手詰めの局面にしてから、評価値を下げる
             if is_weak_move:
@@ -594,6 +628,8 @@ class Learn():
                 if result_str == 'changed':
                     changed_count += 1
 
+            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手]  ★次の指し手へ')
+
 
         if self._is_debug:
             print(f'[{datetime.datetime.now()}] [learn > 逃げる方]  現悪手一覧：')
@@ -605,7 +641,10 @@ class Learn():
 
             # 検討を間引く
             if not Learn.is_learn_by_rate():
+                print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手]  ★間引く')
                 continue
+
+            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手]  ★間引かなかった')
 
             is_strong_move = False
 
@@ -664,7 +703,7 @@ class Learn():
             else:
                 log_progress("[　] この悪手の評価はそのまま")
 
-            # 終局図の内部データに戻す
+            # 終局図の内部データに進める
             self.restore_end_position()
 
             # ｎ手詰めの局面まで戻す
@@ -691,5 +730,7 @@ class Learn():
 
                 if result_str == 'changed':
                     changed_count += 1
+
+            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手]  ★次の指し手へ')
 
         return ('ok', changed_count)
