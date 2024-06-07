@@ -1,4 +1,5 @@
 import datetime
+import random
 from v_a44_0_debug_plan import DebugPlan
 from v_a44_0_eval import EvaluationFacade
 from v_a44_0_lib import Turn, BoardHelper
@@ -6,6 +7,15 @@ from v_a44_0_lib import Turn, BoardHelper
 
 class Learn():
     """学習部"""
+
+
+    @staticmethod
+    def is_learn_by_rate():
+        """全ての指し手の良し悪しを検討していると、全体を見る時間がなくなるから、
+        間引くのに使う"""
+
+        # 100分の1の指し手だけ検討
+        return random.randint(0,100) == 0
 
 
     def __init__(
@@ -234,6 +244,11 @@ class Learn():
         choice_num = 0
 
         for move_u in good_move_u_set:
+
+            # 検討を間引く
+            if not Learn.is_learn_by_rate():
+                continue
+
             choice_num += 1
             is_weak_move = False
 
@@ -320,6 +335,11 @@ class Learn():
             print(f'[{datetime.datetime.now()}] [learn > 詰める方]  現悪手一覧：')
 
         for move_u in bad_move_u_set:
+
+            # 検討を間引く
+            if not Learn.is_learn_by_rate():
+                continue
+
             choice_num += 1
             is_strong_move = False
 
@@ -460,6 +480,11 @@ class Learn():
         choice_num = 0
 
         for move_u in good_move_u_set:
+
+            # 検討を間引く
+            if not Learn.is_learn_by_rate():
+                continue
+
             choice_num += 1
             is_weak_move = False
 
@@ -538,6 +563,11 @@ class Learn():
             print(f'[{datetime.datetime.now()}] [learn > 逃げる方]  現悪手一覧：')
 
         for move_u in bad_move_u_set:
+
+            # 検討を間引く
+            if not Learn.is_learn_by_rate():
+                continue
+
             choice_num += 1
             is_strong_move = False
 

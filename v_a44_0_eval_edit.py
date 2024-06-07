@@ -437,7 +437,7 @@ class EvaluationEdit():
                 if rest < 1:
                     break
 
-                p_move_obj, l_move_obj = EvaluationPkTable.destructure_pl_index(
+                p_move_obj, l_move_obj = EvaluationPkTable.destructure_pk_index(
                         pl_index=pl_index,
                         p_turn=self._board.turn)
 

@@ -697,7 +697,7 @@ class Kifuwarabe():
             # ＰＬ
             for pl_index, relation_exists in pl_index_to_relation_exists_dictionary.items():
 
-                p_move_obj, l_move_obj = EvaluationPkTable.destructure_pl_index(
+                p_move_obj, l_move_obj = EvaluationPkTable.destructure_pk_index(
                         pk_index=pl_index,
                         p_turn=self._board.turn)
 
