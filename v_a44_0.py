@@ -817,19 +817,6 @@ class Kifuwarabe():
                 return 'nyugyoku_win'
 
             # （評価値テーブルの内容だけで対局したい用途で使う想定なので）プレイアウト中は１手詰めルーチンを使わない
-            ## １手詰めを詰める
-            #if not self._board.is_check():
-            #    """自玉に王手がかかっていない時で"""
-            #
-            #    if (matemove := self._board.mate_move_in_1ply()):
-            #        """１手詰めの指し手があれば、それを取得"""
-            #
-            #        best_move_u = cshogi.move_to_usi(matemove)
-            #        print('# info score mate 1 pv {}'.format(best_move_u), flush=True)
-            #
-            #        # 一手指す
-            #        self._board.push_usi(best_move_u)
-            #        return 'checkmate'
 
             # くじを引く（投了のケースは対応済みなので、ここで対応しなくていい）
             best_move_str = Lottery.choice_best(
@@ -928,13 +915,12 @@ class Lottery():
                 is_debug=is_debug)
 
         # 候補手の中からランダムに選ぶ。USIの指し手の記法で返却
-        move_u_list = list(good_move_u_set)
+        if 0 < len(good_move_u_set):
+            return random.choice(list(good_move_u_set))
 
-        # 何も指さないよりはマシ
-        if len(move_u_list) < 1:
-            move_u_list = list(bad_move_u_set)
-
-        return random.choice(move_u_list)
+        # 何も指さないよりは、悪手を指した方がマシ
+        else:
+            return random.choice(list(bad_move_u_set))
 
 
     def get_best_move(
