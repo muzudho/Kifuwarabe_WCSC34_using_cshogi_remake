@@ -656,14 +656,20 @@ class Learn():
                 print(f"#  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
                 raise ValueError(f"[learn > 逃げる方 > 悪手] {mate}手詰め局面図エラー")
 
+            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手]  ★一手指す前')
+
             # （ｎ手詰め局面図で）とりあえず一手指す
             self._board.push_usi(move_u)
+
+            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手]  ★プレイアウトする前')
 
             # プレイアウトする
             result_str = self._kifuwarabe.playout(
                     is_in_learn=True,
                     # １手指しているので、１つ引く
                     max_playout_depth=max_playout_depth - 1)
+
+            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手]  ★プレイアウトした後')
 
             move_number_difference = self._board.move_number - self._move_number_at_end
 
@@ -703,12 +709,18 @@ class Learn():
             else:
                 log_progress("[　] この悪手の評価はそのまま")
 
+            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手]  ★終局図に進める前')
+
             # 終局図の内部データに進める
             self.restore_end_position()
+
+            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手]  ★ｎ手詰めの局面まで戻す前')
 
             # ｎ手詰めの局面まで戻す
             for _i in range(0, mate):
                 self._board.pop()
+
+            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手]  ★戻せたかチェックする前')
 
             # 戻せたかチェック
             if self._board.sfen() != sfen_at_mate:
@@ -717,6 +729,8 @@ class Learn():
                 print(self._board)
                 print(f"#  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
                 raise ValueError("局面巻き戻しエラー")
+
+            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手]  ★評価値を上げる前')
 
             # ｎ手詰めの局面にしてから、評価値を上げる
             if is_strong_move:
