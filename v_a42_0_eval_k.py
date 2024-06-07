@@ -325,12 +325,14 @@ class EvaluationKMove():
         k_move_obj = Move.from_src_dst_pro(
                 src_sq=src_sq,
                 dst_sq=dst_sq,
+                # 玉に成りはありません
                 promoted=False)
 
         if is_rotate:
             k_move_obj = Move.from_src_dst_pro(
                     src_sq=k_move_obj.rot_src_sq_or_none,
                     dst_sq=k_move_obj.rot_dst_sq,
+                    # 玉に成りはありません
                     promoted=False)
 
         return k_move_obj
