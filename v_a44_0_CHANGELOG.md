@@ -1,4 +1,6 @@
-* TODO プレイアウトを高速化したい
+* プレイアウトをできるだけ高速化した
+* 学習を間引きした
+* TODO learn は gameover時ではなく、newgame 時に行いたい（gameover時は、連続対局時の対局開始に蹴られるので）
 * TODO 不具合局面？: position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 2g2f 6a6b 2f2e 4a4b 2e2d 1a1b 2d2c+ 4b5b 2c2b 6b7b 2b3a 5c5d 2h2a+ 9a9b 3a3b 5a6b B*2f 4c4d 2f4d 5b5c S*5a 6b6a 5a4b 6a6b 4d5c+
 * TODO 不具合局面？: position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 5i4h 3c3d 4h5i 8b3b 5i4h 5a6b 4h5i 6b7b 5i5h 7b8b 5h5i 3d3e 5i4h 3a4b 4h5h 4a5b 5h4h 4c4d 4h5h 4b4c 5h4h 1c1d 4h5i 6c6d 5i6h 5b6c 6h5h 5c5d 5h4h 4d4e 4h5i 7a7b 5i6h 9c9d 6h7h 9d9e 7h6h 3b4b 6h5i 5d5e 5i5h 7c7d 5h6h 4c5d 6h5h 8c8d 5h4h 7b8c 4h5i 6a7b 5i6h 7d7e 6h5h 2c2d 5h6h 8a7c 6h5i 1d1e 5i5h 2d2e 5h4h 2b3c 4h5h 3c4d 5h6h 4b2b 6h5i 4d3c 5i5h 2b4b 5h6h 4b4d 6h5h 6c7d 5h4h 4d2d 4h5h 5d6c 5h4h 7d6e 4h3h 6c7d 3h4h 2d2b 4h5i 7d6c 5i6h 3c4d 6h5i 8d8e 5i6h 6c7d 6h5h 2b5b 5h6h 5e5f 6h5i 5f5g+ 6i5h P*5f 5i6i 5g5h 6i7h 5h4i 7h6h 5f5g+ 6h6i 5g6g 2h3h 5b5i+
 * テスト局面： position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 2g2f 5a6b 2f2e 3a3b 2e2d 6b5b 2d2c+ 5b5a 2c2b 5a4b 2b3b 4b5b 3b4a 9c9d 2h2b+ 5b4a G*3a 4a5a 2b2a 5a6b 2a3b 6b5a B*4b 8b4b 3b3c 5a6b 3c4b B*5b N*5d 5c5d S*5c 6b7b 5c5b+ 7b8b 5b6a N*5b 4b5b 7a6b 5b6b 8b9c B*7a 9c8d N*7f 8d8e G*8f 8e7d R*7e
