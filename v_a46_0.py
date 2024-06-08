@@ -8,8 +8,9 @@ from v_a46_0_eval.kk import EvaluationKkTable
 from v_a46_0_eval.kp import EvaluationKpTable
 from v_a46_0_eval.pk import EvaluationPkTable
 from v_a46_0_eval.pp import EvaluationPpTable
+from v_a46_0_misc.game_result_document import GameResultDocument
 from v_a46_0_misc.learn import Learn
-from v_a46_0_misc.lib import Turn, Move, MoveHelper, BoardHelper, GameResultFile
+from v_a46_0_misc.lib import Turn, Move, MoveHelper, BoardHelper
 
 
 ########################################
@@ -79,8 +80,8 @@ class Kifuwarabe():
         # 自分の手番
         self._my_turn = None
 
-        # 対局結果ファイル
-        self._game_result_file = None
+        # 対局結果ドキュメント
+        self._game_result_document = None
 
 
     @property
@@ -402,12 +403,12 @@ class Kifuwarabe():
         self.save_eval_all_tables(
                 is_debug=is_debug)
 
-        # 対局結果ファイル（デフォルト）
-        self._game_result_file = GameResultFile(
+        # 対局結果ドキュメント（デフォルト）
+        self._game_result_document = GameResultDocument(
                 engine_version_str=engine_version_str)
 
         # 読取
-        game_result_lines = self._game_result_file.read_lines()
+        game_result_lines = self._game_result_document.read_lines()
 
         if is_debug:
             for line in game_result_lines:
@@ -575,22 +576,22 @@ class Kifuwarabe():
                 raise ValueError(f'unexpected my turn:{Turn.to_string(self._my_turn)}')
 
             # ［対局結果］　常に記憶する
-            self._game_result_file.save_lose(self._my_turn, self._board)
+            self._game_result_document.save_lose(self._my_turn, self._board)
 
         # 勝ち
         elif cmd_tail == 'win':
             # ［対局結果］　常に記憶する
-            self._game_result_file.save_win(self._my_turn, self._board)
+            self._game_result_document.save_win(self._my_turn, self._board)
 
         # 持将棋
         elif cmd_tail == 'draw':
             # ［対局結果］　常に記憶する
-            self._game_result_file.save_draw(self._my_turn, self._board)
+            self._game_result_document.save_draw(self._my_turn, self._board)
 
         # その他
         else:
             # ［対局結果］　常に記憶する
-            self._game_result_file.save_otherwise(cmd_tail, self._my_turn, self._board)
+            self._game_result_document.save_otherwise(cmd_tail, self._my_turn, self._board)
 
         # 終了ログは出したい
         print(f"[{datetime.datetime.now()}] [gameover] end", flush=True)
