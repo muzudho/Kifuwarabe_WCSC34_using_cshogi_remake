@@ -298,31 +298,38 @@ class Learn():
             if result_str == 'resign':
                 # 自分の負け
                 if self._kifuwarabe._my_turn == self._board.turn:
+                    # すごく悪い手だ。好手の評価を取り下げる
                     is_weak_move = True
-                    log_progress(f"[▼DOWN▼] {mate}手詰めを逃して {max_playout_depth} 手以内に負けた。すごく悪い手だ。好手の評価を取り下げる")
+                    log_progress(f"[▼DOWN▼] {mate}手詰めを逃して {max_playout_depth} 手以内に負けた")
                 else:
-                    log_progress(f"[　] {mate}手詰めは逃したが {max_playout_depth} 手以内には勝ったからセーフとする。好手の評価はそのまま")
+                    # 好手の評価はそのまま
+                    log_progress(f"[　] {mate}手詰めは逃したが {max_playout_depth} 手以内には勝ったからセーフ")
 
             # どちらかが入玉勝ちした
             elif result_str == 'nyugyoku_win':
                 if self._kifuwarabe._my_turn == self._board.turn:
-                    log_progress(f"[　] {mate}手詰めは逃したが {max_playout_depth} 手以内には入玉宣言勝ちしたからセーフとする。好手の評価はそのまま")
+                    # 好手の評価はそのまま
+                    log_progress(f"[　] {mate}手詰めは逃したが {max_playout_depth} 手以内には入玉宣言勝ちしたからセーフ")
 
                 else:
                     is_weak_move = True
-                    log_progress(f"[▼DOWN▼] {mate}手詰めを逃して、 {max_playout_depth} 手以内に入玉宣言されて負けた。すごく悪い手だ。好手の評価を取り下げる")
+                    # すごく悪い手だ。好手の評価を取り下げる
+                    log_progress(f"[▼DOWN▼] {mate}手詰めを逃して、 {max_playout_depth} 手以内に入玉宣言されて負けた")
 
             # 手数の上限に達した
             elif result_str == 'max_move':
-                log_progress(f"[　] 攻めてる間に手数上限で打ち切られた。ノーカウント")
+                # ノーカウント
+                log_progress(f"[　] 攻めてる間に手数上限で打ち切られた")
 
             # プレイアウトの深さの上限に達した
             elif result_str == 'max_playout_depth':
+                # （評価値テーブルを動かしたいので）好手の評価を取り下げる
                 is_weak_move = True
-                log_progress(f"[▼DOWN▼] 攻めてる間にプレイアウトが打ち切られた。（評価値テーブルを動かしたいので）好手の評価を取り下げる")
+                log_progress(f"[▼DOWN▼] 攻めてる間にプレイアウトが打ち切られた")
 
             else:
-                log_progress("[　] 好手の評価はそのまま")
+                # 好手の評価はそのまま
+                log_progress("[　] 関心のない結果")
 
             # 終局図の内部データに進める
             self.restore_end_position()
@@ -400,23 +407,30 @@ class Learn():
                 if self._kifuwarabe._my_turn != self._board.turn:
                     # かかった手数ｎ手
                     if self._move_number_at_end - self._board.move_number == mate:
+                        # 良いことだ。評価を上げよう
                         is_strong_move = True
-                        log_progress(f"[▲UP▲] {mate}手詰めの局面で、{mate}手で勝ったので、評価を上げよう")
+                        log_progress(f"[▲UP▲] {mate}手詰めの局面で、その通り{mate}手で勝った")
                     else:
-                        log_progress(f"[　] {mate}手詰めの局面で、{mate + 1}手以上かけて {max_playout_depth} 手以内には勝ったが、相手がヘボ手を指した可能性を消せない。悪手の評価はこのまま")
+                        # 相手がヘボ手を指している可能性もあるから、ヘボ手を好手にするのはよくないが、今は評価値テーブルの値を変化させたいから、好手ということにしておく
+                        is_strong_move = True
+                        log_progress(f"[▲UP▲] {mate}手詰めの局面で、{mate + 1}手以上かけて {max_playout_depth} 手以内には勝った")
 
                 else:
-                    log_progress(f"[　] {mate}手詰めの局面で、{mate}手詰めを逃して負けたのだから、悪手の評価はそのまま")
+                    # 悪手の評価はそのまま
+                    log_progress(f"[　] {mate}手詰めの局面で、{mate}手詰めを逃して負けた")
 
             # 手数の上限に達した
             elif result_str == 'max_move':
-                log_progress(f"[　] 攻めてる間に手数上限で打ち切られた。ノーカウント")
+                # ノーカウント
+                log_progress(f"[　] 攻めてる間に手数上限で打ち切られた")
 
             elif result_str == 'max_playout_depth':
-                log_progress(f"[　] 攻めてる間にプレイアウトが打ち切られた。悪手の評価はそのまま")
+                # 悪手の評価はそのまま
+                log_progress(f"[　] 攻めてる間にプレイアウトが打ち切られた")
 
             else:
-                log_progress("[　] 悪手の評価はそのまま")
+                # 悪手の評価はそのまま
+                log_progress("[　] 関心のない結果")
 
             # 終局図の内部データに進める
             self.restore_end_position()
@@ -551,22 +565,27 @@ class Learn():
             if result_str == 'resign':
                 # 自分の負け。かかった手数２手。つまり１手詰め
                 if self._kifuwarabe._my_turn == self._board.turn and self._move_number_at_end - self._board.move_number == 2:
+                    # 好手の評価を取り下げる
                     is_weak_move = True
-                    log_progress(f"[▼DOWN▼] {mate}手詰めが掛けられていて、{mate}手詰めを避けられなかったから、好手の評価を取り下げる")
+                    log_progress(f"[▼DOWN▼] {mate}手詰めが掛けられていて、{mate}手詰めを避けられなかった")
 
                 else:
-                    log_progress(f"[　] {mate}手詰めが掛けられていて、{mate}手詰めを避けたから、好手の評価はそのまま")
+                    # 好手の評価はそのまま
+                    log_progress(f"[　] {mate}手詰めが掛けられていて、{mate}手詰めを避けた")
 
             # 手数の上限に達した
             elif result_str == 'max_move':
-                log_progress(f"[　] 手数上限で打ち切られるまで逃げ切った。好手の評価はそのまま")
+                # 好手の評価はそのまま
+                log_progress(f"[　] 手数上限で打ち切られるまで逃げ切った")
 
             # プレイアウトの深さの上限に達した
             elif result_str == 'max_playout_depth':
-                log_progress(f"[　] プレイアウトが打ち切られるまで逃げ切った。好手の評価はそのまま")
+                # 好手の評価はそのまま
+                log_progress(f"[　] プレイアウトが打ち切られるまで逃げ切った")
 
             else:
-                log_progress("[　] この好手の評価はそのまま")
+                # この好手の評価はそのまま
+                log_progress("[　] 関心のない結果")
 
             # 終局図の内部データに進める
             self.restore_end_position()
@@ -645,31 +664,36 @@ class Learn():
                 if self._kifuwarabe._my_turn != self._board.turn and move_number_difference == mate:
                     # 次にｎ手詰めの局面に掛けられるところを、その前に詰めたのだから、すごく良い手だ。この手の評価を上げる
                     is_strong_move = True
-                    log_progress(f"[▲UP▲] {mate}手詰めを掛けられていて、逆に{mate - 1}手で勝ったのだから、この手の評価を上げる")
+                    log_progress(f"[▲UP▲] {mate}手詰めを掛けられていて、逆に{mate - 1}手で勝った")
                 else:
-                    log_progress(f"[　] {mate}手詰めを掛けられていて、ここで１手で勝てなかったから、この悪手の評価はそのまま")
+                    # この悪手の評価はそのまま
+                    log_progress(f"[　] {mate}手詰めを掛けられていて、ここで１手で勝てなかった")
 
             # どちらかが入玉勝ちした
             elif result_str == 'nyugyoku_win':
                 if move_number_difference != mate:
                     # 次にｎ手詰めの局面に掛けられるところを、その前に入玉宣言勝ちしたのだから、すごく良い手だ。この手の評価を上げる
                     is_strong_move = True
-                    log_progress(f"[▲UP▲] {mate}手詰めを掛けられていて、逆に{mate - 1}手で入玉宣言勝ちしたのだから、この手の評価を上げる")
+                    log_progress(f"[▲UP▲] {mate}手詰めを掛けられていて、逆に{mate - 1}手で入玉宣言勝ちした")
                 else:
-                    log_progress(f"[　] {mate}手詰めを掛けられていて、ここで{mate}手以上掛けて入玉したから、この悪手の評価はそのまま")
+                    # この悪手の評価はそのまま
+                    log_progress(f"[　] {mate}手詰めを掛けられていて、ここで{mate}手以上掛けて入玉した")
 
             # 手数の上限に達した
             elif result_str == 'max_move':
+                # （評価値テーブルを動かしたいので）悪手の評価を取り下げる
                 is_strong_move = True
-                log_progress(f"[▲UP▲] 手数上限で打ち切られるまで逃げ切った。（評価値テーブルを動かしたいので）悪手の評価を取り下げる")
+                log_progress(f"[▲UP▲] 手数上限で打ち切られるまで逃げ切った")
 
             # プレイアウトの深さの上限に達した
             elif result_str == 'max_playout_depth':
+                # （評価値テーブルを動かしたいので）悪手の評価を取り下げる
                 is_strong_move = True
-                log_progress(f"[▲UP▲] プレイアウトが打ち切られるまで逃げ切った。（評価値テーブルを動かしたいので）悪手の評価を取り下げる")
+                log_progress(f"[▲UP▲] プレイアウトが打ち切られるまで逃げ切った")
 
             else:
-                log_progress("[　] この悪手の評価はそのまま")
+                # この悪手の評価はそのまま
+                log_progress("[　] 関心のない結果")
 
 
             # 終局図の内部データに進める
