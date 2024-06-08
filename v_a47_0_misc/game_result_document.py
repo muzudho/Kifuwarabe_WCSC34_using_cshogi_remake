@@ -237,6 +237,7 @@ class GameResultDocument():
 
         # ファイルに出力する
         GameResultDocument.append_to_file_and_save(
+                base_name=self.file_name_obj.base_name,
                 game_result_record=game_result_record)
 
 
