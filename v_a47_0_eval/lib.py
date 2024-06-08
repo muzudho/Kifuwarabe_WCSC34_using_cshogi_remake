@@ -23,31 +23,46 @@ class EvaluationLib():
 
         table_as_array = []
 
-        try:
-            with open(file_name_obj.base_name, 'rb') as f:
+        # 読込失敗時は、リトライを１０回は行いたい
+        max_try = 10
+        for retry in range(0,max_try):
 
-                one_byte_binary = f.read(1)
-
-                while one_byte_binary:
-                    one_byte_num = int.from_bytes(one_byte_binary, signed=False)
-
-                    # 大きな桁から、リストに追加していきます
-                    table_as_array.append(one_byte_num//128 % 2)
-                    table_as_array.append(one_byte_num// 64 % 2)
-                    table_as_array.append(one_byte_num// 32 % 2)
-                    table_as_array.append(one_byte_num// 16 % 2)
-                    table_as_array.append(one_byte_num//  8 % 2)
-                    table_as_array.append(one_byte_num//  4 % 2)
-                    table_as_array.append(one_byte_num//  2 % 2)
-                    table_as_array.append(one_byte_num//      2)
+            try:
+                with open(file_name_obj.base_name, 'rb') as f:
 
                     one_byte_binary = f.read(1)
 
-            print(f"[{datetime.datetime.now()}] '{file_name_obj.base_name}' file loaded. evaluation table size: {len(table_as_array)}", flush=True)
+                    while one_byte_binary:
+                        one_byte_num = int.from_bytes(one_byte_binary, signed=False)
 
-        except FileNotFoundError as ex:
-            print(f"[evaluation table / load from file] [{file_name_obj.base_name}] file error. {ex}")
-            raise
+                        # 大きな桁から、リストに追加していきます
+                        table_as_array.append(one_byte_num//128 % 2)
+                        table_as_array.append(one_byte_num// 64 % 2)
+                        table_as_array.append(one_byte_num// 32 % 2)
+                        table_as_array.append(one_byte_num// 16 % 2)
+                        table_as_array.append(one_byte_num//  8 % 2)
+                        table_as_array.append(one_byte_num//  4 % 2)
+                        table_as_array.append(one_byte_num//  2 % 2)
+                        table_as_array.append(one_byte_num//      2)
+
+                        one_byte_binary = f.read(1)
+
+                print(f"[{datetime.datetime.now()}] '{file_name_obj.base_name}' file loaded. evaluation table size: {len(table_as_array)}", flush=True)
+
+                # リトライのループを抜ける
+                break
+
+            # （機械学習の実行中にアクセスすると）評価値ファイルが存在しない瞬間はある
+            #FileNotFoundError
+            except Exception as ex:
+
+                # 次にループを抜けるタイミングなら、例外を投げ上げる
+                if max_try <= retry + 1:
+                    raise
+
+                # リトライする
+                else:
+                    print(f"[{datetime.datetime.now()}] [evaluation lib / read evaluation table as array from file] retry. [{file_name_obj.base_name}] file error. ex:{ex}")
 
         return table_as_array
 
