@@ -76,27 +76,29 @@ class Learn():
         """それを学習する"""
 
         # 開始ログは出したい
-        print(f'[{datetime.datetime.now()}] [learn] start...')
+        print(f'[{datetime.datetime.now()}] [learn > learn_it] start...')
 
         # 終局図の sfen を取得。巻き戻せたかのチェックに利用
         self._end_position_sfen = self._board.sfen()
 
-        # 終局図とその sfen はログに出したい
-        print(f"[{datetime.datetime.now()}] [learn] 終局図：")
-        print(self._board)
+        ## 終局図とその sfen はログに出したい
+        #print(f"[{datetime.datetime.now()}] [learn > learn_it] 終局図：")
+        #print(self._board)
 
-        # 現局面の position コマンドを表示
-        print(f"""[{datetime.datetime.now()}] [learn]
-    #board.move_number:{self._board.move_number}
-    #{BoardHelper.get_position_command(board=self._board)}
-""")
+        #        # 現局面の position コマンドを表示
+        #        print(f"""[{datetime.datetime.now()}] [learn > learn_it]
+        #    # board move_number:{self._board.move_number}
+        #    # {BoardHelper.get_position_command(board=self._board)}
+        #""")
 
         # 戻せたかチェック
         if self._board.sfen() != self._end_position_sfen:
             # 終局図の表示
-            print(f"[{datetime.datetime.now()}] [learn] 局面巻き戻しエラー")
-            print(self._board)
-            print(f"#  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
+            print(f"""[{datetime.datetime.now()}] [learn > learn_it] 局面巻き戻しエラー
+{self._board}
+    # board move_number:{self._board.move_number}
+    # {BoardHelper.get_position_command(board=self._board)}
+""")
             raise ValueError("局面巻き戻しエラー")
 
         # 本譜の指し手を覚えておく。ログにも出したい
@@ -113,10 +115,11 @@ class Learn():
         # （あとで元の position の内部状態に戻すために）初期局面を覚えておく
         self._init_position_sfen = self._board.sfen()
 
-        # 初期局面と、その sfen はログに出したい
-        print(f"[{datetime.datetime.now()}] [learn] 初期局面図：")
-        print(self._board)
-        print(f"#  init_position_sfen:`{self._init_position_sfen}`   board.move_number:{self._board.move_number}")
+        # 初期局面をログに出したい。 position は文字量が多くなるので出さない
+        print(f"""[{datetime.datetime.now()}] [learn] 初期局面図：
+{self._board}
+    # board.move_number:{self._board.move_number}
+""")
 
         # 終局図の内部データに進める
         self.restore_end_position()
@@ -134,8 +137,8 @@ class Learn():
         #if 16 < max_depth:
         #    max_depth = 16
 
-        # ３手詰めを３手で詰める必要はなく、５手必至でも良い手と言えるので、そのような場合 5-3 で、 attack_extension=2 とします
-        attack_extension = 10
+        # ３手詰めを３手で詰める必要はなく、５手必至でも良い手と言えるので（ただの詰み逃しかもしれないが）、そのような場合 5-3 で、 attack_extension=2 とします
+        attack_extension = 30
         # ２手詰めを４手詰めまで引き延ばせれば、逃げるのが上手くなったと言えるので、そのような場合 4-2 で、 escape_extension=2 とします
         escape_extension = 100
 

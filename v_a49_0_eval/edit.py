@@ -148,7 +148,7 @@ class EvaluationEdit():
 
                 # assert
                 if k_move_obj.as_usi != move_u:
-                    raise ValueError(f"[{datetime.datetime.now()}] [weaken > kl] 着手が変わっているエラー")
+                    raise ValueError(f"[{datetime.datetime.now()}] [weaken > kl] 着手が変わっているエラー  k_move_obj.as_usi:{k_move_obj.as_usi}  move_u:{move_u}")
 
                 # デバッグ表示
                 if is_debug and DebugPlan.evaluation_edit_weaken:
@@ -174,7 +174,7 @@ class EvaluationEdit():
 
                 # assert
                 if k_move_obj.as_usi != move_u:
-                    raise ValueError(f"[{datetime.datetime.now()}] [weaken > kl] 着手が変わっているエラー")
+                    raise ValueError(f"[{datetime.datetime.now()}] [weaken > kq] 着手が変わっているエラー  k_move_obj.as_usi:{k_move_obj.as_usi}  move_u:{move_u}")
 
                 # デバッグ表示
                 if is_debug and DebugPlan.evaluation_edit_weaken:
@@ -322,7 +322,7 @@ class EvaluationEdit():
 
                 # assert
                 if p_move_obj.as_usi != move_u:
-                    raise ValueError(f"[{datetime.datetime.now()}] [weaken > pl] 着手が変わっているエラー")
+                    raise ValueError(f"[{datetime.datetime.now()}] [weaken > pl] 着手が変わっているエラー  p_move_obj.as_usi:{p_move_obj.as_usi}  move_u:{move_u}")
 
                 # デバッグ表示
                 if is_debug and DebugPlan.evaluation_edit_weaken:
@@ -342,13 +342,13 @@ class EvaluationEdit():
             # ＰＱ
             #
             for target_fq_index in target_fq_index_list:
-                p_move_obj, q_move_obj = EvaluationKpTable.destructure_kp_index(
-                        kp_index=target_fq_index,
-                        k_turn=self._board.turn)
+                p_move_obj, q_move_obj = EvaluationPpTable.destructure_pp_index(
+                        pp_index=target_fq_index,
+                        p_turn=self._board.turn)
 
                 # assert
-                if k_move_obj.as_usi != move_u:
-                    raise ValueError(f"[{datetime.datetime.now()}] [weaken > pq] 着手が変わっているエラー")
+                if p_move_obj.as_usi != move_u:
+                    raise ValueError(f"[{datetime.datetime.now()}] [weaken > pq] 着手が変わっているエラー  p_move_obj.as_usi:{p_move_obj.as_usi}  move_u:{move_u}")
 
                 # デバッグ表示
                 if is_debug and DebugPlan.evaluation_edit_weaken:
@@ -555,7 +555,7 @@ class EvaluationEdit():
 
                 # assert
                 if k_move_obj.as_usi != move_u:
-                    raise ValueError(f"[{datetime.datetime.now()}] [strengthen > kl] 着手が変わっているエラー")
+                    raise ValueError(f"[{datetime.datetime.now()}] [strengthen > kl] 着手が変わっているエラー  k_move_obj.as_usi:{k_move_obj.as_usi}  move_u:{move_u}")
 
                 # デバッグ表示
                 if is_debug and DebugPlan.evaluation_edit_strengthen:
@@ -581,7 +581,7 @@ class EvaluationEdit():
 
                 # assert
                 if k_move_obj.as_usi != move_u:
-                    raise ValueError(f"[{datetime.datetime.now()}] [strengthen > kl] 着手が変わっているエラー")
+                    raise ValueError(f"[{datetime.datetime.now()}] [strengthen > kq] 着手が変わっているエラー  k_move_obj.as_usi:{k_move_obj.as_usi}  move_u:{move_u}")
 
                 # デバッグ表示
                 if is_debug and DebugPlan.evaluation_edit_strengthen:
@@ -725,16 +725,16 @@ class EvaluationEdit():
 
                 # assert
                 if p_move_obj.as_usi != move_u:
-                    raise ValueError(f"[{datetime.datetime.now()}] [strengthen > pl] 着手が変わっているエラー")
+                    raise ValueError(f"[{datetime.datetime.now()}] [strengthen > pl] 着手が変わっているエラー  p_move_obj.as_usi:{p_move_obj.as_usi}  move_u:{move_u}")
 
                 # デバッグ表示
                 if is_debug and DebugPlan.evaluation_edit_strengthen:
                     print(f"[{datetime.datetime.now()}] [strengthen > pl] turn:{Turn.to_string(self._board.turn)}  pl_index:{target_fl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  remove relation")
 
-                is_changed_temp = self._kifuwarabe._evaluation_kl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kl_moves(
-                        k_move_obj=p_move_obj,
-                        l_move_obj=l_move_obj,
-                        k_turn=self._board.turn,
+                is_changed_temp = self._kifuwarabe._evaluation_pl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_pk_moves(
+                        p_move_obj=p_move_obj,
+                        k_move_obj=l_move_obj,
+                        p_turn=self._board.turn,
                         bit=1)
 
                 if is_changed_temp:
@@ -745,13 +745,14 @@ class EvaluationEdit():
             # ＰＱ
             #
             for target_fq_index in target_fq_index_list:
-                p_move_obj, q_move_obj = EvaluationKpTable.destructure_kp_index(
-                        kp_index=target_fq_index,
-                        k_turn=self._board.turn)
+                p_move_obj, q_move_obj = EvaluationPpTable.destructure_pp_index(
+                        pp_index=target_fq_index,
+                        p_turn=self._board.turn)
 
                 # assert
-                if k_move_obj.as_usi != move_u:
-                    raise ValueError(f"[{datetime.datetime.now()}] [strengthen > pq] 着手が変わっているエラー")
+                if p_move_obj.as_usi != move_u:
+                    # p_move_obj.as_usi:9d8e  move_u:4a4b
+                    raise ValueError(f"[{datetime.datetime.now()}] [strengthen > pq] 着手が変わっているエラー  p_move_obj.as_usi:{p_move_obj.as_usi}  move_u:{move_u}")
 
                 # デバッグ表示
                 if is_debug and DebugPlan.evaluation_edit_strengthen:
