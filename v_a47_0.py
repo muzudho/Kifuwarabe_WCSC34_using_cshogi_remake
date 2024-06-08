@@ -571,22 +571,22 @@ class Kifuwarabe():
                 raise ValueError(f'unexpected my turn:{Turn.to_string(self._my_turn)}')
 
             # ［対局結果］　常に記憶する
-            self._game_result_document.save_lose(self._my_turn, self._board)
+            self._game_result_document.add_loss_and_save(self._my_turn, self._board)
 
         # 勝ち
         elif cmd_tail == 'win':
             # ［対局結果］　常に記憶する
-            self._game_result_document.save_win(self._my_turn, self._board)
+            self._game_result_document.add_win_and_save(self._my_turn, self._board)
 
         # 持将棋
         elif cmd_tail == 'draw':
             # ［対局結果］　常に記憶する
-            self._game_result_document.save_draw(self._my_turn, self._board)
+            self._game_result_document.add_draw_and_save(self._my_turn, self._board)
 
         # その他
         else:
             # ［対局結果］　常に記憶する
-            self._game_result_document.save_otherwise(cmd_tail, self._my_turn, self._board)
+            self._game_result_document.add_otherwise_and_save(cmd_tail, self._my_turn, self._board)
 
         # 終了ログは出したい
         print(f"[{datetime.datetime.now()}] [gameover] end", flush=True)
