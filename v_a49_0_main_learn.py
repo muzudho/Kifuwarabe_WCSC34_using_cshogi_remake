@@ -97,6 +97,17 @@ class LearningFramework():
                 time.sleep(seconds)
                 continue
 
+            # （既存なら）学習用の一時ファイルを削除したい
+            try:
+                if is_debug:
+                    print(f"[{datetime.datetime.now()}] [learning framework > start it] remove `{file_name_for_learning}` file...")
+
+                os.remove(file_name_for_learning)
+
+            # ファイルが存在しないなら無視する
+            except FileNotFoundError:
+                pass
+
             try:
                 # 対局結果ファイルを、学習用にリネーム（対局結果ファイルは、学習を回したあと削除する）
                 os.rename(
