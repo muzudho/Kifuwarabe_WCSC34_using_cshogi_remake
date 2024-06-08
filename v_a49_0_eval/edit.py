@@ -344,7 +344,7 @@ class EvaluationEdit():
             for target_fq_index in target_fq_index_list:
                 p_move_obj, q_move_obj = EvaluationPpTable.destructure_pp_index(
                         pp_index=target_fq_index,
-                        p_turn=self._board.turn)
+                        p1_turn=self._board.turn)
 
                 # assert
                 if p_move_obj.as_usi != move_u:
@@ -747,7 +747,7 @@ class EvaluationEdit():
             for target_fq_index in target_fq_index_list:
                 p_move_obj, q_move_obj = EvaluationPpTable.destructure_pp_index(
                         pp_index=target_fq_index,
-                        p_turn=self._board.turn)
+                        p1_turn=self._board.turn)
 
                 # assert
                 if p_move_obj.as_usi != move_u:
