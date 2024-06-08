@@ -1,11 +1,11 @@
-# python v_a46_0_eval/pk.py
+# python v_a47_0_eval/pk.py
 import cshogi
 import os
 import datetime
-from v_a46_0_eval.k import EvaluationKMove
-from v_a46_0_eval.lib import EvaluationLib
-from v_a46_0_eval.p import EvaluationPMove
-from v_a46_0_misc.lib import FileName, Turn, Move, EvalutionMmTable
+from v_a47_0_eval.k import EvaluationKMove
+from v_a47_0_eval.lib import EvaluationLib
+from v_a47_0_eval.p import EvaluationPMove
+from v_a47_0_misc.lib import FileName, Turn, Move, EvalutionMmTable
 
 
 class EvaluationPkTable():

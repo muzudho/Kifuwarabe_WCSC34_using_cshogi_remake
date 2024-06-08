@@ -1,11 +1,11 @@
 import datetime
-from v_a46_0_debug_plan import DebugPlan
-from v_a46_0_eval.facade import EvaluationFacade
-from v_a46_0_eval.kk import EvaluationKkTable
-from v_a46_0_eval.kp import EvaluationKpTable
-from v_a46_0_eval.pk import EvaluationPkTable
-from v_a46_0_eval.pp import EvaluationPpTable
-from v_a46_0_misc.lib import Turn, Move
+from v_a47_0_debug_plan import DebugPlan
+from v_a47_0_eval.facade import EvaluationFacade
+from v_a47_0_eval.kk import EvaluationKkTable
+from v_a47_0_eval.kp import EvaluationKpTable
+from v_a47_0_eval.pk import EvaluationPkTable
+from v_a47_0_eval.pp import EvaluationPpTable
+from v_a47_0_misc.lib import Turn, Move
 
 
 class EvaluationEdit():

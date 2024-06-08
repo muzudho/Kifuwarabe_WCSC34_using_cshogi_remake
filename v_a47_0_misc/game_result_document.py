@@ -61,8 +61,8 @@ class GameResultRecord():
         return self._position_command
 
 
-    def to_string(self):
-        return f"{self.result} {self.result_turn} {self.position_command}"
+    def to_string_line(self):
+        return f"{self.result} {self.result_turn} {self.position_command}\n"
 
 
 class GameResultDocument():
@@ -99,9 +99,9 @@ class GameResultDocument():
         """ファイルの削除"""
 
         try:
-            print(f"[{datetime.datetime.now()}] {self.file_name_obj.base_name} file delete...", flush=True)
+            print(f"[{datetime.datetime.now()}] delete `{self.file_name_obj.base_name}` file...", flush=True)
             os.remove(self.file_name_obj.base_name)
-            print(f"[{datetime.datetime.now()}] {self.file_name_obj.base_name} file deleted", flush=True)
+            print(f"[{datetime.datetime.now()}] deleted `{self.file_name_obj.base_name}` file", flush=True)
 
         except FileNotFoundError:
             # ファイルが無いのなら、削除に失敗しても問題ない
@@ -117,10 +117,12 @@ class GameResultDocument():
         record_list : list<GameResultRecord>
             各行。１行は１対局分
         """
-        try:
-            print(f"[{datetime.datetime.now()}] {self.file_name_obj.base_name} file read ...", flush=True)
 
-            with open(self.file_name_obj.base_name, 'r', encoding="utf-8") as f:
+        print(f"[{datetime.datetime.now()}] read `{self.file_name_obj.base_name}` file...", flush=True)
+
+        try:
+
+            with open(self.file_name_obj.base_name, 'r+', encoding="utf-8") as f:
                 text = f.read()
 
             # 改行で分割
@@ -128,17 +130,18 @@ class GameResultDocument():
             record_list = []
             for line in lines:
                 record_list.append(GameResultRecord.parse_line(line))
-            print(f"[{datetime.datetime.now()}] {self.file_name_obj.base_name} file read", flush=True)
+            print(f"[{datetime.datetime.now()}] read `{self.file_name_obj.base_name}` file", flush=True)
 
             return record_list
 
-        # ファイルの読込に失敗
-        except:
+        # ファイルの読込に失敗したら残念ですが、無視して続行します
+        except Exception as ex:
+            print(f'[{datetime.datetime.now()}] [read_record_list] failed to read `{self.file_name_obj.base_name}` file. ex:{ex}')
             return []
 
 
     @staticmethod
-    def write_to_file(
+    def append_to_file_and_save(
             base_name,
             game_result_record):
         """ファイルに対局結果を追加して保存する
@@ -152,12 +155,34 @@ class GameResultDocument():
         position_command : str
             USI の position コマンド
         """
-        print(f"[{datetime.datetime.now()}] {base_name} file save ...", flush=True)
+        print(f"[{datetime.datetime.now()}] save `{base_name}` file...", flush=True)
 
-        with open(base_name, 'w', encoding="utf-8") as f:
-            f.write(game_result_record.to_string())
+        # サイズが膨大になるのを防ぎます
+        try:
+            byte_size = os.path.getsize(base_name)
 
-        print(f"[{datetime.datetime.now()}] {base_name} file saved", flush=True)
+        # ファイルが無いのならＯｋ
+        except FileNotFoundError:
+            byte_size = 0
+
+        # 1 giga 超えたら保存やめとくか
+        #      mega       kilo       bytes
+        if 1024     * 1024     * 1024      < byte_size:
+            print(f"[{datetime.datetime.now()}] failed to save `{base_name}` file. size is huge. {byte_size} bytes", flush=True)
+            return
+
+        try:
+            # `a` - 追加モードでファイルを開く
+            # `+` - ファイルが無ければ新規作成する
+            with open(base_name, 'a+', encoding="utf-8") as f:
+                f.write(game_result_record.to_string_line())
+
+            print(f"[{datetime.datetime.now()}] saved `{base_name}` file", flush=True)
+
+        except Exception as ex:
+            # 保存に失敗したら残念ですが、無視して続行します
+            print(f'[{datetime.datetime.now()}] [append_to_file_and_save] failed to save `{base_name}` file. ex:{ex}')
+
 
 
     def add_loss_and_save(self, my_turn, board):
@@ -183,7 +208,7 @@ class GameResultDocument():
                 position_command=position_command)
 
         # ファイルに出力する
-        GameResultDocument.write_to_file(
+        GameResultDocument.append_to_file_and_save(
                 base_name=self.file_name_obj.base_name,
                 game_result_record=game_result_record)
 
@@ -211,7 +236,7 @@ class GameResultDocument():
                 position_command=position_command)
 
         # ファイルに出力する
-        GameResultDocument.write_to_file(
+        GameResultDocument.append_to_file_and_save(
                 game_result_record=game_result_record)
 
 
@@ -238,7 +263,7 @@ class GameResultDocument():
                 position_command=position_command)
 
         # ファイルに出力する
-        GameResultDocument.write_to_file(
+        GameResultDocument.append_to_file_and_save(
                 base_name=self.file_name_obj.base_name,
                 game_result_record=game_result_record)
 
@@ -269,6 +294,6 @@ class GameResultDocument():
                 position_command=position_command)
 
         # ファイルに出力する
-        GameResultDocument.write_to_file(
+        GameResultDocument.append_to_file_and_save(
                 base_name=self.file_name_obj.base_name,
                 game_result_record=game_result_record)

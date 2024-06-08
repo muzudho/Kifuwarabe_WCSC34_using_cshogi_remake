@@ -1,7 +1,6 @@
-# python v_a46_0_eval/p.py
-import datetime
-from v_a46_0_misc.debug import DebugHelper
-from v_a46_0_misc.lib import Move, BoardHelper
+# python v_a47_0_eval/p.py
+from v_a47_0_misc.debug import DebugHelper
+from v_a47_0_misc.lib import Move, BoardHelper
 
 
 class EvaluationPMove():
@@ -130,11 +129,8 @@ class EvaluationPMove():
     @classmethod
     def get_src_sq_to_dst_sq_index_dictionary_tuple(clazz):
 
-        # 未生成なら生成
+        # 未生成なら生成（重い処理は１回だけ）
         if clazz._src_sq_to_dst_sq_to_index_for_npsi_dictionary == None:
-
-            print(f"[{datetime.datetime.now()}] [evaluation p move > get_src_sq_to_dst_sq_index_dictionary_tuple] ★重い処理は１回だけ")
-
             # 先手成らず（no promote）　通しインデックス（serial index）
             clazz._src_sq_to_dst_sq_to_index_for_npsi_dictionary = dict()
 

@@ -1,7 +1,6 @@
-# python v_a46_0_eval/k.py
-import datetime
-from v_a46_0_misc.lib import Move, BoardHelper
-from v_a46_0_misc.debug import DebugHelper
+# python v_a47_0_eval/k.py
+from v_a47_0_misc.lib import Move, BoardHelper
+from v_a47_0_misc.debug import DebugHelper
 
 
 class EvaluationKMove():
@@ -104,11 +103,8 @@ class EvaluationKMove():
         """元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します。
         初回アクセス時はテーブル生成に時間がかかります"""
 
-        # 未生成なら生成
+        # 未生成なら生成（重い処理は１回だけ）
         if clazz._src_to_dst_index_dictionary == None:
-
-            print(f"[{datetime.datetime.now()}] [evaluation k move > get_src_sq_to_dst_sq_index_dictionary_tuple] ★重い処理は１回だけ")
-
             # 右
             right_file = - 1
             # 左

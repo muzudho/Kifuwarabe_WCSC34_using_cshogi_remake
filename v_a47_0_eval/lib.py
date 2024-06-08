@@ -19,7 +19,7 @@ class EvaluationLib():
         """
 
         # ロードする。数分ほどかかる
-        print(f"[{datetime.datetime.now()}] read {file_name_obj.base_name} file ...", flush=True)
+        print(f"[{datetime.datetime.now()}] read `{file_name_obj.base_name}` file ...", flush=True)
 
         table_as_array = []
 
