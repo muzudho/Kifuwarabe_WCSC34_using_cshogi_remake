@@ -1,2 +1,0 @@
-lose black
-sfen 1ns4+R1/lrgk1S+P1l/ppppg1p1p/4pB3/9/9/PPPPPPP1P/1B7/LNSGKGSNL b N2P 25

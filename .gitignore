@@ -1,6 +1,6 @@
 # Kifuwarabe (^q^)
 *.bin
-*_game_result_*.txt
+*_game_result.txt
 *.bak
 
 # Byte-compiled / optimized / DLL files
