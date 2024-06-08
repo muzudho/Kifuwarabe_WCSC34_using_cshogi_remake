@@ -83,6 +83,25 @@ class GameResultDocument():
 
 
     @staticmethod
+    def get_file_extension():
+        """ファイル拡張子を取得"""
+        return '.txt'
+
+
+    @staticmethod
+    def get_file_name(
+            engine_version_str):
+        """ファイル名を作成
+
+        Parameters
+        ----------
+        engine_version_str : str
+            将棋エンジンのバージョン
+        """
+        return f'{GameResultDocument.get_file_stem(engine_version_str)}{GameResultDocument.get_file_extension()}'
+
+
+    @staticmethod
     def get_file_stem_for_learning(
             engine_version_str):
         """学習用の一時ファイル名の幹を作成
@@ -93,6 +112,19 @@ class GameResultDocument():
             将棋エンジンのバージョン
         """
         return f'data[{engine_version_str}]_n1_game_result_for_learn'
+
+
+    @staticmethod
+    def get_file_name_for_learning(
+            engine_version_str):
+        """ファイル名を作成
+
+        Parameters
+        ----------
+        engine_version_str : str
+            将棋エンジンのバージョン
+        """
+        return f'{GameResultDocument.get_file_stem_for_learning(engine_version_str)}{GameResultDocument.get_file_extension()}'
 
 
     def __init__(

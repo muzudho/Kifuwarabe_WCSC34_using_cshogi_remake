@@ -86,24 +86,21 @@ class LearningFramework():
             # 評価値テーブルの読込
             kifuwarabe.load_eval_all_tables()
 
-            file_stem_for_learning = GameResultDocument.get_file_stem_for_learning(engine_version_str)
+            original_file_name = GameResultDocument.get_file_name(engine_version_str)
+            file_name_for_learning = GameResultDocument.get_file_name_for_learning(engine_version_str)
 
-            # 対局結果の学習用の一時ファイルのオブジェクト生成（ファイル読込はあとでする）
-            game_result_document = GameResultDocument(
-                    file_stem=file_stem_for_learning)
-
-            if not game_result_document.exists_file():
+            if not os.path.isfile(original_file_name):
                 # １分後にループをやり直し
                 seconds = 60.0
-                print(f"[{datetime.datetime.now()}] [learning framework > start it] `{game_result_document.file_name_obj.base_name}` file not found. wait for {seconds} seconds before retrying")
+                print(f"[{datetime.datetime.now()}] [learning framework > start it] `{original_file_name}` file not found. wait for {seconds} seconds before retrying")
                 time.sleep(seconds)
                 continue
 
             try:
                 # 対局結果ファイルを、学習用にリネーム（対局結果ファイルは、学習を回したあと削除する）
                 os.rename(
-                        src=GameResultDocument.get_file_stem(engine_version_str),
-                        dst=file_stem_for_learning)
+                        src=original_file_name,
+                        dst=file_name_for_learning)
 
             except Exception as ex:
                 # １分後にループをやり直し
@@ -111,6 +108,11 @@ class LearningFramework():
                 print(f"[{datetime.datetime.now()}] [learning framework > start it] failed to rename file. wait for {seconds} seconds before retrying. ex:{ex}")
                 time.sleep(seconds)
                 continue
+
+            # 対局結果の学習用の一時ファイルのオブジェクト生成（ファイル読込はあとでする）
+            game_result_document = GameResultDocument(
+                    # ファイル名の幹だけ
+                    file_stem=GameResultDocument.get_file_stem_for_learning(engine_version_str))
 
             # 対局結果ファイルの読込、各行取得
             game_result_record_list = game_result_document.read_record_list()
@@ -143,12 +145,12 @@ class LearningFramework():
             # 学習用の一時ファイルを削除したい
             try:
                 if is_debug:
-                    print(f"[{datetime.datetime.now()}] [learning framework > start it] remove `{file_stem_for_learning}` file...")
+                    print(f"[{datetime.datetime.now()}] [learning framework > start it] remove `{file_name_for_learning}` file...")
 
-                os.remove(file_stem_for_learning)
+                os.remove(file_name_for_learning)
 
             except Exception as ex:
-                print(f"[{datetime.datetime.now()}] [learning framework > start it] failed to remove `{file_stem_for_learning}` file. ex:{ex}")
+                print(f"[{datetime.datetime.now()}] [learning framework > start it] failed to remove `{file_name_for_learning}` file. ex:{ex}")
                 # 学習用の一時ファイルを削除できなければ、結局次の学習のためのリネームで失敗するので、ここで強制終了しておく
                 raise
 
