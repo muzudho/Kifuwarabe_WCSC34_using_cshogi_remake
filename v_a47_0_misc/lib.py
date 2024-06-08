@@ -70,6 +70,13 @@ class Turn():
     }
 
 
+    _str_to_int = {
+        'None': None,
+        'black': cshogi.BLACK,
+        'white': cshogi.WHITE,
+    }
+
+
     @staticmethod
     def to_index(turn):
         """先手を0、後手を1とするのを明示する
@@ -85,13 +92,18 @@ class Turn():
 
 
     @classmethod
-    def to_string(clazz, my_turn):
-        return clazz._turn_string[my_turn]
+    def to_string(clazz, turn):
+        return clazz._turn_string[turn]
 
 
     @classmethod
-    def to_symbol(clazz, my_turn):
-        return clazz._turn_symbol[my_turn]
+    def to_symbol(clazz, turn):
+        return clazz._turn_symbol[turn]
+
+
+    @classmethod
+    def str_to_int(clazz, turn_str):
+        return clazz._str_to_int[turn_str]
 
 
 class Move():

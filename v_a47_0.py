@@ -408,22 +408,20 @@ class Kifuwarabe():
                 engine_version_str=engine_version_str)
 
         # 読取
-        game_result_lines = self._game_result_document.read_lines()
+        game_result_record_list = self._game_result_document.read_record_list()
 
         if is_debug:
-            for line in game_result_lines:
-                print(f"[{datetime.datetime.now()}] [usinewgame] game result line:[{line}]")
+            print(f"[{datetime.datetime.now()}] [usinewgame] game result record list len:{len(list(game_result_record_list))}")
 
-        if 2 <= len(game_result_lines):
-            #(win_lose_etc, result_turn) = game_result_lines[0].split(' ')
-            position_command = game_result_lines[1]
+        for game_result_record in game_result_record_list:
+            position_command = game_result_record.position_command
             head_tail = position_command.split(' ', 1)
 
             self.position(
                     cmd_tail=head_tail[1],
                     is_debug=is_debug)
 
-            # 学習する。
+            # TODO ここでの学習は除去したい
             # 開始ログは出したい
             print(f"[{datetime.datetime.now()}] [usinewgame] learn start...", flush=True)
 
@@ -432,6 +430,9 @@ class Kifuwarabe():
 
             # 終了ログは出したい
             print(f"[{datetime.datetime.now()}] [usinewgame] learn end", flush=True)
+
+            # １件処理したら終了
+            break
 
 
     def position(
