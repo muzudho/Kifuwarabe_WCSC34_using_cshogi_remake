@@ -1,9 +1,9 @@
 import cshogi
 import os
 import datetime
-from v_a46_0_eval_lib import EvaluationLib
-from v_a46_0_eval_k import EvaluationKMove
-from v_a46_0_eval_p import EvaluationPMove
+from v_a46_0_eval.lib import EvaluationLib
+from v_a46_0_eval.k import EvaluationKMove
+from v_a46_0_eval.p import EvaluationPMove
 from v_a46_0_lib import FileName, Turn, Move, EvalutionMmTable
 
 

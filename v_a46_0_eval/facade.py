@@ -2,10 +2,10 @@ import cshogi
 import datetime
 from decimal import Decimal, ROUND_HALF_UP
 from v_a46_0_debug_plan import DebugPlan
-from v_a46_0_eval_kk import EvaluationKkTable
-from v_a46_0_eval_kp import EvaluationKpTable
-from v_a46_0_eval_pk import EvaluationPkTable
-from v_a46_0_eval_pp import EvaluationPpTable
+from v_a46_0_eval.kk import EvaluationKkTable
+from v_a46_0_eval.kp import EvaluationKpTable
+from v_a46_0_eval.pk import EvaluationPkTable
+from v_a46_0_eval.pp import EvaluationPpTable
 from v_a46_0_lib import Turn, Move, MoveHelper, BoardHelper
 
 

@@ -2,12 +2,12 @@
 import cshogi
 import datetime
 import random
-from v_a46_0_eval import EvaluationFacade
-from v_a46_0_eval_edit import EvaluationEdit
-from v_a46_0_eval_kk import EvaluationKkTable
-from v_a46_0_eval_kp import EvaluationKpTable
-from v_a46_0_eval_pk import EvaluationPkTable
-from v_a46_0_eval_pp import EvaluationPpTable
+from v_a46_0_eval.facade import EvaluationFacade
+from v_a46_0_eval.edit import EvaluationEdit
+from v_a46_0_eval.kk import EvaluationKkTable
+from v_a46_0_eval.kp import EvaluationKpTable
+from v_a46_0_eval.pk import EvaluationPkTable
+from v_a46_0_eval.pp import EvaluationPpTable
 from v_a46_0_learn import Learn
 from v_a46_0_lib import Turn, Move, MoveHelper, BoardHelper, GameResultFile
 
