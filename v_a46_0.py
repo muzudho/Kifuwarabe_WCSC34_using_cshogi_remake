@@ -8,8 +8,8 @@ from v_a46_0_eval.kk import EvaluationKkTable
 from v_a46_0_eval.kp import EvaluationKpTable
 from v_a46_0_eval.pk import EvaluationPkTable
 from v_a46_0_eval.pp import EvaluationPpTable
-from v_a46_0_learn import Learn
-from v_a46_0_lib import Turn, Move, MoveHelper, BoardHelper, GameResultFile
+from v_a46_0_misc.learn import Learn
+from v_a46_0_misc.lib import Turn, Move, MoveHelper, BoardHelper, GameResultFile
 
 
 ########################################
@@ -81,6 +81,16 @@ class Kifuwarabe():
 
         # 対局結果ファイル
         self._game_result_file = None
+
+
+    @property
+    def board(self):
+        return self._board
+
+
+    @property
+    def my_turn(self):
+        return self._my_turn
 
 
     @property
@@ -347,18 +357,11 @@ class Kifuwarabe():
                 print(f"[{datetime.datetime.now()}] pp file not changed.  turn:{Turn.to_string(turn)}", flush=True)
 
 
-    def usinewgame(
-            self,
-            is_debug=False):
-        """新しい対局
+    def load_eval_all_tables(
+            self):
+        print(f"[{datetime.datetime.now()}] [kifuwarabe > load eval all tables] start...")
 
-        Parameters
-        ----------
-        is_debug : bool
-            デバッグモードか？
-        """
-
-        # 評価値テーブル［0:先手, 1:後手］の読込
+        """評価値テーブル［0:先手, 1:後手］の読込"""
         for turn in [cshogi.BLACK, cshogi.WHITE]:
             turn_index = Turn.to_index(turn)
 
@@ -377,6 +380,23 @@ class Kifuwarabe():
             # ＰＰ
             self._evaluation_pq_table_obj_array[turn_index].load_on_usinewgame(
                     turn=turn)
+
+        print(f"[{datetime.datetime.now()}] [kifuwarabe > load eval all tables] finished")
+
+
+    def usinewgame(
+            self,
+            is_debug=False):
+        """新しい対局
+
+        Parameters
+        ----------
+        is_debug : bool
+            デバッグモードか？
+        """
+
+        # 評価値テーブルの読込
+        self.load_eval_all_tables()
 
         # 全ての評価値テーブル［0:先手, 1:後手］の（変更があれば）保存
         self.save_eval_all_tables(
@@ -484,9 +504,9 @@ class Kifuwarabe():
         if is_debug:
             # 自分の手番と、局面の手番が一致なら自分のターン
             if self._board.turn == self._my_turn:
-                print(f"[{datetime.datetime.now()}] [kifuwarabe > go] my turn.  board.turn:{Turn.to_string(self._board.turn)}  my turn:{Turn.to_string(self._my_turn)}")
+                print(f"[{datetime.datetime.now()}] [kifuwarabe > go] my turn.  board turn:{Turn.to_string(self._board.turn)}  my turn:{Turn.to_string(self._my_turn)}")
             else:
-                print(f"[{datetime.datetime.now()}] [kifuwarabe > go] opponent turn.  board.turn:{Turn.to_string(self._board.turn)}  my turn:{Turn.to_string(self._my_turn)}")
+                print(f"[{datetime.datetime.now()}] [kifuwarabe > go] opponent turn.  board turn:{Turn.to_string(self._board.turn)}  my turn:{Turn.to_string(self._my_turn)}")
 
         if self._board.is_game_over():
             """投了局面時"""
@@ -614,9 +634,9 @@ class Kifuwarabe():
 
         # 自分の手番と、局面の手番が一致なら自分のターン
         if self._board.turn == self._my_turn:
-            print(f"[kifuwarabe > policy] my turn.  board.turn:{Turn.to_string(self._board.turn)}  my turn:{Turn.to_string(self._my_turn)}")
+            print(f"[kifuwarabe > policy] my turn.  board turn:{Turn.to_string(self._board.turn)}  my turn:{Turn.to_string(self._my_turn)}")
         else:
-            print(f"[kifuwarabe > policy] opponent turn.  board.turn:{Turn.to_string(self._board.turn)}  my turn:{Turn.to_string(self._my_turn)}")
+            print(f"[kifuwarabe > policy] opponent turn.  board turn:{Turn.to_string(self._board.turn)}  my turn:{Turn.to_string(self._my_turn)}")
 
         print(f"""\
   先手玉の位置：　{self._board.king_square(cshogi.BLACK)}

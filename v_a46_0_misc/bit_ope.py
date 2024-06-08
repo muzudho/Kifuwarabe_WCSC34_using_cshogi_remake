@@ -1,5 +1,5 @@
 # ビット操作
-# python v_a46_0_bit_ope.py
+# python v_a46_0_misc/bit_ope.py
 import datetime
 
 

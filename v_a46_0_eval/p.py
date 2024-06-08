@@ -1,7 +1,7 @@
-# python v_a46_0_eval_p.py
+# python v_a46_0_eval/p.py
 import datetime
-from v_a46_0_debug import DebugHelper
-from v_a46_0_lib import Move, BoardHelper
+from v_a46_0_misc.debug import DebugHelper
+from v_a46_0_misc.lib import Move, BoardHelper
 
 
 class EvaluationPMove():

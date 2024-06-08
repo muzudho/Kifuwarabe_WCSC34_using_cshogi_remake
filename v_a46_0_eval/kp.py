@@ -4,7 +4,7 @@ import datetime
 from v_a46_0_eval.lib import EvaluationLib
 from v_a46_0_eval.k import EvaluationKMove
 from v_a46_0_eval.p import EvaluationPMove
-from v_a46_0_lib import FileName, Turn, Move, EvalutionMmTable
+from v_a46_0_misc.lib import FileName, Turn, Move, EvalutionMmTable
 
 
 class EvaluationKpTable():

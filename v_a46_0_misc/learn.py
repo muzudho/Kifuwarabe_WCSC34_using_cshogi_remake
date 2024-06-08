@@ -2,7 +2,7 @@ import datetime
 import random
 from v_a46_0_debug_plan import DebugPlan
 from v_a46_0_eval.facade import EvaluationFacade
-from v_a46_0_lib import Turn, BoardHelper
+from v_a46_0_misc.lib import Turn, BoardHelper
 
 
 class Learn():

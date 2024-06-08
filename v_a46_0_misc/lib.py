@@ -1,9 +1,9 @@
-# python v_a46_0_lib.py
+# python v_a46_0_misc/lib.py
 import cshogi
 import os
 import datetime
 
-from v_a46_0_bit_ope import BitOpe
+from v_a46_0_misc.bit_ope import BitOpe
 from v_a46_0_debug_plan import DebugPlan
 
 
