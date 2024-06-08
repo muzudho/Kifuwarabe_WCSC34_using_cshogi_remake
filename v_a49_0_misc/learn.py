@@ -314,7 +314,7 @@ class Learn():
 
             # 手数の上限に達した
             elif result_str == 'max_move':
-                log_progress(f"[　] 手数上限で終わったらノーカウント")
+                log_progress(f"[　] 攻めてる間に手数上限で打ち切られた。ノーカウント")
 
             # プレイアウトの深さの上限に達した
             elif result_str == 'max_playout_depth':
@@ -410,7 +410,7 @@ class Learn():
 
             # 手数の上限に達した
             elif result_str == 'max_move':
-                log_progress(f"[　] 手数上限で終わったらノーカウント")
+                log_progress(f"[　] 攻めてる間に手数上限で打ち切られた。ノーカウント")
 
             elif result_str == 'max_playout_depth':
                 log_progress(f"[　] 攻めてる間にプレイアウトが打ち切られた。悪手の評価はそのまま")
@@ -559,7 +559,7 @@ class Learn():
 
             # 手数の上限に達した
             elif result_str == 'max_move':
-                log_progress(f"[　] 手数上限で終わったらノーカウント")
+                log_progress(f"[　] 手数上限で打ち切られるまで逃げ切った。好手の評価はそのまま")
 
             # プレイアウトの深さの上限に達した
             elif result_str == 'max_playout_depth':
@@ -660,7 +660,8 @@ class Learn():
 
             # 手数の上限に達した
             elif result_str == 'max_move':
-                log_progress(f"[　] 手数上限で終わったらノーカウント")
+                is_strong_move = True
+                log_progress(f"[▲UP▲] 手数上限で打ち切られるまで逃げ切った。（評価値テーブルを動かしたいので）悪手の評価を取り下げる")
 
             # プレイアウトの深さの上限に達した
             elif result_str == 'max_playout_depth':
