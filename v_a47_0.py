@@ -95,6 +95,12 @@ class Kifuwarabe():
 
 
     @property
+    def game_result_document(self):
+        """対局結果ドキュメント"""
+        return self._game_result_document
+
+
+    @property
     def evaluation_kl_table_obj_array(self):
         """ＫＬ評価値テーブル　[0:先手, 1:後手]"""
         return self._evaluation_kl_table_obj_array
@@ -385,6 +391,21 @@ class Kifuwarabe():
         print(f"[{datetime.datetime.now()}] [kifuwarabe > load eval all tables] finished")
 
 
+    def load_game_result_file(
+            self,
+            is_debug=False):
+        """対局結果ファイルの読込
+
+        Parameters
+        ----------
+        is_debug : bool
+            デバッグモードか？
+        """
+        # 対局結果ドキュメント（デフォルト）
+        self._game_result_document = GameResultDocument(
+                engine_version_str=engine_version_str)
+
+
     def usinewgame(
             self,
             is_debug=False):
@@ -403,36 +424,9 @@ class Kifuwarabe():
         self.save_eval_all_tables(
                 is_debug=is_debug)
 
-        # 対局結果ドキュメント（デフォルト）
-        self._game_result_document = GameResultDocument(
-                engine_version_str=engine_version_str)
-
-        # 読取
-        game_result_record_list = self._game_result_document.read_record_list()
-
-        if is_debug:
-            print(f"[{datetime.datetime.now()}] [usinewgame] game result record list len:{len(list(game_result_record_list))}")
-
-        for game_result_record in game_result_record_list:
-            position_command = game_result_record.position_command
-            head_tail = position_command.split(' ', 1)
-
-            self.position(
-                    cmd_tail=head_tail[1],
-                    is_debug=is_debug)
-
-            # TODO ここでの学習は除去したい
-            # 開始ログは出したい
-            print(f"[{datetime.datetime.now()}] [usinewgame] learn start...", flush=True)
-
-            self.learn(
-                    is_debug=is_debug)
-
-            # 終了ログは出したい
-            print(f"[{datetime.datetime.now()}] [usinewgame] learn end", flush=True)
-
-            # １件処理したら終了
-            break
+        # 対局結果ファイルの読込
+        self.load_game_result_file(
+                is_debug=is_debug)
 
 
     def position(

@@ -78,18 +78,37 @@ class LearningFramework():
         # 評価値テーブルの読込
         kifuwarabe.load_eval_all_tables()
 
-        # とりあえず 2000対局について学習するか
-        max_game = 2000
-        for game_number in range(0,max_game):
+        # 対局結果ファイルの読込
+        kifuwarabe.load_game_result_file(
+                is_debug=is_debug)
 
-            print(f"[{datetime.datetime.now()}] [learning framework > start it] ({game_number + 1:4}/{max_game}) start...")
+        # 各行取得
+        game_result_record_list = kifuwarabe.game_result_document.read_record_list()
+
+        # サイズ
+        max_game = len(list(game_result_record_list))
+
+        if is_debug:
+            print(f"[{datetime.datetime.now()}] [learning framework > start it] length of game result record list:{max_game}")
+
+        for game_index, game_result_record in enumerate(game_result_record_list):
+
+            # position コマンドの読取
+            kifuwarabe.position(
+                    # position コマンドの position 抜き
+                    cmd_tail=game_result_record.position_command.split(' ', 1)[1],
+                    is_debug=is_debug)
+
+            # 開始ログは出したい
+            print(f"[{datetime.datetime.now()}] [learning framework > start it] ({game_index + 1:4}/{max_game}) start...", flush=True)
 
             self.learn_about_one_game(
                     board=board,
                     kifuwarabe=kifuwarabe,
                     is_debug=is_debug)
 
-            print(f"[{datetime.datetime.now()}] [learning framework > start it] ({game_number + 1:4}/{max_game}) finished")
+            # 終了ログは出したい
+            print(f"[{datetime.datetime.now()}] [learning framework > start it] ({game_index + 1:4}/{max_game}) finished, flush=True")
 
 
 ########################################
