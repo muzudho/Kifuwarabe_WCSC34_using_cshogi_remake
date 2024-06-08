@@ -1,1 +1,1 @@
-* TODO weaken, strengthen のアルゴリズムの偏りをバラけさせたい
+* weaken, strengthen のサンプル選択のアルゴリズムの偏りをバラけさせた
