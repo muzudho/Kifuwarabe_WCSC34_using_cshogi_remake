@@ -106,44 +106,44 @@ class EvaluationEdit():
             rest = difference
 
             # TODO どの関係を無効にするか、計画できないか？
-            # TODO ＫＬから何個、ＫＱから何個と配分できないか？
+            # TODO ＦＬから何個、ＦＱから何個と配分できないか？
 
             # ビットが立っている項目だけ残します
-            deletes_fl_index_list = list()
+            target_fl_index_list = list()
             for key, relation_exists in fl_index_to_relation_exists_dictionary.items():
                 if relation_exists == 1:
-                    deletes_fl_index_list.append(key)
+                    target_fl_index_list.append(key)
 
-            deletes_fq_index_list = list()
+            target_fq_index_list = list()
             for key, relation_exists in fq_index_to_relation_exists_dictionary.items():
                 if relation_exists == 1:
-                    deletes_fq_index_list.append(key)
+                    target_fq_index_list.append(key)
 
-            # 例えばＫＬが２個、ＫＱが３０個あり、削除したい関係が９個の場合の配分
-            # 　　　　１／１６　＝　２／（２＋３０）　　……　ＫＬの割合は１／１６
-            # 　　　　０．１２５　＝　２×（１／１６）　　……　ＫＬの割合は０．１２５
-            #        １　＝　ｒｏｕｎｄ（９　×　０．１２５）　　……削除するＫＬの個数は１
-            #      　８　＝　９　ー　１　　……　削除するＫＱの個数は８
-            # 例：ＫＬの個数　２
-            fl_size = len(deletes_fl_index_list)
-            # 例：ＫＱの個数　３０
+            # 例えばＦＬが２個、ＦＱが３０個あり、削除したい関係が９個の場合の配分
+            # 　　　　１／１６　＝　２／（２＋３０）　　……　ＦＬの割合は１／１６
+            # 　　　　０．１２５　＝　２×（１／１６）　　……　ＦＬの割合は０．１２５
+            #        １　＝　ｒｏｕｎｄ（９　×　０．１２５）　　……削除するＦＬの個数は１
+            #      　８　＝　９　ー　１　　……　削除するＦＱの個数は８
+            # 例：ＦＬの個数　２
+            fl_size = len(target_fl_index_list)
+            # 例：ＦＱの個数　３０
             fq_size = len(fq_index_to_relation_exists_dictionary)
-            # 例：ＫＬの割合　０．１２５
+            # 例：ＦＬの割合　０．１２５
             fl_weight = fl_size / (fl_size + fq_size)
-            # 例：削除するＫＬの個数　１
-            fl_deletes_size = round(rest * fl_weight) # この四捨五入には丸めが入っているが、めんどくさいんでとりあえずこれを使う
-            # 例：削除するＫＱの個数　８
-            fq_deletes_size = rest - fl_deletes_size
+            # 例：削除するＦＬの個数　１
+            fl_target_size = round(float(rest) * fl_weight) # この四捨五入には丸めが入っているが、めんどくさいんでとりあえずこれを使う
+            # 例：削除するＦＱの個数　８
+            fq_target_size = rest - fl_target_size
             # TODO 辞書のキーから何個抽出するとかできないか？ random.choices(sequence, k)
-            deletes_fl_index_list = random.choices(deletes_fl_index_list, k=fl_deletes_size)
-            deletes_fq_index_list = random.choices(deletes_fq_index_list, k=fq_deletes_size)
+            target_fl_index_list = random.choices(target_fl_index_list, k=fl_target_size)
+            target_fq_index_list = random.choices(target_fq_index_list, k=fq_target_size)
 
             #
             # ＫＬ
             #
-            for deletes_fl_index in deletes_fl_index_list:
+            for target_fl_index in target_fl_index_list:
                 k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
-                        kl_index=deletes_fl_index,
+                        kl_index=target_fl_index,
                         k_turn=self._board.turn)
 
                 # assert
@@ -152,7 +152,7 @@ class EvaluationEdit():
 
                 # デバッグ表示
                 if is_debug and DebugPlan.evaluation_edit_weaken:
-                    print(f"[{datetime.datetime.now()}] [weaken > kl] turn:{Turn.to_string(self._board.turn)}  kl_index:{deletes_fl_index:7}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  remove relation")
+                    print(f"[{datetime.datetime.now()}] [weaken > kl] turn:{Turn.to_string(self._board.turn)}  kl_index:{target_fl_index:7}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  remove relation")
 
                 is_changed_temp = self._kifuwarabe._evaluation_kl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kl_moves(
                         k_move_obj=k_move_obj,
@@ -167,9 +167,9 @@ class EvaluationEdit():
             #
             # ＫＱ
             #
-            for deletes_fq_index in deletes_fq_index_list:
+            for target_fq_index in target_fq_index_list:
                 k_move_obj, q_move_obj = EvaluationKpTable.destructure_kp_index(
-                        kp_index=deletes_fq_index,
+                        kp_index=target_fq_index,
                         k_turn=self._board.turn)
 
                 # assert
@@ -178,7 +178,7 @@ class EvaluationEdit():
 
                 # デバッグ表示
                 if is_debug and DebugPlan.evaluation_edit_weaken:
-                    print(f"[{datetime.datetime.now()}] [weaken > kq] turn:{Turn.to_string(self._board.turn)}  kq_index:{deletes_fq_index:7}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  remove relation")
+                    print(f"[{datetime.datetime.now()}] [weaken > kq] turn:{Turn.to_string(self._board.turn)}  kq_index:{target_fq_index:7}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  remove relation")
 
                 is_changed_temp = self._kifuwarabe._evaluation_kq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kp_moves(
                         k_move_obj=k_move_obj,
@@ -283,15 +283,15 @@ class EvaluationEdit():
             # TODO ＰＬから何個、ＰＱから何個と配分できないか？
 
             # ビットが下りている項目だけ残します
-            creates_fl_index_list = list()
+            target_fl_index_list = list()
             for key, relation_exists in fl_index_to_relation_exists_dictionary.items():
                 if relation_exists == 0:
-                    creates_fl_index_list.append(key)
+                    target_fl_index_list.append(key)
 
-            creates_fq_index_list = list()
+            target_fq_index_list = list()
             for key, relation_exists in fq_index_to_relation_exists_dictionary.items():
                 if relation_exists == 0:
-                    creates_fq_index_list.append(key)
+                    target_fq_index_list.append(key)
 
             # 例えばＦＬが２個、ＦＱが３０個あり、削除したい関係が９個の場合の配分
             # 　　　　１／１６　＝　２／（２＋３０）　　……　ＦＬの割合は１／１６
@@ -299,25 +299,25 @@ class EvaluationEdit():
             #        １　＝　ｒｏｕｎｄ（９　×　０．１２５）　　……削除するＦＬの個数は１
             #      　８　＝　９　ー　１　　……　削除するＦＱの個数は８
             # 例：ＦＬの個数　２
-            fl_size = len(creates_fl_index_list)
+            fl_size = len(target_fl_index_list)
             # 例：ＦＱの個数　３０
-            fq_size = len(creates_fq_index_list)
+            fq_size = len(target_fq_index_list)
             # 例：ＦＬの割合　０．１２５
             fl_weight = fl_size / (fl_size + fq_size)
             # 例：削除するＦＬの個数　１
-            fl_deletes_size = round(rest * fl_weight) # この四捨五入には丸めが入っているが、めんどくさいんでとりあえずこれを使う
+            fl_target_size = round(float(rest) * fl_weight) # この四捨五入には丸めが入っているが、めんどくさいんでとりあえずこれを使う
             # 例：削除するＦＱの個数　８
-            fq_deletes_size = rest - fl_deletes_size
+            fq_target_size = rest - fl_target_size
             # TODO 辞書のキーから何個抽出するとかできないか？ random.choices(sequence, k)
-            creates_fl_index_list = random.choices(creates_fl_index_list, k=fl_deletes_size)
-            creates_fq_index_list = random.choices(creates_fq_index_list, k=fq_deletes_size)
+            target_fl_index_list = random.choices(target_fl_index_list, k=fl_target_size)
+            target_fq_index_list = random.choices(target_fq_index_list, k=fq_target_size)
 
             #
             # ＰＬ
             #
-            for deletes_fl_index in deletes_fl_index_list:
+            for target_fl_index in target_fl_index_list:
                 p_move_obj, l_move_obj = EvaluationPkTable.destructure_pk_index(
-                        pk_index=deletes_fl_index,
+                        pk_index=target_fl_index,
                         p_turn=self._board.turn)
 
                 # assert
@@ -326,7 +326,7 @@ class EvaluationEdit():
 
                 # デバッグ表示
                 if is_debug and DebugPlan.evaluation_edit_weaken:
-                    print(f"[{datetime.datetime.now()}] [weaken > pl] turn:{Turn.to_string(self._board.turn)}  pl_index:{deletes_fl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  remove relation")
+                    print(f"[{datetime.datetime.now()}] [weaken > pl] turn:{Turn.to_string(self._board.turn)}  pl_index:{target_fl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  remove relation")
 
                 is_changed_temp = self._kifuwarabe._evaluation_kl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kl_moves(
                         k_move_obj=p_move_obj,
@@ -341,9 +341,9 @@ class EvaluationEdit():
             #
             # ＰＱ
             #
-            for deletes_fq_index in deletes_fq_index_list:
+            for target_fq_index in target_fq_index_list:
                 p_move_obj, q_move_obj = EvaluationKpTable.destructure_kp_index(
-                        kp_index=deletes_fq_index,
+                        kp_index=target_fq_index,
                         k_turn=self._board.turn)
 
                 # assert
@@ -352,7 +352,7 @@ class EvaluationEdit():
 
                 # デバッグ表示
                 if is_debug and DebugPlan.evaluation_edit_weaken:
-                    print(f"[{datetime.datetime.now()}] [weaken > pq] turn:{Turn.to_string(self._board.turn)}  pq_index:{deletes_fq_index:7}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  remove relation")
+                    print(f"[{datetime.datetime.now()}] [weaken > pq] turn:{Turn.to_string(self._board.turn)}  pq_index:{target_fq_index:7}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  remove relation")
 
                 is_changed_temp = self._kifuwarabe._evaluation_pq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_pp_moves(
                         p1_move_obj=p_move_obj,
@@ -498,13 +498,13 @@ class EvaluationEdit():
             difference = max_number_of_less_than_50_percent - positive_of_relation
 
             # デバッグ表示
-            if is_debug and DebugPlan.evaluation_edit_weaken:
+            if is_debug and DebugPlan.evaluation_edit_strengthen:
                 print(f"[{datetime.datetime.now()}] [strengthen > kl and kq]  K:{move_obj.as_usi:5}  O:*****  policy:{policy}  有:{positive_of_relation}  /  総:{total_of_relation}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
 
             # 既に好手評価なので、強化は不要です
             if difference < 1:
                 # デバッグ表示
-                if is_debug and DebugPlan.evaluation_edit_weaken:
+                if is_debug and DebugPlan.evaluation_edit_strengthen:
                     print(f"[{datetime.datetime.now()}] [strengthen > kl and kq]  既に好手評価なので、強化は不要です")
 
                 return 'unnecessary'
@@ -515,67 +515,149 @@ class EvaluationEdit():
             # TODO どの関係を有効にするか、計画できないか？
             # TODO ＫＬから何個、ＫＱから何個と配分できないか？
 
+            # ビットが下りている項目だけ残します
+            target_fl_index_list = list()
+            for key, relation_exists in fl_index_to_relation_exists_dictionary.items():
+                if relation_exists == 0:
+                    target_fl_index_list.append(key)
+
+            target_fq_index_list = list()
+            for key, relation_exists in fq_index_to_relation_exists_dictionary.items():
+                if relation_exists == 0:
+                    target_fq_index_list.append(key)
+
+            # 例えばＦＬが２個、ＦＱが３０個あり、削除したい関係が９個の場合の配分
+            # 　　　　１／１６　＝　２／（２＋３０）　　……　ＦＬの割合は１／１６
+            # 　　　　０．１２５　＝　２×（１／１６）　　……　ＦＬの割合は０．１２５
+            #        １　＝　ｒｏｕｎｄ（９　×　０．１２５）　　……削除するＦＬの個数は１
+            #      　８　＝　９　ー　１　　……　削除するＦＱの個数は８
+            # 例：ＦＬの個数　２
+            fl_size = len(target_fl_index_list)
+            # 例：ＦＱの個数　３０
+            fq_size = len(fq_index_to_relation_exists_dictionary)
+            # 例：ＦＬの割合　０．１２５
+            fl_weight = fl_size / (fl_size + fq_size)
+            # 例：削除するＦＬの個数　１
+            fl_target_size = round(float(rest) * fl_weight) # この四捨五入には丸めが入っているが、めんどくさいんでとりあえずこれを使う
+            # 例：削除するＦＱの個数　８
+            fq_target_size = rest - fl_target_size
+            # TODO 辞書のキーから何個抽出するとかできないか？ random.choices(sequence, k)
+            target_fl_index_list = random.choices(target_fl_index_list, k=fl_target_size)
+            target_fq_index_list = random.choices(target_fq_index_list, k=fq_target_size)
+
             #
             # ＫＬ
             #
-            for kl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
-
-                if is_debug and DebugPlan.evaluation_edit_weaken:
-                    print(f"[{datetime.datetime.now()}] [strengthen > kl]  rest:{rest} / {len(fl_index_to_relation_exists_dictionary)}")
-
-                if rest < 1:
-                    break
-
+            for target_fl_index in target_fl_index_list:
                 k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
-                        kl_index=kl_index,
+                        kl_index=target_fl_index,
                         k_turn=self._board.turn)
 
-                if k_move_obj.as_usi == move_u:
-                    if relation_exists == 0:
+                # assert
+                if k_move_obj.as_usi != move_u:
+                    raise ValueError(f"[{datetime.datetime.now()}] [strengthen > kl] 着手が変わっているエラー")
 
-                        if is_debug and DebugPlan.evaluation_edit_weaken:
-                            print(f"[{datetime.datetime.now()}] [strengthen > kl]  turn:{Turn.to_string(self._board.turn)}  kl_index:{kl_index:7}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
+                # デバッグ表示
+                if is_debug and DebugPlan.evaluation_edit_strengthen:
+                    print(f"[{datetime.datetime.now()}] [strengthen > kl] turn:{Turn.to_string(self._board.turn)}  kl_index:{target_fl_index:7}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  remove relation")
 
-                        is_changed_temp = self._kifuwarabe._evaluation_kl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kl_moves(
-                                k_move_obj=k_move_obj,
-                                l_move_obj=l_move_obj,
-                                k_turn=self._board.turn,
-                                bit=1)
+                is_changed_temp = self._kifuwarabe._evaluation_kl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kl_moves(
+                        k_move_obj=k_move_obj,
+                        l_move_obj=l_move_obj,
+                        k_turn=self._board.turn,
+                        bit=1)
 
-                        if is_changed_temp:
-                            is_changed = True
-                            rest -= 1
+                if is_changed_temp:
+                    is_changed = True
+                    rest -= 1
 
             #
             # ＫＱ
             #
-            for kq_index, relation_exists in fq_index_to_relation_exists_dictionary.items():
-
-                if is_debug and DebugPlan.evaluation_edit_weaken:
-                    print(f"[{datetime.datetime.now()}] [strengthen > kq]  rest:{rest} / {len(fq_index_to_relation_exists_dictionary)}")
-
-                if rest < 1:
-                    break
-
+            for target_fq_index in target_fq_index_list:
                 k_move_obj, q_move_obj = EvaluationKpTable.destructure_kp_index(
-                        kp_index=kq_index,
+                        kp_index=target_fq_index,
                         k_turn=self._board.turn)
 
-                if k_move_obj.as_usi == move_u:
-                    if relation_exists == 0:
+                # assert
+                if k_move_obj.as_usi != move_u:
+                    raise ValueError(f"[{datetime.datetime.now()}] [strengthen > kl] 着手が変わっているエラー")
 
-                        if is_debug and DebugPlan.evaluation_edit_weaken:
-                            print(f"[{datetime.datetime.now()}] [strengthen > kq]  turn:{Turn.to_string(self._board.turn)}  kq_index:{kq_index:7}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
+                # デバッグ表示
+                if is_debug and DebugPlan.evaluation_edit_strengthen:
+                    print(f"[{datetime.datetime.now()}] [strengthen > kq] turn:{Turn.to_string(self._board.turn)}  kq_index:{target_fq_index:7}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  remove relation")
 
-                        is_changed_temp = self._kifuwarabe._evaluation_kq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kp_moves(
-                                k_move_obj=k_move_obj,
-                                p_move_obj=q_move_obj,
-                                k_turn=self._board.turn,
-                                bit=1)
+                is_changed_temp = self._kifuwarabe._evaluation_kq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kp_moves(
+                        k_move_obj=k_move_obj,
+                        p_move_obj=q_move_obj,
+                        k_turn=self._board.turn,
+                        bit=1)
 
-                        if is_changed_temp:
-                            is_changed = True
-                            rest -= 1
+                if is_changed_temp:
+                    is_changed = True
+                    rest -= 1
+
+            ##
+            ## ＫＬ
+            ##
+            #for kl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
+            #
+            #    if is_debug and DebugPlan.evaluation_edit_strengthen:
+            #        print(f"[{datetime.datetime.now()}] [strengthen > kl]  rest:{rest} / {len(fl_index_to_relation_exists_dictionary)}")
+            #
+            #    if rest < 1:
+            #        break
+            #
+            #    k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
+            #            kl_index=kl_index,
+            #            k_turn=self._board.turn)
+            #
+            #    if k_move_obj.as_usi == move_u:
+            #        if relation_exists == 0:
+            #
+            #            if is_debug and DebugPlan.evaluation_edit_strengthen:
+            #                print(f"[{datetime.datetime.now()}] [strengthen > kl]  turn:{Turn.to_string(self._board.turn)}  kl_index:{kl_index:7}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
+            #
+            #            is_changed_temp = self._kifuwarabe._evaluation_kl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kl_moves(
+            #                    k_move_obj=k_move_obj,
+            #                    l_move_obj=l_move_obj,
+            #                    k_turn=self._board.turn,
+            #                    bit=1)
+            #
+            #            if is_changed_temp:
+            #                is_changed = True
+            #                rest -= 1
+            #
+            ##
+            ## ＫＱ
+            ##
+            #for kq_index, relation_exists in fq_index_to_relation_exists_dictionary.items():
+            #
+            #    if is_debug and DebugPlan.evaluation_edit_strengthen:
+            #        print(f"[{datetime.datetime.now()}] [strengthen > kq]  rest:{rest} / {len(fq_index_to_relation_exists_dictionary)}")
+            #
+            #    if rest < 1:
+            #        break
+            #
+            #    k_move_obj, q_move_obj = EvaluationKpTable.destructure_kp_index(
+            #            kp_index=kq_index,
+            #            k_turn=self._board.turn)
+            #
+            #    if k_move_obj.as_usi == move_u:
+            #        if relation_exists == 0:
+            #
+            #            if is_debug and DebugPlan.evaluation_edit_strengthen:
+            #                print(f"[{datetime.datetime.now()}] [strengthen > kq]  turn:{Turn.to_string(self._board.turn)}  kq_index:{kq_index:7}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
+            #
+            #            is_changed_temp = self._kifuwarabe._evaluation_kq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kp_moves(
+            #                    k_move_obj=k_move_obj,
+            #                    p_move_obj=q_move_obj,
+            #                    k_turn=self._board.turn,
+            #                    bit=1)
+            #
+            #            if is_changed_temp:
+            #                is_changed = True
+            #                rest -= 1
 
         else:
 
@@ -586,13 +668,13 @@ class EvaluationEdit():
             difference = max_number_of_less_than_50_percent - positive_of_relation
 
             # デバッグ表示
-            if is_debug and DebugPlan.evaluation_edit_weaken:
+            if is_debug and DebugPlan.evaluation_edit_strengthen:
                 print(f"[{datetime.datetime.now()}] [strengthen > pl and pq]  P:{move_obj.as_usi:5}  O:*****  policy:{policy}‰  有:{positive_of_relation}  /  総:{total_of_relation}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
 
             # 既に好手評価なので、強化は不要です
             if difference < 1:
                 # デバッグ表示
-                if is_debug and DebugPlan.evaluation_edit_weaken:
+                if is_debug and DebugPlan.evaluation_edit_strengthen:
                     print(f"[{datetime.datetime.now()}] [strengthen > pl and pq]  既に好手評価なので、強化は不要です")
 
                 return 'unnecessary'
@@ -603,67 +685,149 @@ class EvaluationEdit():
             # TODO どの関係を有効にするか、計画できないか？
             # TODO ＰＬから何個、ＰＱから何個と配分できないか？
 
+            # ビットが下りている項目だけ残します
+            target_fl_index_list = list()
+            for key, relation_exists in fl_index_to_relation_exists_dictionary.items():
+                if relation_exists == 0:
+                    target_fl_index_list.append(key)
+
+            target_fq_index_list = list()
+            for key, relation_exists in fq_index_to_relation_exists_dictionary.items():
+                if relation_exists == 0:
+                    target_fq_index_list.append(key)
+
+            # 例えばＦＬが２個、ＦＱが３０個あり、削除したい関係が９個の場合の配分
+            # 　　　　１／１６　＝　２／（２＋３０）　　……　ＦＬの割合は１／１６
+            # 　　　　０．１２５　＝　２×（１／１６）　　……　ＦＬの割合は０．１２５
+            #        １　＝　ｒｏｕｎｄ（９　×　０．１２５）　　……削除するＦＬの個数は１
+            #      　８　＝　９　ー　１　　……　削除するＦＱの個数は８
+            # 例：ＦＬの個数　２
+            fl_size = len(target_fl_index_list)
+            # 例：ＦＱの個数　３０
+            fq_size = len(target_fq_index_list)
+            # 例：ＦＬの割合　０．１２５
+            fl_weight = fl_size / (fl_size + fq_size)
+            # 例：削除するＦＬの個数　１
+            fl_target_size = round(float(rest) * fl_weight) # この四捨五入には丸めが入っているが、めんどくさいんでとりあえずこれを使う
+            # 例：削除するＦＱの個数　８
+            fq_target_size = rest - fl_target_size
+            # TODO 辞書のキーから何個抽出するとかできないか？ random.choices(sequence, k)
+            target_fl_index_list = random.choices(target_fl_index_list, k=fl_target_size)
+            target_fq_index_list = random.choices(target_fq_index_list, k=fq_target_size)
+
             #
             # ＰＬ
             #
-            for pl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
-
-                if is_debug and DebugPlan.evaluation_edit_weaken:
-                    print(f"[{datetime.datetime.now()}] [strengthen > pl]  rest:{rest} / {len(fl_index_to_relation_exists_dictionary)}")
-
-                if rest < 1:
-                    break
-
+            for target_fl_index in target_fl_index_list:
                 p_move_obj, l_move_obj = EvaluationPkTable.destructure_pk_index(
-                        pk_index=pl_index,
+                        pk_index=target_fl_index,
                         p_turn=self._board.turn)
 
-                if p_move_obj.as_usi == move_u:
-                    if relation_exists == 0:
+                # assert
+                if p_move_obj.as_usi != move_u:
+                    raise ValueError(f"[{datetime.datetime.now()}] [strengthen > pl] 着手が変わっているエラー")
 
-                        if is_debug and DebugPlan.evaluation_edit_weaken:
-                            print(f"[{datetime.datetime.now()}] [strengthen > pl]  turn:{Turn.to_string(self._board.turn)}  pl_index:{pl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
+                # デバッグ表示
+                if is_debug and DebugPlan.evaluation_edit_strengthen:
+                    print(f"[{datetime.datetime.now()}] [strengthen > pl] turn:{Turn.to_string(self._board.turn)}  pl_index:{target_fl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  remove relation")
 
-                        is_changed_temp = self._kifuwarabe._evaluation_pl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_pk_moves(
-                                p_move_obj=p_move_obj,
-                                k_move_obj=l_move_obj,
-                                p_turn=self._board.turn,
-                                bit=1)
+                is_changed_temp = self._kifuwarabe._evaluation_kl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kl_moves(
+                        k_move_obj=p_move_obj,
+                        l_move_obj=l_move_obj,
+                        k_turn=self._board.turn,
+                        bit=1)
 
-                        if is_changed_temp:
-                            is_changed = True
-                            rest -= 1
+                if is_changed_temp:
+                    is_changed = True
+                    rest -= 1
 
             #
             # ＰＱ
             #
-            for pq_index, relation_exists in fq_index_to_relation_exists_dictionary.items():
+            for target_fq_index in target_fq_index_list:
+                p_move_obj, q_move_obj = EvaluationKpTable.destructure_kp_index(
+                        kp_index=target_fq_index,
+                        k_turn=self._board.turn)
 
-                if is_debug and DebugPlan.evaluation_edit_weaken:
-                    print(f"[{datetime.datetime.now()}] [strengthen > pq]  rest:{rest} / {len(fq_index_to_relation_exists_dictionary)}")
+                # assert
+                if k_move_obj.as_usi != move_u:
+                    raise ValueError(f"[{datetime.datetime.now()}] [strengthen > pq] 着手が変わっているエラー")
 
-                if rest < 1:
-                    break
+                # デバッグ表示
+                if is_debug and DebugPlan.evaluation_edit_strengthen:
+                    print(f"[{datetime.datetime.now()}] [strengthen > pq] turn:{Turn.to_string(self._board.turn)}  pq_index:{target_fq_index:7}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  remove relation")
 
-                p_move_obj, q_move_obj = EvaluationPpTable.destructure_pp_index(
-                        pp_index=pq_index,
-                        p1_turn=self._board.turn)
+                is_changed_temp = self._kifuwarabe._evaluation_pq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_pp_moves(
+                        p1_move_obj=p_move_obj,
+                        p2_move_obj=q_move_obj,
+                        p1_turn=self._board.turn,
+                        bit=1)
 
-                if p_move_obj.as_usi == move_u:
-                    if relation_exists == 0:
+                if is_changed_temp:
+                    is_changed = True
+                    rest -= 1
 
-                        if is_debug and DebugPlan.evaluation_edit_weaken:
-                            print(f"[{datetime.datetime.now()}] [strengthen > pq]  turn:{Turn.to_string(self._board.turn)}  pq_index:{pq_index:7}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
-
-                        is_changed_temp = self._kifuwarabe._evaluation_pq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_pp_moves(
-                                p1_move_obj=p_move_obj,
-                                p2_move_obj=q_move_obj,
-                                p1_turn=self._board.turn,
-                                bit=1)
-
-                        if is_changed_temp:
-                            is_changed = True
-                            rest -= 1
+            ##
+            ## ＰＬ
+            ##
+            #for pl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
+            #
+            #    if is_debug and DebugPlan.evaluation_edit_strengthen:
+            #        print(f"[{datetime.datetime.now()}] [strengthen > pl]  rest:{rest} / {len(fl_index_to_relation_exists_dictionary)}")
+            #
+            #    if rest < 1:
+            #        break
+            #
+            #    p_move_obj, l_move_obj = EvaluationPkTable.destructure_pk_index(
+            #            pk_index=pl_index,
+            #            p_turn=self._board.turn)
+            #
+            #    if p_move_obj.as_usi == move_u:
+            #        if relation_exists == 0:
+            #
+            #            if is_debug and DebugPlan.evaluation_edit_strengthen:
+            #                print(f"[{datetime.datetime.now()}] [strengthen > pl]  turn:{Turn.to_string(self._board.turn)}  pl_index:{pl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
+            #
+            #            is_changed_temp = self._kifuwarabe._evaluation_pl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_pk_moves(
+            #                    p_move_obj=p_move_obj,
+            #                    k_move_obj=l_move_obj,
+            #                    p_turn=self._board.turn,
+            #                    bit=1)
+            #
+            #            if is_changed_temp:
+            #                is_changed = True
+            #                rest -= 1
+            #
+            ##
+            ## ＰＱ
+            ##
+            #for pq_index, relation_exists in fq_index_to_relation_exists_dictionary.items():
+            #
+            #    if is_debug and DebugPlan.evaluation_edit_strengthen:
+            #        print(f"[{datetime.datetime.now()}] [strengthen > pq]  rest:{rest} / {len(fq_index_to_relation_exists_dictionary)}")
+            #
+            #    if rest < 1:
+            #        break
+            #
+            #    p_move_obj, q_move_obj = EvaluationPpTable.destructure_pp_index(
+            #            pp_index=pq_index,
+            #            p1_turn=self._board.turn)
+            #
+            #    if p_move_obj.as_usi == move_u:
+            #        if relation_exists == 0:
+            #
+            #            if is_debug and DebugPlan.evaluation_edit_strengthen:
+            #                print(f"[{datetime.datetime.now()}] [strengthen > pq]  turn:{Turn.to_string(self._board.turn)}  pq_index:{pq_index:7}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}  add relation")
+            #
+            #            is_changed_temp = self._kifuwarabe._evaluation_pq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_pp_moves(
+            #                    p1_move_obj=p_move_obj,
+            #                    p2_move_obj=q_move_obj,
+            #                    p1_turn=self._board.turn,
+            #                    bit=1)
+            #
+            #            if is_changed_temp:
+            #                is_changed = True
+            #                rest -= 1
 
 
         # 正常終了
