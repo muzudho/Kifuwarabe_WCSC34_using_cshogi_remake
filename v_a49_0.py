@@ -568,9 +568,6 @@ class Kifuwarabe():
 
         # 負け
         if cmd_tail == 'lose':
-            if self._my_turn is None:
-                raise ValueError(f'unexpected my turn:{Turn.to_string(self._my_turn)}')
-
             # ［対局結果］　常に記憶する
             self._game_result_document.add_loss_and_save(self._my_turn, self._board)
 

@@ -223,12 +223,6 @@ class Learn():
         # ｎ手詰めの局面図の sfen
         sfen_at_mate = self._board.sfen()
 
-        # 現局面の情報表示
-        print(f"""[{datetime.datetime.now()}] [learn]
-    # board move_number:{self._board.move_number}
-""")
-        # {BoardHelper.get_position_command(board=self._board)}
-
         # 終局局面までの手数
         self._move_number_to_end = self._move_number_at_end - self._board.move_number
         if self._is_debug:
@@ -485,12 +479,6 @@ class Learn():
 
         # ｎ手詰めの局面図の sfen
         sfen_at_mate = self._board.sfen()
-
-        # 現局面の情報表示
-        print(f"""[{datetime.datetime.now()}] [learn]
-    # board move_number:{self._board.move_number}
-""")
-        # {BoardHelper.get_position_command(board=self._board)}
 
         # 終局局面までの手数
         self._move_number_to_end = self._move_number_at_end - self._board.move_number

@@ -127,13 +127,13 @@ class EvaluationEdit():
             # 例：ＦＬの個数　２
             fl_size = len(target_fl_index_list)
             # 例：ＦＱの個数　３０
-            fq_size = len(fq_index_to_relation_exists_dictionary)
+            fq_size = len(target_fq_index_list)
             # 例：ＦＬの割合　０．１２５
             fl_weight = fl_size / (fl_size + fq_size)
             # 例：削除するＦＬの個数　１
-            fl_target_size = round(float(rest) * fl_weight) # この四捨五入には丸めが入っているが、めんどくさいんでとりあえずこれを使う
+            fl_target_size = int(round(float(rest) * fl_weight)) # この四捨五入には丸めが入っているが、めんどくさいんでとりあえずこれを使う
             # 例：削除するＦＱの個数　８
-            fq_target_size = rest - fl_target_size
+            fq_target_size = int(rest - fl_target_size)
             # TODO 辞書のキーから何個抽出するとかできないか？ random.choices(sequence, k)
             target_fl_index_list = random.choices(target_fl_index_list, k=fl_target_size)
             target_fq_index_list = random.choices(target_fq_index_list, k=fq_target_size)
@@ -305,9 +305,9 @@ class EvaluationEdit():
             # 例：ＦＬの割合　０．１２５
             fl_weight = fl_size / (fl_size + fq_size)
             # 例：削除するＦＬの個数　１
-            fl_target_size = round(float(rest) * fl_weight) # この四捨五入には丸めが入っているが、めんどくさいんでとりあえずこれを使う
+            fl_target_size = int(round(float(rest) * fl_weight)) # この四捨五入には丸めが入っているが、めんどくさいんでとりあえずこれを使う
             # 例：削除するＦＱの個数　８
-            fq_target_size = rest - fl_target_size
+            fq_target_size = int(rest - fl_target_size)
             # TODO 辞書のキーから何個抽出するとかできないか？ random.choices(sequence, k)
             target_fl_index_list = random.choices(target_fl_index_list, k=fl_target_size)
             target_fq_index_list = random.choices(target_fq_index_list, k=fq_target_size)
@@ -534,13 +534,13 @@ class EvaluationEdit():
             # 例：ＦＬの個数　２
             fl_size = len(target_fl_index_list)
             # 例：ＦＱの個数　３０
-            fq_size = len(fq_index_to_relation_exists_dictionary)
+            fq_size = len(target_fq_index_list)
             # 例：ＦＬの割合　０．１２５
             fl_weight = fl_size / (fl_size + fq_size)
             # 例：削除するＦＬの個数　１
-            fl_target_size = round(float(rest) * fl_weight) # この四捨五入には丸めが入っているが、めんどくさいんでとりあえずこれを使う
+            fl_target_size = int(round(float(rest) * fl_weight)) # この四捨五入には丸めが入っているが、めんどくさいんでとりあえずこれを使う
             # 例：削除するＦＱの個数　８
-            fq_target_size = rest - fl_target_size
+            fq_target_size = int(rest - fl_target_size)
             # TODO 辞書のキーから何個抽出するとかできないか？ random.choices(sequence, k)
             target_fl_index_list = random.choices(target_fl_index_list, k=fl_target_size)
             target_fq_index_list = random.choices(target_fq_index_list, k=fq_target_size)
@@ -708,9 +708,9 @@ class EvaluationEdit():
             # 例：ＦＬの割合　０．１２５
             fl_weight = fl_size / (fl_size + fq_size)
             # 例：削除するＦＬの個数　１
-            fl_target_size = round(float(rest) * fl_weight) # この四捨五入には丸めが入っているが、めんどくさいんでとりあえずこれを使う
+            fl_target_size = int(round(float(rest) * fl_weight)) # この四捨五入には丸めが入っているが、めんどくさいんでとりあえずこれを使う
             # 例：削除するＦＱの個数　８
-            fq_target_size = rest - fl_target_size
+            fq_target_size = int(rest - fl_target_size)
             # TODO 辞書のキーから何個抽出するとかできないか？ random.choices(sequence, k)
             target_fl_index_list = random.choices(target_fl_index_list, k=fl_target_size)
             target_fq_index_list = random.choices(target_fq_index_list, k=fq_target_size)
