@@ -1,16 +1,17 @@
-# python v_a49_0.py
 import cshogi
 import datetime
 import random
-from v_a49_0_eval.facade import EvaluationFacade
-from v_a49_0_eval.edit import EvaluationEdit
-from v_a49_0_eval.kk import EvaluationKkTable
-from v_a49_0_eval.kp import EvaluationKpTable
-from v_a49_0_eval.pk import EvaluationPkTable
-from v_a49_0_eval.pp import EvaluationPpTable
-from v_a49_0_misc.game_result_document import GameResultDocument
-from v_a49_0_misc.learn import Learn
-from v_a49_0_misc.lib import Turn, Move, MoveHelper, BoardHelper
+
+# python v_a49_0.py
+from     v_a49_0_eval.facade import EvaluationFacade
+from     v_a49_0_eval.edit import EvaluationEdit
+from     v_a49_0_eval.kk import EvaluationKkTable
+from     v_a49_0_eval.kp import EvaluationKpTable
+from     v_a49_0_eval.pk import EvaluationPkTable
+from     v_a49_0_eval.pp import EvaluationPpTable
+from     v_a49_0_misc.game_result_document import GameResultDocument
+from     v_a49_0_misc.learn import Learn
+from     v_a49_0_misc.lib import Turn, Move, MoveHelper, BoardHelper
 
 
 ########################################

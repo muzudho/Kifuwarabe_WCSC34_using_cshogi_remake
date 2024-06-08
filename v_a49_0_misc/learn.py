@@ -223,11 +223,11 @@ class Learn():
         # ｎ手詰めの局面図の sfen
         sfen_at_mate = self._board.sfen()
 
-        # 現局面の position コマンドを表示
+        # 現局面の情報表示
         print(f"""[{datetime.datetime.now()}] [learn]
-    #board.move_number:{self._board.move_number}
-    #{BoardHelper.get_position_command(board=self._board)}
+    # board move_number:{self._board.move_number}
 """)
+        # {BoardHelper.get_position_command(board=self._board)}
 
         # 終局局面までの手数
         self._move_number_to_end = self._move_number_at_end - self._board.move_number
@@ -273,10 +273,12 @@ class Learn():
 
             # ｎ手詰め局面図かチェック
             if self._board.sfen() != sfen_at_mate:
-                # 局面図の表示
-                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > 好手] {mate}手詰め局面図エラー")
-                print(self._board)
-                print(f"#  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
+                # エラー時
+                print(f"""[{datetime.datetime.now()}] [learn > 詰める方 > 好手] {mate}手詰め局面図エラー
+{self._board}
+    # board move_number:{self._board.move_number}
+    # {BoardHelper.get_position_command(board=self._board)}
+""")
                 raise ValueError(f"[learn > 詰める方 > 好手] {mate}手詰め局面図エラー")
 
             # （ｎ手詰め局面図で）とりあえず一手指す
@@ -293,14 +295,14 @@ class Learn():
             # 進捗ログを出したい
             def log_progress(comment):
                 if DebugPlan.learn_at_odd_log_progress():
-                    print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 好手] ({choice_num:3}/{total_num:3})  {move_u:5}  [{self._board.move_number}手（差{move_number_difference}） {Turn.to_symbol(self._board.turn)}]  {result_str}  {comment}', flush=True)
+                    print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 好手] ({choice_num:3}/{total_num:3})  {move_u:5}  [{self._board.move_number}手（差{move_number_difference}）{Turn.to_kanji(self._board.turn)}]  {result_str}  {comment}', flush=True)
 
             # どちらかが投了した
             if result_str == 'resign':
                 # 自分の負け
                 if self._kifuwarabe._my_turn == self._board.turn:
                     is_weak_move = True
-                    log_progress(f"[↓] {mate}手詰めを逃して {max_playout_depth} 手以内に負けた。すごく悪い手だ。好手の評価を取り下げる")
+                    log_progress(f"[▼DOWN▼] {mate}手詰めを逃して {max_playout_depth} 手以内に負けた。すごく悪い手だ。好手の評価を取り下げる")
                 else:
                     log_progress(f"[　] {mate}手詰めは逃したが {max_playout_depth} 手以内には勝ったからセーフとする。好手の評価はそのまま")
 
@@ -311,7 +313,7 @@ class Learn():
 
                 else:
                     is_weak_move = True
-                    log_progress(f"[↓] {mate}手詰めを逃して、 {max_playout_depth} 手以内に入玉宣言されて負けた。すごく悪い手だ。好手の評価を取り下げる")
+                    log_progress(f"[▼DOWN▼] {mate}手詰めを逃して、 {max_playout_depth} 手以内に入玉宣言されて負けた。すごく悪い手だ。好手の評価を取り下げる")
 
             # 手数の上限に達した
             elif result_str == 'max_move':
@@ -320,7 +322,7 @@ class Learn():
             # プレイアウトの深さの上限に達した
             elif result_str == 'max_playout_depth':
                 is_weak_move = True
-                log_progress(f"[↓] 攻めてる間にプレイアウトが打ち切られた。（評価値テーブルを動かしたいので）好手の評価を取り下げる")
+                log_progress(f"[▼DOWN▼] 攻めてる間にプレイアウトが打ち切られた。（評価値テーブルを動かしたいので）好手の評価を取り下げる")
 
             else:
                 log_progress("[　] 好手の評価はそのまま")
@@ -334,10 +336,12 @@ class Learn():
 
             # 戻せたかチェック
             if self._board.sfen() != sfen_at_mate:
-                # 終局図の表示
-                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > 好手] 局面巻き戻しエラー")
-                print(self._board)
-                print(f"#  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
+                # エラー時
+                print(f"""[{datetime.datetime.now()}] [learn > 詰める方 > 好手] 局面巻き戻しエラー
+{self._board}
+    # board move_number:{self._board.move_number}
+    # {BoardHelper.get_position_command(board=self._board)}
+""")
                 raise ValueError("局面巻き戻しエラー")
 
             # ｎ手詰めの局面にしてから、評価値を下げる
@@ -369,10 +373,12 @@ class Learn():
 
             # ｎ手詰め局面図かチェック
             if self._board.sfen() != sfen_at_mate:
-                # 局面図の表示
-                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > 悪手] {mate}手詰め局面図エラー")
-                print(self._board)
-                print(f"#  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
+                # エラー時
+                print(f"""[{datetime.datetime.now()}] [learn > 詰める方 > 悪手] {mate}手詰め局面図エラー
+{self._board}
+    # board move_number:{self._board.move_number}
+    # {BoardHelper.get_position_command(board=self._board)}
+""")
                 raise ValueError(f"[learn > 詰める方 > 悪手] {mate}手詰め局面図エラー")
 
             # （ｎ手詰め局面図で）とりあえず一手指す
@@ -389,7 +395,7 @@ class Learn():
             # 進捗ログを出したい
             def log_progress(comment):
                 if DebugPlan.learn_at_odd_log_progress():
-                    print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 悪手] ({choice_num:3}/{total_num:3})  {move_u:5}  [{self._board.move_number}手（差{move_number_difference}） {Turn.to_symbol(self._board.turn)}]  {result_str}  {comment}', flush=True)
+                    print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 悪手] ({choice_num:3}/{total_num:3})  {move_u:5}  [{self._board.move_number}手（差{move_number_difference}）{Turn.to_kanji(self._board.turn)}]  {result_str}  {comment}', flush=True)
 
             # どちらかが投了した
             if result_str == 'resign':
@@ -398,7 +404,7 @@ class Learn():
                     # かかった手数ｎ手
                     if self._move_number_at_end - self._board.move_number == mate:
                         is_strong_move = True
-                        log_progress(f"[↑] {mate}手詰めの局面で、{mate}手で勝ったので、評価を上げよう")
+                        log_progress(f"[▲UP▲] {mate}手詰めの局面で、{mate}手で勝ったので、評価を上げよう")
                     else:
                         log_progress(f"[　] {mate}手詰めの局面で、{mate + 1}手以上かけて {max_playout_depth} 手以内には勝ったが、相手がヘボ手を指した可能性を消せない。悪手の評価はこのまま")
 
@@ -424,10 +430,12 @@ class Learn():
 
             # 戻せたかチェック
             if self._board.sfen() != sfen_at_mate:
-                # 局面図の表示
-                print(f"[{datetime.datetime.now()}] [learn > 詰める方 > 悪手] 局面巻き戻しエラー")
-                print(self._board)
-                print(f"#  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
+                # エラー時
+                print(f"""[{datetime.datetime.now()}] [learn > 詰める方 > 悪手] 局面巻き戻しエラー
+{self._board}
+    # board move_number:{self._board.move_number}
+    # {BoardHelper.get_position_command(board=self._board)}
+""")
                 raise ValueError("局面巻き戻しエラー")
 
             # ｎ手詰めの局面にしてから、評価値を上げる
@@ -478,11 +486,11 @@ class Learn():
         # ｎ手詰めの局面図の sfen
         sfen_at_mate = self._board.sfen()
 
-        # 現局面の position コマンドを表示
+        # 現局面の情報表示
         print(f"""[{datetime.datetime.now()}] [learn]
-    #board.move_number:{self._board.move_number}
-    #{BoardHelper.get_position_command(board=self._board)}
+    # board move_number:{self._board.move_number}
 """)
+        # {BoardHelper.get_position_command(board=self._board)}
 
         # 終局局面までの手数
         self._move_number_to_end = self._move_number_at_end - self._board.move_number
@@ -524,10 +532,12 @@ class Learn():
 
             # ｎ手詰め局面図かチェック
             if self._board.sfen() != sfen_at_mate:
-                # 局面図の表示
-                print(f"[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] {mate}手詰め局面図エラー")
-                print(self._board)
-                print(f"#  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
+                # エラー時
+                print(f"""[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] {mate}手詰め局面図エラー
+{self._board}
+    # board move_number:{self._board.move_number}
+    # {BoardHelper.get_position_command(board=self._board)}
+""")
                 raise ValueError(f"[learn > 逃げる方 > 好手] {mate}手詰め局面図エラー")
 
             # （ｎ手詰め局面図で）とりあえず一手指す
@@ -544,14 +554,14 @@ class Learn():
             # 進捗ログを出したい
             def log_progress(comment):
                 if DebugPlan.learn_at_even_log_progress():
-                    print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] ({choice_num:3}/{total_num:3})  {move_u:5}  [{self._board.move_number}手（差{move_number_difference}） {Turn.to_symbol(self._board.turn)}]  {result_str}  {comment}', flush=True)
+                    print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] ({choice_num:3}/{total_num:3})  {move_u:5}  [{self._board.move_number}手（差{move_number_difference}）{Turn.to_kanji(self._board.turn)}]  {result_str}  {comment}', flush=True)
 
             # どちらかが投了した
             if result_str == 'resign':
                 # 自分の負け。かかった手数２手。つまり１手詰め
                 if self._kifuwarabe._my_turn == self._board.turn and self._move_number_at_end - self._board.move_number == 2:
                     is_weak_move = True
-                    log_progress(f"[↓] {mate}手詰めが掛けられていて、{mate}手詰めを避けられなかったから、好手の評価を取り下げる")
+                    log_progress(f"[▼DOWN▼] {mate}手詰めが掛けられていて、{mate}手詰めを避けられなかったから、好手の評価を取り下げる")
 
                 else:
                     log_progress(f"[　] {mate}手詰めが掛けられていて、{mate}手詰めを避けたから、好手の評価はそのまま")
@@ -576,10 +586,12 @@ class Learn():
 
             # 戻せたかチェック
             if self._board.sfen() != sfen_at_mate:
-                # 局面図の表示
-                print(f"[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] 局面巻き戻しエラー")
-                print(self._board)
-                print(f"#  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
+                # エラー時
+                print(f"""[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] 局面巻き戻しエラー
+{self._board}
+    # board move_number:{self._board.move_number}
+    # {BoardHelper.get_position_command(board=self._board)}
+""")
                 raise ValueError("局面巻き戻しエラー")
 
             # ｎ手詰めの局面にしてから、評価値を下げる
@@ -612,10 +624,12 @@ class Learn():
 
             # ｎ手詰め局面図かチェック
             if self._board.sfen() != sfen_at_mate:
-                # 局面図の表示
-                print(f"[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手] {mate}手詰め局面図エラー")
-                print(self._board)
-                print(f"#  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
+                # エラー時
+                print(f"""[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手] {mate}手詰め局面図エラー
+{self._board}
+    # board move_number:{self._board.move_number}
+    # {BoardHelper.get_position_command(board=self._board)}
+""")
                 raise ValueError(f"[learn > 逃げる方 > 悪手] {mate}手詰め局面図エラー")
 
             # （ｎ手詰め局面図で）とりあえず一手指す
@@ -632,7 +646,7 @@ class Learn():
             # 進捗ログを出したい
             def log_progress(comment):
                 if DebugPlan.learn_at_even_log_progress():
-                    print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手] ({choice_num:3}/{total_num:3})  {move_u:5}  [{self._board.move_number}手（差{move_number_difference}） {Turn.to_symbol(self._board.turn)}]  {result_str}  {comment}', flush=True)
+                    print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手] ({choice_num:3}/{total_num:3})  {move_u:5}  [{self._board.move_number}手（差{move_number_difference}）{Turn.to_kanji(self._board.turn)}]  {result_str}  {comment}', flush=True)
 
             # どちらかが投了した
             if result_str == 'resign':
@@ -640,7 +654,7 @@ class Learn():
                 if self._kifuwarabe._my_turn != self._board.turn and move_number_difference == mate:
                     # 次にｎ手詰めの局面に掛けられるところを、その前に詰めたのだから、すごく良い手だ。この手の評価を上げる
                     is_strong_move = True
-                    log_progress(f"[↑] {mate}手詰めを掛けられていて、逆に{mate - 1}手で勝ったのだから、この手の評価を上げる")
+                    log_progress(f"[▲UP▲] {mate}手詰めを掛けられていて、逆に{mate - 1}手で勝ったのだから、この手の評価を上げる")
                 else:
                     log_progress(f"[　] {mate}手詰めを掛けられていて、ここで１手で勝てなかったから、この悪手の評価はそのまま")
 
@@ -649,7 +663,7 @@ class Learn():
                 if move_number_difference != mate:
                     # 次にｎ手詰めの局面に掛けられるところを、その前に入玉宣言勝ちしたのだから、すごく良い手だ。この手の評価を上げる
                     is_strong_move = True
-                    log_progress(f"[↑] {mate}手詰めを掛けられていて、逆に{mate - 1}手で入玉宣言勝ちしたのだから、この手の評価を上げる")
+                    log_progress(f"[▲UP▲] {mate}手詰めを掛けられていて、逆に{mate - 1}手で入玉宣言勝ちしたのだから、この手の評価を上げる")
                 else:
                     log_progress(f"[　] {mate}手詰めを掛けられていて、ここで{mate}手以上掛けて入玉したから、この悪手の評価はそのまま")
 
@@ -660,7 +674,7 @@ class Learn():
             # プレイアウトの深さの上限に達した
             elif result_str == 'max_playout_depth':
                 is_strong_move = True
-                log_progress(f"[↑] プレイアウトが打ち切られるまで逃げ切った。（評価値テーブルを動かしたいので）悪手の評価を取り下げる")
+                log_progress(f"[▲UP▲] プレイアウトが打ち切られるまで逃げ切った。（評価値テーブルを動かしたいので）悪手の評価を取り下げる")
 
             else:
                 log_progress("[　] この悪手の評価はそのまま")
@@ -675,10 +689,12 @@ class Learn():
 
             # 戻せたかチェック
             if self._board.sfen() != sfen_at_mate:
-                # 局面図の表示
-                print(f"[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手] 局面巻き戻しエラー")
-                print(self._board)
-                print(f"#  sfen:`{self._board.sfen()}`  board.move_number:{self._board.move_number}")
+                # エラー時
+                print(f"""[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手] 局面巻き戻しエラー
+{self._board}
+    # board move_number:{self._board.move_number}
+    # {BoardHelper.get_position_command(board=self._board)}
+""")
                 raise ValueError("局面巻き戻しエラー")
 
             # ｎ手詰めの局面にしてから、評価値を上げる

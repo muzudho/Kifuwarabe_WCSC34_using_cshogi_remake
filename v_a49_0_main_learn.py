@@ -1,11 +1,12 @@
-# python v_a49_0_main_learn.py
 import os
 import datetime
 import time
-from v_a49_0 import Kifuwarabe, max_move_number, engine_version_str
-from v_a49_0_misc.game_result_document import GameResultDocument
-from v_a49_0_misc.learn import Learn
-from v_a49_0_misc.lib import BoardHelper
+
+# python v_a49_0_main_learn.py
+from     v_a49_0 import Kifuwarabe, max_move_number, engine_version_str
+from     v_a49_0_misc.game_result_document import GameResultDocument
+from     v_a49_0_misc.learn import Learn
+from     v_a49_0_misc.lib import BoardHelper
 
 
 class LearningFramework():

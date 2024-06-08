@@ -70,6 +70,13 @@ class Turn():
     }
 
 
+    _turn_kanji = {
+        None: 'None',
+        cshogi.BLACK: '先',
+        cshogi.WHITE: '後',
+    }
+
+
     _str_to_int = {
         'None': None,
         'black': cshogi.BLACK,
@@ -99,6 +106,11 @@ class Turn():
     @classmethod
     def to_symbol(clazz, turn):
         return clazz._turn_symbol[turn]
+
+
+    @classmethod
+    def to_kanji(clazz, turn):
+        return clazz._turn_kanji[turn]
 
 
     @classmethod
