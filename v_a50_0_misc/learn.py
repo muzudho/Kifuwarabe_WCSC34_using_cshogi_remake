@@ -19,7 +19,10 @@ class Learn():
 
         # 次の対局の usinewgame のタイミングで、前の対局の棋譜をトレーニングデータにして機械学習を走らせるから、持ち時間を消費してしまう。
         # 平均合法手が 80 手と仮定して、 80分の1 にすれば、 1 手当たり 1 つの合法手を検討する間隔になって早く終わるだろう
-        return random.randint(0,80) == 0
+        # 分子
+        numerator = 1
+        denominator = 80
+        return random.randint(0,denominator) <= (numerator - 1)
 
 
     def __init__(

@@ -261,10 +261,11 @@ class Kifuwarabe():
                     board=self._board)
 
             print(f"""\
-[{datetime.datetime.now()}] [playout] result:`{result_str}`
+[{datetime.datetime.now()}] [playout]
 {self._board}
-#move_number:{self._board.move_number} / max_move_number:{max_move_number}
-#{position_command}
+    #result:{result_str}
+    #move_number:{self._board.move_number} / max_move_number:{max_move_number}
+    #{position_command}
 """,
                     flush=True)
 
@@ -288,6 +289,12 @@ class Kifuwarabe():
         elif head == 'debug':
             self.debug(
                     cmd_tail=tail)
+
+        # 連続自己対局モード
+        #       code: selfmatch
+        elif head == 'selfmatch':
+            self.selfmatch(
+                    is_debug=is_debug)
 
         return ''
 
@@ -556,7 +563,7 @@ class Kifuwarabe():
         Parameters
         ----------
         cmd_tail : str
-            コマンドの名前以外
+            コマンドの名前以外。 'draw', 'lose', 'win'
         """
 
         # 開始ログは出したい
@@ -565,6 +572,11 @@ class Kifuwarabe():
         if cmd_tail.strip() == '':
             print(f"`do` command must be result.  ex:`gameover lose`  cmd_tail:`{cmd_tail}`")
             return
+
+        # 持将棋
+        elif cmd_tail == 'draw':
+            # ［対局結果］　常に記憶する
+            self._game_result_document.add_draw_and_save(self._my_turn, self._board)
 
         # 負け
         if cmd_tail == 'lose':
@@ -575,11 +587,6 @@ class Kifuwarabe():
         elif cmd_tail == 'win':
             # ［対局結果］　常に記憶する
             self._game_result_document.add_win_and_save(self._my_turn, self._board)
-
-        # 持将棋
-        elif cmd_tail == 'draw':
-            # ［対局結果］　常に記憶する
-            self._game_result_document.add_draw_and_save(self._my_turn, self._board)
 
         # その他
         else:
@@ -944,6 +951,35 @@ class Kifuwarabe():
         result_str = self.usi_sequence(
                 command_str=cmd_tail,
                 is_debug=True)
+
+
+    def selfmatch(
+            self,
+            is_debug=False):
+        """連続自己対局
+        code: selfmatch
+        """
+        print(f"[{datetime.datetime.now()}] [selfmatch] start...")
+
+        self.usi()
+
+        self.isready()
+
+        # 無限ループ
+        while True:
+
+            self.usinewgame()
+
+            self.position(
+                    cmd_tail="startpos")
+
+            result_str = self.playout(
+                    is_debug=is_debug)
+
+            self.gameover(
+                    cmd_tail=result_str)
+
+            print(f"[{datetime.datetime.now()}] [selfmatch] repeat")
 
 
 ########################################
