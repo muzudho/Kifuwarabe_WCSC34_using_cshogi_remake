@@ -7,7 +7,7 @@ from     v_a51_0_eval.kk import EvaluationKkTable
 from     v_a51_0_eval.p import EvaluationPMove
 from     v_a51_0_eval.pk import EvaluationPkTable
 from     v_a51_0_misc.bit_ope import BitOpe
-from     v_a51_0_misc.lib import Turn, Move, BoardHelper
+from     v_a51_0_misc.lib import Turn, MoveSourceLocation, MoveDestinationLocation, Move, BoardHelper
 from     v_a51_0_misc.debug import DebugHelper
 
 
@@ -277,10 +277,14 @@ def test_lib():
     if not move_obj.promoted:
         raise ValueError(f'unexpected error. move_obj.promoted expected:True  actual:`{move_obj.promoted}`')
 
-    move_obj = Move.from_src_dst_pro(
-            src_sq=BoardHelper.jsa_to_sq(38),
-            dst_sq=BoardHelper.jsa_to_sq(39),
+    move_obj = Move(
+            src_location=MoveSourceLocation.from_sq_drop(
+                sq=BoardHelper.jsa_to_sq(38),
+                drop=None),# TODO 本当にドロップは無いか？
+            dst_location=MoveDestinationLocation.from_sq(
+                sq=BoardHelper.jsa_to_sq(39)),
             promoted=True)
+    
     if move_obj.as_usi != expected_move_u:
         raise ValueError(f'unexpected error. expected:`{expected_move_u}`  actual:`{move_obj.as_usi}`')
 

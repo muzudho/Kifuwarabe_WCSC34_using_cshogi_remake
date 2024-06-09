@@ -117,6 +117,355 @@ class Turn():
         return clazz._str_to_int[turn_str]
 
 
+class MoveSourceLocation():
+    """指し手の移動元は、マス番号と駒種類の２通りある"""
+
+    #_src_drops
+    _drops = ('R*', 'B*', 'G*', 'S*', 'N*', 'L*', 'P*')
+    #_src_drop_files
+    _drop_files = ('R', 'B', 'G', 'S', 'N', 'L', 'P')
+
+
+    @staticmethod
+    def from_string(src_str):
+        file_th=None
+        rank_th=None
+        sq=None
+        drop=None
+
+        #
+        # 移動元の列番号を 1 から始まる整数で返す。打にはマス番号は無い
+        #
+        if src_str in Move._src_drops:
+            file_th = None
+            drop = src_str
+
+        else:
+            file_str = src_str[0]
+            drop = None
+
+            try:
+                file_th = Move._file_th_str_to_num[file_str]
+            except:
+                raise Exception(f"src file error: `{file_str}` in src_str:`{src_str}`")
+
+        #
+        # 移動元の段番号を 1 から始まる整数で返す。打は無い
+        #
+        if src_str in Move._src_drops:
+            rank_th = None
+
+        else:
+            rank_str = src_str[1]
+
+            try:
+                rank_th = Move._rank_str_to_th_num[rank_str]
+            except:
+                raise Exception(f"src rank error: `{rank_str}` in src_str:'{src_str}'")
+
+        #
+        # 移動元のマス番号を基数で。打なら None が入る
+        #
+        if file_th is not None and rank_th is not None:
+            sq = (file_th - 1) * 9 + (rank_th - 1)
+        else:
+            sq = None
+
+        return MoveSourceLocation(
+                file_th=file_th,
+                rank_th=rank_th,
+                sq=sq,
+                drop=drop)
+
+
+    @staticmethod
+    def from_sq_drop(
+            sq,
+            drop):
+        #
+        # 筋に分解
+        #
+        if drop is None:
+            file_th = sq // 9 + 1
+
+        else:
+            file_th = None
+
+        #
+        # 段に分解
+        #
+        if drop is None:
+            rank_th = sq % 9 + 1
+
+        else:
+            rank_th = None
+
+        return MoveSourceLocation(
+                file_th=file_th,
+                rank_th=rank_th,
+                sq=sq,
+                drop=drop)
+
+
+    def __init__(
+            self,
+            file_th,
+            rank_th,
+            sq,
+            drop):
+        """初期化
+
+        Parameters
+        ----------
+        file_th : int
+            列番号。 1 から始まる整数で返す。打には None を入れる
+        rank_th : int
+            段番号。 1 から始まる整数で返す。打には None を入れる
+        sq : int
+            マス番号。 0～80
+        drop : str
+            打の駒種類。 'R*' など
+        """
+        self._sq = sq
+        self._drop = drop
+
+        #
+        # 筋
+        #
+        self._file_th = file_th,
+
+        #
+        # 段
+        #
+        self._rank_th = rank_th,
+
+        #
+        # １８０°回転
+        #
+        def rotate_file_th_or_none():
+            if self._file_th is None:
+                return None
+            else:
+                return 8 - (self._file_th - 1) + 1
+
+        self._rot_file_th = rotate_file_th_or_none()
+
+        def rotate_rank_th_or_none():
+            if self._rank_th is None:
+                return None
+            else:
+                return 8 - (self._rank_th - 1) + 1
+
+        self._rot_rank_th = rotate_rank_th_or_none()
+
+        # 打のときは src_sq が無いので、 None を返す
+        def rotate_sq_or_none():
+            if self._sq is None:
+                # self.src_str は "R*" とか入っていて使えないので、None を返す
+                return None
+
+            else:
+                return 80 - self._sq
+
+        self._rot_sq = rotate_sq_or_none()
+
+
+    @property
+    def file_th(self):
+        """列番号。 1 から始まる整数で返す。打には None を入れる"""
+        return self._file_th
+
+
+    @property
+    def rank_th(self):
+        """段番号。 1 から始まる整数で返す。打には None を入れる"""
+        return self._rank_th
+
+
+    @property
+    def sq(self):
+        """移動元のマス番号を 0 から始まる整数で返す。打には None を入れる"""
+        return self._sq
+
+
+    @property
+    def drop(self):
+        """打なら "R*" などを入れる。打でなければ None を入れる"""
+        return self._drop
+
+
+    @property
+    def rot_file_th(self):
+        """指し手を盤上で１８０°回転したときの列番号。 1 から始まる整数で返す。打なら None を返す"""
+        return self._rot_file_th
+
+
+    @property
+    def rot_rank_th(self):
+        """指し手を盤上で１８０°回転したときの段番号。 1 から始まる整数で返す。打なら None を返す"""
+        return self._rot_rank_th
+
+
+    @property
+    def rot_sq(self):
+        """指し手を盤上で１８０°回転したときのマス番号。 0 から始まる整数で返す。打なら None を返す"""
+        return self._rot_sq
+
+
+    def to_src_str(self):
+        "整数の 10 や、文字列の `R*` などを返す"
+        if self._drop is not None:
+            return self._drop
+        else:
+            return f"{self.file_th}{Move._rank_th_num_to_alphabet[self.rank_th]}"
+
+
+    def rotate(self):
+        """指し手を盤上で１８０°回転"""
+        return MoveSourceLocation(
+            file_th=self._rot_file_th,
+            rank_th=self._rot_rank_th,
+            sq=self._rot_sq)
+
+
+class MoveDestinationLocation():
+    """移動先マス"""
+    # TODO
+    #dst_str,
+    #dst_sq,
+
+        # = dst_str
+    #@property
+    #def dst_str(self):
+    #    """移動先"""
+#
+    #@property
+    #def dst_sq(self):
+    #    """移動先のマス番号を 0 から始まる整数で返す"""
+
+
+    @staticmethod
+    def from_string(dst_str):
+        """文字列からオブジェクトを生成"""
+        file_th = None
+        rank_th = None
+        sq = None
+
+        #
+        # 移動先の列番号を 1 から始まる整数で返す
+        #
+        file_char = dst_str[0]
+
+        try:
+            file_th = Move._file_th_str_to_num[file_char]
+        except:
+            raise Exception(f"dst file error: `{file_char}` in dst_str:`{dst_str}`")
+
+        #
+        # 移動先の段番号を 1 から始まる整数で返す
+        #
+        rank_char = dst_str[1]
+
+        try:
+            rank_th = Move._rank_str_to_th_num[rank_char]
+        except:
+            raise Exception(f"dst rank error: '{rank_char}' in rank_th:`{rank_th}`")
+
+        #
+        # 移動先のマス番号を 0 から始まる整数で返す
+        #
+        # 0～80 = (1～9     - 1) * 9 + (1～9    - 1)
+        sq  = (file_th - 1) * 9 + (rank_th - 1)
+
+        return MoveDestinationLocation(
+            file_th=file_th,
+            rank_th=rank_th,
+            sq=sq)
+
+
+    @staticmethod
+    def from_sq(sq):
+        return MoveDestinationLocation(
+                file_th=sq // 9 + 1,
+                rank_th=sq % 9 + 1,
+                sq=sq)
+
+
+    def __init__(
+            self,
+            file_th,
+            rank_th,
+            sq):
+        """初期化
+
+        Parameters
+        ----------
+        file_th : int
+            筋番号。 1 から始まる整数
+        rank_th : int
+            段番号。 1 から始まる整数
+        sq : int
+            マス番号。 0 ～ 80 の整数
+        """
+        self._file_th = file_th
+        self._rank_th = rank_th
+        self._sq = sq
+
+        # 指し手を盤上で１８０°回転
+        self._rot_file_th = 8 - (self._file_th - 1) + 1
+        self._rot_rank_th = 8 - (self._rank_th - 1) + 1
+        self._rot_sq = 80 - self._sq
+
+
+    @property
+    def file_th(self):
+        """筋番号。 1 から始まる整数"""
+        return self._file_th
+
+
+    @property
+    def rank_th(self):
+        """段番号。 1 から始まる整数"""
+        return self._rank_th
+
+
+    @property
+    def sq(self):
+        """マス番号。 0 ～ 80 の整数"""
+        return self._sq
+
+
+    @property
+    def rot_file_th(self):
+        """指し手を１８０°回転したときの筋番号。 1 から始まる整数"""
+        return self._rot_file_th
+
+
+    @property
+    def rot_rank_th(self):
+        """指し手を１８０°回転したときの段番号。 1 から始まる整数"""
+        return self._rot_rank_th
+
+
+    @property
+    def rot_sq(self):
+        """指し手を１８０°回転したときのマス番号。 0 ～ 80 の整数"""
+        return self._rot_sq
+
+
+    def to_dst_str(self):
+        """文字列形式で返す"""
+        return f"{self.file_th}{Move._rank_th_num_to_alphabet[self.rank_th]}"
+
+
+    def rotate(self):
+        """指し手を盤上で１８０°回転"""
+        return MoveDestinationLocation(
+            file_th=self._rot_file_th,
+            rank_th=self._rot_rank_th,
+            sq=self._rot_sq)
+
+
 class Move():
     """指し手"""
 
@@ -213,10 +562,6 @@ class Move():
     """移動元、移動先の２文字目をインデックスへ変換"""
 
 
-    _src_drops = ('R*', 'B*', 'G*', 'S*', 'N*', 'L*', 'P*')
-    _src_drop_files = ('R', 'B', 'G', 'S', 'N', 'L', 'P')
-
-
     # 使ってない？
     @staticmethod
     def get_rank_th_num_to_alphabet(rank_num):
@@ -233,76 +578,13 @@ class Move():
             "7g7f" や "3d3c+"、 "R*5e" のような文字列を想定。 "resign" のような文字列は想定外
         """
 
-        # 移動元
-        src_str = move_as_usi[0: 2]
+        # 移動元オブジェクト生成
+        src_location = MoveSourceLocation.from_string(
+                src_str=move_as_usi[0: 2])
 
-        # 移動先
-        dst_str = move_as_usi[2: 4]
-
-        #
-        # 移動元の列番号を 1 から始まる整数で返す。打にはマス番号は無い
-        #
-        if src_str in Move._src_drops:
-            src_file_th_or_none = None
-            src_drop_or_none = src_str
-
-        else:
-            file_str = src_str[0]
-            src_drop_or_none = None
-
-            try:
-                src_file_th_or_none = Move._file_th_str_to_num[file_str]
-            except:
-                raise Exception(f"src file error: '{file_str}' in '{move_as_usi}'")
-
-        #
-        # 移動元の段番号を 1 から始まる整数で返す。打は無い
-        #
-        if src_str in Move._src_drops:
-            src_rank_th_or_none = None
-
-        else:
-            rank_str = src_str[1]
-
-            try:
-                src_rank_th_or_none = Move._rank_str_to_th_num[rank_str]
-            except:
-                raise Exception(f"src rank error: '{rank_str}' in '{move_as_usi}'")
-
-        #
-        # 移動元のマス番号を基数で。打にはマス番号は無い
-        #
-        if src_file_th_or_none is not None and src_rank_th_or_none is not None:
-            src_sq_or_none = (src_file_th_or_none - 1) * 9 + (src_rank_th_or_none - 1)
-        else:
-            # TODO 打の情報が欠落している？
-            src_sq_or_none = None
-
-        #
-        # 移動先の列番号を 1 から始まる整数で返す
-        #
-        file_str = dst_str[0]
-
-        try:
-            dst_file_th = Move._file_th_str_to_num[file_str]
-        except:
-            raise Exception(f"dst file error: '{file_str}' in '{move_as_usi}'")
-
-        #
-        # 移動先の段番号を 1 から始まる整数で返す
-        #
-        rank_str = dst_str[1]
-
-        try:
-            dst_rank_th = Move._rank_str_to_th_num[rank_str]
-        except:
-            raise Exception(f"dst rank error: '{rank_str}' in '{move_as_usi}'")
-
-        #
-        # 移動先のマス番号を 0 から始まる整数で返す
-        #
-        # 0～80 = (1～9         - 1) * 9 + (1～9        - 1)
-        dst_sq  = (dst_file_th - 1) * 9 + (dst_rank_th - 1)
+        # 移動先オブジェクト生成
+        dst_location = MoveDestinationLocation.from_string(
+                dst_str=move_as_usi[2: 4])
 
         #
         # 成ったか？
@@ -313,169 +595,38 @@ class Move():
 
         return Move(
                 move_as_usi=move_as_usi,
-                src_str=src_str,
-                dst_str=dst_str,
-                src_file_th_or_none=src_file_th_or_none,
-                src_rank_th_or_none=src_rank_th_or_none,
-                src_sq_or_none=src_sq_or_none,
-                src_drop_or_none=src_drop_or_none,
-                dst_file_th=dst_file_th,
-                dst_rank_th=dst_rank_th,
-                dst_sq=dst_sq,
+                src_location=src_location,
+                dst_location=dst_location,
                 promoted=promoted)
 
 
-    @staticmethod
-    def from_src_dst_pro(
-            src_sq,
-            dst_sq,
+    def __init__(
+            self,
+            src_location,
+            dst_location,
             promoted):
-        """生成
+        """初期化
 
         Parameters
         ----------
-        src_sq : str
-            移動元マス、または打の駒種類
-        dst_sq : str
-            移動先マス
+        src_location : MoveSourceLocation
+            移動元オブジェクト
+        dst_location : MoveDestinationLocation
+            移動先オブジェクト
         promoted : bool
             成ったか？
         """
-
-        #
-        # 移動元マス
-        #
-
-        # 打のケース
-        if src_sq in Move._src_drops:
-            src_str = src_sq
-            src_sq = None   # ナンにする
-            src_drop_or_none = src_sq
-            src_file_th_or_none = None
-            src_rank_th_or_none = None
-
-        else:
-            # 筋と段は 1 から始まる整数（序数）とします
-            src_file_th_or_none = src_sq // 9 + 1
-            src_rank_th_or_none = src_sq % 9 + 1
-            src_str = f"{src_file_th_or_none}{Move._rank_th_num_to_alphabet[src_rank_th_or_none]}"
-            src_drop_or_none = None
-
-        #
-        # 移動先マス
-        #
-        dst_file_th = dst_sq // 9 + 1
-        dst_rank_th = dst_sq % 9 + 1
-        dst_str = f"{dst_file_th}{Move._rank_th_num_to_alphabet[dst_rank_th]}"
+        self._src_location = src_location
+        self._dst_location = dst_location
+        self._promoted = promoted
 
         if promoted:
             pro_str = "+"
         else:
             pro_str = ""
 
-        return Move(
-                move_as_usi=f"{src_str}{dst_str}{pro_str}",
-                src_str=src_str,
-                dst_str=dst_str,
-                src_file_th_or_none=src_file_th_or_none,
-                src_rank_th_or_none=src_rank_th_or_none,
-                src_sq_or_none=src_sq,
-                src_drop_or_none=src_drop_or_none,
-                dst_file_th=dst_file_th,
-                dst_rank_th=dst_rank_th,
-                dst_sq=dst_sq,
-                promoted=promoted)
-
-
-    def __init__(
-            self,
-            move_as_usi,
-            src_str,
-            dst_str,
-            src_file_th_or_none,
-            src_rank_th_or_none,
-            src_sq_or_none,
-            src_drop_or_none,
-            dst_file_th,
-            dst_rank_th,
-            dst_sq,
-            promoted):
-        """初期化
-
-        Parameters
-        ----------
-        move_as_usi : str
-            "7g7f" や "3d3c+"、 "R*5e" のような文字列を想定。 "resign" のような文字列は想定外
-        src_str : str
-            移動元
-        dst_str : str
-            移動先
-        src_file_th_or_none : int
-            移動元の列番号を 1 から始まる整数で返す。打にはマス番号は無い
-        src_rank_th_or_none : int
-            移動元の段番号を 1 から始まる整数で返す。打は無い
-        src_sq_or_none : int
-            移動元のマス番号を 0 から始まる整数で返す。打には None を入れる
-        src_drop_or_none : str
-            打なら "R*" などを入れる。打でなければ None を入れる
-        dst_file_th : int
-            移動先の列番号を 1 から始まる整数で返す
-        dst_rank_th : int
-            移動先の段番号を 1 から始まる整数で返す
-        dst_sq : int
-            移動先のマス番号を 0 から始まる整数で返す
-        promoted : bool
-            成ったか？
-        """
-        self._move_as_usi = move_as_usi
-        self._src_str = src_str
-        self._dst_str = dst_str
-        self._src_file_th_or_none = src_file_th_or_none
-        self._src_rank_th_or_none = src_rank_th_or_none
-        self._src_sq_or_none = src_sq_or_none
-        self._src_drop_or_none = src_drop_or_none
-        self._dst_file_th = dst_file_th
-        self._dst_rank_th = dst_rank_th
-        self._dst_sq = dst_sq
-        self._promoted = promoted
-
-        #
-        # １８０°回転
-        #
-
-        def rotate_src_file_th_or_none():
-            if self._src_file_th_or_none is None:
-                return None
-            else:
-                return 8 - (self._src_file_th_or_none - 1) + 1
-
-        self._rot_src_file_th_or_none = rotate_src_file_th_or_none()
-
-        def rotate_src_rank_th_or_none():
-            if self._src_rank_th_or_none is None:
-                return None
-            else:
-                return 8 - (self._src_rank_th_or_none - 1) + 1
-
-        self._rot_src_rank_th_or_none = rotate_src_rank_th_or_none()
-
-        # 打のときは src_sq が無いので、 None を返す
-        def rotate_src_sq_or_none():
-            if self.src_sq_or_none is None:
-                # self.src_str は "R*" とか入っていて使えないので、None を返す
-                return None
-
-            else:
-                return 80 - self.src_sq_or_none
-
-        self._rot_src_sq_or_none = rotate_src_sq_or_none()
-
-        self._rot_dst_file = 8 - (self._dst_file_th - 1) + 1
-
-        self._rot_dst_rank = 8 - (self._dst_rank_th - 1) + 1
-
-        self._rot_dst_sq = 80 - self.dst_sq
-
+        # "7g7f" や "3d3c+"、 "R*5e" のような文字列を想定。 "resign" のような文字列は想定外
+        self._as_usi = f"{self._src_location.to_src_str()}{self._dst_location.to_dst_str()}{pro_str}"
 
     @property
     def as_usi(self):
@@ -483,99 +634,21 @@ class Move():
 
 
     @property
-    def src_str(self):
+    def src_location(self):
         """移動元"""
-        return self._src_str
+        return self._src_location
 
 
     @property
-    def dst_str(self):
+    def dst_location(self):
         """移動先"""
-        return self._dst_str
-
-
-    @property
-    def src_file_th_or_none(self):
-        """移動元の列番号を 1 から始まる整数で返す。打にはマス番号は無い"""
-        return self._src_file_th_or_none
-
-
-    @property
-    def src_rank_th_or_none(self):
-        """移動元の段番号を 1 から始まる整数で返す。打にはマス番号は無い"""
-        return self._src_rank_th_or_none
-
-
-    @property
-    def src_sq_or_none(self):
-        """移動元のマス番号を 0 から始まる整数で返す。打なら None を返す"""
-        return self._src_sq_or_none
-
-
-    @property
-    def src_drop_or_none(self):
-        """打の駒種類を 'R*' などの形式で返す。打でないなら None を返す"""
-        return self._src_drop_or_none
-
-
-    @property
-    def dst_file_th(self):
-        """移動先の列番号を 1 から始まる整数で返す"""
-        return self._dst_file_th
-
-
-    @property
-    def dst_rank_th(self):
-        """移動先の段番号を 1 から始まる整数で返す"""
-        return self._dst_rank_th
-
-
-    @property
-    def dst_sq(self):
-        """移動先のマス番号を 0 から始まる整数で返す"""
-        return self._dst_sq
+        return self._dst_location
 
 
     @property
     def promoted(self):
         """成ったか？"""
         return self._promoted
-
-
-    @property
-    def rot_src_file_th_or_none(self):
-        """指し手を１８０°回転する。移動元の列番号を 1 から始まる整数で返す。打にはマス番号は無い"""
-        return self._rot_src_file_th_or_none
-
-
-    @property
-    def rot_src_rank_th_or_none(self):
-        """指し手を１８０°回転する。移動元の段番号を 1 から始まる整数で返す。打にはマス番号は無い"""
-        return self._rot_src_rank_th_or_none
-
-
-    @property
-    def rot_src_sq_or_none(self):
-        """指し手を１８０°回転する。移動元のマス番号を 0 から始まる整数で返す。打にはマス番号は無い"""
-        return self._rot_src_sq_or_none
-
-
-    @property
-    def rot_dst_file(self):
-        """指し手を１８０°回転する。移動先の列番号を 1 から始まる整数で返す"""
-        return self._rot_dst_file
-
-
-    @property
-    def rot_dst_rank(self):
-        """指し手を１８０°回転する。移動先の段番号を 1 から始まる整数で返す"""
-        return self._rot_dst_rank
-
-
-    @property
-    def rot_dst_sq(self):
-        """指し手を１８０°回転する。移動先のマス番号を 0 から始まる整数で返す"""
-        return self._rot_dst_sq
 
 
 class MoveHelper():
@@ -588,11 +661,9 @@ class MoveHelper():
             move_obj):
         """自玉か？"""
 
-        src_sq_or_none = move_obj.src_sq_or_none
-
-        # 自玉の指し手か？
-        #print(f"［自玉の指し手か？］ move_as_usi: {move_as_usi}, src_sq_or_none: {src_sq_or_none}, k_sq: {k_sq}, board.turn: {board.turn}")
-        return src_sq_or_none == k_sq
+        # 自玉の指し手か？（打なら None なので False）
+        #print(f"［自玉の指し手か？］ move_as_usi: {move_as_usi}, src sq:{move_obj.src_location.sq}, k_sq: {k_sq}, board.turn: {board.turn}")
+        return move_obj.src_location.sq == k_sq
 
 
 class BoardHelper():

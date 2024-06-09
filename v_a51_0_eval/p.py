@@ -1,4 +1,4 @@
-from     v_a51_0_misc.lib import Move, BoardHelper
+from     v_a51_0_misc.lib import MoveSourceLocation, MoveDestinationLocation, Move, BoardHelper
 
 
 class EvaluationPMove():
@@ -387,10 +387,10 @@ class EvaluationPMove():
         """
 
         if is_rotate:
-            p_src_sq_or_none = p_move_obj.rot_src_sq_or_none
-            p_dst_sq = p_move_obj.rot_dst_sq
+            p_src_sq_or_none = p_move_obj.src_location.rot_sq
+            p_dst_sq = p_move_obj.dst_location.rot_sq
         else:
-            p_src_sq_or_none = p_move_obj.src_sq_or_none
+            p_src_sq_or_none = p_move_obj.src_location.sq
             p_dst_sq = p_move_obj.dst_sq
 
         # 元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します
@@ -485,15 +485,19 @@ class EvaluationPMove():
          dst_sq,
          promoted) = index_to_src_sq_dst_sq_promotion_dictionary[p_index]
 
-        p_move_obj = Move.from_src_dst_pro(
-                src_sq=src_sq,
-                dst_sq=dst_sq,
+        p_move_obj = Move(
+                src_location=MoveSourceLocation.from_sq_drop(
+                        sq=src_sq,
+                        drop=None),# TODO 本当にドロップは無いか？
+                dst_location=MoveDestinationLocation.from_sq(
+                        sq=dst_sq),
                 promoted=promoted)
 
         if is_rotate:
-            p_move_obj = Move.from_src_dst_pro(
-                    src_sq=p_move_obj.rot_src_sq_or_none,
-                    dst_sq=p_move_obj.rot_dst_sq,
+            # TODO ここでオブジェクトを生成しなくて済む方法はないか？
+            p_move_obj = Move(
+                    src_location=p_move_obj.src_location.rotate(),
+                    dst_location=p_move_obj.dst_location.rotate(),
                     promoted=promoted)
 
         return p_move_obj

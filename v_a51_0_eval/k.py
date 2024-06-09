@@ -1,4 +1,4 @@
-from v_a51_0_misc.lib import Move, BoardHelper
+from v_a51_0_misc.lib import MoveSourceLocation, MoveDestinationLocation, Move, BoardHelper
 
 
 class EvaluationKMove():
@@ -250,11 +250,12 @@ class EvaluationKMove():
         """
 
         if is_rotate:
-            k_src_sq_or_none = k_move_obj.rot_src_sq_or_none
-            k_dst_sq = k_move_obj.rot_dst_sq
+            k_src_sq_or_none = k_move_obj.src_location.rot_sq
+            k_dst_sq = k_move_obj.dst_location.rot_sq
+
         else:
-            k_src_sq_or_none = k_move_obj.src_sq_or_none
-            k_dst_sq = k_move_obj.dst_sq
+            k_src_sq_or_none = k_move_obj.src_location.sq
+            k_dst_sq = k_move_obj.dst_location.sq
 
         # 玉は成らない
 
@@ -316,16 +317,19 @@ class EvaluationKMove():
 
         (src_sq, dst_sq) = index_to_src_dst_dictionary[k_index]
 
-        k_move_obj = Move.from_src_dst_pro(
-                src_sq=src_sq,
-                dst_sq=dst_sq,
+        k_move_obj = Move(
+                src_location=MoveSourceLocation.from_sq_drop(
+                        sq=src_sq,
+                        drop=None),# TODO 本当にドロップは無いか？
+                dst_location=MoveDestinationLocation.from_sq(
+                        sq=dst_sq),
                 # 玉に成りはありません
                 promoted=False)
 
         if is_rotate:
-            k_move_obj = Move.from_src_dst_pro(
-                    src_sq=k_move_obj.rot_src_sq_or_none,
-                    dst_sq=k_move_obj.rot_dst_sq,
+            k_move_obj = Move(
+                    src_location=k_move_obj.src_location.rotate(),
+                    dst_location=k_move_obj.dst_location.rotate(),
                     # 玉に成りはありません
                     promoted=False)
 
