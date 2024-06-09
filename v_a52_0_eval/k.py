@@ -365,11 +365,12 @@ class EvaluationKMove():
         """
 
         if is_rotate:
-            k_src_sq_or_none = k_move_obj.src_location.rot_sq
+            # 玉に打は無いので、 src_sq は None にはなりません
+            k_src_sq = k_move_obj.src_location.rot_sq
             k_dst_sq = k_move_obj.dst_location.rot_sq
 
         else:
-            k_src_sq_or_none = k_move_obj.src_location.sq
+            k_src_sq = k_move_obj.src_location.sq
             k_dst_sq = k_move_obj.dst_location.sq
 
         # 玉は成らない
@@ -377,29 +378,37 @@ class EvaluationKMove():
         # 元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します
         (src_to_dst_index_dictionary, _) = EvaluationKMove.get_src_sq_to_dst_sq_index_dictionary_tuple()
 
+        #
+        # unwrap
+        #
         try:
-            # 移動元マス番号
-            #
-            #   - TODO 評価値テーブルに打は作ってるか？ k_src_sq_or_none は None になってるから k_src_drop_or_none がほしい？
-            #
-            dst_to_index_dictionary = src_to_dst_index_dictionary[k_src_sq_or_none]
+            # 移動元マス番号を渡して、辞書を取得
+            dst_to_index_dictionary = src_to_dst_index_dictionary[k_src_sq]
 
         except KeyError as ex:
-            print(f"k_move_obj.as_usi:{k_move_obj.as_usi}  rotated:{is_rotate}  k_src_sq:{k_src_sq_or_none}  src_masu:{BoardHelper.sq_to_jsa(k_src_sq_or_none)}  ex:{ex}")
+            print(f"[evaluation k move > get index by k move]  k_src_sq error. k_move_obj.as_usi:{k_move_obj.as_usi}  rotated:{is_rotate}  k_src_sq:{k_src_sq}  src_masu:{BoardHelper.sq_to_jsa(k_src_sq)}  ex:{ex}")
             raise
 
+        #
+        # unwrap
+        #
         try:
-            # 移動元マス番号
-            #
-            #   - 打はありません。したがって None にはなりません
-            #
+            # 移動先マス番号を渡して、玉の着手のインデックスを取得
             k_index = dst_to_index_dictionary[k_dst_sq]
 
         except KeyError as ex:
             # k_move_obj.as_usi:5a5b  src_sq:36  dst_sq:37
             # k_move_obj.as_usi:5a4b  is_rotate:True  src_sq:44  dst_sq:52  src_masu:59  dst_masu:68  ex:28
             # k_move_obj.as_usi:6g4e  rotated:True  k_src_sq:29  k_dst_sq:49  src_masu:43  dst_masu:65  ex:49
-            print(f"k_move_obj.as_usi:{k_move_obj.as_usi}  rotated:{is_rotate}  len(dst_to_index_dictionary):{len(dst_to_index_dictionary)}  k_src_masu:{BoardHelper.sq_to_jsa(k_src_sq_or_none)}  k_dst_masu:{BoardHelper.sq_to_jsa(k_dst_sq)}  k_src_sq:{k_src_sq_or_none}  k_dst_sq:{k_dst_sq}  ex:{ex}")
+            # k_move_obj.as_usi:8i6g  rotated:True  len(dst_to_index_dictionary):5  k_src_masu:21  k_dst_masu:43  k_src_sq:9  k_dst_sq:29  ex:29
+            print(f"[evaluation k move > get index by k move]  k_dst_sq error. k_move_obj.as_usi:{k_move_obj.as_usi}  rotated:{is_rotate}  len(dst_to_index_dictionary):{len(dst_to_index_dictionary)}  k_src_masu:{BoardHelper.sq_to_jsa(k_src_sq)}  k_dst_masu:{BoardHelper.sq_to_jsa(k_dst_sq)}  k_src_sq:{k_src_sq}  k_dst_sq:{k_dst_sq}  ex:{ex}")
+
+            # ダンプ
+            i = 0
+            for k_dst_sq, k_index in dst_to_index_dictionary.items():
+                print(f"[evaluation k move > get index by k move]  ({i:2})  k_dst_sq:{k_dst_sq}  k_dst_masu:{BoardHelper.sq_to_jsa(k_dst_sq)}  k_index:{k_index}")
+                i += 1
+
             raise
 
         # assert

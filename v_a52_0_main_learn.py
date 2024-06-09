@@ -107,6 +107,11 @@ class LearningFramework():
 
             for game_index, game_result_record in enumerate(game_result_record_list):
 
+                # 引分けの棋譜には詰めが含まれていないのでスキップします
+                if game_result_record.result == 'draw':
+                    print(f"[{datetime.datetime.now()}] [learning framework > start it] ({game_index + 1:4}/{max_game}) skip. this record is draw.", flush=True)
+                    continue
+
                 # position コマンドの読取
                 kifuwarabe.position(
                         # position コマンドの position 抜き
