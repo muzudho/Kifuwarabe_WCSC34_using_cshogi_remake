@@ -579,28 +579,44 @@ class Kifuwarabe():
             print(f"持将棋か～（ー＿ー） my turn:{self._my_turn}", flush=True)
 
             # ［対局結果］　常に記憶する
-            self._game_result_document.add_and_save(self._my_turn, self._board)
+            self._game_result_document.add_and_save(
+                    my_turn=self._my_turn,
+                    result_str=cmd_tail,
+                    reason='-',
+                    board=self._board)
 
         # 負け
         if cmd_tail == 'lose':
             print(f"あ～あ、 {self._my_turn} 番で負けたぜ（＞＿＜）", flush=True)
 
             # ［対局結果］　常に記憶する
-            self._game_result_document.add_and_save(self._my_turn, self._board)
+            self._game_result_document.add_and_save(
+                    my_turn=self._my_turn,
+                    result_str=cmd_tail,
+                    reason='-',
+                    board=self._board)
 
         # 勝ち
         elif cmd_tail == 'win':
             print(f"やったぜ {self._my_turn} 番で勝ったぜ（＾ｑ＾）", flush=True)
 
             # ［対局結果］　常に記憶する
-            self._game_result_document.add_and_save(self._my_turn, self._board)
+            self._game_result_document.add_and_save(
+                    my_turn=self._my_turn,
+                    result_str=cmd_tail,
+                    reason='-',
+                    board=self._board)
 
         # その他
         else:
             print(f"なんだろな（・＿・）？　'{cmd_tail}'  my turn:{self._my_turn}", flush=True)
 
             # ［対局結果］　常に記憶する
-            self._game_result_document.add_and_save(cmd_tail, self._my_turn, self._board)
+            self._game_result_document.add_and_save(
+                    my_turn=self._my_turn,
+                    result_str=cmd_tail,
+                    reason='-',
+                    board=self._board)
 
         # 終了ログは出したい
         print(f"[{datetime.datetime.now()}] [gameover] end", flush=True)
@@ -918,7 +934,7 @@ class Kifuwarabe():
 
         reason = playout_local()
 
-        if not self._board.is_gameover():
+        if not self._board.is_game_over():
             return ('draw', reason)
 
         if self._board.turn == self.my_turn:

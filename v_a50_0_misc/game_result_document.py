@@ -76,7 +76,7 @@ class GameResultRecord():
 
 
     def to_string_line(self):
-        return f"{self.result_turn} {self.result}  {self.reason} {self.position_command}\n"
+        return f"{self.result_turn} {self.result} {self.reason} {self.position_command}\n"
 
 
 class GameResultDocument():
@@ -271,7 +271,7 @@ class GameResultDocument():
         result_str : str
             勝敗の結果。半角空白を含めないでください
         reason : str
-            勝敗の結果の理由
+            勝敗の結果の理由。無記載も可能。その場合は '-' と入れる
         board : Board
             将棋盤
         """
