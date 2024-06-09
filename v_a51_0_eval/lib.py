@@ -1,6 +1,7 @@
 import os
 import datetime
 import random
+import time
 
 
 class EvaluationLib():
@@ -60,9 +61,12 @@ class EvaluationLib():
                 if max_try <= retry + 1:
                     raise
 
-                # リトライする
+                # ３０～５９秒後にリトライする
                 else:
-                    print(f"[{datetime.datetime.now()}] [evaluation lib / read evaluation table as array from file] retry. [{file_name_obj.base_name}] file error. ex:{ex}")
+                    seconds = random.randint(30,60)
+                    print(f"[{datetime.datetime.now()}] [evaluation lib > read evaluation table as array from file] failed to read `{file_name_obj.base_name}` file. wait for {seconds} seconds before retrying. ex:{ex}")
+                    time.sleep(seconds)
+                    continue
 
         return table_as_array
 
@@ -171,9 +175,12 @@ class EvaluationLib():
                 if max_try <= retry + 1:
                     raise
 
-                # リトライする
+                # ３０～５９秒後にリトライする
                 else:
-                    print(f"[{datetime.datetime.now()}] [evaluation lib / save evaluation table file] retry. [{file_name_obj.base_name}] file error. ex:{ex}")
+                    seconds = random.randint(30,60)
+                    print(f"[{datetime.datetime.now()}] [evaluation lib > save evaluation table file] failed to remove `{file_name_obj.base_name}` file. wait for {seconds} seconds before retrying. ex:{ex}")
+                    time.sleep(seconds)
+                    continue
 
         if is_debug:
             print(f"[{datetime.datetime.now()}] rename {file_name_obj.temporary_base_name} file to {file_name_obj.base_name}...", flush=True)
