@@ -484,10 +484,10 @@ class Kifuwarabe():
         #
         # 棋譜再生
         #
-        for move_as_usi in moves_text_as_usi:
-            self._board.push_usi(move_as_usi)
+        for move_u in moves_text_as_usi:
+            self._board.push_usi(move_u)
             if is_debug:
-                print(f"[kifuwarabe > position] done  M:{move_as_usi:5}  board turn:{Turn.to_string(self._board.turn)}")
+                print(f"[kifuwarabe > position] done  M:{move_u:5}  board turn:{Turn.to_string(self._board.turn)}")
 
         # 現局面の手番を、自分の手番とする
         self._my_turn = self._board.turn

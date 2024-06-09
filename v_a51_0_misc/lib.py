@@ -136,7 +136,7 @@ class MoveSourceLocation():
         #
         # 移動元の列番号を 1 から始まる整数で返す。打にはマス番号は無い
         #
-        if src_str in Move._src_drops:
+        if src_str in MoveSourceLocation._drops:
             file_th = None
             drop = src_str
 
@@ -152,7 +152,7 @@ class MoveSourceLocation():
         #
         # 移動元の段番号を 1 から始まる整数で返す。打は無い
         #
-        if src_str in Move._src_drops:
+        if src_str in MoveSourceLocation._drops:
             rank_th = None
 
         else:
@@ -226,48 +226,51 @@ class MoveSourceLocation():
         drop : str
             打の駒種類。 'R*' など
         """
-        self._sq = sq
-        self._drop = drop
 
-        #
-        # 筋
-        #
-        self._file_th = file_th,
+        try:
+            self._sq = sq
+            self._drop = drop
 
-        #
-        # 段
-        #
-        self._rank_th = rank_th,
+            #
+            # 筋
+            #
+            self._file_th = file_th
 
-        #
-        # １８０°回転
-        #
-        def rotate_file_th_or_none():
+            #
+            # 段
+            #
+            self._rank_th = rank_th
+
+            #
+            # １８０°回転
+            #
+            # 筋
             if self._file_th is None:
-                return None
+                self._rot_file_th = None
+
             else:
-                return 8 - (self._file_th - 1) + 1
+                self._rot_file_th = 8 - (self._file_th - 1) + 1
 
-        self._rot_file_th = rotate_file_th_or_none()
-
-        def rotate_rank_th_or_none():
+            # 段
             if self._rank_th is None:
-                return None
+                self._rot_rank_th =  None
+
             else:
-                return 8 - (self._rank_th - 1) + 1
+                self._rot_rank_th =  8 - (self._rank_th - 1) + 1
 
-        self._rot_rank_th = rotate_rank_th_or_none()
-
-        # 打のときは src_sq が無いので、 None を返す
-        def rotate_sq_or_none():
+            # マス番号
             if self._sq is None:
-                # self.src_str は "R*" とか入っていて使えないので、None を返す
-                return None
+                # 打だろう。 None を返す
+                self._rot_sq = None
 
             else:
-                return 80 - self._sq
+                self._rot_sq = 80 - self._sq
 
-        self._rot_sq = rotate_sq_or_none()
+
+        except TypeError as ex:
+            # file_th:1  rank_th:7  sq:6  drop:None  ex:unsupported operand type(s) for -: 'tuple' and 'int'
+            print(f"[move source location > __init__]  file_th:{file_th}  rank_th:{rank_th}  sq:{sq}  drop:{drop}  ex:{ex}")
+            raise
 
 
     @property
@@ -330,18 +333,6 @@ class MoveSourceLocation():
 
 class MoveDestinationLocation():
     """移動先マス"""
-    # TODO
-    #dst_str,
-    #dst_sq,
-
-        # = dst_str
-    #@property
-    #def dst_str(self):
-    #    """移動先"""
-#
-    #@property
-    #def dst_sq(self):
-    #    """移動先のマス番号を 0 から始まる整数で返す"""
 
 
     @staticmethod
@@ -594,7 +585,6 @@ class Move():
         promoted = 4 < len(move_as_usi)
 
         return Move(
-                move_as_usi=move_as_usi,
                 src_location=src_location,
                 dst_location=dst_location,
                 promoted=promoted)
@@ -630,7 +620,7 @@ class Move():
 
     @property
     def as_usi(self):
-        return self._move_as_usi
+        return self._as_usi
 
 
     @property
@@ -662,7 +652,7 @@ class MoveHelper():
         """自玉か？"""
 
         # 自玉の指し手か？（打なら None なので False）
-        #print(f"［自玉の指し手か？］ move_as_usi: {move_as_usi}, src sq:{move_obj.src_location.sq}, k_sq: {k_sq}, board.turn: {board.turn}")
+        #print(f"［自玉の指し手か？］ move_u: {move_obj.as_usi}, src sq:{move_obj.src_location.sq}, k_sq: {k_sq}, board.turn: {board.turn}")
         return move_obj.src_location.sq == k_sq
 
 
