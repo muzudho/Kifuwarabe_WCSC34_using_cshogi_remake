@@ -83,6 +83,13 @@ class Turn():
     }
 
 
+    _flip = {
+        None: None,
+        cshogi.BLACK: cshogi.WHITE,
+        cshogi.WHITE: cshogi.BLACK,
+    }
+
+
     @staticmethod
     def to_index(turn):
         """先手を0、後手を1とするのを明示する
@@ -115,6 +122,11 @@ class Turn():
     @classmethod
     def str_to_int(clazz, turn_str):
         return clazz._str_to_int[turn_str]
+
+
+    @classmethod
+    def flip(clazz, turn):
+        return clazz._flip[turn]
 
 
 class MoveSourceLocation():

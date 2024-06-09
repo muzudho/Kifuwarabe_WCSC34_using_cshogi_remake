@@ -235,6 +235,11 @@ class LearnAboutOneGame():
         # ｎ手詰めの局面図の sfen
         sfen_at_mate = self._board.sfen()
 
+        # 詰める方の手番
+        attacker_turn = self._board.turn
+        # 逃げる方の手番
+        defender_turn = Turn.flip(attacker_turn)
+
         # 終局局面までの手数
         self._move_number_to_end = self._move_number_at_end - self._board.move_number
         if self._is_debug:
@@ -305,8 +310,8 @@ class LearnAboutOneGame():
 
             # どちらかが投了した
             if reason == 'resign':
-                # 自分の負け
-                if self._kifuwarabe._my_turn == self._board.turn:
+                # 攻め手の負け
+                if attacker_turn == self._board.turn:
                     # すごく悪い手だ。好手の評価を取り下げる
                     is_weak_move = True
                     log_progress(f"[▼DOWN▼] {mate}手詰めを逃して {max_playout_depth} 手以内に負けた")
@@ -316,7 +321,8 @@ class LearnAboutOneGame():
 
             # どちらかが入玉勝ちした
             elif reason == 'nyugyoku_win':
-                if self._kifuwarabe._my_turn == self._board.turn:
+                # 攻め手の勝ち
+                if attacker_turn == self._board.turn:
                     # 好手の評価はそのまま
                     log_progress(f"[　] {mate}手詰めは逃したが {max_playout_depth} 手以内には入玉宣言勝ちしたからセーフ")
 
@@ -412,8 +418,8 @@ class LearnAboutOneGame():
 
             # どちらかが投了した
             if reason == 'resign':
-                # 自分の勝ち
-                if self._kifuwarabe._my_turn != self._board.turn:
+                # 逃げてた方の負け
+                if defender_turn == self._board.turn:
                     # かかった手数ｎ手
                     if self._move_number_at_end - self._board.move_number == mate:
                         # 良いことだ。評価を上げよう
@@ -506,6 +512,11 @@ class LearnAboutOneGame():
         # ｎ手詰めの局面図の sfen
         sfen_at_mate = self._board.sfen()
 
+        # 逃げる方の手番
+        defender_turn = self._board.turn
+        # 詰める方の手番
+        attacker_turn = Turn.flip(defender_turn)
+
         # 終局局面までの手数
         self._move_number_to_end = self._move_number_at_end - self._board.move_number
         if self._is_debug:
@@ -572,15 +583,21 @@ class LearnAboutOneGame():
 
             # どちらかが投了した
             if reason == 'resign':
-                # 自分の負け。かかった手数２手。つまり１手詰め
-                if self._kifuwarabe._my_turn == self._board.turn and self._move_number_at_end - self._board.move_number == 2:
-                    # 好手の評価を取り下げる
-                    is_weak_move = True
-                    log_progress(f"[▼DOWN▼] {mate}手詰めが掛けられていて、{mate}手詰めを避けられなかった")
+                # 逃げてる方の負け
+                if defender_turn == self._board.turn:
+                    if self._move_number_at_end - self._board.move_number == 2:
+                        # 好手の評価を取り下げる
+                        is_weak_move = True
+                        log_progress(f"[▼DOWN▼] {mate}手詰めが掛けられていて、それを食らった")
+
+                    else:
+                        # 好手の評価はそのまま
+                        log_progress(f"[　] {mate}手詰めが掛けられていたが、そこから粘った")
 
                 else:
-                    # 好手の評価はそのまま
-                    log_progress(f"[　] {mate}手詰めが掛けられていて、{mate}手詰めを避けた")
+                    # 好手を維持
+                    log_progress(f"[　] 逃げてる方が勝った")
+
 
             # 手数の上限に達した
             elif reason == 'max_move':
@@ -669,24 +686,24 @@ class LearnAboutOneGame():
 
             # どちらかが投了した
             if reason == 'resign':
-                # 相手をｎ手詰め
-                if self._kifuwarabe._my_turn != self._board.turn and move_number_difference == mate:
-                    # 次にｎ手詰めの局面に掛けられるところを、その前に詰めたのだから、すごく良い手だ。この手の評価を上げる
-                    is_strong_move = True
-                    log_progress(f"[▲UP▲] {mate}手詰めを掛けられていて、逆に{mate - 1}手で勝った")
+                # 逃げてる方が負け
+                if defender_turn == self._board.turn:
+                    log_progress(f"[　] 逃げようとしたが、逃げ切れなかった")
+
+                # 逃げてたら勝った
                 else:
-                    # この悪手の評価はそのまま
-                    log_progress(f"[　] {mate}手詰めを掛けられていて、ここで１手で勝てなかった")
+                    is_strong_move = True
+                    log_progress(f"[▲UP▲] 逃げてたら勝った")
 
             # どちらかが入玉勝ちした
             elif reason == 'nyugyoku_win':
-                if move_number_difference != mate:
-                    # 次にｎ手詰めの局面に掛けられるところを、その前に入玉宣言勝ちしたのだから、すごく良い手だ。この手の評価を上げる
-                    is_strong_move = True
-                    log_progress(f"[▲UP▲] {mate}手詰めを掛けられていて、逆に{mate - 1}手で入玉宣言勝ちした")
+                if defender_turn == self._board.turn:
+                    log_progress(f"[　] 逃げようとしたが、入玉宣言負けしてしまった")
+
+                # 逃げてたら勝った
                 else:
-                    # この悪手の評価はそのまま
-                    log_progress(f"[　] {mate}手詰めを掛けられていて、ここで{mate}手以上掛けて入玉した")
+                    is_strong_move = True
+                    log_progress(f"[▲UP▲] 逃げてたら、入玉宣言勝ちした")
 
             # 手数の上限に達した
             elif reason == 'max_move':
