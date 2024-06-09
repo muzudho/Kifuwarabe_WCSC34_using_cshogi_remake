@@ -46,9 +46,6 @@ class LearnAboutOneGame():
         """全ての指し手の良し悪しを検討していると、全体を見る時間がなくなるから、
         間引くのに使う"""
 
-        ## 平均合法手が 80 手と仮定して、 20分の1 にすれば、１手当たり 4 つの合法手を検討するだろう
-        #return random.randint(0,20) == 0
-
         # 次の対局の usinewgame のタイミングで、前の対局の棋譜をトレーニングデータにして機械学習を走らせるから、持ち時間を消費してしまう。
         # 平均合法手が 80 手と仮定して、 80分の1 にすれば、 1 手当たり 1 つの合法手を検討する間隔になって早く終わるだろう
         # 分子
@@ -273,8 +270,8 @@ class LearnAboutOneGame():
             # カウンターは事前に進める
             choice_num += 1
 
-            # 検討を間引く
-            if not self.is_learn_by_rate():
+            # mate が 3 以降なら、検討を間引く
+            if 3 <= mate and not self.is_learn_by_rate():
                 continue
 
             is_weak_move = False
@@ -380,8 +377,8 @@ class LearnAboutOneGame():
             # カウンターは事前に進める
             choice_num += 1
 
-            # 検討を間引く
-            if not self.is_learn_by_rate():
+            # mate が 4 以降なら、検討を間引く
+            if 4 <= mate and not self.is_learn_by_rate():
                 continue
 
             is_strong_move = False
