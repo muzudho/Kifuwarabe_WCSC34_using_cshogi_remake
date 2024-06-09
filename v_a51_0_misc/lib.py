@@ -449,10 +449,11 @@ class Move():
 
         self._rot_src_rank_th_or_none = rotate_src_rank_th_or_none()
 
-        # 打はそのまま
+        # 打のときは src_sq が無いので、 None を返す
         def rotate_src_sq_or_none():
             if self.src_sq_or_none is None:
-                return self.src_str
+                # self.src_str は "R*" とか入っていて使えないので、None を返す
+                return None
 
             else:
                 return 80 - self.src_sq_or_none
