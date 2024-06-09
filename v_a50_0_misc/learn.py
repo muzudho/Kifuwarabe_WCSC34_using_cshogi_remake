@@ -181,13 +181,13 @@ class LearnAboutOneGame():
             if self._move_number_at_end < mate or result_str == 'can not rewind' or 30 <= changed_count:
                 break
 
-            ##
-            ## ２０手毎にコマメに保存する
-            ##
-            #if mate % 20 == 0:
-            #    # 全ての評価値テーブル［0:先手, 1:後手］の（変更があれば）保存
-            #    self._kifuwarabe.save_eval_all_tables(
-            #            is_debug=self._is_debug)
+            #
+            # ２０手毎にコマメに保存する
+            #
+            if mate % 20 == 0:
+                # 全ての評価値テーブル［0:先手, 1:後手］の（変更があれば）保存
+                self._kifuwarabe.save_eval_all_tables(
+                        is_debug=self._is_debug)
 
         #
         # おわり
