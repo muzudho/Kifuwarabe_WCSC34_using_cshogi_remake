@@ -3,11 +3,10 @@ import datetime
 import time
 
 # python v_a51_0_main_learn.py
-from     v_a51_0 import Kifuwarabe, max_move_number, engine_version_str
+from     v_a51_0 import Kifuwarabe, engine_version_str
 from     v_a51_0_misc.game_result_document import GameResultDocument
 from     v_a51_0_misc.learn import LearnAboutOneGame
 from     v_a51_0_misc.learn_config_document import LearnConfigDocument
-from     v_a51_0_misc.lib import BoardHelper
 
 
 class LearningFramework():

@@ -630,7 +630,7 @@ class Move():
         else:
             pro_str = ""
 
-        return Move.from_src_dst_pro(
+        return Move(
                 as_usi=f"{src_location.usi_code}{dst_location.usi_code}{pro_str}",
                 src_location=src_location,
                 dst_location=dst_location,
