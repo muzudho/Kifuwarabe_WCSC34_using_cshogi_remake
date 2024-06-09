@@ -274,6 +274,7 @@ class Move():
         if src_file_th_or_none is not None and src_rank_th_or_none is not None:
             src_sq_or_none = (src_file_th_or_none - 1) * 9 + (src_rank_th_or_none - 1)
         else:
+            # TODO 打の情報が欠落している？
             src_sq_or_none = None
 
         #
@@ -389,6 +390,7 @@ class Move():
             src_file_th_or_none,
             src_rank_th_or_none,
             src_sq_or_none,
+            src_drop_or_none,
             dst_file_th,
             dst_rank_th,
             dst_sq,
@@ -408,7 +410,9 @@ class Move():
         src_rank_th_or_none : int
             移動元の段番号を 1 から始まる整数で返す。打は無い
         src_sq_or_none : int
-            移動元のマス番号を 0 から始まる整数で返す。打にはマス番号は無い
+            移動元のマス番号を 0 から始まる整数で返す。打には None を入れる
+        src_drop_or_none : str
+            打なら "R*" などを入れる。打でなければ None を入れる
         dst_file_th : int
             移動先の列番号を 1 から始まる整数で返す
         dst_rank_th : int
@@ -424,6 +428,7 @@ class Move():
         self._src_file_th_or_none = src_file_th_or_none
         self._src_rank_th_or_none = src_rank_th_or_none
         self._src_sq_or_none = src_sq_or_none
+        self._src_drop_or_none = src_drop_or_none
         self._dst_file_th = dst_file_th
         self._dst_rank_th = dst_rank_th
         self._dst_sq = dst_sq
@@ -498,8 +503,14 @@ class Move():
 
     @property
     def src_sq_or_none(self):
-        """移動元のマス番号を 0 から始まる整数で返す。打にはマス番号は無い"""
+        """移動元のマス番号を 0 から始まる整数で返す。打なら None を返す"""
         return self._src_sq_or_none
+
+
+    @property
+    def src_drop_or_none(self):
+        """打の駒種類を 'R*' などの形式で返す。打でないなら None を返す"""
+        return self._src_drop_or_none
 
 
     @property
