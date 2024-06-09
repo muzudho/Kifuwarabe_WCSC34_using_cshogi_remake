@@ -149,16 +149,31 @@ class EvaluationLib():
 
                 f.write(sum.to_bytes(1))
 
-        try:
-            if is_debug:
-                print(f"[{datetime.datetime.now()}] remove ./{file_name_obj.base_name} file...", flush=True)
+        # 読込失敗時は、リトライを１０回は行いたい
+        max_try = 10
+        for retry in range(0,max_try):
 
-            os.remove(
-                    path=f'./{file_name_obj.base_name}')
+            try:
+                if is_debug:
+                    print(f"[{datetime.datetime.now()}] remove ./{file_name_obj.base_name} file...", flush=True)
 
-        # ファイルが見つからないのは好都合なので無視します
-        except FileNotFoundError:
-            pass
+                os.remove(
+                        path=f'./{file_name_obj.base_name}')
+
+            # ファイルが見つからないのは好都合なので無視します
+            except FileNotFoundError:
+                pass
+
+            # ファイルが使用中かも。削除できないならリネームできないので困る
+            except PermissionError as ex:
+
+                # 次にループを抜けるタイミングなら、例外を投げ上げる
+                if max_try <= retry + 1:
+                    raise
+
+                # リトライする
+                else:
+                    print(f"[{datetime.datetime.now()}] [evaluation lib / save evaluation table file] retry. [{file_name_obj.base_name}] file error. ex:{ex}")
 
         if is_debug:
             print(f"[{datetime.datetime.now()}] rename {file_name_obj.temporary_base_name} file to {file_name_obj.base_name}...", flush=True)

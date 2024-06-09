@@ -184,7 +184,9 @@ class LearnAboutOneGame():
             #
             # ２０手毎にコマメに保存する
             #
-            if mate % 20 == 0:
+            #   mate = 1 から始まることに注意
+            #
+            if mate % 20 == 1:
                 # 全ての評価値テーブル［0:先手, 1:後手］の（変更があれば）保存
                 self._kifuwarabe.save_eval_all_tables(
                         is_debug=self._is_debug)
