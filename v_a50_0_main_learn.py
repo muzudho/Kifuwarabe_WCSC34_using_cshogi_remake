@@ -5,7 +5,8 @@ import time
 # python v_a50_0_main_learn.py
 from     v_a50_0 import Kifuwarabe, max_move_number, engine_version_str
 from     v_a50_0_misc.game_result_document import GameResultDocument
-from     v_a50_0_misc.learn import Learn
+from     v_a50_0_misc.learn import LearnAboutOneGame
+from     v_a50_0_misc.learn_config_document import LearnConfigDocument
 from     v_a50_0_misc.lib import BoardHelper
 
 
@@ -15,52 +16,6 @@ class LearningFramework():
 
     def __init__(self):
         pass
-
-
-    def learn_about_one_game(
-            self,
-            board,
-            kifuwarabe,
-            is_debug):
-        """対局１つについて学習する
-
-        Parameters
-        ----------
-        board : cshogi.Board
-            現局面
-        kifuwarabe : Kifuwarabe
-            きふわらべ
-        is_debug : bool
-            デバッグモードか？
-        """
-
-        # トレーニングデータの用意
-        print(f"[{datetime.datetime.now()}] [learning framework > learn about one game > get training data] start...")
-
-        # トレーニングデータが無いからプレイアウトする
-        (result_str, reason) = kifuwarabe.playout(
-                is_debug=is_debug)
-
-        position_command = BoardHelper.get_position_command(
-                board=board)
-
-        print(f"""[{datetime.datetime.now()}] [learning framework > learn about one game > get training data] finished
-{board}
-    # result:{result_str}
-    # reason:{reason}
-    # move number:{board.move_number} / max move number:{max_move_number}
-    # {position_command}
-""", flush=True)
-
-        print(f"[{datetime.datetime.now()}] [learning framework > learn about one game] start...")
-
-        # 学習する
-        Learn(
-                board=board,
-                kifuwarabe=kifuwarabe,
-                is_debug=is_debug).learn_it()
-
-        print(f"[{datetime.datetime.now()}] [learning framework > learn about one game] finished")
 
 
     def start_it(
@@ -85,6 +40,21 @@ class LearningFramework():
 
         # 強制終了するまで、ずっと繰り返す
         while True:
+            # 学習設定ファイルの読込
+            learn_config_file_base_name = LearnConfigDocument.get_base_name(engine_version_str)
+
+            learn_config_document = LearnConfigDocument.load_toml(
+                    base_name=learn_config_file_base_name,
+                    engine_version_str=engine_version_str)
+
+            if learn_config_document == None:
+                # １分後にループをやり直し
+                seconds = 60.0
+                print(f"[{datetime.datetime.now()}] [learning framework > start it] failed to read `{learn_config_file_base_name}` file. wait for {seconds} seconds before retrying")
+                time.sleep(seconds)
+                continue
+
+
             # 評価値テーブルの読込
             kifuwarabe.load_eval_all_tables()
 
@@ -147,10 +117,12 @@ class LearningFramework():
                 # 開始ログは出したい
                 print(f"[{datetime.datetime.now()}] [learning framework > start it] ({game_index + 1:4}/{max_game}) start...", flush=True)
 
-                self.learn_about_one_game(
+                # 学習する
+                LearnAboutOneGame(
                         board=board,
                         kifuwarabe=kifuwarabe,
-                        is_debug=is_debug)
+                        learn_config_document=learn_config_document,
+                        is_debug=is_debug).learn_it()
 
                 # 終了ログは出したい
                 print(f"[{datetime.datetime.now()}] [learning framework > start it] ({game_index + 1:4}/{max_game}) finished, flush=True")

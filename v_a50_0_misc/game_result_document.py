@@ -46,6 +46,7 @@ class GameResultRecord():
             勝敗の結果。 'win', 'lose', 'draw'
         reason : str
             勝敗の理由。 'max_move' とか色々
+            無記載も可能。その場合はプレースホルダーとして '-' と入れる
         position_command : str
             USI の position コマンド形式
         """

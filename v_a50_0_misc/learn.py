@@ -5,30 +5,18 @@ from v_a50_0_eval.facade import EvaluationFacade
 from v_a50_0_misc.lib import Turn, BoardHelper
 
 
-class Learn():
-    """学習部"""
+class LearnAboutOneGame():
+    """学習部
 
-
-    @staticmethod
-    def is_learn_by_rate():
-        """全ての指し手の良し悪しを検討していると、全体を見る時間がなくなるから、
-        間引くのに使う"""
-
-        ## 平均合法手が 80 手と仮定して、 20分の1 にすれば、１手当たり 4 つの合法手を検討するだろう
-        #return random.randint(0,20) == 0
-
-        # 次の対局の usinewgame のタイミングで、前の対局の棋譜をトレーニングデータにして機械学習を走らせるから、持ち時間を消費してしまう。
-        # 平均合法手が 80 手と仮定して、 80分の1 にすれば、 1 手当たり 1 つの合法手を検討する間隔になって早く終わるだろう
-        # 分子
-        numerator = 1
-        denominator = 80
-        return random.randint(0,denominator) <= (numerator - 1)
+    対局データ１つを与えると、そこから学習する
+    """
 
 
     def __init__(
             self,
             board,
             kifuwarabe,
+            learn_config_document,
             is_debug):
         """初期化
 
@@ -38,17 +26,35 @@ class Learn():
             現局面
         kifuwarabe:
             きふわらべ
+        learn_config_document : LearnConfigDocument
+            学習設定ドキュメント
         is_debug : bool
             デバッグモードか？
         """
 
         self._board = board
         self._kifuwarabe = kifuwarabe
+        self._learn_config_document = learn_config_document
         self._is_debug = is_debug
 
         self._init_position_sfen = None
         self._principal_history = None
         self._end_position_sfen = None
+
+
+    def is_learn_by_rate(self):
+        """全ての指し手の良し悪しを検討していると、全体を見る時間がなくなるから、
+        間引くのに使う"""
+
+        ## 平均合法手が 80 手と仮定して、 20分の1 にすれば、１手当たり 4 つの合法手を検討するだろう
+        #return random.randint(0,20) == 0
+
+        # 次の対局の usinewgame のタイミングで、前の対局の棋譜をトレーニングデータにして機械学習を走らせるから、持ち時間を消費してしまう。
+        # 平均合法手が 80 手と仮定して、 80分の1 にすれば、 1 手当たり 1 つの合法手を検討する間隔になって早く終わるだろう
+        # 分子
+        numerator = self._learn_config_document.learn_rate_numerator #1
+        denominator = self._learn_config_document.learn_rate_denominator #80
+        return random.randint(0,denominator) <= (numerator - 1)
 
 
     def restore_end_position(self):
@@ -266,7 +272,7 @@ class Learn():
             choice_num += 1
 
             # 検討を間引く
-            if not Learn.is_learn_by_rate():
+            if not self.is_learn_by_rate():
                 continue
 
             is_weak_move = False
@@ -373,7 +379,7 @@ class Learn():
             choice_num += 1
 
             # 検討を間引く
-            if not Learn.is_learn_by_rate():
+            if not self.is_learn_by_rate():
                 continue
 
             is_strong_move = False
@@ -533,7 +539,7 @@ class Learn():
             choice_num += 1
 
             # 検討を間引く
-            if not Learn.is_learn_by_rate():
+            if not self.is_learn_by_rate():
                 continue
 
             is_weak_move = False
@@ -630,7 +636,7 @@ class Learn():
             choice_num += 1
 
             # 検討を間引く
-            if not Learn.is_learn_by_rate():
+            if not self.is_learn_by_rate():
                 continue
 
             is_strong_move = False

@@ -10,7 +10,7 @@ from                  v_a50_0_eval.kp import EvaluationKpTable
 from                  v_a50_0_eval.pk import EvaluationPkTable
 from                  v_a50_0_eval.pp import EvaluationPpTable
 from                  v_a50_0_misc.game_result_document import GameResultDocument
-from                  v_a50_0_misc.learn import Learn
+from                  v_a50_0_misc.learn import LearnAboutOneGame
 from                  v_a50_0_misc.lib import Turn, Move, MoveHelper, BoardHelper
 engine_version_str = "v_a50_0"
 
@@ -957,7 +957,7 @@ class Kifuwarabe():
         """
 
         # 学習する
-        Learn(
+        LearnAboutOneGame(
                 board=self._board,
                 kifuwarabe=self,
                 is_debug=is_debug).learn_it()
