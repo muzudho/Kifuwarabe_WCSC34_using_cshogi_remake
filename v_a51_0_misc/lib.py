@@ -242,6 +242,16 @@ class MoveSourceLocation():
             self._rank_th = rank_th
 
             #
+            # USI形式文字列
+            #
+            #   例： `7g` や `R*` など
+            #
+            if self._drop is not None:
+                self._usi_code = self._drop
+            else:
+                self._usi_code = f"{self.file_th}{Move._rank_th_num_to_alphabet[self.rank_th]}"
+
+            #
             # １８０°回転
             #
             # 筋
@@ -315,12 +325,13 @@ class MoveSourceLocation():
         return self._rot_sq
 
 
-    def to_usi_code(self):
-        "整数の 10 や、文字列の `R*` などを返す"
-        if self._drop is not None:
-            return self._drop
-        else:
-            return f"{self.file_th}{Move._rank_th_num_to_alphabet[self.rank_th]}"
+    @property
+    def usi_code(self):
+        """USI形式文字列
+
+        例： `7g` や `R*` など
+        """
+        return self._usi_code
 
 
     def rotate(self):
@@ -402,6 +413,8 @@ class MoveDestinationLocation():
         self._rank_th = rank_th
         self._sq = sq
 
+        self._usi_code = f"{self._file_th}{Move._rank_th_num_to_alphabet[self._rank_th]}"
+
         # 指し手を盤上で１８０°回転
         self._rot_file_th = 8 - (self._file_th - 1) + 1
         self._rot_rank_th = 8 - (self._rank_th - 1) + 1
@@ -444,9 +457,13 @@ class MoveDestinationLocation():
         return self._rot_sq
 
 
-    def to_usi_code(self):
-        """文字列形式で返す"""
-        return f"{self.file_th}{Move._rank_th_num_to_alphabet[self.rank_th]}"
+    @property
+    def usi_code(self):
+        """USI形式文字列
+
+        例： `7g` など
+        """
+        return self._usi_code
 
 
     def rotate(self):
@@ -585,13 +602,14 @@ class Move():
         promoted = 4 < len(move_as_usi)
 
         return Move(
+                as_usi=move_as_usi,
                 src_location=src_location,
                 dst_location=dst_location,
                 promoted=promoted)
 
 
-    def __init__(
-            self,
+    @staticmethod
+    def from_src_dst_pro(
             src_location,
             dst_location,
             promoted):
@@ -606,17 +624,44 @@ class Move():
         promoted : bool
             成ったか？
         """
-        self._src_location = src_location
-        self._dst_location = dst_location
-        self._promoted = promoted
 
         if promoted:
             pro_str = "+"
         else:
             pro_str = ""
 
-        # "7g7f" や "3d3c+"、 "R*5e" のような文字列を想定。 "resign" のような文字列は想定外
-        self._as_usi = f"{self._src_location.to_usi_code()}{self._dst_location.to_usi_code()}{pro_str}"
+        return Move.from_src_dst_pro(
+                as_usi=f"{src_location.usi_code}{dst_location.usi_code}{pro_str}",
+                src_location=src_location,
+                dst_location=dst_location,
+                promoted=promoted)
+
+
+    def __init__(
+            self,
+            as_usi,
+            src_location,
+            dst_location,
+            promoted):
+        """初期化
+
+        Parameters
+        ----------
+        as_usi:
+            USI形式の指し手の符号。
+            "7g7f" や "3d3c+"、 "R*5e" のような文字列を想定。 "resign" のような文字列は想定外
+        src_location : MoveSourceLocation
+            移動元オブジェクト
+        dst_location : MoveDestinationLocation
+            移動先オブジェクト
+        promoted : bool
+            成ったか？
+        """
+        self._as_usi = as_usi
+        self._src_location = src_location
+        self._dst_location = dst_location
+        self._promoted = promoted
+
 
     @property
     def as_usi(self):

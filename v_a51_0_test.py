@@ -277,7 +277,7 @@ def test_lib():
     if not move_obj.promoted:
         raise ValueError(f'unexpected error. move_obj.promoted expected:True  actual:`{move_obj.promoted}`')
 
-    move_obj = Move(
+    move_obj = Move.from_src_dst_pro(
             src_location=MoveSourceLocation.from_sq_drop(
                 sq=BoardHelper.jsa_to_sq(38),
                 drop=None),# TODO 本当にドロップは無いか？

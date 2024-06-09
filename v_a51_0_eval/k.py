@@ -317,7 +317,7 @@ class EvaluationKMove():
 
         (src_sq, dst_sq) = index_to_src_dst_dictionary[k_index]
 
-        k_move_obj = Move(
+        k_move_obj = Move.from_src_dst_pro(
                 src_location=MoveSourceLocation.from_sq_drop(
                         sq=src_sq,
                         drop=None),# TODO 本当にドロップは無いか？
@@ -327,7 +327,7 @@ class EvaluationKMove():
                 promoted=False)
 
         if is_rotate:
-            k_move_obj = Move(
+            k_move_obj = Move.from_src_dst_pro(
                     src_location=k_move_obj.src_location.rotate(),
                     dst_location=k_move_obj.dst_location.rotate(),
                     # 玉に成りはありません
