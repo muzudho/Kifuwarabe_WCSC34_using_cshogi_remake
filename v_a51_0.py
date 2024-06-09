@@ -575,7 +575,7 @@ class Kifuwarabe():
             return
 
         # 持将棋
-        elif cmd_tail == 'draw':
+        if cmd_tail == 'draw':
             print(f"持将棋か～（ー＿ー） my turn:{self._my_turn}", flush=True)
 
             # ［対局結果］　常に記憶する
@@ -586,7 +586,7 @@ class Kifuwarabe():
                     board=self._board)
 
         # 負け
-        if cmd_tail == 'lose':
+        elif cmd_tail == 'lose':
             print(f"あ～あ、 {self._my_turn} 番で負けたぜ（＞＿＜）", flush=True)
 
             # ［対局結果］　常に記憶する
