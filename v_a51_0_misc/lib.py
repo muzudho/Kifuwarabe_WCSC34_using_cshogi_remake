@@ -245,9 +245,11 @@ class Move():
         #
         if src_str in Move._src_drops:
             src_file_th_or_none = None
+            src_drop_or_none = src_str
 
         else:
             file_str = src_str[0]
+            src_drop_or_none = None
 
             try:
                 src_file_th_or_none = Move._file_th_str_to_num[file_str]
@@ -317,6 +319,7 @@ class Move():
                 src_file_th_or_none=src_file_th_or_none,
                 src_rank_th_or_none=src_rank_th_or_none,
                 src_sq_or_none=src_sq_or_none,
+                src_drop_or_none=src_drop_or_none,
                 dst_file_th=dst_file_th,
                 dst_rank_th=dst_rank_th,
                 dst_sq=dst_sq,
@@ -348,6 +351,7 @@ class Move():
         if src_sq in Move._src_drops:
             src_str = src_sq
             src_sq = None   # ナンにする
+            src_drop_or_none = src_sq
             src_file_th_or_none = None
             src_rank_th_or_none = None
 
@@ -356,6 +360,7 @@ class Move():
             src_file_th_or_none = src_sq // 9 + 1
             src_rank_th_or_none = src_sq % 9 + 1
             src_str = f"{src_file_th_or_none}{Move._rank_th_num_to_alphabet[src_rank_th_or_none]}"
+            src_drop_or_none = None
 
         #
         # 移動先マス
@@ -376,6 +381,7 @@ class Move():
                 src_file_th_or_none=src_file_th_or_none,
                 src_rank_th_or_none=src_rank_th_or_none,
                 src_sq_or_none=src_sq,
+                src_drop_or_none=src_drop_or_none,
                 dst_file_th=dst_file_th,
                 dst_rank_th=dst_rank_th,
                 dst_sq=dst_sq,

@@ -1,6 +1,7 @@
 import cshogi
 import datetime
 from decimal import Decimal, ROUND_HALF_UP
+
 from v_a51_0_debug_plan import DebugPlan
 from v_a51_0_eval.kk import EvaluationKkTable
 from v_a51_0_eval.kp import EvaluationKpTable

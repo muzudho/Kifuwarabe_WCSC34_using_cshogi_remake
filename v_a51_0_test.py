@@ -1,6 +1,9 @@
+import cshogi
+
 # python v_a51_0_test.py
 from     v_a51_0_eval.k import EvaluationKMove
-from     v_a51_0_misc.lib import BoardHelper
+from     v_a51_0_eval.kk import EvaluationKkTable
+from     v_a51_0_misc.lib import Turn, Move, BoardHelper
 from     v_a51_0_misc.debug import DebugHelper
 
 
@@ -75,6 +78,28 @@ src と dst                              通しインデックス
             previous_src_sq = src_sq
 
 
+def test_kk():
+    k_move_obj_expected = Move.from_usi('5i5h')
+    l_move_obj_expected = Move.from_usi('5a5b')
+    k_turn = cshogi.BLACK
+
+    kk_index = EvaluationKkTable.get_index_of_kk_table(
+            k_move_obj=k_move_obj_expected,
+            l_move_obj=l_move_obj_expected,
+            k_turn=k_turn)
+
+    (k_move_obj_actual,
+     l_move_obj_actual) = EvaluationKkTable.destructure_kl_index(
+            kl_index=kk_index,
+            k_turn=k_turn)
+
+    if k_move_obj_expected.as_usi != k_move_obj_actual.as_usi:
+        raise ValueError(f"not match. k_turn:{Turn.to_string(k_turn)} K expected:`{k_move_obj_expected.as_usi}`  actual:`{k_move_obj_actual.as_usi}`")
+
+    if l_move_obj_expected.as_usi != l_move_obj_actual.as_usi:
+        raise ValueError(f"not match. k_turn:{Turn.to_string(k_turn)} L expected:`{l_move_obj_expected.as_usi}`  actual:`{l_move_obj_actual.as_usi}`")
+
+
 ########################################
 # スクリプト実行時
 ########################################
@@ -86,6 +111,9 @@ if __name__ == '__main__':
 
     if line == 'k':
         test_k()
+
+    elif line == 'kk':
+        test_kk()
 
     else:
         print("please input test name 'k', ...")
