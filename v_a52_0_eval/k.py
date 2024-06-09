@@ -364,6 +364,10 @@ class EvaluationKMove():
             - 玉の指し手のインデックス
         """
 
+        # assert
+        if k_move_obj.src_location.sq == None or k_move_obj.src_location.rot_sq == None:
+            raise ValueError(f"[evaluation k move > get index by k move] 玉の指し手で src_sq が None なのはおかしい。 k_move_obj.src_location.masu:{BoardHelper.sq_to_jsa(k_move_obj.src_location.sq)}  k_move_obj.src_location.rot_masu:{BoardHelper.sq_to_jsa(k_move_obj.src_location.rot_sq)}")
+
         if is_rotate:
             # 玉に打は無いので、 src_sq は None にはなりません
             k_src_sq = k_move_obj.src_location.rot_sq
@@ -386,6 +390,7 @@ class EvaluationKMove():
             dst_to_index_dictionary = src_to_dst_index_dictionary[k_src_sq]
 
         except KeyError as ex:
+            # k_src_sq error. k_move_obj.as_usi:S*3b  rotated:False  k_src_sq:None  src_masu:None  ex:None
             print(f"[evaluation k move > get index by k move]  k_src_sq error. k_move_obj.as_usi:{k_move_obj.as_usi}  rotated:{is_rotate}  k_src_sq:{k_src_sq}  src_masu:{BoardHelper.sq_to_jsa(k_src_sq)}  ex:{ex}")
             raise
 
