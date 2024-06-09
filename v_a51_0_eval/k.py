@@ -1,5 +1,4 @@
 from v_a51_0_misc.lib import Move, BoardHelper
-from v_a51_0_misc.debug import DebugHelper
 
 
 class EvaluationKMove():

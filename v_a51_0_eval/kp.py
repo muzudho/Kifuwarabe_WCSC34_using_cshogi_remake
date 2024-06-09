@@ -1,6 +1,7 @@
 import cshogi
 import os
 import datetime
+
 from v_a51_0_eval.lib import EvaluationLib
 from v_a51_0_eval.k import EvaluationKMove
 from v_a51_0_eval.p import EvaluationPMove

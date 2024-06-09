@@ -1,7 +1,6 @@
 import cshogi
 import datetime
 
-# python v_a51_0_misc/lib.py
 from     v_a51_0_misc.bit_ope import BitOpe
 from     v_a51_0_debug_plan import DebugPlan
 
@@ -1004,30 +1003,3 @@ class EvalutionMmTable():
             self._is_file_modified = True
 
         return is_changed
-
-
-########################################
-# スクリプト実行時
-########################################
-
-if __name__ == '__main__':
-    """スクリプト実行時"""
-
-    expected_move_u = '3h3i+'
-    move_obj = Move.from_usi(expected_move_u)
-    if move_obj.as_usi != expected_move_u:
-        raise ValueError(f'unexpected error. move_obj expected:`{expected_move_u}`  actual:`{move_obj.as_usi}`')
-
-    if not move_obj.promoted:
-        raise ValueError(f'unexpected error. move_obj.promoted expected:True  actual:`{move_obj.promoted}`')
-
-    move_obj = Move.from_src_dst_pro(
-            src_sq=BoardHelper.jsa_to_sq(38),
-            dst_sq=BoardHelper.jsa_to_sq(39),
-            promoted=True)
-    if move_obj.as_usi != expected_move_u:
-        raise ValueError(f'unexpected error. expected:`{expected_move_u}`  actual:`{move_obj.as_usi}`')
-
-    if not move_obj.promoted:
-        raise ValueError(f'unexpected error. move_obj.promoted expected:True  actual:`{move_obj.promoted}`')
-

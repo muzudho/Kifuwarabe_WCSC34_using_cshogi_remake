@@ -2,7 +2,6 @@ import cshogi
 import os
 import datetime
 
-# python v_a51_0_eval/pk.py
 from     v_a51_0_eval.k import EvaluationKMove
 from     v_a51_0_eval.lib import EvaluationLib
 from     v_a51_0_eval.p import EvaluationPMove
@@ -304,32 +303,3 @@ class EvaluationPkTable():
             relations[pk_index] = relation_bit
 
         return relations
-
-
-########################################
-# スクリプト実行時
-########################################
-
-if __name__ == '__main__':
-    """スクリプト実行時"""
-
-    # 後手
-    expected_p_move_u = '3h3i+'
-    expected_p_move_obj = Move.from_usi(expected_p_move_u)
-
-    # 先手
-    expected_k_move_u = '5h5i'
-    expected_k_move_obj = Move.from_usi(expected_k_move_u)
-
-    pk_index = EvaluationPkTable.get_index_of_pk_table(
-            p_move_obj=expected_p_move_obj,
-            k_move_obj=expected_k_move_obj,
-            p_turn=cshogi.WHITE)
-
-    (actual_p_move_obj,
-     actual_k_move_obj) = EvaluationPkTable.destructure_pk_index(
-            pk_index=pk_index,
-            p_turn=cshogi.WHITE)
-
-    if expected_p_move_obj.as_usi != actual_p_move_obj.as_usi or expected_k_move_obj.as_usi != actual_k_move_obj.as_usi:
-        raise ValueError(f'unexpected error. move_obj expected P:`{expected_p_move_obj.as_usi}`  K:`{expected_k_move_obj.as_usi}`  actual P:`{actual_p_move_obj.as_usi}`  K:`{actual_k_move_obj.as_usi}`')
