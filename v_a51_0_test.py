@@ -278,9 +278,8 @@ def test_lib():
         raise ValueError(f'unexpected error. move_obj.promoted expected:True  actual:`{move_obj.promoted}`')
 
     move_obj = Move.from_src_dst_pro(
-            src_location=MoveSourceLocation.from_sq_drop(
-                sq=BoardHelper.jsa_to_sq(38),
-                drop=None),# TODO 本当にドロップは無いか？
+            src_location=MoveSourceLocation.from_sq_or_drop(
+                sq=BoardHelper.jsa_to_sq(38)),
             dst_location=MoveDestinationLocation.from_sq(
                 sq=BoardHelper.jsa_to_sq(39)),
             promoted=True)

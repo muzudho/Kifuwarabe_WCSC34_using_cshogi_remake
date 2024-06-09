@@ -120,6 +120,7 @@ class Turn():
 class MoveSourceLocation():
     """指し手の移動元は、マス番号と駒種類の２通りある"""
 
+
     #_src_drops
     _drops = ('R*', 'B*', 'G*', 'S*', 'N*', 'L*', 'P*')
     #_src_drop_files
@@ -179,32 +180,46 @@ class MoveSourceLocation():
 
 
     @staticmethod
-    def from_sq_drop(
-            sq,
-            drop):
-        #
-        # 筋に分解
-        #
-        if drop is None:
-            file_th = sq // 9 + 1
+    def from_sq_or_drop(
+            sq_or_drop):
+        """マス番号か、打の駒種類か分かってない状態
 
+        Parameter
+        ---------
+        sq_or_drop : str
+            マス番号か、打の駒種類のどちらか
+        """
+
+        # TODO そもそも、この打とマス番号を分けるようにしなくていいようなフローにできないか？
+
+        # 打なら
+        if sq_or_drop in MoveSourceLocation._drops:
+            return MoveSourceLocation(
+                    file_th=None,
+                    rank_th=None,
+                    sq=None,
+                    drop=sq_or_drop)
+
+        # マス番号なら
         else:
-            file_th = None
+            file_th = sq_or_drop // 9 + 1
+            rank_th = sq_or_drop % 9 + 1
 
-        #
-        # 段に分解
-        #
-        if drop is None:
-            rank_th = sq % 9 + 1
+            return MoveSourceLocation(
+                    file_th=file_th,
+                    rank_th=rank_th,
+                    sq=sq_or_drop,
+                    drop=None)
 
-        else:
-            rank_th = None
 
-        return MoveSourceLocation(
-                file_th=file_th,
-                rank_th=rank_th,
-                sq=sq,
-                drop=drop)
+    @staticmethod
+    def get_drops():
+        return MoveSourceLocation._drops
+
+
+    @staticmethod
+    def get_drop_files():
+        return MoveSourceLocation._drop_files
 
 
     def __init__(
