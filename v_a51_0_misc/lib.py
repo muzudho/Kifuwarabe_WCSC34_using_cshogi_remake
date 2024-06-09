@@ -315,7 +315,7 @@ class MoveSourceLocation():
         return self._rot_sq
 
 
-    def to_src_str(self):
+    def to_usi_code(self):
         "整数の 10 や、文字列の `R*` などを返す"
         if self._drop is not None:
             return self._drop
@@ -444,7 +444,7 @@ class MoveDestinationLocation():
         return self._rot_sq
 
 
-    def to_dst_str(self):
+    def to_usi_code(self):
         """文字列形式で返す"""
         return f"{self.file_th}{Move._rank_th_num_to_alphabet[self.rank_th]}"
 
@@ -616,7 +616,7 @@ class Move():
             pro_str = ""
 
         # "7g7f" や "3d3c+"、 "R*5e" のような文字列を想定。 "resign" のような文字列は想定外
-        self._as_usi = f"{self._src_location.to_src_str()}{self._dst_location.to_dst_str()}{pro_str}"
+        self._as_usi = f"{self._src_location.to_usi_code()}{self._dst_location.to_usi_code()}{pro_str}"
 
     @property
     def as_usi(self):
