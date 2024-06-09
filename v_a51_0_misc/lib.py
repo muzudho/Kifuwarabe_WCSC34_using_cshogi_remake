@@ -339,7 +339,9 @@ class MoveSourceLocation():
         return MoveSourceLocation(
             file_th=self._rot_file_th,
             rank_th=self._rot_rank_th,
-            sq=self._rot_sq)
+            sq=self._rot_sq,
+            # 打の駒種類は回転しません
+            drop=self._drop)
 
 
 class MoveDestinationLocation():
