@@ -15,40 +15,44 @@ class GameResultRecord():
         ----------
         line : str
             対局１つ分の１行
+            {手番} {勝敗の結果} {理由} {対局コマンド}
         """
-        (result, tail) = line.split(' ', 1)
-        (result_turn, position_command) = tail.split(' ', 1)
+        tail = line
+        (result_turn, tail) = tail.split(' ', 1)
+        (result, tail) = tail.split(' ', 1)
+        (reason, position_command) = tail.split(' ', 1)
 
         return GameResultRecord(
-                result=result,
                 result_turn=Turn.str_to_int(result_turn),
+                result=result,
+                reason=reason,
                 position_command=position_command)
 
 
     def __init__(
             self,
-            result,
             result_turn,
+            result,
+            reason,
             position_command):
         """初期化
 
         Parameters
         ----------
-        result : str
-            'win', 'lose', 'draw'
         result_turn : int
-            結果がどちらの手番のものか
+            勝敗の結果がどちらの手番について書かれているか。
+            自分の対局の場合、自分の手番、それ以外は任意
+        result : str
+            勝敗の結果。 'win', 'lose', 'draw'
+        reason : str
+            勝敗の理由。 'max_move' とか色々
         position_command : str
             USI の position コマンド形式
         """
-        self._result = result
         self._result_turn = result_turn
+        self._result = result
+        self._reason = reason
         self._position_command = position_command
-
-
-    @property
-    def result(self):
-        return self._result
 
 
     @property
@@ -57,12 +61,22 @@ class GameResultRecord():
 
 
     @property
+    def result(self):
+        return self._result
+
+
+    @property
+    def reason(self):
+        return self._reason
+
+
+    @property
     def position_command(self):
         return self._position_command
 
 
     def to_string_line(self):
-        return f"{self.result} {self.result_turn} {self.position_command}\n"
+        return f"{self.result_turn} {self.result}  {self.reason} {self.position_command}\n"
 
 
 class GameResultDocument():
@@ -242,114 +256,36 @@ class GameResultDocument():
             print(f'[{datetime.datetime.now()}] [append_to_file_and_save] failed to save `{base_name}` file. ex:{ex}')
 
 
-
-    def add_loss_and_save(self, my_turn, board):
-        """負け
+    def add_and_save(
+            self,
+            my_turn,
+            result_str,
+            reason,
+            board):
+        """結果を追加して保存
 
         Parameters
         ----------
         my_turn : Turn
             自分の手番
+        result_str : str
+            勝敗の結果。半角空白を含めないでください
+        reason : str
+            勝敗の結果の理由
         board : Board
             将棋盤
         """
 
         result_turn = Turn.to_string(my_turn)
 
-        print(f"あ～あ、 {result_turn} 番で負けたぜ（＞＿＜）", flush=True)
-
         position_command = BoardHelper.get_position_command(
                 board=board)
+
         game_result_record = GameResultRecord(
-                result='lose',
                 result_turn=result_turn,
-                position_command=position_command)
-
-        # ファイルに出力する
-        GameResultDocument.append_to_file_and_save(
-                base_name=self.file_name_obj.base_name,
-                game_result_record=game_result_record)
-
-
-    def add_win_and_save(self, my_turn, board):
-        """勝ち
-
-        Parameters
-        ----------
-        my_turn : Turn
-            自分の手番
-        board : Board
-            将棋盤
-        """
-
-        result_turn = Turn.to_string(my_turn)
-
-        print(f"やったぜ {result_turn} 番で勝ったぜ（＾ｑ＾）", flush=True)
-
-        position_command = BoardHelper.get_position_command(
-                board=board)
-        game_result_record = GameResultRecord(
-                result='win',
-                result_turn=result_turn,
-                position_command=position_command)
-
-        # ファイルに出力する
-        GameResultDocument.append_to_file_and_save(
-                base_name=self.file_name_obj.base_name,
-                game_result_record=game_result_record)
-
-
-    def add_draw_and_save(self, my_turn, board):
-        """持将棋
-
-        Parameters
-        ----------
-        my_turn : Turn
-            自分の手番
-        board : Board
-            将棋盤
-        """
-
-        result_turn = Turn.to_string(my_turn)
-
-        print(f"持将棋か～（ー＿ー） turn: {result_turn}", flush=True)
-
-        position_command = BoardHelper.get_position_command(
-                board=board)
-        game_result_record = GameResultRecord(
-                result='draw',
-                result_turn=result_turn,
-                position_command=position_command)
-
-        # ファイルに出力する
-        GameResultDocument.append_to_file_and_save(
-                base_name=self.file_name_obj.base_name,
-                game_result_record=game_result_record)
-
-
-    def add_otherwise_and_save(self, result_text, my_turn, board):
-        """予期しない結果を追加して保存
-
-        Parameters
-        ----------
-        result_text : str
-            結果文字列。半角空白を含めないでください
-        my_turn : Turn
-            自分の手番
-        board : Board
-            将棋盤
-        """
-
-        result_turn = Turn.to_string(my_turn)
-
-        print(f"なんだろな（・＿・）？　'{result_text}', turn: '{result_turn}'", flush=True)
-
-        position_command = BoardHelper.get_position_command(
-                board=board)
                 # 半角空白が混ざっていると構文が崩れるので、アンダースコアで強制的に置き換えます
-        game_result_record = GameResultRecord(
-                result=result_text.replace(" ", "_"),
-                result_turn=result_turn,
+                result=result_str.replace(" ", "_"),
+                reason=reason,
                 position_command=position_command)
 
         # ファイルに出力する

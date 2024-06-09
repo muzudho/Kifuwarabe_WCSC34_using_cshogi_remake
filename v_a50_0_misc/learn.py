@@ -285,7 +285,7 @@ class Learn():
             self._board.push_usi(move_u)
 
             # プレイアウトする
-            result_str = self._kifuwarabe.playout(
+            (result_str, reason) = self._kifuwarabe.playout(
                     is_in_learn=True,
                     # １手指した分引く
                     max_playout_depth=max_playout_depth - 1)
@@ -295,10 +295,10 @@ class Learn():
             # 進捗ログを出したい
             def log_progress(comment):
                 if DebugPlan.learn_at_odd_log_progress():
-                    print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 好手] ({choice_num:3}/{total_num:3})  {move_u:5}  [{self._board.move_number}手（差{move_number_difference}）{Turn.to_kanji(self._board.turn)}]  {result_str}  {comment}', flush=True)
+                    print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 好手] ({choice_num:3}/{total_num:3})  {move_u:5}  {result_str}  [{self._board.move_number}手（差{move_number_difference}）{Turn.to_kanji(self._board.turn)}]  {reason}  {comment}', flush=True)
 
             # どちらかが投了した
-            if result_str == 'resign':
+            if reason == 'resign':
                 # 自分の負け
                 if self._kifuwarabe._my_turn == self._board.turn:
                     # すごく悪い手だ。好手の評価を取り下げる
@@ -309,7 +309,7 @@ class Learn():
                     log_progress(f"[　] {mate}手詰めは逃したが {max_playout_depth} 手以内には勝ったからセーフ")
 
             # どちらかが入玉勝ちした
-            elif result_str == 'nyugyoku_win':
+            elif reason == 'nyugyoku_win':
                 if self._kifuwarabe._my_turn == self._board.turn:
                     # 好手の評価はそのまま
                     log_progress(f"[　] {mate}手詰めは逃したが {max_playout_depth} 手以内には入玉宣言勝ちしたからセーフ")
@@ -320,12 +320,12 @@ class Learn():
                     log_progress(f"[▼DOWN▼] {mate}手詰めを逃して、 {max_playout_depth} 手以内に入玉宣言されて負けた")
 
             # 手数の上限に達した
-            elif result_str == 'max_move':
+            elif reason == 'max_move':
                 # ノーカウント
                 log_progress(f"[　] 攻めてる間に手数上限で打ち切られた")
 
             # プレイアウトの深さの上限に達した
-            elif result_str == 'max_playout_depth':
+            elif reason == 'max_playout_depth':
                 # （評価値テーブルを動かしたいので）好手の評価を取り下げる
                 is_weak_move = True
                 log_progress(f"[▼DOWN▼] 攻めてる間にプレイアウトが打ち切られた")
@@ -392,7 +392,7 @@ class Learn():
             self._board.push_usi(move_u)
 
             # プレイアウトする
-            result_str = self._kifuwarabe.playout(
+            (result_str, reason) = self._kifuwarabe.playout(
                     is_in_learn=True,
                     # １手指しているので、１つ引く
                     max_playout_depth=max_playout_depth - 1)
@@ -402,10 +402,10 @@ class Learn():
             # 進捗ログを出したい
             def log_progress(comment):
                 if DebugPlan.learn_at_odd_log_progress():
-                    print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 悪手] ({choice_num:3}/{total_num:3})  {move_u:5}  [{self._board.move_number}手（差{move_number_difference}）{Turn.to_kanji(self._board.turn)}]  {result_str}  {comment}', flush=True)
+                    print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 悪手] ({choice_num:3}/{total_num:3})  {move_u:5}  {result_str}  [{self._board.move_number}手（差{move_number_difference}）{Turn.to_kanji(self._board.turn)}]  {reason}  {comment}', flush=True)
 
             # どちらかが投了した
-            if result_str == 'resign':
+            if reason == 'resign':
                 # 自分の勝ち
                 if self._kifuwarabe._my_turn != self._board.turn:
                     # かかった手数ｎ手
@@ -423,11 +423,11 @@ class Learn():
                     log_progress(f"[　] {mate}手詰めの局面で、{mate}手詰めを逃して負けた")
 
             # 手数の上限に達した
-            elif result_str == 'max_move':
+            elif reason == 'max_move':
                 # ノーカウント
                 log_progress(f"[　] 攻めてる間に手数上限で打ち切られた")
 
-            elif result_str == 'max_playout_depth':
+            elif reason == 'max_playout_depth':
                 # 悪手の評価はそのまま
                 log_progress(f"[　] 攻めてる間にプレイアウトが打ち切られた")
 
@@ -552,7 +552,7 @@ class Learn():
             self._board.push_usi(move_u)
 
             # プレイアウトする
-            result_str = self._kifuwarabe.playout(
+            (result_str, reason) = self._kifuwarabe.playout(
                     is_in_learn=True,
                     # １手指した分引く
                     max_playout_depth=max_playout_depth - 1)
@@ -562,10 +562,10 @@ class Learn():
             # 進捗ログを出したい
             def log_progress(comment):
                 if DebugPlan.learn_at_even_log_progress():
-                    print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] ({choice_num:3}/{total_num:3})  {move_u:5}  [{self._board.move_number}手（差{move_number_difference}）{Turn.to_kanji(self._board.turn)}]  {result_str}  {comment}', flush=True)
+                    print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] ({choice_num:3}/{total_num:3})  {move_u:5}  {result_str}  [{self._board.move_number}手（差{move_number_difference}）{Turn.to_kanji(self._board.turn)}]  {reason}  {comment}', flush=True)
 
             # どちらかが投了した
-            if result_str == 'resign':
+            if reason == 'resign':
                 # 自分の負け。かかった手数２手。つまり１手詰め
                 if self._kifuwarabe._my_turn == self._board.turn and self._move_number_at_end - self._board.move_number == 2:
                     # 好手の評価を取り下げる
@@ -577,12 +577,12 @@ class Learn():
                     log_progress(f"[　] {mate}手詰めが掛けられていて、{mate}手詰めを避けた")
 
             # 手数の上限に達した
-            elif result_str == 'max_move':
+            elif reason == 'max_move':
                 # 好手の評価はそのまま
                 log_progress(f"[　] 手数上限で打ち切られるまで逃げ切った")
 
             # プレイアウトの深さの上限に達した
-            elif result_str == 'max_playout_depth':
+            elif reason == 'max_playout_depth':
                 # 好手の評価はそのまま
                 log_progress(f"[　] プレイアウトが打ち切られるまで逃げ切った")
 
@@ -649,7 +649,7 @@ class Learn():
             self._board.push_usi(move_u)
 
             # プレイアウトする
-            result_str = self._kifuwarabe.playout(
+            (result_str, reason) = self._kifuwarabe.playout(
                     is_in_learn=True,
                     # １手指しているので、１つ引く
                     max_playout_depth=max_playout_depth - 1)
@@ -659,10 +659,10 @@ class Learn():
             # 進捗ログを出したい
             def log_progress(comment):
                 if DebugPlan.learn_at_even_log_progress():
-                    print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手] ({choice_num:3}/{total_num:3})  {move_u:5}  [{self._board.move_number}手（差{move_number_difference}）{Turn.to_kanji(self._board.turn)}]  {result_str}  {comment}', flush=True)
+                    print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手] ({choice_num:3}/{total_num:3})  {move_u:5}  {result_str}  [{self._board.move_number}手（差{move_number_difference}）{Turn.to_kanji(self._board.turn)}]  {reason}  {comment}', flush=True)
 
             # どちらかが投了した
-            if result_str == 'resign':
+            if reason == 'resign':
                 # 相手をｎ手詰め
                 if self._kifuwarabe._my_turn != self._board.turn and move_number_difference == mate:
                     # 次にｎ手詰めの局面に掛けられるところを、その前に詰めたのだから、すごく良い手だ。この手の評価を上げる
@@ -673,7 +673,7 @@ class Learn():
                     log_progress(f"[　] {mate}手詰めを掛けられていて、ここで１手で勝てなかった")
 
             # どちらかが入玉勝ちした
-            elif result_str == 'nyugyoku_win':
+            elif reason == 'nyugyoku_win':
                 if move_number_difference != mate:
                     # 次にｎ手詰めの局面に掛けられるところを、その前に入玉宣言勝ちしたのだから、すごく良い手だ。この手の評価を上げる
                     is_strong_move = True
@@ -683,13 +683,13 @@ class Learn():
                     log_progress(f"[　] {mate}手詰めを掛けられていて、ここで{mate}手以上掛けて入玉した")
 
             # 手数の上限に達した
-            elif result_str == 'max_move':
+            elif reason == 'max_move':
                 # （評価値テーブルを動かしたいので）悪手の評価を取り下げる
                 is_strong_move = True
                 log_progress(f"[▲UP▲] 手数上限で打ち切られるまで逃げ切った")
 
             # プレイアウトの深さの上限に達した
-            elif result_str == 'max_playout_depth':
+            elif reason == 'max_playout_depth':
                 # （評価値テーブルを動かしたいので）悪手の評価を取り下げる
                 is_strong_move = True
                 log_progress(f"[▲UP▲] プレイアウトが打ち切られるまで逃げ切った")

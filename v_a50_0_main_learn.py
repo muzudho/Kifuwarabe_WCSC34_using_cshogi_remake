@@ -38,7 +38,7 @@ class LearningFramework():
         print(f"[{datetime.datetime.now()}] [learning framework > learn about one game > get training data] start...")
 
         # トレーニングデータが無いからプレイアウトする
-        result_str = kifuwarabe.playout(
+        (result_str, reason) = kifuwarabe.playout(
                 is_debug=is_debug)
 
         position_command = BoardHelper.get_position_command(
@@ -46,8 +46,9 @@ class LearningFramework():
 
         print(f"""[{datetime.datetime.now()}] [learning framework > learn about one game > get training data] finished
 {board}
-    # playout result:`{result_str}`
-    # move_number:{board.move_number} / max_move_number:{max_move_number}
+    # result:{result_str}
+    # reason:{reason}
+    # move number:{board.move_number} / max move number:{max_move_number}
     # {position_command}
 """, flush=True)
 

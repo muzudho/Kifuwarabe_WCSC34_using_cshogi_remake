@@ -254,7 +254,7 @@ class Kifuwarabe():
         # プレイアウト
         #       code: playout
         elif head == 'playout':
-            result_str = self.playout(
+            (result_str, reason) = self.playout(
                     is_debug=is_debug)
 
             position_command = BoardHelper.get_position_command(
@@ -263,9 +263,10 @@ class Kifuwarabe():
             print(f"""\
 [{datetime.datetime.now()}] [playout]
 {self._board}
-    #result:{result_str}
-    #move_number:{self._board.move_number} / max_move_number:{max_move_number}
-    #{position_command}
+    # result:{result_str}
+    # reason:{reason}
+    # move_number:{self._board.move_number} / max_move_number:{max_move_number}
+    # {position_command}
 """,
                     flush=True)
 
@@ -575,23 +576,31 @@ class Kifuwarabe():
 
         # 持将棋
         elif cmd_tail == 'draw':
+            print(f"持将棋か～（ー＿ー） my turn:{self._my_turn}", flush=True)
+
             # ［対局結果］　常に記憶する
-            self._game_result_document.add_draw_and_save(self._my_turn, self._board)
+            self._game_result_document.add_and_save(self._my_turn, self._board)
 
         # 負け
         if cmd_tail == 'lose':
+            print(f"あ～あ、 {self._my_turn} 番で負けたぜ（＞＿＜）", flush=True)
+
             # ［対局結果］　常に記憶する
-            self._game_result_document.add_loss_and_save(self._my_turn, self._board)
+            self._game_result_document.add_and_save(self._my_turn, self._board)
 
         # 勝ち
         elif cmd_tail == 'win':
+            print(f"やったぜ {self._my_turn} 番で勝ったぜ（＾ｑ＾）", flush=True)
+
             # ［対局結果］　常に記憶する
-            self._game_result_document.add_win_and_save(self._my_turn, self._board)
+            self._game_result_document.add_and_save(self._my_turn, self._board)
 
         # その他
         else:
+            print(f"なんだろな（・＿・）？　'{cmd_tail}'  my turn:{self._my_turn}", flush=True)
+
             # ［対局結果］　常に記憶する
-            self._game_result_document.add_otherwise_and_save(cmd_tail, self._my_turn, self._board)
+            self._game_result_document.add_and_save(cmd_tail, self._my_turn, self._board)
 
         # 終了ログは出したい
         print(f"[{datetime.datetime.now()}] [gameover] end", flush=True)
@@ -863,7 +872,7 @@ class Kifuwarabe():
 
         Returns
         -------
-        result : str
+        reason : str
             'max_move', 'resign', 'nyugyoku_win', 'max_playout_depth'
         """
 
@@ -874,37 +883,48 @@ class Kifuwarabe():
         if max_playout_depth is None:
             max_playout_depth = max_move_number - self._board.move_number + 1
 
-        for _playout_depth in range(0, max_playout_depth):
+        def playout_local():
+            for _playout_depth in range(0, max_playout_depth):
 
-            # 手数上限
-            if max_move_number <= self._board.move_number:
-                return 'max_move'
+                # 手数上限
+                if max_move_number <= self._board.move_number:
+                    return 'max_move'
 
-            # 投了局面時
-            if self._board.is_game_over():
-                return 'resign'
+                # 投了局面時
+                if self._board.is_game_over():
+                    return 'resign'
 
-            # 入玉勝利宣言局面時
-            if self._board.is_nyugyoku():
-                return 'nyugyoku_win'
+                # 入玉勝利宣言局面時
+                if self._board.is_nyugyoku():
+                    return 'nyugyoku_win'
 
-            # （評価値テーブルの内容だけで対局したい用途で使う想定なので）プレイアウト中は１手詰めルーチンを使わない
+                # （評価値テーブルの内容だけで対局したい用途で使う想定なので）プレイアウト中は１手詰めルーチンを使わない
 
-            # くじを引く（投了のケースは対応済みなので、ここで対応しなくていい）
-            best_move_str = Lottery.choice_best(
-                    legal_moves=list(self._board.legal_moves),
-                    board=self._board,
-                    kifuwarabe=self)
+                # くじを引く（投了のケースは対応済みなので、ここで対応しなくていい）
+                best_move_str = Lottery.choice_best(
+                        legal_moves=list(self._board.legal_moves),
+                        board=self._board,
+                        kifuwarabe=self)
 
-            if is_debug:
-                print(f"[{datetime.datetime.now()}] [playout] best_move:{best_move_str:5}")
+                if is_debug:
+                    print(f"[{datetime.datetime.now()}] [playout] best_move:{best_move_str:5}")
 
-            # 一手指す
-            self._board.push_usi(best_move_str)
+                # 一手指す
+                self._board.push_usi(best_move_str)
 
 
-        # プレイアウト深さ上限
-        return 'max_playout_depth'
+            # プレイアウト深さ上限
+            return 'max_playout_depth'
+
+        reason = playout_local()
+
+        if not self._board.is_gameover():
+            return ('draw', reason)
+
+        if self._board.turn == self.my_turn:
+            return ('lose', reason)
+
+        return ('win', reason)
 
 
     def learn(
@@ -973,7 +993,7 @@ class Kifuwarabe():
             self.position(
                     cmd_tail="startpos")
 
-            result_str = self.playout(
+            (result_str, reason) = self.playout(
                     is_debug=is_debug)
 
             self.gameover(
