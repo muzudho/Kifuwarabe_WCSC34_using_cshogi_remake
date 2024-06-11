@@ -168,12 +168,15 @@ class MoveSourceLocation():
     """指し手の移動元は、マス番号と駒種類の２通りある"""
 
 
-    #_src_drop_files
-    _drop_files = ('R', 'B', 'G', 'S', 'N', 'L', 'P')
-
-
     @staticmethod
-    def from_string(src_str):
+    def from_string(srcloc):
+        """文字列から生成
+
+        Parameters
+        ----------
+        srcloc : str
+            元位置
+        """
         file_th=None
         rank_th=None
         sq=None
@@ -181,33 +184,28 @@ class MoveSourceLocation():
 
         #
         # 移動元の列番号を 1 から始まる整数で返す。打にはマス番号は無い
+        # 移動元の段番号を 1 から始まる整数で返す。打は無い
         #
-        if src_str in get_srcdrop_list():
+        if srcloc in get_srcdrop_list():
             file_th = None
-            drop = src_str
+            rank_th = None
+            drop = srcloc
 
         else:
-            file_str = src_str[0]
+            file_str = srcloc[0]
             drop = None
 
             try:
                 file_th = Move._file_th_str_to_num[file_str]
             except:
-                raise Exception(f"src file error: `{file_str}` in src_str:`{src_str}`")
+                raise Exception(f"src file error: `{file_str}` in srcloc:`{srcloc}`")
 
-        #
-        # 移動元の段番号を 1 から始まる整数で返す。打は無い
-        #
-        if src_str in get_srcdrop_list():
-            rank_th = None
-
-        else:
-            rank_str = src_str[1]
+            rank_str = srcloc[1]
 
             try:
                 rank_th = Move._rank_str_to_th_num[rank_str]
             except:
-                raise Exception(f"src rank error: `{rank_str}` in src_str:'{src_str}'")
+                raise Exception(f"src rank error: `{rank_str}` in srcloc:'{srcloc}'")
 
         #
         # 移動元のマス番号を基数で。打なら None が入る
@@ -255,11 +253,6 @@ class MoveSourceLocation():
                     rank_th=rank_th,
                     sq=sq_or_drop,
                     drop=None)
-
-
-    @staticmethod
-    def get_drop_files():
-        return MoveSourceLocation._drop_files
 
 
     def __init__(
@@ -645,7 +638,7 @@ class Move():
 
         # 移動元オブジェクト生成
         src_location = MoveSourceLocation.from_string(
-                src_str=move_as_usi[0: 2])
+                srcloc=move_as_usi[0: 2])
 
         # 移動先オブジェクト生成
         dst_location = MoveDestinationLocation.from_string(
