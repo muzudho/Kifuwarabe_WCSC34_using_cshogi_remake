@@ -5,6 +5,19 @@ from v_a53_0_misc.bit_ope import BitOpe
 from v_a53_0_debug_plan import DebugPlan
 
 
+#_src_drops 廃止
+#_drops 廃止
+#get_drops() 廃止
+_srcdrop_list = ['R*', 'B*', 'G*', 'S*', 'N*', 'L*', 'P*']
+def get_srcdrop_list():
+    return _srcdrop_list
+
+_srcloc_list = range(0,81)
+_srcloc_list.extend(_srcdrop_list)
+def get_srcloc_list():
+    return _srcloc_list
+
+
 class FileName():
     """ファイル名"""
 
@@ -133,8 +146,6 @@ class MoveSourceLocation():
     """指し手の移動元は、マス番号と駒種類の２通りある"""
 
 
-    #_src_drops
-    _drops = ('R*', 'B*', 'G*', 'S*', 'N*', 'L*', 'P*')
     #_src_drop_files
     _drop_files = ('R', 'B', 'G', 'S', 'N', 'L', 'P')
 
@@ -149,7 +160,7 @@ class MoveSourceLocation():
         #
         # 移動元の列番号を 1 から始まる整数で返す。打にはマス番号は無い
         #
-        if src_str in MoveSourceLocation._drops:
+        if src_str in get_srcdrop_list():
             file_th = None
             drop = src_str
 
@@ -165,7 +176,7 @@ class MoveSourceLocation():
         #
         # 移動元の段番号を 1 から始まる整数で返す。打は無い
         #
-        if src_str in MoveSourceLocation._drops:
+        if src_str in get_srcdrop_list():
             rank_th = None
 
         else:
@@ -205,7 +216,7 @@ class MoveSourceLocation():
         # TODO そもそも、この打とマス番号を分けるようにしなくていいようなフローにできないか？
 
         # 打なら
-        if sq_or_drop in MoveSourceLocation._drops:
+        if sq_or_drop in get_srcdrop_list():
             return MoveSourceLocation(
                     file_th=None,
                     rank_th=None,
@@ -222,11 +233,6 @@ class MoveSourceLocation():
                     rank_th=rank_th,
                     sq=sq_or_drop,
                     drop=None)
-
-
-    @staticmethod
-    def get_drops():
-        return MoveSourceLocation._drops
 
 
     @staticmethod

@@ -130,7 +130,7 @@ def test_p():
     #
     # 元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します
     #
-    (src_sq_to_dst_sq_to_index_for_npsi_dictionary,
+    (srcloc_to_dst_sq_to_index_for_npsi_dictionary,
      src_sq_to_dst_sq_to_index_for_psi_dictionary,
      drop_to_dst_sq_index,
      index_to_src_sq_dst_sq_promotion_dictionary) = EvaluationPMove.get_srcloc_to_dst_sq_index_dictionary_tuple()
@@ -150,7 +150,7 @@ def test_p():
         # 元マス・先マス to インデックス
         #
         for srcsq in range(0,81):
-            dst_sq_to_index_for_npsi_dictionary = src_sq_to_dst_sq_to_index_for_npsi_dictionary[srcsq]
+            dst_sq_to_index_for_npsi_dictionary = srcloc_to_dst_sq_to_index_for_npsi_dictionary[srcsq]
             dst_sq_to_index_for_b_dictionary = src_sq_to_dst_sq_to_index_for_psi_dictionary[srcsq]
 
             # 成らない指し手（no promote）の各マス　値：通しインデックス（serial index）

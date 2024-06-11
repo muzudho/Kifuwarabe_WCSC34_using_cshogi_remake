@@ -227,7 +227,7 @@ class EvaluationKMove():
             ##
             ##   移動元マス番号 81～87 に、持ち駒の種類　飛～歩　を当てる
             ##
-            #for src_drop in MoveSourceLocation.get_drops():
+            #for src_drop in get_srcdrop_list():
             #    # 飛
             #    if src_drop == 'R*':
             #        srcdrop=81
