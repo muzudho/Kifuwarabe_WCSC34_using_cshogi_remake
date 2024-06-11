@@ -125,7 +125,7 @@ class EvaluationPMove():
 
 
     @classmethod
-    def get_src_sq_to_dst_sq_index_dictionary_tuple(clazz):
+    def get_srcloc_to_dst_sq_index_dictionary_tuple(clazz):
 
         # 未生成なら生成（重い処理は１回だけ）
         if clazz._src_sq_to_dst_sq_to_index_for_npsi_dictionary == None:
@@ -397,7 +397,7 @@ class EvaluationPMove():
         (src_sq_to_dst_sq_to_index_for_npsi_dictionary,
          src_sq_to_dst_sq_to_index_for_psi_dictionary,
          drop_to_dst_sq_index,
-         index_to_src_sq_dst_sq_promotion_dictionary) = EvaluationPMove.get_src_sq_to_dst_sq_index_dictionary_tuple()
+         index_to_src_sq_dst_sq_promotion_dictionary) = EvaluationPMove.get_srcloc_to_dst_sq_index_dictionary_tuple()
 
 
         # 打か。打に成りはありません。したがって None にはなりません
@@ -479,7 +479,7 @@ class EvaluationPMove():
         (src_sq_to_dst_sq_to_index_for_npsi_dictionary,
          src_sq_to_dst_sq_to_index_for_psi_dictionary,
          drop_to_dst_sq_index,
-         index_to_src_sq_dst_sq_promotion_dictionary) = EvaluationPMove.get_src_sq_to_dst_sq_index_dictionary_tuple()
+         index_to_src_sq_dst_sq_promotion_dictionary) = EvaluationPMove.get_srcloc_to_dst_sq_index_dictionary_tuple()
 
         (src_sq,
          dst_sq,

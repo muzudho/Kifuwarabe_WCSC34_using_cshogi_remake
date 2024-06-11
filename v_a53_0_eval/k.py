@@ -97,9 +97,12 @@ class EvaluationKMove():
 
 
     @classmethod
-    def get_src_sq_to_dst_sq_index_dictionary_tuple(clazz):
+    def get_srcsq_to_dst_sq_index_dictionary_tuple(clazz):
         """元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します。
-        初回アクセス時はテーブル生成に時間がかかります"""
+        初回アクセス時はテーブル生成に時間がかかります
+
+        玉に打は無いので、 srcsq です。 srcloc ではありません
+        """
 
         # 未生成なら生成（重い処理は１回だけ）
         if clazz._src_to_dst_index_dictionary == None:
@@ -122,17 +125,17 @@ class EvaluationKMove():
             #
             # 移動元マス（１一～９九）
             #
-            for src_sq in range(0,81):
+            for srcsq in range(0,81):
 
                 dst_to_index_dictionary = dict()
-                clazz._src_to_dst_index_dictionary[src_sq] = dst_to_index_dictionary
+                clazz._src_to_dst_index_dictionary[srcsq] = dst_to_index_dictionary
 
                 # 利きのマスの集合
                 dst_sq_set = set()
 
                 # 元マスの座標
                 (src_file,
-                src_rank) = BoardHelper.get_file_rank_by_sq(src_sq)
+                src_rank) = BoardHelper.get_file_rank_by_sq(srcsq)
 
                 #
                 # 絶対マス番号を作成
@@ -214,7 +217,7 @@ class EvaluationKMove():
                     #print(f"[昇順] dst_sq={dst_sq}")
 
                     dst_to_index_dictionary[dst_sq] = effect_serial_index
-                    clazz._index_to_src_dst_dictionary[effect_serial_index] = (src_sq, dst_sq)
+                    clazz._index_to_src_dst_dictionary[effect_serial_index] = (srcsq, dst_sq)
 
                     effect_serial_index += 1
 
@@ -227,61 +230,61 @@ class EvaluationKMove():
             #for src_drop in MoveSourceLocation.get_drops():
             #    # 飛
             #    if src_drop == 'R*':
-            #        src_sq=81
+            #        srcdrop=81
             #        dst_to_index_dictionary = dict()
-            #        clazz._src_to_dst_index_dictionary[src_sq] = dst_to_index_dictionary
+            #        clazz._src_to_dst_index_dictionary[srcdrop] = dst_to_index_dictionary
             #
             #        # 打ち込み先マス（１一～９九）
             #        for dst_sq in range(0,81):
             #            dst_to_index_dictionary[dst_sq] = effect_serial_index
-            #            clazz._index_to_src_dst_dictionary[effect_serial_index] = (src_sq, dst_sq)
+            #            clazz._index_to_src_dst_dictionary[effect_serial_index] = (srcdrop, dst_sq)
             #
             #            effect_serial_index += 1
             #
             #    # 角
             #    elif src_drop == 'B*':
-            #        src_sq=82
+            #        srcdrop=82
             #        dst_to_index_dictionary = dict()
-            #        clazz._src_to_dst_index_dictionary[src_sq] = dst_to_index_dictionary
+            #        clazz._src_to_dst_index_dictionary[srcdrop] = dst_to_index_dictionary
             #
             #        # 打ち込み先マス（１一～９九）
             #        for dst_sq in range(0,81):
             #            dst_to_index_dictionary[dst_sq] = effect_serial_index
-            #            clazz._index_to_src_dst_dictionary[effect_serial_index] = (src_sq, dst_sq)
+            #            clazz._index_to_src_dst_dictionary[effect_serial_index] = (srcdrop, dst_sq)
             #
             #            effect_serial_index += 1
             #
             #    # 金
             #    elif src_drop == 'G*':
-            #        src_sq=83
+            #        srcdrop=83
             #        dst_to_index_dictionary = dict()
-            #        clazz._src_to_dst_index_dictionary[src_sq] = dst_to_index_dictionary
+            #        clazz._src_to_dst_index_dictionary[srcdrop] = dst_to_index_dictionary
             #
             #        # 打ち込み先マス（１一～９九）
             #        for dst_sq in range(0,81):
             #            dst_to_index_dictionary[dst_sq] = effect_serial_index
-            #            clazz._index_to_src_dst_dictionary[effect_serial_index] = (src_sq, dst_sq)
+            #            clazz._index_to_src_dst_dictionary[effect_serial_index] = (srcdrop, dst_sq)
             #
             #            effect_serial_index += 1
             #
             #    # 銀
             #    elif src_drop == 'S*':
-            #        src_sq=84
+            #        srcdrop=84
             #        dst_to_index_dictionary = dict()
-            #        clazz._src_to_dst_index_dictionary[src_sq] = dst_to_index_dictionary
+            #        clazz._src_to_dst_index_dictionary[srcdrop] = dst_to_index_dictionary
             #
             #        # 打ち込み先マス（１一～９九）
             #        for dst_sq in range(0,81):
             #            dst_to_index_dictionary[dst_sq] = effect_serial_index
-            #            clazz._index_to_src_dst_dictionary[effect_serial_index] = (src_sq, dst_sq)
+            #            clazz._index_to_src_dst_dictionary[effect_serial_index] = (srcdrop, dst_sq)
             #
             #            effect_serial_index += 1
             #
             #    # 桂
             #    elif src_drop == 'N*':
-            #        src_sq=85
+            #        srcdrop=85
             #        dst_to_index_dictionary = dict()
-            #        clazz._src_to_dst_index_dictionary[src_sq] = dst_to_index_dictionary
+            #        clazz._src_to_dst_index_dictionary[srcdrop] = dst_to_index_dictionary
             #
             #        # 打ち込み先マス（１一～９九）
             #        for dst_sq in range(0,81):
@@ -290,15 +293,15 @@ class EvaluationKMove():
             #                continue
             #
             #            dst_to_index_dictionary[dst_sq] = effect_serial_index
-            #            clazz._index_to_src_dst_dictionary[effect_serial_index] = (src_sq, dst_sq)
+            #            clazz._index_to_src_dst_dictionary[effect_serial_index] = (srcdrop, dst_sq)
             #
             #            effect_serial_index += 1
             #
             #    # 香
             #    elif src_drop == 'L*':
-            #        src_sq=86
+            #        srcdrop=86
             #        dst_to_index_dictionary = dict()
-            #        clazz._src_to_dst_index_dictionary[src_sq] = dst_to_index_dictionary
+            #        clazz._src_to_dst_index_dictionary[srcdrop] = dst_to_index_dictionary
             #
             #        # 打ち込み先マス（１一～９九）
             #        for dst_sq in range(0,81):
@@ -307,15 +310,15 @@ class EvaluationKMove():
             #                continue
             #
             #            dst_to_index_dictionary[dst_sq] = effect_serial_index
-            #            clazz._index_to_src_dst_dictionary[effect_serial_index] = (src_sq, dst_sq)
+            #            clazz._index_to_src_dst_dictionary[effect_serial_index] = (srcdrop, dst_sq)
             #
             #            effect_serial_index += 1
             #
             #    # 歩
             #    elif src_drop == 'L*':
-            #        src_sq=87
+            #        srcdrop=87
             #        dst_to_index_dictionary = dict()
-            #        clazz._src_to_dst_index_dictionary[src_sq] = dst_to_index_dictionary
+            #        clazz._src_to_dst_index_dictionary[srcdrop] = dst_to_index_dictionary
             #
             #        # 打ち込み先マス（１一～９九）
             #        for dst_sq in range(0,81):
@@ -324,7 +327,7 @@ class EvaluationKMove():
             #                continue
             #
             #            dst_to_index_dictionary[dst_sq] = effect_serial_index
-            #            clazz._index_to_src_dst_dictionary[effect_serial_index] = (src_sq, dst_sq)
+            #            clazz._index_to_src_dst_dictionary[effect_serial_index] = (srcdrop, dst_sq)
             #
             #            effect_serial_index += 1
             #
@@ -366,32 +369,32 @@ class EvaluationKMove():
 
         # assert
         if k_move_obj.src_location.sq == None or k_move_obj.src_location.rot_sq == None:
-            raise ValueError(f"[evaluation k move > get index by k move] 玉の指し手で src_sq が None なのはおかしい。 k_move_obj.src_location.masu:{BoardHelper.sq_to_jsa(k_move_obj.src_location.sq)}  k_move_obj.src_location.rot_masu:{BoardHelper.sq_to_jsa(k_move_obj.src_location.rot_sq)}")
+            raise ValueError(f"[evaluation k move > get index by k move] 玉の指し手で k_move_obj.src_location.sq が None なのはおかしい。 k_move_obj.src_location.masu:{BoardHelper.sq_to_jsa(k_move_obj.src_location.sq)}  k_move_obj.src_location.rot_masu:{BoardHelper.sq_to_jsa(k_move_obj.src_location.rot_sq)}")
 
         if is_rotate:
-            # 玉に打は無いので、 src_sq は None にはなりません
-            k_src_sq = k_move_obj.src_location.rot_sq
+            # 玉に打は無いので、 k_move_obj.src_location.sq は None にはなりません
+            k_srcsq = k_move_obj.src_location.rot_sq
             k_dst_sq = k_move_obj.dst_location.rot_sq
 
         else:
-            k_src_sq = k_move_obj.src_location.sq
+            k_srcsq = k_move_obj.src_location.sq
             k_dst_sq = k_move_obj.dst_location.sq
 
         # 玉は成らない
 
         # 元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します
-        (src_to_dst_index_dictionary, _) = EvaluationKMove.get_src_sq_to_dst_sq_index_dictionary_tuple()
+        (srcsq_to_dst_index_dictionary, _) = EvaluationKMove.get_srcsq_to_dst_sq_index_dictionary_tuple()
 
         #
         # unwrap
         #
         try:
             # 移動元マス番号を渡して、辞書を取得
-            dst_to_index_dictionary = src_to_dst_index_dictionary[k_src_sq]
+            dst_to_index_dictionary = srcsq_to_dst_index_dictionary[k_srcsq]
 
         except KeyError as ex:
-            # k_src_sq error. k_move_obj.as_usi:S*3b  rotated:False  k_src_sq:None  src_masu:None  ex:None
-            print(f"[evaluation k move > get index by k move]  k_src_sq error. k_move_obj.as_usi:{k_move_obj.as_usi}  rotated:{is_rotate}  k_src_sq:{k_src_sq}  src_masu:{BoardHelper.sq_to_jsa(k_src_sq)}  ex:{ex}")
+            # k_srcsq error. k_move_obj.as_usi:S*3b  rotated:False  k_srcsq:None  src_masu:None  ex:None
+            print(f"[evaluation k move > get index by k move]  k_srcsq error. k_move_obj.as_usi:{k_move_obj.as_usi}  rotated:{is_rotate}  k_srcsq:{k_srcsq}  src_masu:{BoardHelper.sq_to_jsa(k_srcsq)}  ex:{ex}")
             raise
 
         #
@@ -402,11 +405,11 @@ class EvaluationKMove():
             k_index = dst_to_index_dictionary[k_dst_sq]
 
         except KeyError as ex:
-            # k_move_obj.as_usi:5a5b  src_sq:36  dst_sq:37
-            # k_move_obj.as_usi:5a4b  is_rotate:True  src_sq:44  dst_sq:52  src_masu:59  dst_masu:68  ex:28
-            # k_move_obj.as_usi:6g4e  rotated:True  k_src_sq:29  k_dst_sq:49  src_masu:43  dst_masu:65  ex:49
-            # k_move_obj.as_usi:8i6g  rotated:True  len(dst_to_index_dictionary):5  k_src_masu:21  k_dst_masu:43  k_src_sq:9  k_dst_sq:29  ex:29
-            print(f"[evaluation k move > get index by k move]  k_dst_sq error. k_move_obj.as_usi:{k_move_obj.as_usi}  rotated:{is_rotate}  len(dst_to_index_dictionary):{len(dst_to_index_dictionary)}  k_src_masu:{BoardHelper.sq_to_jsa(k_src_sq)}  k_dst_masu:{BoardHelper.sq_to_jsa(k_dst_sq)}  k_src_sq:{k_src_sq}  k_dst_sq:{k_dst_sq}  ex:{ex}")
+            # k_move_obj.as_usi:5a5b  k_srcsq:36  dst_sq:37
+            # k_move_obj.as_usi:5a4b  is_rotate:True  k_srcsq:44  dst_sq:52  src_masu:59  dst_masu:68  ex:28
+            # k_move_obj.as_usi:6g4e  rotated:True  k_srcsq:29  k_dst_sq:49  src_masu:43  dst_masu:65  ex:49
+            # k_move_obj.as_usi:8i6g  rotated:True  len(dst_to_index_dictionary):5  k_src_masu:21  k_dst_masu:43  k_srcsq:9  k_dst_sq:29  ex:29
+            print(f"[evaluation k move > get index by k move]  k_dst_sq error. k_move_obj.as_usi:{k_move_obj.as_usi}  rotated:{is_rotate}  len(dst_to_index_dictionary):{len(dst_to_index_dictionary)}  k_src_masu:{BoardHelper.sq_to_jsa(k_srcsq)}  k_dst_masu:{BoardHelper.sq_to_jsa(k_dst_sq)}  k_srcsq:{k_srcsq}  k_dst_sq:{k_dst_sq}  ex:{ex}")
 
             # ダンプ
             i = 0
@@ -443,7 +446,7 @@ class EvaluationKMove():
         """
 
         # マスの通し番号を渡すと、元マスと移動先マスを返す入れ子の辞書を返します
-        (_, index_to_src_dst_dictionary) = EvaluationKMove.get_src_sq_to_dst_sq_index_dictionary_tuple()
+        (_, index_to_src_dst_dictionary) = EvaluationKMove.get_srcsq_to_dst_sq_index_dictionary_tuple()
 
         (src_sq, dst_sq) = index_to_src_dst_dictionary[k_index]
 
