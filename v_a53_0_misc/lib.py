@@ -34,7 +34,7 @@ _srcdrop_list = ['R*', 'B*', 'G*', 'S*', 'N*', 'L*', 'P*']
 def get_srcdrop_list():
     return _srcdrop_list
 
-_srcloc_list = range(0,81)
+_srcloc_list = list(range(0,81))
 _srcloc_list.extend(_srcdrop_list)
 def get_srcloc_list():
     return _srcloc_list
