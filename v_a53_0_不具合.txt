@@ -1,0 +1,48 @@
+[2024-06-12 00:17:31.012999] [learning framework > start it] (  19/198) start...
+[2024-06-12 00:17:31.013975] [learn > learn_it] start...
+[2024-06-12 00:17:31.013975] [learn] 初期局面図：
+'  9  8  7  6  5  4  3  2  1
+P1-KY-KE-GI-KI-OU-KI-GI-KE-KY
+P2 * -HI *  *  *  *  * -KA *
+P3-FU-FU-FU-FU-FU-FU-FU-FU-FU
+P4 *  *  *  *  *  *  *  *  *
+P5 *  *  *  *  *  *  *  *  *
+P6 *  *  *  *  *  *  *  *  *
+P7+FU+FU+FU+FU+FU+FU+FU+FU+FU
+P8 * +KA *  *  *  *  * +HI *
+P9+KY+KE+GI+KI+OU+KI+GI+KE+KY
++
+
+    # board.move_number:1
+
+[2024-06-12 00:17:31.051976] [learn > 詰める方]  mate:1  好手数：1  悪手数：109
+[2024-06-12 00:17:31.101448] [learn > 詰める方 > 好手] (  1/110)  G*5h   win  [80手（差5）後]  resign  [▼DOWN▼] 1手詰めを逃して 31 手以内に負けた
+[2024-06-12 00:17:31.105704] [learning framework > unexpected error] err=ValueError('[evaluation k move > get index by k move] 玉の指し手で k_move_obj.src_location.sq が None なのはおかしい。
+ k_move_obj.src_location.masu:None  k_move_obj.src_location.rot_masu:None'), type(err)=<class 'ValueError'>
+Traceback (most recent call last):
+  File "C:\Users\むずでょ\Documents\Muzudho Workspaces\shogi\Kifuwarabe_WCSC34R_using_cshogi_v_a53_0\v_a53_0_main_learn.py", line 165, in <module>
+    learning_framework.start_it(
+  File "C:\Users\むずでょ\Documents\Muzudho Workspaces\shogi\Kifuwarabe_WCSC34R_using_cshogi_v_a53_0\v_a53_0_main_learn.py", line 129, in start_it
+    is_debug=is_debug).learn_it()
+                       ^^^^^^^^^^
+  File "C:\Users\むずでょ\Documents\Muzudho Workspaces\shogi\Kifuwarabe_WCSC34R_using_cshogi_v_a53_0\v_a53_0_misc\learn.py", line 159, in learn_it
+    changed_count) = self.at_odd(
+                     ^^^^^^^^^^^^
+  File "C:\Users\むずでょ\Documents\Muzudho Workspaces\shogi\Kifuwarabe_WCSC34R_using_cshogi_v_a53_0\v_a53_0_misc\learn.py", line 368, in at_odd
+    result_str = self._kifuwarabe.weaken(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\むずでょ\Documents\Muzudho Workspaces\shogi\Kifuwarabe_WCSC34R_using_cshogi_v_a53_0\v_a53_0.py", line 835, in weaken
+    ).weaken(
+      ^^^^^^^
+  File "C:\Users\むずでょ\Documents\Muzudho Workspaces\shogi\Kifuwarabe_WCSC34R_using_cshogi_v_a53_0\v_a53_0_eval\edit.py", line 274, in weaken
+    is_changed_temp = self._kifuwarabe._evaluation_kl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kl_moves(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\むずでょ\Documents\Muzudho Workspaces\shogi\Kifuwarabe_WCSC34R_using_cshogi_v_a53_0\v_a53_0_eval\kk.py", line 256, in set_relation_esixts_by_kl_moves
+    index=EvaluationKkTable.get_index_of_kk_table(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\むずでょ\Documents\Muzudho Workspaces\shogi\Kifuwarabe_WCSC34R_using_cshogi_v_a53_0\v_a53_0_eval\kk.py", line 40, in get_index_of_kk_table
+    kk_index       = EvaluationKMove.get_index_by_k_move(k_move_obj, k_rotate) * EvaluationKMove.get_serial_number_size() + EvaluationKMove.get_index_by_k_move(l_move_obj, l_rotate)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\むずでょ\Documents\Muzudho Workspaces\shogi\Kifuwarabe_WCSC34R_using_cshogi_v_a53_0\v_a53_0_eval\k.py", line 372, in get_index_by_k_move
+    raise ValueError(f"[evaluation k move > get index by k move] 玉の指し手で k_move_obj.src_location.sq が None なのはおかしい。 k_move_obj.src_location.masu:{BoardHelper.sq_to_jsa(k_move_obj.src_location.sq)}  k_move_obj.src_location.rot_masu:{BoardHelper.sq_to_jsa(k_move_obj.src_location.rot_sq)}")
+ValueError: [evaluation k move > get index by k move] 玉の指し手で k_move_obj.src_location.sq が None なのはおかしい。 k_move_obj.src_location.masu:None  k_move_obj.src_location.rot_masu:NonePS C:\Users\むずでょ\Documents\Muzudho Workspaces\shogi\Kifuwarabe_WCSC34R_using_cshogi_v_a53_0>

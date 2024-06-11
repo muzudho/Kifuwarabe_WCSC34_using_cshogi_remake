@@ -1,6 +1,7 @@
 import os
 import datetime
 import time
+import random
 
 # python v_a53_0_main_learn.py
 from     v_a53_0 import Kifuwarabe, engine_version_str
@@ -47,8 +48,8 @@ class LearningFramework():
                     engine_version_str=engine_version_str)
 
             if learn_config_document == None:
-                # １分後にループをやり直し
-                seconds = 60.0
+                # ３０～５９秒後にリトライする
+                seconds = random.randint(30,60)
                 print(f"[{datetime.datetime.now()}] [learning framework > start it] failed to read `{learn_config_file_base_name}` file. wait for {seconds} seconds before retrying")
                 time.sleep(seconds)
                 continue
@@ -61,8 +62,8 @@ class LearningFramework():
             file_name_for_learning = GameResultDocument.get_file_name_for_learning(engine_version_str)
 
             if not os.path.isfile(original_file_name):
-                # １分後にループをやり直し
-                seconds = 60.0
+                # ３０～５９秒後にリトライする
+                seconds = random.randint(30,60)
                 print(f"[{datetime.datetime.now()}] [learning framework > start it] `{original_file_name}` file not found. wait for {seconds} seconds before retrying")
                 time.sleep(seconds)
                 continue
@@ -85,8 +86,8 @@ class LearningFramework():
                         dst=file_name_for_learning)
 
             except Exception as ex:
-                # １分後にループをやり直し
-                seconds = 60.0
+                # ３０～５９秒後にリトライする
+                seconds = random.randint(30,60)
                 print(f"[{datetime.datetime.now()}] [learning framework > start it] failed to rename file. wait for {seconds} seconds before retrying. ex:{ex}")
                 time.sleep(seconds)
                 continue

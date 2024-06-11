@@ -331,6 +331,19 @@ class MoveSourceLocation():
             raise
 
 
+    def dump(self):
+        return f"""\
+_sq:{self._sq}
+_drop:{self._drop}
+_file_th:{self._file_th}
+_rank_th:{self._rank_th}
+_usi_code:{self._usi_code}
+_rot_file_th:{self._rot_file_th}
+_rot_rank_th:{self._rot_rank_th}
+_rot_sq:{self._rot_sq}
+"""
+
+
     @property
     def file_th(self):
         """列番号。 1 から始まる整数で返す。打には None を入れる"""
@@ -469,6 +482,18 @@ class MoveDestinationLocation():
         self._rot_file_th = 8 - (self._file_th - 1) + 1
         self._rot_rank_th = 8 - (self._rank_th - 1) + 1
         self._rot_sq = 80 - self._sq
+
+
+    def dump(self):
+        return f"""\
+_file_th:{self._file_th}
+_rank_th:{self._rank_th}
+_sq:{self._sq}
+_usi_code:`{self._usi_code}`
+_rot_file_th:{self._rot_file_th}
+_rot_rank_th:{self._rot_rank_th}
+_rot_sq:{self._rot_sq}
+"""
 
 
     @property
@@ -712,6 +737,16 @@ class Move():
         self._dst_location = dst_location
         self._promoted = promoted
 
+
+    def dump(self):
+        return f"""\
+_as_usi:`{self._as_usi}`
+_src_location:
+{self._src_location.dump()}
+_dst_location:
+{self._dst_location.dump()}
+_promoted:`{self._promoted}`
+"""
 
     @property
     def as_usi(self):

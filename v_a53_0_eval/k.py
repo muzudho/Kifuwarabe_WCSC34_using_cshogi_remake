@@ -369,7 +369,7 @@ class EvaluationKMove():
 
         # assert
         if k_move_obj.src_location.sq == None or k_move_obj.src_location.rot_sq == None:
-            raise ValueError(f"[evaluation k move > get index by k move] 玉の指し手で k_move_obj.src_location.sq が None なのはおかしい。 k_move_obj.src_location.masu:{BoardHelper.sq_to_jsa(k_move_obj.src_location.sq)}  k_move_obj.src_location.rot_masu:{BoardHelper.sq_to_jsa(k_move_obj.src_location.rot_sq)}")
+            raise ValueError(f"[evaluation k move > get index by k move] 玉の指し手で k_move_obj.src_location.sq が None なのはおかしい。 k_move_obj.src_location.masu:{BoardHelper.sq_to_jsa(k_move_obj.src_location.sq)}  k_move_obj.src_location.rot_masu:{BoardHelper.sq_to_jsa(k_move_obj.src_location.rot_sq)}  k_move_obj:{k_move_obj.dump()}")
 
         if is_rotate:
             # 玉に打は無いので、 k_move_obj.src_location.sq は None にはなりません
@@ -394,7 +394,7 @@ class EvaluationKMove():
 
         except KeyError as ex:
             # k_srcsq error. k_move_obj.as_usi:S*3b  rotated:False  k_srcsq:None  src_masu:None  ex:None
-            print(f"[evaluation k move > get index by k move]  k_srcsq error. k_move_obj.as_usi:{k_move_obj.as_usi}  rotated:{is_rotate}  k_srcsq:{k_srcsq}  src_masu:{BoardHelper.sq_to_jsa(k_srcsq)}  ex:{ex}")
+            print(f"[evaluation k move > get index by k move]  k_srcsq error. k_move_obj.as_usi:{k_move_obj.as_usi}  rotated:{is_rotate}  k_srcsq:{k_srcsq}  src_masu:{BoardHelper.sq_to_jsa(k_srcsq)}  k_move_obj:{k_move_obj.dump()}  ex:{ex}")
             raise
 
         #
