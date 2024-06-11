@@ -120,12 +120,12 @@ class EvaluationPMove():
     _drop_to_dst_sq_index = None
     """先手持ち駒 to （移動先 to 通し番号）"""
 
-    _index_to_src_sq_dst_sq_promotion_dictionary = None
+    _index_to_srcloc_dst_sq_promotion_dictionary = None
     """通しインデックスを渡すと、移動元、移動先、成りか、を返す辞書"""
 
 
     @classmethod
-    def get_srcloc_to_dst_sq_index_dictionary_tuple(clazz):
+    def get_src_lists_to_dst_sq_index_dictionary_tuple(clazz):
 
         # 未生成なら生成（重い処理は１回だけ）
         if clazz._src_sq_to_dst_sq_to_index_for_npsi_dictionary == None:
@@ -139,7 +139,7 @@ class EvaluationPMove():
             clazz._drop_to_dst_sq_index = dict()
 
             # 通しインデックスを渡すと、移動元、移動先、成りか、を返す辞書
-            clazz._index_to_src_sq_dst_sq_promotion_dictionary = dict()
+            clazz._index_to_srcloc_dst_sq_promotion_dictionary = dict()
 
             # 通しのインデックス
             effect_index = 0
@@ -313,12 +313,12 @@ class EvaluationPMove():
 
                     for dst_sq in no_pro_dst_sq_list:
                         dst_sq_to_index_for_npsi_dictionary[dst_sq] = effect_index
-                        clazz._index_to_src_sq_dst_sq_promotion_dictionary[effect_index] = (src_sq, dst_sq, False)
+                        clazz._index_to_srcloc_dst_sq_promotion_dictionary[effect_index] = (src_sq, dst_sq, False)
                         effect_index += 1
 
                     for dst_sq in pro_dst_sq_list:
                         dst_sq_to_index_for_b_dictionary[dst_sq] = effect_index
-                        clazz._index_to_src_sq_dst_sq_promotion_dictionary[effect_index] = (src_sq, dst_sq, True)
+                        clazz._index_to_srcloc_dst_sq_promotion_dictionary[effect_index] = (src_sq, dst_sq, True)
                         effect_index += 1
 
 
@@ -349,13 +349,13 @@ class EvaluationPMove():
 
                         # 格納
                         dst_sq_to_index[dst_sq] = effect_index
-                        clazz._index_to_src_sq_dst_sq_promotion_dictionary[effect_index] = (drop, dst_sq, False)
+                        clazz._index_to_srcloc_dst_sq_promotion_dictionary[effect_index] = (drop, dst_sq, False)
                         effect_index += 1
 
         return (clazz._src_sq_to_dst_sq_to_index_for_npsi_dictionary,
                 clazz._src_sq_to_dst_sq_to_index_for_psi_dictionary,
                 clazz._drop_to_dst_sq_index,
-                clazz._index_to_src_sq_dst_sq_promotion_dictionary)
+                clazz._index_to_srcloc_dst_sq_promotion_dictionary)
 
 
     def get_serial_number_size():
@@ -394,17 +394,17 @@ class EvaluationPMove():
             p_dst_sq = p_move_obj.dst_location.sq
 
         # 元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します
-        (src_sq_to_dst_sq_to_index_for_npsi_dictionary,
-         src_sq_to_dst_sq_to_index_for_psi_dictionary,
-         drop_to_dst_sq_index,
-         index_to_src_sq_dst_sq_promotion_dictionary) = EvaluationPMove.get_srcloc_to_dst_sq_index_dictionary_tuple()
+        (srcsq_to_dst_sq_to_index_for_npsi_dictionary,
+         srcsq_to_dst_sq_to_index_for_psi_dictionary,
+         srcdrop_to_dst_sq_index,
+         index_to_srcloc_dst_sq_promotion_dictionary) = EvaluationPMove.get_src_lists_to_dst_sq_index_dictionary_tuple()
 
 
         # 打か。打に成りはありません。したがって None にはなりません
         if p_move_obj.src_location.rank_th is None:
             try:
                 # 'R*' とかが入っていると想定
-                dst_sq_to_index_dictionary = drop_to_dst_sq_index[p_move_obj.src_location.usi_code]
+                dst_sq_to_index_dictionary = srcdrop_to_dst_sq_index[p_move_obj.src_location.usi_code]
 
             except KeyError as ex:
                 print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  src_str:{p_move_obj.src_location.usi_code}  rotated:{is_rotate}  p_src_masu:{BoardHelper.sq_to_jsa(p_src_sq_or_none)}  成:{p_move_obj.promoted}  ex:{ex}")
@@ -420,7 +420,7 @@ class EvaluationPMove():
         # 成りか。成りに打は有りません
         elif p_move_obj.promoted:
             try:
-                dst_sq_to_index_dictionary = src_sq_to_dst_sq_to_index_for_psi_dictionary[p_src_sq_or_none]
+                dst_sq_to_index_dictionary = srcsq_to_dst_sq_to_index_for_psi_dictionary[p_src_sq_or_none]
 
             except KeyError as ex:
                 print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  src_str:{p_move_obj.src_location.usi_code}  rotated:{is_rotate}  p_src_masu:{BoardHelper.sq_to_jsa(p_src_sq_or_none)}  成:{p_move_obj.promoted}  ex:{ex}")
@@ -436,7 +436,7 @@ class EvaluationPMove():
         # 成らずだ
         else:
             try:
-                dst_sq_to_index_dictionary = src_sq_to_dst_sq_to_index_for_npsi_dictionary[p_src_sq_or_none]
+                dst_sq_to_index_dictionary = srcsq_to_dst_sq_to_index_for_npsi_dictionary[p_src_sq_or_none]
 
             except KeyError as ex:
                 print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  src_str:{p_move_obj.src_location.usi_code}  rotated:{is_rotate}  p_src_masu:{BoardHelper.sq_to_jsa(p_src_sq_or_none)}  成:{p_move_obj.promoted}  ex:{ex}")
@@ -478,16 +478,16 @@ class EvaluationPMove():
         # マスの通し番号を渡すと、元マスと移動先マスを返す入れ子の辞書を返します
         (src_sq_to_dst_sq_to_index_for_npsi_dictionary,
          src_sq_to_dst_sq_to_index_for_psi_dictionary,
-         drop_to_dst_sq_index,
-         index_to_src_sq_dst_sq_promotion_dictionary) = EvaluationPMove.get_srcloc_to_dst_sq_index_dictionary_tuple()
+         srcdrop_to_dst_sq_index,
+         index_to_srcloc_dst_sq_promotion_dictionary) = EvaluationPMove.get_src_lists_to_dst_sq_index_dictionary_tuple()
 
-        (src_sq,
+        (srcloc,
          dst_sq,
-         promoted) = index_to_src_sq_dst_sq_promotion_dictionary[p_index]
+         promoted) = index_to_srcloc_dst_sq_promotion_dictionary[p_index]
 
         p_move_obj = Move.from_src_dst_pro(
                 src_location=MoveSourceLocation.from_sq_or_drop(
-                        sq_or_drop=src_sq),
+                        sq_or_drop=srcloc),
                 dst_location=MoveDestinationLocation.from_sq(
                         sq=dst_sq),
                 promoted=promoted)

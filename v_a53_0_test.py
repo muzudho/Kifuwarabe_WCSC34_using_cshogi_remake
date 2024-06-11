@@ -130,10 +130,10 @@ def test_p():
     #
     # 元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します
     #
-    (srcloc_to_dst_sq_to_index_for_npsi_dictionary,
-     src_sq_to_dst_sq_to_index_for_psi_dictionary,
-     drop_to_dst_sq_index,
-     index_to_src_sq_dst_sq_promotion_dictionary) = EvaluationPMove.get_srcloc_to_dst_sq_index_dictionary_tuple()
+    (srcsq_to_dst_sq_to_index_for_npsi_dictionary,
+     srcsq_to_dst_sq_to_index_for_psi_dictionary,
+     srcdrop_to_dst_sq_index,
+     index_to_srcsq_dst_sq_promotion_dictionary) = EvaluationPMove.get_src_lists_to_dst_sq_index_dictionary_tuple()
 
     base_name = "test_eval_p.log"
     print(f"please read `{base_name}` file")
@@ -150,8 +150,8 @@ def test_p():
         # 元マス・先マス to インデックス
         #
         for srcsq in range(0,81):
-            dst_sq_to_index_for_npsi_dictionary = srcloc_to_dst_sq_to_index_for_npsi_dictionary[srcsq]
-            dst_sq_to_index_for_b_dictionary = src_sq_to_dst_sq_to_index_for_psi_dictionary[srcsq]
+            dst_sq_to_index_for_npsi_dictionary = srcsq_to_dst_sq_to_index_for_npsi_dictionary[srcsq]
+            dst_sq_to_index_for_b_dictionary = srcsq_to_dst_sq_to_index_for_psi_dictionary[srcsq]
 
             # 成らない指し手（no promote）の各マス　値：通しインデックス（serial index）
             label_table_for_npsi = ["    "] * 81
@@ -194,7 +194,7 @@ def test_p():
         #   - 打は SFEN では駒種類毎に分かれている。 R*, B*, G*, S*, N*, L*, P*
         #
         for drop in ['R*', 'B*', 'G*', 'S*', 'N*', 'L*', 'P*']:
-            dst_sq_to_index_dictionary = drop_to_dst_sq_index[drop]
+            dst_sq_to_index_dictionary = srcdrop_to_dst_sq_index[drop]
 
             label_table_for_drop = ['    '] * 81
 
