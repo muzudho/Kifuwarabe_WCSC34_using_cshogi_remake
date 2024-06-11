@@ -5,6 +5,28 @@ from v_a53_0_misc.bit_ope import BitOpe
 from v_a53_0_debug_plan import DebugPlan
 
 
+_drop_srcloc = {
+    'R*' : 81,
+    'B*' : 82,
+    'G*' : 83,
+    'S*' : 84,
+    'N*' : 85,
+    'L*' : 86,
+    'P*' : 87,
+}
+"""'R*' といった文字列を 81 といった整数に変換します"""
+
+def get_srcloc_by_drop(drop_str):
+    """'R*' といった文字列を 81 といった整数に変換します
+
+    Parameters
+    ----------
+    drop_str : str
+        'R*' といった文字列
+    """
+    return _drop_srcloc[drop_str]
+
+
 #_src_drops 廃止
 #_drops 廃止
 #get_drops() 廃止
