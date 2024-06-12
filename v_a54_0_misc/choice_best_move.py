@@ -313,11 +313,14 @@ class ChoiceBestMove():
           bad_move_u_set)
         """
 
-        # 好手の集合
-        good_move_u_set = set()
+        ranked_move_set_list = []
 
-        # 悪手の集合
-        bad_move_u_set = set()
+        # 好手と悪手の２パターンなら
+        # 配列のインデックスの小さい方がランクが上とする
+        ranking_resolution = 2
+
+        for i in range(0, ranking_resolution):
+            ranked_move_set_list.append(set())
 
         for move_id in legal_moves:
             move_u = cshogi.move_to_usi(move_id)
@@ -351,28 +354,29 @@ class ChoiceBestMove():
                 policy = 0
 
             if 500 <= policy:
-                good_move_u_set.add(move_u)
+                # 好手の集合
+                target_set = ranked_move_set_list[0]
+                target_set.add(move_u)
 
             else:
-                bad_move_u_set.add(move_u)
+                # 悪手の集合
+                target_set = ranked_move_set_list[1]
+                target_set.add(move_u)
 
 
         # デバッグ表示
         if is_debug and DebugPlan.select_ranked_f_move_u_set_facade:
 
-            print(f"[{datetime.datetime.now()}] [select ranked f move u set facade] ランク付けされた指し手一覧（好手）")
+            for ranking in range(0, ranking_resolution):
 
-            for good_move_u in good_move_u_set:
-                print(f"[{datetime.datetime.now()}] [select ranked f move u set facade]    good:{good_move_u:5}")
+                print(f"[{datetime.datetime.now()}] [select ranked f move u set facade] ランク付けされた指し手一覧（ranking:{ranking}）")
+                target_set = ranked_move_set_list[ranking]
 
-            print(f"[{datetime.datetime.now()}] [select ranked f move u set facade] ランク付けされた指し手一覧（悪手）")
-
-            for bad_move_u in bad_move_u_set:
-                print(f"[{datetime.datetime.now()}] [select ranked f move u set facade]    bad :{bad_move_u:5}")
+                for ranked_move_u in target_set:
+                    print(f"[{datetime.datetime.now()}] [select ranked f move u set facade]  ranking:{ranking}  move:{ranked_move_u:5}")
 
 
-        return (good_move_u_set,
-                bad_move_u_set)
+        return ranked_move_set_list
 
 
     @staticmethod
@@ -396,17 +400,20 @@ class ChoiceBestMove():
         """
 
         # ランク付けされた指し手一覧
-        (good_move_u_set,
-         bad_move_u_set) = ChoiceBestMove.select_ranked_f_move_u_set_facade(
+        ranked_move_set_list = ChoiceBestMove.select_ranked_f_move_u_set_facade(
                 legal_moves=legal_moves,
                 board=board,
                 kifuwarabe=kifuwarabe,
                 is_debug=is_debug)
 
-        # 候補手の中からランダムに選ぶ。USIの指し手の記法で返却
-        if 0 < len(good_move_u_set):
-            return random.choice(list(good_move_u_set))
+        for ranked_move_set in ranked_move_set_list:
 
-        # 何も指さないよりは、悪手を指した方がマシ
-        else:
-            return random.choice(list(bad_move_u_set))
+            # このランキングに候補手が無ければ、下のランキングへ
+            if len(ranked_move_set) < 1:
+                continue
+
+            # 候補手の中からランダムに選ぶ。USIの指し手の記法で返却
+            return random.choice(list(ranked_move_set))
+
+        # ここにくることはないはず
+        return "resign"

@@ -1,18 +1,16 @@
 import cshogi
 import datetime
-import random
 
-#              python v_a54_0.py
-from                  v_a54_0_eval.facade import EvaluationFacade
-from                  v_a54_0_eval.edit import EvaluationEdit
-from                  v_a54_0_eval.kk import EvaluationKkTable
-from                  v_a54_0_eval.kp import EvaluationKpTable
-from                  v_a54_0_eval.pk import EvaluationPkTable
-from                  v_a54_0_eval.pp import EvaluationPpTable
-from                  v_a54_0_misc.choice_best_move import ChoiceBestMove
-from                  v_a54_0_misc.game_result_document import GameResultDocument
-from                  v_a54_0_misc.learn import LearnAboutOneGame
-from                  v_a54_0_misc.lib import Turn, Move, MoveHelper, BoardHelper
+# python v_a54_0.py
+from     v_a54_0_eval.edit import EvaluationEdit
+from     v_a54_0_eval.kk import EvaluationKkTable
+from     v_a54_0_eval.kp import EvaluationKpTable
+from     v_a54_0_eval.pk import EvaluationPkTable
+from     v_a54_0_eval.pp import EvaluationPpTable
+from     v_a54_0_misc.choice_best_move import ChoiceBestMove
+from     v_a54_0_misc.game_result_document import GameResultDocument
+from     v_a54_0_misc.learn import LearnAboutOneGame
+from     v_a54_0_misc.lib import Turn, Move, MoveHelper, BoardHelper
 engine_version_str = "v_a54_0"
 
 
@@ -716,20 +714,16 @@ class Kifuwarabe():
         # ランク付けされた指し手一覧（好手、悪手）
         # ----------------------------------
         #
-        (good_move_u_set,
-         bad_move_u_set) = ChoiceBestMove.select_ranked_f_move_u_set_facade(
+        ranked_move_set_list = ChoiceBestMove.select_ranked_f_move_u_set_facade(
                 legal_moves=list(self._board.legal_moves),
                 board=self._board,
                 kifuwarabe=self,
                 is_debug=is_debug)
 
-        print(f'  ランク付けされた指し手一覧（好手）：')
-        for move_u in good_move_u_set:
-            print(f'    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is good')
-
-        print(f'  ランク付けされた指し手一覧（悪手）：')
-        for move_u in bad_move_u_set:
-            print(f'    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is bad')
+        for ranking, ranked_move_set in enumerate(ranked_move_set_list):
+            print(f'  ランク付けされた指し手一覧（ranking:{ranking}）：')
+            for ranked_move_u in ranked_move_set:
+                print(f'    turn:{Turn.to_string(self._board.turn)}  ranking:{ranking}  F:{ranked_move_u:5}  O:*****')
 
 
     def relation(self, cmd_tail):
