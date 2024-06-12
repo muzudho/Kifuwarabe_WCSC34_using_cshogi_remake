@@ -83,6 +83,9 @@ class Kifuwarabe():
         # 対局結果ドキュメント
         self._game_result_document = None
 
+        # 好手・悪手のランキングの階層数
+        self._ranking_resolution = 2
+
 
     @property
     def board(self):
@@ -98,6 +101,12 @@ class Kifuwarabe():
     def game_result_document(self):
         """対局結果ドキュメント"""
         return self._game_result_document
+
+
+    @property
+    def ranking_resolution(self):
+        """好手・悪手のランキングの階層数"""
+        return self._ranking_resolution
 
 
     @property

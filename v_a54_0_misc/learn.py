@@ -273,13 +273,13 @@ class LearnAboutOneGame():
         print(f'  累計：{sum_size}', flush=True)
 
         # TODO 好手と悪手の真ん中を設定できるようにしたい
-        threshold = sum_size // 2
+        ranking_resolution_threshold = sum_size // self._kifuwarabe.ranking_resolution
 
 
         for ranking, ranked_move_u_set in enumerate(ranked_move_u_set_list):
             choice_num = 0
 
-            if ranking < threshold:
+            if ranking < ranking_resolution_threshold:
 
                 if self._is_debug:
                     print(f'[{datetime.datetime.now()}] [learn > 詰める方]  着手のランキング：{ranking}（好手）')
@@ -559,13 +559,13 @@ class LearnAboutOneGame():
         print(f'  累計：{sum_size}', flush=True)
 
         # TODO 好手と悪手の真ん中を設定できるようにしたい
-        threshold = sum_size // 2
+        ranking_resolution_threshold = sum_size // self._kifuwarabe.ranking_resolution
 
 
         for ranking, ranked_move_u_set in enumerate(ranked_move_u_set_list):
             choice_num = 0
 
-            if ranking < threshold:
+            if ranking < ranking_resolution_threshold:
                 if self._is_debug:
                     print(f'[{datetime.datetime.now()}] [learn > 逃げる方]  着手のランキング：{ranking}（好手）')
 

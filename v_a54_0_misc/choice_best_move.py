@@ -315,11 +315,9 @@ class ChoiceBestMove():
 
         ranked_move_u_set_list = []
 
-        # 好手と悪手の２パターンなら
+        # もし好手と悪手の２パターンなら ranking_resolution は ２。
         # 配列のインデックスの小さい方がランクが上とする
-        ranking_resolution = 2
-
-        for i in range(0, ranking_resolution):
+        for i in range(0, kifuwarabe.ranking_resolution):
             ranked_move_u_set_list.append(set())
 
         for move_id in legal_moves:
@@ -367,7 +365,7 @@ class ChoiceBestMove():
         # デバッグ表示
         if is_debug and DebugPlan.select_ranked_f_move_u_set_facade:
 
-            for ranking in range(0, ranking_resolution):
+            for ranking in range(0, kifuwarabe.ranking_resolution):
 
                 print(f"[{datetime.datetime.now()}] [select ranked f move u set facade] ランク付けされた指し手一覧（ranking:{ranking}）")
                 target_set = ranked_move_u_set_list[ranking]
