@@ -369,7 +369,7 @@ class EvaluationKMove():
 
         # assert
         if k_move_obj.src_location.sq == None or k_move_obj.src_location.rot_sq == None:
-            raise ValueError(f"[evaluation k move > get index by k move] 玉の指し手で k_move_obj.src_location.sq が None なのはおかしい。 k_move_obj.src_location.masu:{BoardHelper.sq_to_jsa(k_move_obj.src_location.sq)}  k_move_obj.src_location.rot_masu:{BoardHelper.sq_to_jsa(k_move_obj.src_location.rot_sq)}  k_move_obj:{k_move_obj.dump()}")
+            raise ValueError(f"[evaluation k move > get index by k move] 玉の指し手で k_move_obj.src_location.sq が None （打？）なのはおかしい。 k_move_obj.src_location.masu:{BoardHelper.sq_to_jsa(k_move_obj.src_location.sq)}  k_move_obj.src_location.rot_masu:{BoardHelper.sq_to_jsa(k_move_obj.src_location.rot_sq)}  k_move_obj:{k_move_obj.dump()}")
 
         if is_rotate:
             # 玉に打は無いので、 k_move_obj.src_location.sq は None にはなりません

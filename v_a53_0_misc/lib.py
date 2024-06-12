@@ -5,39 +5,102 @@ from v_a53_0_misc.bit_ope import BitOpe
 from v_a53_0_debug_plan import DebugPlan
 
 
-_drop_srcloc = {
-    'R*' : 81,
-    'B*' : 82,
-    'G*' : 83,
-    'S*' : 84,
-    'N*' : 85,
-    'L*' : 86,
-    'P*' : 87,
+_rank_th_num_to_alphabet = {
+    1:'a',
+    2:'b',
+    3:'c',
+    4:'d',
+    5:'e',
+    6:'f',
+    7:'g',
+    8:'h',
+    9:'i',
 }
-"""'R*' といった文字列を 81 といった整数に変換します"""
-
-def get_srcloc_by_drop(drop_str):
-    """'R*' といった文字列を 81 といった整数に変換します
-
-    Parameters
-    ----------
-    drop_str : str
-        'R*' といった文字列
-    """
-    return _drop_srcloc[drop_str]
+"""1 から始まる段の整数を a から始まる英字に変換"""
 
 
-#_src_drops 廃止
-#_drops 廃止
-#get_drops() 廃止
+# 使ってない？
+def get_rank_th_num_to_alphabet(rank_th):
+    return _rank_th_num_to_alphabet[rank_th]
+
+
+_srcloc_to_usi = None
+"""以下のような辞書を get_usi_by_srcloc(...) 関数の初回使用時に自動生成する
+{
+    0 : '1a',
+    1 : '1b',
+    ...
+    81 : 'R*',
+    ...
+    87 : 'P*',
+}
+"""
+
+
+def sq_to_usi(sq):
+    """マス番号から、USI 形式の符号の先頭２文字へ変換します"""
+    file_th = sq % 9 + 1
+    rank_th = sq // 9 + 1
+    return f"{file_th}{_rank_th_num_to_alphabet[rank_th]}"
+
+
 _srcdrop_list = ['R*', 'B*', 'G*', 'S*', 'N*', 'L*', 'P*']
 def get_srcdrop_list():
     return _srcdrop_list
 
-_srcloc_list = list(range(0,81))
-_srcloc_list.extend(_srcdrop_list)
-def get_srcloc_list():
-    return _srcloc_list
+
+def get_usi_by_srcloc(srcloc):
+    """0 ～ 87 の整数から、USI 形式の指し手符号の先頭２文字へ変換"""
+    global _srcloc_to_usi
+
+    if _srcloc_to_usi is None:
+        _srcloc_to_usi = {}
+
+        # 盤上のマス
+        for sq in range(0,81):
+            _srcloc_to_usi[sq] = sq_to_usi(sq)
+
+        # 打
+        drop_num = 81
+        for drop_str in _srcdrop_list:
+            _srcloc_to_usi[drop_num] = drop_str
+            drop_num += 1
+
+    return _srcloc_to_usi[srcloc]
+
+
+_usi_to_srcloc = None
+"""以下のような辞書を get_srcloc_by_usi(...) 関数の初回使用時に自動生成する
+{
+    '1a' : 0,
+    '1b' : 1,
+    ...
+    'R*' : 81,
+    ...
+    'P*' : 87,
+}
+"""
+
+
+def get_srcloc_by_usi(usi_code):
+    """USI 形式の指し手符号の先頭２文字から、0 ～ 87 の整数へ変換"""
+    global _usi_to_srcloc
+
+    if _usi_to_srcloc is None:
+        _usi_to_srcloc = {}
+
+        # 盤上のマス
+        for sq in range(0,81):
+            usi_str = sq_to_usi(sq)
+            _usi_to_srcloc[usi_str] = sq
+
+        # 打
+        drop_num = 81
+        for drop_str in _srcdrop_list:
+            _usi_to_srcloc[drop_str] = drop_num
+            drop_num += 1
+
+    return _usi_to_srcloc[usi_code]
 
 
 class FileName():
@@ -169,6 +232,116 @@ class MoveSourceLocation():
 
 
     @staticmethod
+    def get_file_th_rank_th_from_sq(sq):
+        """盤上のマス番号を渡すと、 1 から始まる筋番号と、 1 から始まる段番号のタプルを返します"""
+        return (sq // 9 + 1,
+                sq % 9 + 1)
+
+
+    @staticmethod
+    def get_file_th_with_rotate(file_th):
+        """１８０°回転"""
+        if file_th is None:
+            return None
+
+        else:
+            return 8 - (file_th - 1) + 1
+
+
+    @staticmethod
+    def get_rank_th_with_rotate(rank_th):
+        return MoveSourceLocation.get_file_th_with_rotate(rank_th)
+
+
+    @staticmethod
+    def get_sq_with_rotate(sq):
+        """マス番号を１８０°回転"""
+        if sq is None:
+            # 打だろう。 None を返す
+            return None
+
+        else:
+            return 80 - sq
+
+
+    @staticmethod
+    def get_usi_code_from_file_th_rank_th(
+            file_th,
+            rank_th):
+        return f"{file_th}{_rank_th_num_to_alphabet[rank_th]}"
+
+
+    @staticmethod
+    def get_usi_code_from_sq(sq):
+        """元位置の盤上のマス番号から、USI形式の指し手の符号の先頭２文字へ変換します"""
+        (file_th, rank_th) = MoveSourceLocation.get_file_th_rank_th_from_sq(sq)
+        return MoveSourceLocation.get_usi_code_from_file_th_rank_th(file_th, rank_th)
+
+
+    @staticmethod
+    def get_usi_code_from_srcloc(srcloc):
+        """元位置番号から、USI形式の指し手の符号の先頭２文字へ変換します"""
+        # マス番号なら
+        if srcloc < 81:
+            return MoveSourceLocation.get_usi_code_from_sq(sq=srcloc)
+
+        # 打なら
+        else:
+            return get_usi_by_srcloc(srcloc)
+
+
+    @staticmethod
+    def from_sq(
+            sq):
+            (file_th, rank_th) = MoveSourceLocation.get_file_th_rank_th_from_sq(sq)
+
+            return MoveSourceLocation(
+                    usi_code=sq_to_usi(sq),
+                    srcloc=sq,
+                    sq=sq,
+                    drop=None,
+                    file_th=file_th,
+                    rank_th=rank_th,
+                    )
+
+
+    @staticmethod
+    def from_srcloc(
+            srcloc):
+        """マス番号か、打の駒種類か分かってない状態
+
+        Parameter
+        ---------
+        srcloc : str
+            マス番号か、打の駒種類のどちらか
+        """
+
+        # TODO そもそも、この打とマス番号を分けるようにしなくていいようなフローにできないか？
+
+        # 打なら
+        if srcloc in get_srcdrop_list():
+            return MoveSourceLocation(
+                    srcloc=srcloc,
+                    sq=None,
+                    drop=srcloc,
+                    is_drop=True,
+                    file_th=None,
+                    rank_th=None)
+
+        # マス番号なら
+        else:
+            (file_th, rank_th) = MoveSourceLocation.get_file_th_rank_th_from_sq(srcloc)
+
+            return MoveSourceLocation(
+                    srcloc=srcloc,
+                    sq=int(srcloc),
+                    drop=None,
+                    is_drop=False,
+                    file_th=file_th,
+                    rank_th=rank_th)
+
+
+    @staticmethod
     def from_string(srcloc):
         """文字列から生成
 
@@ -216,77 +389,49 @@ class MoveSourceLocation():
             sq = None
 
         return MoveSourceLocation(
+                srcloc=srcloc,
                 file_th=file_th,
                 rank_th=rank_th,
                 sq=sq,
                 drop=drop)
 
 
-    @staticmethod
-    def from_sq_or_drop(
-            sq_or_drop):
-        """マス番号か、打の駒種類か分かってない状態
-
-        Parameter
-        ---------
-        sq_or_drop : str
-            マス番号か、打の駒種類のどちらか
-        """
-
-        # TODO そもそも、この打とマス番号を分けるようにしなくていいようなフローにできないか？
-
-        # 打なら
-        if sq_or_drop in get_srcdrop_list():
-            return MoveSourceLocation(
-                    file_th=None,
-                    rank_th=None,
-                    sq=None,
-                    drop=sq_or_drop)
-
-        # マス番号なら
-        else:
-            file_th = sq_or_drop // 9 + 1
-            rank_th = sq_or_drop % 9 + 1
-
-            return MoveSourceLocation(
-                    file_th=file_th,
-                    rank_th=rank_th,
-                    sq=sq_or_drop,
-                    drop=None)
-
-
     def __init__(
             self,
-            file_th,
-            rank_th,
+            usi_code,
+            srcloc,
             sq,
-            drop):
+            drop,
+            is_drop,
+            file_th,
+            rank_th):
         """初期化
 
         Parameters
         ----------
+        usi_code : str
+            USI 形式の指し手符号の先頭２文字。 '7g' や 'R*' など
+        srcloc : int
+            盤上のマス番号（0 ～ 80）、または打つ駒の種類番号（81 ～ 87）
+        sq : int
+            マス番号。 0～80
+        drop : str
+            打の駒種類。 
+        is_drop : bool
+            打なら真
         file_th : int
             列番号。 1 から始まる整数で返す。打には None を入れる
         rank_th : int
             段番号。 1 から始まる整数で返す。打には None を入れる
-        sq : int
-            マス番号。 0～80
-        drop : str
-            打の駒種類。 'R*' など
         """
 
         try:
+            self._usi_code = usi_code
+            self._srcloc = srcloc
             self._sq = sq
             self._drop = drop
-
-            #
-            # 筋
-            #
+            self._is_drop = is_drop
             self._file_th = file_th
-
-            #
-            # 段
-            #
             self._rank_th = rank_th
 
             #
@@ -297,32 +442,19 @@ class MoveSourceLocation():
             if self._drop is not None:
                 self._usi_code = self._drop
             else:
-                self._usi_code = f"{self.file_th}{Move._rank_th_num_to_alphabet[self.rank_th]}"
+                self._usi_code = MoveSourceLocation.get_usi_code_from_file_th_rank_th(self.file_th, self.rank_th)
 
             #
             # １８０°回転
             #
             # 筋
-            if self._file_th is None:
-                self._rot_file_th = None
-
-            else:
-                self._rot_file_th = 8 - (self._file_th - 1) + 1
+            self._rot_file_th = MoveSourceLocation.get_file_th_with_rotate(self._file_th)
 
             # 段
-            if self._rank_th is None:
-                self._rot_rank_th =  None
+            self._rot_rank_th = MoveSourceLocation.get_rank_th_with_rotate(self._file_th)
 
-            else:
-                self._rot_rank_th =  8 - (self._rank_th - 1) + 1
-
-            # マス番号
-            if self._sq is None:
-                # 打だろう。 None を返す
-                self._rot_sq = None
-
-            else:
-                self._rot_sq = 80 - self._sq
+            # 打
+            self._rot_sq = MoveSourceLocation.get_sq_with_rotate(self._sq)
 
 
         except TypeError as ex:
@@ -354,6 +486,12 @@ _rot_sq:{self._rot_sq}
     def rank_th(self):
         """段番号。 1 から始まる整数で返す。打には None を入れる"""
         return self._rank_th
+
+
+    @property
+    def srcloc(self):
+        """USI 形式の指し手符号の先頭2文字。盤上のマス、または打つ駒の種類"""
+        return self._srcloc
 
 
     @property
@@ -476,7 +614,7 @@ class MoveDestinationLocation():
         self._rank_th = rank_th
         self._sq = sq
 
-        self._usi_code = f"{self._file_th}{Move._rank_th_num_to_alphabet[self._rank_th]}"
+        self._usi_code = f"{self._file_th}{_rank_th_num_to_alphabet[self._rank_th]}"
 
         # 指し手を盤上で１８０°回転
         self._rot_file_th = 8 - (self._file_th - 1) + 1
@@ -595,20 +733,6 @@ class Move():
     """段英字を 1 から始まる整数に変換"""
 
 
-    _rank_th_num_to_alphabet = {
-        1:'a',
-        2:'b',
-        3:'c',
-        4:'d',
-        5:'e',
-        6:'f',
-        7:'g',
-        8:'h',
-        9:'i',
-    }
-    """1 から始まる段の整数を a から始まる英字に変換"""
-
-
     _src_dst_str_1st_figure_to_sq = {
         'R' : 81,   # 'R*' 移動元の打 72+9=81
         'B' : 82,   # 'B*'
@@ -643,12 +767,6 @@ class Move():
         'i': 8,
     }
     """移動元、移動先の２文字目をインデックスへ変換"""
-
-
-    # 使ってない？
-    @staticmethod
-    def get_rank_th_num_to_alphabet(rank_num):
-        return Move._rank_th_num_to_alphabet[rank_num]
 
 
     @staticmethod
