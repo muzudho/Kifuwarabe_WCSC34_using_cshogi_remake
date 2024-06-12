@@ -330,12 +330,12 @@ class EvaluationFacade():
 
 
     @staticmethod
-    def select_good_f_move_u_set_facade(
+    def select_ranked_f_move_u_set_facade(
             legal_moves,
             board,
             kifuwarabe,
             is_debug=False):
-        """好手と悪手の一覧を作成
+        """ランク付けされた指し手一覧（好手、悪手）を作成
 
         Parameters
         ----------
@@ -394,17 +394,18 @@ class EvaluationFacade():
                 bad_move_u_set.add(move_u)
 
 
-        if is_debug and DebugPlan.select_good_f_move_u_set_facade:
+        # デバッグ表示
+        if is_debug and DebugPlan.select_ranked_f_move_u_set_facade:
 
-            print(f"[{datetime.datetime.now()}] [select good f move u set facade] 好手一覧")
+            print(f"[{datetime.datetime.now()}] [select ranked f move u set facade] ランク付けされた指し手一覧（好手）")
 
             for good_move_u in good_move_u_set:
-                print(f"[{datetime.datetime.now()}] [select good f move u set facade]    good:{good_move_u:5}")
+                print(f"[{datetime.datetime.now()}] [select ranked f move u set facade]    good:{good_move_u:5}")
 
-            print(f"[{datetime.datetime.now()}] [select good f move u set facade] 悪手一覧")
+            print(f"[{datetime.datetime.now()}] [select ranked f move u set facade] ランク付けされた指し手一覧（悪手）")
 
             for bad_move_u in bad_move_u_set:
-                print(f"[{datetime.datetime.now()}] [select good f move u set facade]    bad :{bad_move_u:5}")
+                print(f"[{datetime.datetime.now()}] [select ranked f move u set facade]    bad :{bad_move_u:5}")
 
 
         return (good_move_u_set,

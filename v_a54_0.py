@@ -712,21 +712,21 @@ class Kifuwarabe():
                 return
 
         #
-        # 好手、悪手一覧
-        # ------------
+        # ランク付けされた指し手一覧（好手、悪手）
+        # ----------------------------------
         #
         (good_move_u_set,
-         bad_move_u_set) = EvaluationFacade.select_good_f_move_u_set_facade(
+         bad_move_u_set) = EvaluationFacade.select_ranked_f_move_u_set_facade(
                 legal_moves=list(self._board.legal_moves),
                 board=self._board,
                 kifuwarabe=self,
                 is_debug=is_debug)
 
-        print(f'  好手一覧：')
+        print(f'  ランク付けされた指し手一覧（好手）：')
         for move_u in good_move_u_set:
             print(f'    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is good')
 
-        print(f'  悪手一覧：')
+        print(f'  ランク付けされた指し手一覧（悪手）：')
         for move_u in bad_move_u_set:
             print(f'    turn:{Turn.to_string(self._board.turn)}  F:{move_u:5}  O:*****  is bad')
 
@@ -1045,8 +1045,9 @@ class Lottery():
             デバッグモードか？
         """
 
+        # ランク付けされた指し手一覧
         (good_move_u_set,
-         bad_move_u_set) = EvaluationFacade.select_good_f_move_u_set_facade(
+         bad_move_u_set) = EvaluationFacade.select_ranked_f_move_u_set_facade(
                 legal_moves=legal_moves,
                 board=board,
                 kifuwarabe=kifuwarabe,

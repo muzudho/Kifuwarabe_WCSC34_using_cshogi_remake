@@ -31,7 +31,7 @@ class DebugPlan():
     #####
     # S #
     #####
-    select_good_f_move_u_set_facade = False
+    select_ranked_f_move_u_set_facade = False
 
     _select_fo_move_u_and_policy_dictionary_no1 = False
 
