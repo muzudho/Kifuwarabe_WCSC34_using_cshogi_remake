@@ -8,6 +8,7 @@ from     v_a55_0_eval.kk import EvaluationKkTable
 from     v_a55_0_eval.kp import EvaluationKpTable
 from     v_a55_0_eval.pk import EvaluationPkTable
 from     v_a55_0_eval.pp import EvaluationPpTable
+from     v_a55_0_eval.facade import EvaluationFacade
 from     v_a55_0_misc.lib import Turn, MoveHelper, BoardHelper, Move
 
 
@@ -345,26 +346,21 @@ class ChoiceBestMove():
                     is_debug=is_debug)
 
             #
-            # 分離機
+            # 好手悪手のランキング算出
             #
-
-            # ポリシー率
-            if 0 < total_of_relation:
-                policy_rate = positive_of_relation / total_of_relation
-            else:
-                policy_rate = 1.0
+            (ranking_th, policy_rate) = EvaluationFacade.get_ranking_th(
+                    positive_of_relation=positive_of_relation,
+                    total_of_relation=total_of_relation,
+                    ranking_resolution=kifuwarabe.ranking_resolution)
 
 
-            ranking_resolution_threshold = 1 / kifuwarabe.ranking_resolution
-            policy_rate_rev = 1 - policy_rate
-            ranking = int(policy_rate_rev // ranking_resolution_threshold)
-
-            target_set = ranked_move_u_set_list[ranking]
+            # 1 から始まる数を、0 から始まる数に変換して配列のインデックスに使用
+            target_set = ranked_move_u_set_list[ranking_th - 1]
             target_set.add(move_u)
 
             # デバッグ表示
             if is_debug and DebugPlan.select_ranked_f_move_u_set_facade:
-                print(f"[choice best move]  move_u:{move_u}  ranking:{ranking}  positive_of_relation:{positive_of_relation}  total_of_relation:{total_of_relation}  policy_rate:{policy_rate}  policy_rate_rev:{policy_rate_rev}  ranking_resolution_threshold:{ranking_resolution_threshold}")
+                print(f"[choice best move]  move_u:{move_u}  policy_rate:{policy_rate}  ranking_th:{ranking_th}  positive_of_relation:{positive_of_relation}  total_of_relation:{total_of_relation}")
 
 
         # デバッグ表示

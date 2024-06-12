@@ -1,5 +1,7 @@
 from decimal import Decimal, ROUND_HALF_UP
 
+from v_a55_0_debug_plan import DebugPlan
+
 
 class EvaluationFacade():
     """評価値のファサード"""
@@ -45,3 +47,63 @@ class EvaluationFacade():
             max_number_of_less_than_50_percent = 0
 
         return max_number_of_less_than_50_percent
+
+
+    def get_ranking_th(
+            positive_of_relation,
+            total_of_relation,
+            ranking_resolution,
+            is_debug=False):
+        """好手悪手のランキングを求めます。
+        最高が 1位、最低が ranking_resolution 位
+
+        positive_of_relation : int
+            挙手数
+        total_of_relation : int
+            議席数
+        ranking_resolution : int
+            ランキングの階層数
+        is_debug : bool
+            デバッグモードか？
+        """
+
+        # ポリシー率
+        #
+        #   例えば　挙手数　０、議席数１０なら、ポリシー率は 0.0
+        #   例えば　挙手数　１、議席数１０なら、ポリシー率は 0.1
+        #   例えば　挙手数１０、議席数１０なら、ポリシー率は 1.0
+        #
+        if 0 < total_of_relation:
+            policy_rate = positive_of_relation / total_of_relation
+        else:
+            policy_rate = 1.0
+
+        # 補ポリシー率
+        #
+        #   例えば　ポリシー率が 0.0 なら、補ポリシー率は 1.0
+        #   例えば　ポリシー率が 0.1 なら、補ポリシー率は 0.9
+        #   例えば　ポリシー率が 1.0 なら、補ポリシー率は 0.0
+        #
+        policy_rate_rev = 1 - policy_rate
+
+        # 解像度
+        #
+        #   例えば ranking_resolution が 10 なら、解像度は 0.1
+        #
+        ranking_resolution_threshold = 1 / ranking_resolution
+
+        # 階位
+        #
+        #
+        #   例えば　補ポリシー率が 1.0、解像度が 0.1 なら、階位は 10
+        #   例えば　補ポリシー率が 0.9、解像度が 0.1 なら、階位は  9
+        #   例えば　補ポリシー率が 0.1、解像度が 0.1 なら、階位は  1
+        #
+        ranking_th = int(policy_rate_rev // ranking_resolution_threshold)
+
+        # デバッグ表示
+        if is_debug and DebugPlan.select_ranked_f_move_u_set_facade:
+            #move_u:{move_u}
+            print(f"[choice best move]  ranking_th:{ranking_th}  positive_of_relation:{positive_of_relation}  total_of_relation:{total_of_relation}  policy_rate:{policy_rate}  policy_rate_rev:{policy_rate_rev}  ranking_resolution_threshold:{ranking_resolution_threshold}")
+
+        return (ranking_th, policy_rate)

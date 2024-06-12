@@ -72,11 +72,14 @@ class EvaluationEdit():
                 kifuwarabe=self._kifuwarabe,
                 is_debug=is_debug)
 
-        # ポリシー値（千分率）
-        if 0 < total_of_relation:
-            policy = EvaluationFacade.round_half_up(positive_of_relation * 1000 / total_of_relation)
-        else:
-            policy = 0
+
+        #
+        # 好手悪手のランキング算出
+        #
+        (ranking_th, policy_rate) = EvaluationFacade.get_ranking_th(
+                positive_of_relation=positive_of_relation,
+                total_of_relation=total_of_relation,
+                ranking_resolution=self._kifuwarabe.ranking_resolution)
 
         # 関係の数の半分未満のうち、最大の数
         max_number_of_less_than_50_percent = EvaluationFacade.get_max_number_of_less_than_50_percent(
@@ -94,7 +97,7 @@ class EvaluationEdit():
 
             # デバッグ表示
             if is_debug:
-                print(f"[{datetime.datetime.now()}] [weaken > kl and kq]  K:{move_obj.as_usi:5}  O:*****  policy:{policy}‰  =  陽性:{positive_of_relation}  /  総:{total_of_relation}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
+                print(f"[{datetime.datetime.now()}] [weaken > kl and kq]  K:{move_obj.as_usi:5}  O:*****  policy:{policy_rate}  =  陽性:{positive_of_relation}  /  総:{total_of_relation}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
 
             # 既に悪手評価なので、弱化は不要です
             if difference < 1:
@@ -206,7 +209,7 @@ class EvaluationEdit():
 
             # デバッグ表示
             if is_debug and DebugPlan.evaluation_edit_weaken:
-                print(f"[{datetime.datetime.now()}] [weaken > pl and pq]  P:{move_obj.as_usi:5}  O:*****  policy:{policy}‰  陽性:{positive_of_relation}  /  総:{total_of_relation}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
+                print(f"[{datetime.datetime.now()}] [weaken > pl and pq]  P:{move_obj.as_usi:5}  O:*****  policy:{policy_rate}  陽性:{positive_of_relation}  /  総:{total_of_relation}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
 
             # 既に悪手評価なので、弱化は不要です
             if difference < 1:
@@ -354,11 +357,14 @@ class EvaluationEdit():
                 kifuwarabe=self._kifuwarabe,
                 is_debug=is_debug)
 
-        # ポリシー値（千分率）
-        if 0 < total_of_relation:
-            policy = EvaluationFacade.round_half_up(positive_of_relation * 1000 / total_of_relation)
-        else:
-            policy = 0
+
+        #
+        # 好手悪手のランキング算出
+        #
+        (ranking_th, policy_rate) = EvaluationFacade.get_ranking_th(
+                positive_of_relation=positive_of_relation,
+                total_of_relation=total_of_relation,
+                ranking_resolution=self._kifuwarabe.ranking_resolution)
 
         # 関係の数の半分未満のうち、最大の数
         max_number_of_less_than_50_percent = EvaluationFacade.get_max_number_of_less_than_50_percent(
@@ -376,7 +382,7 @@ class EvaluationEdit():
 
             # デバッグ表示
             if is_debug and DebugPlan.evaluation_edit_strengthen:
-                print(f"[{datetime.datetime.now()}] [strengthen > kl and kq]  K:{move_obj.as_usi:5}  O:*****  policy:{policy}  有:{positive_of_relation}  /  総:{total_of_relation}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
+                print(f"[{datetime.datetime.now()}] [strengthen > kl and kq]  K:{move_obj.as_usi:5}  O:*****  policy:{policy_rate}  有:{positive_of_relation}  /  総:{total_of_relation}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
 
             # 既に好手評価なので、強化は不要です
             if difference < 1:
@@ -488,7 +494,7 @@ class EvaluationEdit():
 
             # デバッグ表示
             if is_debug and DebugPlan.evaluation_edit_strengthen:
-                print(f"[{datetime.datetime.now()}] [strengthen > pl and pq]  P:{move_obj.as_usi:5}  O:*****  policy:{policy}‰  有:{positive_of_relation}  /  総:{total_of_relation}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
+                print(f"[{datetime.datetime.now()}] [strengthen > pl and pq]  P:{move_obj.as_usi:5}  O:*****  policy:{policy_rate}  有:{positive_of_relation}  /  総:{total_of_relation}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
 
             # 既に好手評価なので、強化は不要です
             if difference < 1:
