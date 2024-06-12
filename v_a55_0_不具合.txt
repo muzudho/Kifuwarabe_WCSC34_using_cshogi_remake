@@ -1,0 +1,22 @@
+[2024-06-13 00:27:05.272212] [learn > 逃げる方]  mate:2  ランク別着手数：  [0]0  [1]0  [2]0  [3]0  [4]0  [5]1  [6]2  [7]22  [8]20  [9]0  累計：45
+[2024-06-13 00:27:10.155442] [learn > 逃げる方 > 悪手] ( 14/ 45)  3f2g   draw  [278手（差100）後]  max_playout_depth  [▲UP▲] プレイアウトが打ち切られるまで逃げ切った
+[2024-06-13 00:27:10.156445] [learning framework > unexpected error] err=ValueError('[2024-06-13 00:27:10.156445] [strengthen > pl] 着手が変わっているエラー  p_move_obj.as_usi:4g2g  move_u:3f2g'), type(err)=<class 'ValueError'>
+Traceback (most recent call last):
+  File "C:\Users\むずでょ\Documents\Muzudho Workspaces\shogi\Kifuwarabe_WCSC34R_using_cshogi_v_a55_0\v_a55_0_main_learn.py", line 166, in <module>
+    learning_framework.start_it(
+  File "C:\Users\むずでょ\Documents\Muzudho Workspaces\shogi\Kifuwarabe_WCSC34R_using_cshogi_v_a55_0\v_a55_0_main_learn.py", line 130, in start_it
+    is_debug=is_debug).learn_it()
+                       ^^^^^^^^^^
+  File "C:\Users\むずでょ\Documents\Muzudho Workspaces\shogi\Kifuwarabe_WCSC34R_using_cshogi_v_a55_0\v_a55_0_misc\learn.py", line 173, in learn_it
+    changed_count) = self.at_even(
+                     ^^^^^^^^^^^^^
+  File "C:\Users\むずでょ\Documents\Muzudho Workspaces\shogi\Kifuwarabe_WCSC34R_using_cshogi_v_a55_0\v_a55_0_misc\learn.py", line 769, in at_even
+    result_str = self._kifuwarabe.strengthen(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\むずでょ\Documents\Muzudho Workspaces\shogi\Kifuwarabe_WCSC34R_using_cshogi_v_a55_0\v_a55_0.py", line 872, in strengthen
+    ).strengthen(
+      ^^^^^^^^^^^
+  File "C:\Users\むずでょ\Documents\Muzudho Workspaces\shogi\Kifuwarabe_WCSC34R_using_cshogi_v_a55_0\v_a55_0_eval\edit.py", line 531, in strengthen
+    raise ValueError(f"[{datetime.datetime.now()}] [strengthen > pl] 着手が変わっているエラー  p_move_obj.as_usi:{p_move_obj.as_usi}  move_u:{move_u}")
+ValueError: [2024-06-13 00:27:10.156445] [strengthen > pl] 着手が変わっているエラー  p_move_obj.as_usi:4g2g  move_u:3f2g
+PS C:\Users\むずでょ\Documents\Muzudho Workspaces\shogi\Kifuwarabe_WCSC34R_using_cshogi_v_a55_0> 

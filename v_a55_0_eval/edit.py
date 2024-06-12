@@ -72,6 +72,13 @@ class EvaluationEdit():
                 kifuwarabe=self._kifuwarabe,
                 is_debug=is_debug)
 
+        # 減らすものがないので、弱化は不要です
+        if positive_of_relation < 1:
+            # デバッグ表示
+            if is_debug:
+                print(f"[{datetime.datetime.now()}] [weaken]  減らすものがないので、弱化は不要です")
+
+            return 'unnecessary'
 
         #
         # 好手悪手のランキング算出
@@ -81,37 +88,30 @@ class EvaluationEdit():
                 total_of_relation=total_of_relation,
                 ranking_resolution=self._kifuwarabe.ranking_resolution)
 
-        # 関係の数の半分未満のうち、最大の数
-        max_number_of_less_than_50_percent = EvaluationFacade.get_max_number_of_less_than_50_percent(
-                total=total_of_relation)
+        #
+        # 弱める量
+        #
+        update_delta = int(total_of_relation // self._kifuwarabe.ranking_resolution)
+        if update_delta < 1:
+            update_delta = 1
+
+        if positive_of_relation < update_delta:
+            update_delta = positive_of_relation
 
         is_changed = False
 
         if is_king_move:
 
-            # この着手に対する応手の関係を減らしたい
-            #
-            #   差を埋めればよい
-            #
-            difference = positive_of_relation - max_number_of_less_than_50_percent
-
             # デバッグ表示
             if is_debug:
-                print(f"[{datetime.datetime.now()}] [weaken > kl and kq]  K:{move_obj.as_usi:5}  O:*****  policy:{policy_rate}  =  陽性:{positive_of_relation}  /  総:{total_of_relation}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
+                print(f"[{datetime.datetime.now()}] [weaken > kl and kq]  K:{move_obj.as_usi:5}  O:*****  policy:{policy_rate}  =  陽性:{positive_of_relation}  /  総:{total_of_relation}  update_delta:{update_delta}")
 
-            # 既に悪手評価なので、弱化は不要です
-            if difference < 1:
-                # デバッグ表示
-                if is_debug:
-                    print(f"[{datetime.datetime.now()}] [weaken > kl and kq]  既に悪手評価なので、弱化は不要です")
+            # 関係を update_delta 個削除
+            rest = update_delta
 
-                return 'unnecessary'
-
-            # 関係を difference 個削除
-            rest = difference
-
-            # TODO どの関係を無効にするか、計画できないか？
-            # TODO ＦＬから何個、ＦＱから何個と配分できないか？
+            #
+            # ＦＬから何個、ＦＱから何個と配分して弱化していく
+            #
 
             # ビットが立っている項目だけ残します
             target_fl_index_list = list()
@@ -201,29 +201,16 @@ class EvaluationEdit():
 
         else:
 
-            # この着手に対する応手の関係を減らしたい
-            #
-            #   差を埋めればよい
-            #
-            difference = positive_of_relation - max_number_of_less_than_50_percent
-
             # デバッグ表示
             if is_debug and DebugPlan.evaluation_edit_weaken:
-                print(f"[{datetime.datetime.now()}] [weaken > pl and pq]  P:{move_obj.as_usi:5}  O:*****  policy:{policy_rate}  陽性:{positive_of_relation}  /  総:{total_of_relation}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
+                print(f"[{datetime.datetime.now()}] [weaken > pl and pq]  P:{move_obj.as_usi:5}  O:*****  policy:{policy_rate}  陽性:{positive_of_relation}  /  総:{total_of_relation}  update_delta:{update_delta}")
 
-            # 既に悪手評価なので、弱化は不要です
-            if difference < 1:
-                # デバッグ表示
-                if is_debug and DebugPlan.evaluation_edit_weaken:
-                    print(f"[{datetime.datetime.now()}] [weaken > pl and pg]  既に悪手評価なので、弱化は不要です")
+            # 関係を update_delta 個削除
+            rest = update_delta
 
-                return 'unnecessary'
-
-            # 関係を difference 個削除
-            rest = difference
-
-            # TODO どの関係を無効にするか、計画できないか？
-            # TODO ＰＬから何個、ＰＱから何個と配分できないか？
+            #
+            # ＰＬから何個、ＰＱから何個と配分できないか？
+            #
 
             # ビットが下りている項目だけ残します
             target_fl_index_list = list()
@@ -357,6 +344,14 @@ class EvaluationEdit():
                 kifuwarabe=self._kifuwarabe,
                 is_debug=is_debug)
 
+        # 既に全ての議席が挙手しているので、強化は不要です
+        if total_of_relation <= positive_of_relation:
+            # デバッグ表示
+            if is_debug and DebugPlan.evaluation_edit_strengthen:
+                print(f"[{datetime.datetime.now()}] [strengthen]  既に全ての議席が挙手しているので、強化は不要です")
+
+            return 'unnecessary'
+
 
         #
         # 好手悪手のランキング算出
@@ -365,38 +360,30 @@ class EvaluationEdit():
                 positive_of_relation=positive_of_relation,
                 total_of_relation=total_of_relation,
                 ranking_resolution=self._kifuwarabe.ranking_resolution)
+        #
+        # 強める量
+        #
+        update_delta = int(total_of_relation // self._kifuwarabe.ranking_resolution)
+        if update_delta < 1:
+            update_delta = 1
 
-        # 関係の数の半分未満のうち、最大の数
-        max_number_of_less_than_50_percent = EvaluationFacade.get_max_number_of_less_than_50_percent(
-                total=total_of_relation)
+        if total_of_relation < positive_of_relation + update_delta:
+            update_delta = total_of_relation - positive_of_relation
 
         is_changed = False
 
         if is_king_move:
 
-            # この着手に対する応手の関係を増やしたい
-            #
-            #   差を埋めればよい
-            #
-            difference = max_number_of_less_than_50_percent - positive_of_relation
-
             # デバッグ表示
             if is_debug and DebugPlan.evaluation_edit_strengthen:
-                print(f"[{datetime.datetime.now()}] [strengthen > kl and kq]  K:{move_obj.as_usi:5}  O:*****  policy:{policy_rate}  有:{positive_of_relation}  /  総:{total_of_relation}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
+                print(f"[{datetime.datetime.now()}] [strengthen > kl and kq]  K:{move_obj.as_usi:5}  O:*****  policy:{policy_rate}  有:{positive_of_relation}  /  総:{total_of_relation}  update_delta:{update_delta}")
 
-            # 既に好手評価なので、強化は不要です
-            if difference < 1:
-                # デバッグ表示
-                if is_debug and DebugPlan.evaluation_edit_strengthen:
-                    print(f"[{datetime.datetime.now()}] [strengthen > kl and kq]  既に好手評価なので、強化は不要です")
+            # 関係を update_delta 個追加
+            rest = update_delta
 
-                return 'unnecessary'
-
-            # 関係を difference 個追加
-            rest = difference
-
-            # TODO どの関係を有効にするか、計画できないか？
-            # TODO ＫＬから何個、ＫＱから何個と配分できないか？
+            #
+            # ＫＬから何個、ＫＱから何個と配分する
+            #
 
             # ビットが下りている項目だけ残します
             target_fl_index_list = list()
@@ -486,29 +473,16 @@ class EvaluationEdit():
 
         else:
 
-            # この着手に対する応手の関係を増やしたい
-            #
-            #   差を埋めればよい
-            #
-            difference = max_number_of_less_than_50_percent - positive_of_relation
-
             # デバッグ表示
             if is_debug and DebugPlan.evaluation_edit_strengthen:
-                print(f"[{datetime.datetime.now()}] [strengthen > pl and pq]  P:{move_obj.as_usi:5}  O:*****  policy:{policy_rate}  有:{positive_of_relation}  /  総:{total_of_relation}  閾値:{max_number_of_less_than_50_percent}  difference:{difference}")
+                print(f"[{datetime.datetime.now()}] [strengthen > pl and pq]  P:{move_obj.as_usi:5}  O:*****  policy:{policy_rate}  有:{positive_of_relation}  /  総:{total_of_relation}  update_delta:{update_delta}")
 
-            # 既に好手評価なので、強化は不要です
-            if difference < 1:
-                # デバッグ表示
-                if is_debug and DebugPlan.evaluation_edit_strengthen:
-                    print(f"[{datetime.datetime.now()}] [strengthen > pl and pq]  既に好手評価なので、強化は不要です")
+            # 関係を update_delta 個追加
+            rest = update_delta
 
-                return 'unnecessary'
-
-            # 関係を difference 個追加
-            rest = difference
-
-            # TODO どの関係を有効にするか、計画できないか？
-            # TODO ＰＬから何個、ＰＱから何個と配分できないか？
+            #
+            # ＰＬから何個、ＰＱから何個と配分する
+            #
 
             # ビットが下りている項目だけ残します
             target_fl_index_list = list()
