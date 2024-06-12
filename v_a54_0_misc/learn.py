@@ -254,7 +254,7 @@ class LearnAboutOneGame():
         # ランク付けされた指し手一覧（好手、悪手）
         # ----------------------------------
         #
-        ranked_move_set_list = ChoiceBestMove.select_ranked_f_move_u_set_facade(
+        ranked_move_u_set_list = ChoiceBestMove.select_ranked_f_move_u_set_facade(
                 legal_moves=list(self._board.legal_moves),
                 board=self._board,
                 kifuwarabe=self._kifuwarabe,
@@ -264,8 +264,8 @@ class LearnAboutOneGame():
         print(f'[{datetime.datetime.now()}] [learn > 詰める方]  mate:{mate}  ランク別着手数：', end='')
         size_list = []
         sum_size = 0
-        for ranking, ranked_move_set in enumerate(ranked_move_set_list):
-            set_size = len(ranked_move_set)
+        for ranking, ranked_move_u_set in enumerate(ranked_move_u_set_list):
+            set_size = len(ranked_move_u_set)
             size_list.append(set_size)
             sum_size += set_size
             print(f'  [{ranking}]{set_size}', end='')
@@ -276,7 +276,7 @@ class LearnAboutOneGame():
         threshold = sum_size // 2
 
 
-        for ranking, ranked_move_set in enumerate(ranked_move_set_list):
+        for ranking, ranked_move_u_set in enumerate(ranked_move_u_set_list):
             choice_num = 0
 
             if ranking < threshold:
@@ -284,7 +284,7 @@ class LearnAboutOneGame():
                 if self._is_debug:
                     print(f'[{datetime.datetime.now()}] [learn > 詰める方]  着手のランキング：{ranking}（好手）')
 
-                for move_u in ranked_move_set:
+                for move_u in ranked_move_u_set:
 
                     # カウンターは事前に進める
                     choice_num += 1
@@ -393,7 +393,7 @@ class LearnAboutOneGame():
                 if self._is_debug:
                     print(f'[{datetime.datetime.now()}] [learn > 詰める方]  着手のランキング：{ranking}（悪手）')
 
-                for move_u in ranked_move_set:
+                for move_u in ranked_move_u_set:
 
                     # カウンターは事前に進める
                     choice_num += 1
@@ -540,7 +540,7 @@ class LearnAboutOneGame():
         # ランク付けされた指し手一覧（好手、悪手）
         # ----------------------------------
         #
-        ranked_move_set_list = ChoiceBestMove.select_ranked_f_move_u_set_facade(
+        ranked_move_u_set_list = ChoiceBestMove.select_ranked_f_move_u_set_facade(
                 legal_moves=list(self._board.legal_moves),
                 board=self._board,
                 kifuwarabe=self._kifuwarabe,
@@ -550,8 +550,8 @@ class LearnAboutOneGame():
         print(f'[{datetime.datetime.now()}] [learn > 逃げる方]  mate:{mate}  ランク別着手数：', end='')
         size_list = []
         sum_size = 0
-        for ranking, ranked_move_set in enumerate(ranked_move_set_list):
-            set_size = len(ranked_move_set)
+        for ranking, ranked_move_u_set in enumerate(ranked_move_u_set_list):
+            set_size = len(ranked_move_u_set)
             size_list.append(set_size)
             sum_size += set_size
             print(f'  [{ranking}]{set_size}', end='')
@@ -562,14 +562,14 @@ class LearnAboutOneGame():
         threshold = sum_size // 2
 
 
-        for ranking, ranked_move_set in enumerate(ranked_move_set_list):
+        for ranking, ranked_move_u_set in enumerate(ranked_move_u_set_list):
             choice_num = 0
 
             if ranking < threshold:
                 if self._is_debug:
                     print(f'[{datetime.datetime.now()}] [learn > 逃げる方]  着手のランキング：{ranking}（好手）')
 
-                for move_u in ranked_move_set:
+                for move_u in ranked_move_u_set:
 
                     # カウンターは事前に進める
                     choice_num += 1
@@ -673,7 +673,7 @@ class LearnAboutOneGame():
                 if self._is_debug:
                     print(f'[{datetime.datetime.now()}] [learn > 逃げる方]  現悪手一覧：')
 
-                for move_u in ranked_move_set:
+                for move_u in ranked_move_u_set:
 
                     # カウンターは事前に進める
                     choice_num += 1

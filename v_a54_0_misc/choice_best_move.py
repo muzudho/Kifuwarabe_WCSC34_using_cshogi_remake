@@ -313,14 +313,14 @@ class ChoiceBestMove():
           bad_move_u_set)
         """
 
-        ranked_move_set_list = []
+        ranked_move_u_set_list = []
 
         # 好手と悪手の２パターンなら
         # 配列のインデックスの小さい方がランクが上とする
         ranking_resolution = 2
 
         for i in range(0, ranking_resolution):
-            ranked_move_set_list.append(set())
+            ranked_move_u_set_list.append(set())
 
         for move_id in legal_moves:
             move_u = cshogi.move_to_usi(move_id)
@@ -355,12 +355,12 @@ class ChoiceBestMove():
 
             if 500 <= policy:
                 # 好手の集合
-                target_set = ranked_move_set_list[0]
+                target_set = ranked_move_u_set_list[0]
                 target_set.add(move_u)
 
             else:
                 # 悪手の集合
-                target_set = ranked_move_set_list[1]
+                target_set = ranked_move_u_set_list[1]
                 target_set.add(move_u)
 
 
@@ -370,13 +370,13 @@ class ChoiceBestMove():
             for ranking in range(0, ranking_resolution):
 
                 print(f"[{datetime.datetime.now()}] [select ranked f move u set facade] ランク付けされた指し手一覧（ranking:{ranking}）")
-                target_set = ranked_move_set_list[ranking]
+                target_set = ranked_move_u_set_list[ranking]
 
                 for ranked_move_u in target_set:
                     print(f"[{datetime.datetime.now()}] [select ranked f move u set facade]  ranking:{ranking}  move:{ranked_move_u:5}")
 
 
-        return ranked_move_set_list
+        return ranked_move_u_set_list
 
 
     @staticmethod
@@ -400,13 +400,13 @@ class ChoiceBestMove():
         """
 
         # ランク付けされた指し手一覧
-        ranked_move_set_list = ChoiceBestMove.select_ranked_f_move_u_set_facade(
+        ranked_move_u_set_list = ChoiceBestMove.select_ranked_f_move_u_set_facade(
                 legal_moves=legal_moves,
                 board=board,
                 kifuwarabe=kifuwarabe,
                 is_debug=is_debug)
 
-        for ranked_move_set in ranked_move_set_list:
+        for ranked_move_set in ranked_move_u_set_list:
 
             # このランキングに候補手が無ければ、下のランキングへ
             if len(ranked_move_set) < 1:
