@@ -758,7 +758,7 @@ class Kifuwarabe():
         (kl_index_to_relation_exists_dictionary,
          kq_index_to_relation_exists_dictionary,
          pl_index_to_relation_exists_dictionary,
-         pq_index_to_relation_exists_dictionary) = EvaluationFacade.select_fo_index_to_relation_exists(
+         pq_index_to_relation_exists_dictionary) = ChoiceBestMove.select_fo_index_to_relation_exists(
                 move_obj=Move.from_usi(move_u),
                 is_king_move=is_king_move,
                 board=self._board,
