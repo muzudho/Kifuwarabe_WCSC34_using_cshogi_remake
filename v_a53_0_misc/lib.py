@@ -381,11 +381,12 @@ _rot_sq:{self._rot_sq}
     def rotate(self):
         """指し手を盤上で１８０°回転"""
         return MoveSourceLocation(
-            file_th=self._rot_file_th,
-            rank_th=self._rot_rank_th,
+            srcloc=self._srcloc,
             sq=self._rot_sq,
             # 打の駒種類は回転しません
-            drop=self._drop)
+            drop=self._drop,
+            file_th=self._rot_file_th,
+            rank_th=self._rot_rank_th)
 
 
 class MoveDestinationLocation():
