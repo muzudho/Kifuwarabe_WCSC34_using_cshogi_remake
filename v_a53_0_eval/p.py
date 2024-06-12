@@ -486,8 +486,8 @@ class EvaluationPMove():
          promoted) = index_to_srcloc_dst_sq_promotion_dictionary[p_index]
 
         p_move_obj = Move.from_src_dst_pro(
-                src_location=MoveSourceLocation.from_sq_or_drop(
-                        sq_or_drop=srcloc),
+                src_location=MoveSourceLocation.from_srcloc(
+                        srcloc=srcloc),
                 dst_location=MoveDestinationLocation.from_sq(
                         sq=dst_sq),
                 promoted=promoted)

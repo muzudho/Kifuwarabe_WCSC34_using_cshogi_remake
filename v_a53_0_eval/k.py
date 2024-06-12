@@ -451,8 +451,8 @@ class EvaluationKMove():
         (srcsq, dst_sq) = index_to_srcsq_dst_dictionary[k_index]
 
         k_move_obj = Move.from_src_dst_pro(
-                src_location=MoveSourceLocation.from_sq_or_drop(
-                        sq_or_drop=srcsq),
+                src_location=MoveSourceLocation.from_sq(
+                        sq=srcsq),
                 dst_location=MoveDestinationLocation.from_sq(
                         sq=dst_sq),
                 # 玉に成りはありません
