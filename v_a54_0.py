@@ -84,7 +84,8 @@ class Kifuwarabe():
         self._game_result_document = None
 
         # 好手・悪手のランキングの階層数
-        self._ranking_resolution = 2
+        # TODO 探索部の choice_best_move では使ってるが、学習部の weaken, strongthen では使ってないので、全ての箇所で共通の処理になるようにしたい
+        self._ranking_resolution = 10
 
 
     @property

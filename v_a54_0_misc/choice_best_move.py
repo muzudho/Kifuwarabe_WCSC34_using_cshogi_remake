@@ -320,6 +320,10 @@ class ChoiceBestMove():
         for i in range(0, kifuwarabe.ranking_resolution):
             ranked_move_u_set_list.append(set())
 
+        # デバッグ表示
+        if is_debug and DebugPlan.select_ranked_f_move_u_set_facade:
+            print(f"[choice best move]  kifuwarabe.ranking_resolution:{kifuwarabe.ranking_resolution}")
+
         for move_id in legal_moves:
             move_u = cshogi.move_to_usi(move_id)
 
@@ -328,14 +332,14 @@ class ChoiceBestMove():
 
             # 自駒と敵玉に対する関係の辞書
             (fl_index_to_relation_exists_dictionary,
-            # 自駒と敵兵に対する関係の辞書
-            fq_index_to_relation_exists_dictionary,
-            # 玉の指し手か？
-            is_king_move,
-            # 関係が陽性の総数
-            positive_of_relation,
-            # 関係の総数
-            total_of_relation) = ChoiceBestMove.get_summary(
+             # 自駒と敵兵に対する関係の辞書
+             fq_index_to_relation_exists_dictionary,
+             # 玉の指し手か？
+             is_king_move,
+             # 関係が陽性の総数
+             positive_of_relation,
+             # 関係の総数
+             total_of_relation) = ChoiceBestMove.get_summary(
                     move_obj=move_obj,
                     board=board,
                     kifuwarabe=kifuwarabe,
@@ -345,21 +349,23 @@ class ChoiceBestMove():
             # 分離機
             #
 
-            # ポリシー値（千分率）
+            # ポリシー率
             if 0 < total_of_relation:
-                policy = EvaluationFacade.round_half_up(positive_of_relation * 1000 / total_of_relation)
+                policy_rate = positive_of_relation / total_of_relation
             else:
-                policy = 0
+                policy_rate = 1.0
 
-            if 500 <= policy:
-                # 好手の集合
-                target_set = ranked_move_u_set_list[0]
-                target_set.add(move_u)
 
-            else:
-                # 悪手の集合
-                target_set = ranked_move_u_set_list[1]
-                target_set.add(move_u)
+            ranking_resolution_threshold = 1 / kifuwarabe.ranking_resolution
+            policy_rate_rev = 1 - policy_rate
+            ranking = int(policy_rate_rev // ranking_resolution_threshold)
+
+            target_set = ranked_move_u_set_list[ranking]
+            target_set.add(move_u)
+
+            # デバッグ表示
+            if is_debug and DebugPlan.select_ranked_f_move_u_set_facade:
+                print(f"[choice best move]  move_u:{move_u}  ranking:{ranking}  positive_of_relation:{positive_of_relation}  total_of_relation:{total_of_relation}  policy_rate:{policy_rate}  policy_rate_rev:{policy_rate_rev}  ranking_resolution_threshold:{ranking_resolution_threshold}")
 
 
         # デバッグ表示
