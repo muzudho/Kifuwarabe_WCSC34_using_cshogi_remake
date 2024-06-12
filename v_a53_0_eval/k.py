@@ -227,9 +227,9 @@ class EvaluationKMove():
             ##
             ##   移動元マス番号 81～87 に、持ち駒の種類　飛～歩　を当てる
             ##
-            #for src_drop in get_srcdrop_list():
+            #for drop_str in Usi.get_srcdrop_str_list():
             #    # 飛
-            #    if src_drop == 'R*':
+            #    if drop_str == 'R*':
             #        srcdrop=81
             #        dst_to_index_dictionary = dict()
             #        clazz._src_to_dst_index_dictionary[srcdrop] = dst_to_index_dictionary
@@ -242,7 +242,7 @@ class EvaluationKMove():
             #            effect_serial_index += 1
             #
             #    # 角
-            #    elif src_drop == 'B*':
+            #    elif drop_str == 'B*':
             #        srcdrop=82
             #        dst_to_index_dictionary = dict()
             #        clazz._src_to_dst_index_dictionary[srcdrop] = dst_to_index_dictionary
@@ -255,7 +255,7 @@ class EvaluationKMove():
             #            effect_serial_index += 1
             #
             #    # 金
-            #    elif src_drop == 'G*':
+            #    elif drop_str == 'G*':
             #        srcdrop=83
             #        dst_to_index_dictionary = dict()
             #        clazz._src_to_dst_index_dictionary[srcdrop] = dst_to_index_dictionary
@@ -268,7 +268,7 @@ class EvaluationKMove():
             #            effect_serial_index += 1
             #
             #    # 銀
-            #    elif src_drop == 'S*':
+            #    elif drop_str == 'S*':
             #        srcdrop=84
             #        dst_to_index_dictionary = dict()
             #        clazz._src_to_dst_index_dictionary[srcdrop] = dst_to_index_dictionary
@@ -281,7 +281,7 @@ class EvaluationKMove():
             #            effect_serial_index += 1
             #
             #    # 桂
-            #    elif src_drop == 'N*':
+            #    elif drop_str == 'N*':
             #        srcdrop=85
             #        dst_to_index_dictionary = dict()
             #        clazz._src_to_dst_index_dictionary[srcdrop] = dst_to_index_dictionary
@@ -298,7 +298,7 @@ class EvaluationKMove():
             #            effect_serial_index += 1
             #
             #    # 香
-            #    elif src_drop == 'L*':
+            #    elif drop_str == 'L*':
             #        srcdrop=86
             #        dst_to_index_dictionary = dict()
             #        clazz._src_to_dst_index_dictionary[srcdrop] = dst_to_index_dictionary
@@ -315,7 +315,7 @@ class EvaluationKMove():
             #            effect_serial_index += 1
             #
             #    # 歩
-            #    elif src_drop == 'L*':
+            #    elif drop_str == 'L*':
             #        srcdrop=87
             #        dst_to_index_dictionary = dict()
             #        clazz._src_to_dst_index_dictionary[srcdrop] = dst_to_index_dictionary
@@ -332,7 +332,7 @@ class EvaluationKMove():
             #            effect_serial_index += 1
             #
             #    else:
-            #        raise ValueError(f"[evaluation k move > get src sq to dst sq index dictionary tuple] unexpected src drop:`{src_drop}`")
+            #        raise ValueError(f"[evaluation k move > get src sq to dst sq index dictionary tuple] unexpected drop_str:`{drop_str}`")
 
 
         return (clazz._src_to_dst_index_dictionary, clazz._index_to_src_dst_dictionary)
