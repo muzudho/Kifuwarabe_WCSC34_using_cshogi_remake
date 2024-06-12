@@ -387,14 +387,14 @@ class EvaluationEdit():
 
             # ビットが下りている項目だけ残します
             target_fl_index_list = list()
-            for key, relation_exists in fl_index_to_relation_exists_dictionary.items():
+            for fl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
                 if relation_exists == 0:
-                    target_fl_index_list.append(key)
+                    target_fl_index_list.append(fl_index)
 
             target_fq_index_list = list()
-            for key, relation_exists in fq_index_to_relation_exists_dictionary.items():
+            for fq_index, relation_exists in fq_index_to_relation_exists_dictionary.items():
                 if relation_exists == 0:
-                    target_fq_index_list.append(key)
+                    target_fq_index_list.append(fq_index)
 
             # 例えばＦＬが２個、ＦＱが３０個あり、削除したい関係が９個の場合の配分
             # 　　　　１／１６　＝　２／（２＋３０）　　……　ＦＬの割合は１／１６
@@ -486,14 +486,14 @@ class EvaluationEdit():
 
             # ビットが下りている項目だけ残します
             target_fl_index_list = list()
-            for key, relation_exists in fl_index_to_relation_exists_dictionary.items():
+            for fl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
                 if relation_exists == 0:
-                    target_fl_index_list.append(key)
+                    target_fl_index_list.append(fl_index)
 
             target_fq_index_list = list()
-            for key, relation_exists in fq_index_to_relation_exists_dictionary.items():
+            for fq_index, relation_exists in fq_index_to_relation_exists_dictionary.items():
                 if relation_exists == 0:
-                    target_fq_index_list.append(key)
+                    target_fq_index_list.append(fq_index)
 
             # 例えばＦＬが２個、ＦＱが３０個あり、削除したい関係が９個の場合の配分
             # 　　　　１／１６　＝　２／（２＋３０）　　……　ＦＬの割合は１／１６
