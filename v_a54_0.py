@@ -9,6 +9,7 @@ from                  v_a54_0_eval.kk import EvaluationKkTable
 from                  v_a54_0_eval.kp import EvaluationKpTable
 from                  v_a54_0_eval.pk import EvaluationPkTable
 from                  v_a54_0_eval.pp import EvaluationPpTable
+from                  v_a54_0_misc.choice_best_move import ChoiceBestMove
 from                  v_a54_0_misc.game_result_document import GameResultDocument
 from                  v_a54_0_misc.learn import LearnAboutOneGame
 from                  v_a54_0_misc.lib import Turn, Move, MoveHelper, BoardHelper
@@ -540,7 +541,7 @@ class Kifuwarabe():
                 return
 
         # くじを引く（投了のケースは対応済みなので、ここで対応しなくていい）
-        best_move_str = Lottery.choice_best(
+        best_move_str = ChoiceBestMove.do_it(
                 legal_moves=list(self._board.legal_moves),
                 board=self._board,
                 kifuwarabe=self,
@@ -917,7 +918,7 @@ class Kifuwarabe():
                 # （評価値テーブルの内容だけで対局したい用途で使う想定なので）プレイアウト中は１手詰めルーチンを使わない
 
                 # くじを引く（投了のケースは対応済みなので、ここで対応しなくていい）
-                best_move_str = Lottery.choice_best(
+                best_move_str = ChoiceBestMove.do_it(
                         legal_moves=list(self._board.legal_moves),
                         board=self._board,
                         kifuwarabe=self)
@@ -1016,81 +1017,6 @@ class Kifuwarabe():
                     cmd_tail=result_str)
 
             print(f"[{datetime.datetime.now()}] [selfmatch] repeat")
-
-
-########################################
-# くじ引き階層
-########################################
-
-class Lottery():
-
-
-    @staticmethod
-    def choice_best(
-            legal_moves,
-            board,
-            kifuwarabe,
-            is_debug=False):
-        """くじを引く
-
-        Parameters
-        ----------
-        legal_moves : list<int>
-            合法手のリスト : cshogi の指し手整数
-        board : Board
-            局面
-        kifuwarabe : Kifuwarabe
-            評価値テーブルを持っている
-        is_debug : bool
-            デバッグモードか？
-        """
-
-        # ランク付けされた指し手一覧
-        (good_move_u_set,
-         bad_move_u_set) = EvaluationFacade.select_ranked_f_move_u_set_facade(
-                legal_moves=legal_moves,
-                board=board,
-                kifuwarabe=kifuwarabe,
-                is_debug=is_debug)
-
-        # 候補手の中からランダムに選ぶ。USIの指し手の記法で返却
-        if 0 < len(good_move_u_set):
-            return random.choice(list(good_move_u_set))
-
-        # 何も指さないよりは、悪手を指した方がマシ
-        else:
-            return random.choice(list(bad_move_u_set))
-
-
-    def get_best_move(
-            kl_move_u_and_policy_dictionary,
-            kq_move_u_and_policy_dictionary,
-            pl_move_u_and_policy_dictionary,
-            pq_move_u_and_policy_dictionary):
-        """ポリシー値が最高のものをどれか１つ選ぶ"""
-
-        list_of_friend_move_u_and_policy_dictionary = [
-            kl_move_u_and_policy_dictionary,
-            kq_move_u_and_policy_dictionary,
-            pl_move_u_and_policy_dictionary,
-            pq_move_u_and_policy_dictionary,
-        ]
-
-        # 一番高いポリシー値を探す。
-        # 指し手は１個以上あるとする
-        best_moves_u = []
-        best_policy = -1000
-        for friend_move_u_and_policy_dictionary in list_of_friend_move_u_and_policy_dictionary:
-            for friend_move_u, policy in friend_move_u_and_policy_dictionary.items():
-                if best_policy == policy:
-                    best_moves_u.append(friend_move_u)
-
-                elif best_policy < policy:
-                    best_policy = policy
-                    best_moves_u = [friend_move_u]
-
-        # 候補手の中からランダムに選ぶ。USIの指し手の記法で返却
-        return random.choice(best_moves_u)
 
 
 ########################################
