@@ -3,6 +3,7 @@ import random
 
 from v_a54_0_debug_plan import DebugPlan
 from v_a54_0_eval.facade import EvaluationFacade
+from v_a54_0_misc.choice_best_move import ChoiceBestMove
 from v_a54_0_misc.lib import Turn, BoardHelper
 
 
@@ -254,7 +255,7 @@ class LearnAboutOneGame():
         # ----------------------------------
         #
         (good_move_u_set,
-         bad_move_u_set) = EvaluationFacade.select_ranked_f_move_u_set_facade(
+         bad_move_u_set) = ChoiceBestMove.select_ranked_f_move_u_set_facade(
                 legal_moves=list(self._board.legal_moves),
                 board=self._board,
                 kifuwarabe=self._kifuwarabe,
@@ -527,7 +528,7 @@ class LearnAboutOneGame():
         # ----------------------------------
         #
         (good_move_u_set,
-         bad_move_u_set) = EvaluationFacade.select_ranked_f_move_u_set_facade(
+         bad_move_u_set) = ChoiceBestMove.select_ranked_f_move_u_set_facade(
                 legal_moves=list(self._board.legal_moves),
                 board=self._board,
                 kifuwarabe=self._kifuwarabe,

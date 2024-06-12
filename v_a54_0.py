@@ -717,7 +717,7 @@ class Kifuwarabe():
         # ----------------------------------
         #
         (good_move_u_set,
-         bad_move_u_set) = EvaluationFacade.select_ranked_f_move_u_set_facade(
+         bad_move_u_set) = ChoiceBestMove.select_ranked_f_move_u_set_facade(
                 legal_moves=list(self._board.legal_moves),
                 board=self._board,
                 kifuwarabe=self,
