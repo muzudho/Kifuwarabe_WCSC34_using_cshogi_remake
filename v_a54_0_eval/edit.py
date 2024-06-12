@@ -7,6 +7,7 @@ from v_a54_0_eval.kk import EvaluationKkTable
 from v_a54_0_eval.kp import EvaluationKpTable
 from v_a54_0_eval.pk import EvaluationPkTable
 from v_a54_0_eval.pp import EvaluationPpTable
+from v_a54_0_misc.choice_best_move import ChoiceBestMove
 from v_a54_0_misc.lib import Turn, Move
 
 
@@ -65,7 +66,7 @@ class EvaluationEdit():
          # 関係が陽性の総数
          positive_of_relation,
          # 関係の総数
-         total_of_relation) = EvaluationFacade.get_summary(
+         total_of_relation) = ChoiceBestMove.get_summary(
                 move_obj=move_obj,
                 board=self._board,
                 kifuwarabe=self._kifuwarabe,
@@ -347,7 +348,7 @@ class EvaluationEdit():
          # 関係が陽性の総数
          positive_of_relation,
          # 関係の総数
-         total_of_relation) = EvaluationFacade.get_summary(
+         total_of_relation) = ChoiceBestMove.get_summary(
                 move_obj=move_obj,
                 board=self._board,
                 kifuwarabe=self._kifuwarabe,
