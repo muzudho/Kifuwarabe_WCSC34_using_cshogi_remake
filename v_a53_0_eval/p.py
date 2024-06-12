@@ -330,7 +330,7 @@ class EvaluationPMove():
                 #
                 dst_sq_to_index = dict()
 
-                clazz._srcdrop_to_dst_sq_index[drop] = dst_sq_to_index
+                clazz._srcdrop_to_dst_sq_index[Usi.code_to_srcloc(drop)] = dst_sq_to_index
 
                 if drop == 'N*':
                     min_rank = 2
