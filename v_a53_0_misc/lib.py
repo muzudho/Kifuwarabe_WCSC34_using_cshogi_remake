@@ -25,7 +25,7 @@ def get_rank_th_num_to_alphabet(rank_th):
 
 
 _srcloc_to_usi = None
-"""以下のような辞書を get_usi_by_srcloc(...) 関数の初回使用時に自動生成する
+"""以下のような辞書を srcloc_to_usi(...) 関数の初回使用時に自動生成する
 {
     0 : '1a',
     1 : '1b',
@@ -49,7 +49,7 @@ def get_srcdrop_list():
     return _srcdrop_list
 
 
-def get_usi_by_srcloc(srcloc):
+def srcloc_to_usi(srcloc):
     """0 ～ 87 の整数から、USI 形式の指し手符号の先頭２文字へ変換"""
     global _srcloc_to_usi
 
@@ -70,7 +70,7 @@ def get_usi_by_srcloc(srcloc):
 
 
 _usi_to_srcloc = None
-"""以下のような辞書を get_srcloc_by_usi(...) 関数の初回使用時に自動生成する
+"""以下のような辞書を usi_to_srcloc(...) 関数の初回使用時に自動生成する
 {
     '1a' : 0,
     '1b' : 1,
@@ -82,7 +82,7 @@ _usi_to_srcloc = None
 """
 
 
-def get_srcloc_by_usi(usi_code):
+def usi_to_srcloc(usi_code):
     """USI 形式の指し手符号の先頭２文字から、0 ～ 87 の整数へ変換"""
     global _usi_to_srcloc
 
@@ -101,6 +101,18 @@ def get_srcloc_by_usi(usi_code):
             drop_num += 1
 
     return _usi_to_srcloc[usi_code]
+
+
+def get_file_th_rank_th_by_sq(sq):
+    """盤上のマス番号を渡すと、 1 から始まる筋番号と、 1 から始まる段番号のタプルを返します"""
+    return (sq // 9 + 1,
+            sq % 9 + 1)
+
+
+def file_th_rank_th_to_usi(
+        file_th,
+        rank_th):
+    return f"{file_th}{_rank_th_num_to_alphabet[rank_th]}"
 
 
 class FileName():
@@ -232,13 +244,6 @@ class MoveSourceLocation():
 
 
     @staticmethod
-    def get_file_th_rank_th_from_sq(sq):
-        """盤上のマス番号を渡すと、 1 から始まる筋番号と、 1 から始まる段番号のタプルを返します"""
-        return (sq // 9 + 1,
-                sq % 9 + 1)
-
-
-    @staticmethod
     def get_file_th_with_rotate(file_th):
         """１８０°回転"""
         if file_th is None:
@@ -265,35 +270,9 @@ class MoveSourceLocation():
 
 
     @staticmethod
-    def get_usi_code_from_file_th_rank_th(
-            file_th,
-            rank_th):
-        return f"{file_th}{_rank_th_num_to_alphabet[rank_th]}"
-
-
-    @staticmethod
-    def get_usi_code_from_sq(sq):
-        """元位置の盤上のマス番号から、USI形式の指し手の符号の先頭２文字へ変換します"""
-        (file_th, rank_th) = MoveSourceLocation.get_file_th_rank_th_from_sq(sq)
-        return MoveSourceLocation.get_usi_code_from_file_th_rank_th(file_th, rank_th)
-
-
-    @staticmethod
-    def get_usi_code_from_srcloc(srcloc):
-        """元位置番号から、USI形式の指し手の符号の先頭２文字へ変換します"""
-        # マス番号なら
-        if srcloc < 81:
-            return MoveSourceLocation.get_usi_code_from_sq(sq=srcloc)
-
-        # 打なら
-        else:
-            return get_usi_by_srcloc(srcloc)
-
-
-    @staticmethod
     def from_sq(
             sq):
-            (file_th, rank_th) = MoveSourceLocation.get_file_th_rank_th_from_sq(sq)
+            (file_th, rank_th) = get_file_th_rank_th_by_sq(sq)
 
             return MoveSourceLocation(
                     usi_code=sq_to_usi(sq),
@@ -330,7 +309,7 @@ class MoveSourceLocation():
 
         # マス番号なら
         else:
-            (file_th, rank_th) = MoveSourceLocation.get_file_th_rank_th_from_sq(srcloc)
+            (file_th, rank_th) = get_file_th_rank_th_by_sq(sq=srcloc)
 
             return MoveSourceLocation(
                     srcloc=srcloc,
@@ -442,7 +421,7 @@ class MoveSourceLocation():
             if self._drop is not None:
                 self._usi_code = self._drop
             else:
-                self._usi_code = MoveSourceLocation.get_usi_code_from_file_th_rank_th(self.file_th, self.rank_th)
+                self._usi_code = file_th_rank_th_to_usi(self.file_th, self.rank_th)
 
             #
             # １８０°回転
