@@ -427,34 +427,34 @@ class MoveDestinationLocation():
         sq  = (file_th - 1) * 9 + (rank_th - 1)
 
         return MoveDestinationLocation(
+            sq=sq,
             file_th=file_th,
-            rank_th=rank_th,
-            sq=sq)
+            rank_th=rank_th)
 
 
     @staticmethod
     def from_sq(sq):
         return MoveDestinationLocation(
+                sq=sq,
                 file_th=sq // 9 + 1,
-                rank_th=sq % 9 + 1,
-                sq=sq)
+                rank_th=sq % 9 + 1)
 
 
     def __init__(
             self,
+            sq,
             file_th,
-            rank_th,
-            sq):
+            rank_th):
         """初期化
 
         Parameters
         ----------
+        sq : int
+            マス番号。 0 ～ 80 の整数
         file_th : int
             筋番号。 1 から始まる整数
         rank_th : int
             段番号。 1 から始まる整数
-        sq : int
-            マス番号。 0 ～ 80 の整数
         """
         self._file_th = file_th
         self._rank_th = rank_th
@@ -528,9 +528,9 @@ _rot_sq:{self._rot_sq}
     def rotate(self):
         """指し手を盤上で１８０°回転"""
         return MoveDestinationLocation(
+            sq=self._rot_sq,
             file_th=self._rot_file_th,
-            rank_th=self._rot_rank_th,
-            sq=self._rot_sq)
+            rank_th=self._rot_rank_th)
 
 
 class Move():
