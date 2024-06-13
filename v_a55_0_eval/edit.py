@@ -72,6 +72,22 @@ class EvaluationEdit():
                 kifuwarabe=self._kifuwarabe,
                 is_debug=is_debug)
 
+        # assert
+        for fl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
+            assert_p_move_obj, assert_l_move_obj = EvaluationPkTable.destructure_pk_index(
+                    pk_index=fl_index,
+                    p_turn=self._board.turn)
+            if assert_p_move_obj.as_usi != move_u:
+                raise ValueError(f"[{datetime.datetime.now()}] [weaken > fl] 着手が変わっているエラー  p_move_obj.as_usi:{assert_p_move_obj.as_usi}  move_u:{move_u}")
+
+        # assert
+        for fq_index, relation_exists in fq_index_to_relation_exists_dictionary.items():
+            assert_p_move_obj, assert_q_move_obj = EvaluationPpTable.destructure_pp_index(
+                    pp_index=fq_index,
+                    p1_turn=self._board.turn)
+            if assert_p_move_obj.as_usi != move_u:
+                raise ValueError(f"[{datetime.datetime.now()}] [weaken > fq] 着手が変わっているエラー  p_move_obj.as_usi:{assert_p_move_obj.as_usi}  move_u:{move_u}")
+
         # 減らすものがないので、弱化は不要です
         if positive_of_relation < 1:
             # デバッグ表示
@@ -350,7 +366,15 @@ class EvaluationEdit():
                     pk_index=fl_index,
                     p_turn=self._board.turn)
             if assert_p_move_obj.as_usi != move_u:
-                raise ValueError(f"[{datetime.datetime.now()}] [strengthen] 着手が変わっているエラー  p_move_obj.as_usi:{assert_p_move_obj.as_usi}  move_u:{move_u}")
+                raise ValueError(f"[{datetime.datetime.now()}] [strengthen > fl] 着手が変わっているエラー  p_move_obj.as_usi:{assert_p_move_obj.as_usi}  move_u:{move_u}")
+
+        # assert
+        for fq_index, relation_exists in fq_index_to_relation_exists_dictionary.items():
+            assert_p_move_obj, assert_q_move_obj = EvaluationPpTable.destructure_pp_index(
+                    pp_index=fq_index,
+                    p1_turn=self._board.turn)
+            if assert_p_move_obj.as_usi != move_u:
+                raise ValueError(f"[{datetime.datetime.now()}] [strengthen > fq] 着手が変わっているエラー  p_move_obj.as_usi:{assert_p_move_obj.as_usi}  move_u:{move_u}")
 
 
         # 既に全ての議席が挙手しているので、強化は不要です
