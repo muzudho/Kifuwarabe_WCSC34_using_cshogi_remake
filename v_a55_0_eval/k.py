@@ -394,7 +394,7 @@ class EvaluationKMove():
 
         except KeyError as ex:
             # k_srcsq error. k_move_obj.as_usi:S*3b  rotated:False  k_srcsq:None  src_masu:None  ex:None
-            print(f"[evaluation k move > get index by k move]  k_srcsq error. k_move_obj.as_usi:{k_move_obj.as_usi}  rotated:{is_rotate}  k_srcsq:{k_srcsq}  src_masu:{BoardHelper.sq_to_jsa(k_srcsq)}  k_move_obj:{k_move_obj.dump()}  ex:{ex}")
+            print(f"[evaluation k move > get index by k move]  k_srcsq error. k_move_obj.as_usi:{k_move_obj.as_usi}  rotated:{is_rotate}  k_srcsq:{k_srcsq}  src_masu:{BoardHelper.sq_to_jsa(k_srcsq)}  k_move_obj:{k_move_obj.dump()}  k_move_obj.dst_location.rot_sq:{k_move_obj.dst_location.rot_sq}  k_move_obj.dst_location.sq:{k_move_obj.dst_location.sq}  ex:{ex}")
             raise
 
         #
@@ -402,6 +402,7 @@ class EvaluationKMove():
         #
         try:
             # 移動先マス番号を渡して、玉の着手のインデックスを取得
+            # FIXME Rotate してるとき、配列に無ければエラーになる
             k_index = dst_to_index_dictionary[k_dst_sq]
 
         except KeyError as ex:
@@ -409,7 +410,8 @@ class EvaluationKMove():
             # k_move_obj.as_usi:5a4b  is_rotate:True  k_srcsq:44  dst_sq:52  src_masu:59  dst_masu:68  ex:28
             # k_move_obj.as_usi:6g4e  rotated:True  k_srcsq:29  k_dst_sq:49  src_masu:43  dst_masu:65  ex:49
             # k_move_obj.as_usi:8i6g  rotated:True  len(dst_to_index_dictionary):5  k_src_masu:21  k_dst_masu:43  k_srcsq:9  k_dst_sq:29  ex:29
-            print(f"[evaluation k move > get index by k move]  k_dst_sq error. k_move_obj.as_usi:{k_move_obj.as_usi}  rotated:{is_rotate}  len(dst_to_index_dictionary):{len(dst_to_index_dictionary)}  k_src_masu:{BoardHelper.sq_to_jsa(k_srcsq)}  k_dst_masu:{BoardHelper.sq_to_jsa(k_dst_sq)}  k_srcsq:{k_srcsq}  k_dst_sq:{k_dst_sq}  ex:{ex}")
+            # [evaluation k move > get index by k move]  k_dst_sq error. k_move_obj.as_usi:2h6h  rotated:True  len(dst_to_index_dictionary):8  k_src_masu:82  k_dst_masu:42  k_srcsq:64  k_dst_sq:28  ex:28
+            print(f"[evaluation k move > get index by k move]  k_dst_sq error. k_move_obj.as_usi:{k_move_obj.as_usi}  rotated:{is_rotate}  len(dst_to_index_dictionary):{len(dst_to_index_dictionary)}  k_src_masu:{BoardHelper.sq_to_jsa(k_srcsq)}  k_dst_masu:{BoardHelper.sq_to_jsa(k_dst_sq)}  k_srcsq:{k_srcsq}  k_dst_sq:{k_dst_sq}  k_move_obj.dst_location.rot_sq:{k_move_obj.dst_location.rot_sq}  k_move_obj.dst_location.sq:{k_move_obj.dst_location.sq}  ex:{ex}")
 
             # ダンプ
             i = 0
