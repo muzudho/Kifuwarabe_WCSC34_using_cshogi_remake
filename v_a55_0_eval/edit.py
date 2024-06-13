@@ -344,6 +344,15 @@ class EvaluationEdit():
                 kifuwarabe=self._kifuwarabe,
                 is_debug=is_debug)
 
+        # assert
+        for fl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
+            assert_p_move_obj, assert_l_move_obj = EvaluationPkTable.destructure_pk_index(
+                    pk_index=fl_index,
+                    p_turn=self._board.turn)
+            if assert_p_move_obj.as_usi != move_u:
+                raise ValueError(f"[{datetime.datetime.now()}] [strengthen] 着手が変わっているエラー  p_move_obj.as_usi:{assert_p_move_obj.as_usi}  move_u:{move_u}")
+
+
         # 既に全ての議席が挙手しているので、強化は不要です
         if total_of_relation <= positive_of_relation:
             # デバッグ表示
@@ -488,6 +497,14 @@ class EvaluationEdit():
             target_fl_index_list = list()
             for fl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
                 if relation_exists == 0:
+
+                    # assert
+                    assert_p_move_obj, assert_l_move_obj = EvaluationPkTable.destructure_pk_index(
+                            pk_index=fl_index,
+                            p_turn=self._board.turn)
+                    if assert_p_move_obj.as_usi != move_u:
+                        raise ValueError(f"[{datetime.datetime.now()}] [strengthen > pl and pq] 着手が変わっているエラー  p_move_obj.as_usi:{assert_p_move_obj.as_usi}  move_u:{move_u}")
+
                     target_fl_index_list.append(fl_index)
 
             target_fq_index_list = list()

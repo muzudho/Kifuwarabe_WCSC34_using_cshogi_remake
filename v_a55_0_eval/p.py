@@ -323,19 +323,19 @@ class EvaluationPMove():
                         effect_index += 1
 
 
-            for drop in ['R*', 'B*', 'G*', 'S*', 'N*', 'L*', 'P*']:
+            for drop_str in ['R*', 'B*', 'G*', 'S*', 'N*', 'L*', 'P*']:
 
                 #
                 # 移動先 to 通し番号
                 #
                 dst_sq_to_index = dict()
 
-                clazz._srcdrop_to_dst_sq_index[Usi.code_to_srcloc(drop)] = dst_sq_to_index
+                clazz._srcdrop_to_dst_sq_index[Usi.code_to_srcloc(drop_str)] = dst_sq_to_index
 
-                if drop == 'N*':
+                if drop_str == 'N*':
                     min_rank = 2
 
-                elif drop in ['L*', 'P*']:
+                elif drop_str in ['L*', 'P*']:
                     min_rank = 1
 
                 else:
@@ -350,7 +350,7 @@ class EvaluationPMove():
 
                         # 格納
                         dst_sq_to_index[dst_sq] = effect_index
-                        clazz._index_to_srcloc_dst_sq_promotion_dictionary[effect_index] = (drop, dst_sq, False)
+                        clazz._index_to_srcloc_dst_sq_promotion_dictionary[effect_index] = (Usi.code_to_srcloc(drop_str), dst_sq, False)
                         effect_index += 1
 
         return (clazz._srcsq_to_dst_sq_to_index_for_npsi_dictionary,
@@ -484,6 +484,9 @@ class EvaluationPMove():
         (srcloc,
          dst_sq,
          promoted) = index_to_srcloc_dst_sq_promotion_dictionary[p_index]
+
+        # assert: srcloc は数だ
+        temp = srcloc + 1
 
         p_move_obj = Move.from_src_dst_pro(
                 src_location=MoveSourceLocation.from_srcloc(
