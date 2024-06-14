@@ -98,16 +98,11 @@ class EvaluationPkTable():
             玉の応手
         """
         (p_index,
-         k_index) = EvaluationKMove.destructure_p_k_index_by_pk_index(
+         k_index) = EvaluationPkTable.destructure_p_k_index_by_pk_index(
                 pk_index=pk_index)
 
         # 評価値テーブルは先手用の形なので、後手番は１８０°回転させる必要がある
-        if p_turn == cshogi.BLACK:
-            is_p_rotate = False
-            is_k_rotate = True
-        else:
-            is_p_rotate = True
-            is_k_rotate = False
+        is_rotate = p_turn == cshogi.WHITE
 
         # Ｋ
         (k_srcsq,
@@ -120,7 +115,7 @@ class EvaluationPkTable():
                         sq=k_dst_sq),
                 # 玉に成りはありません
                 promoted=False,
-                is_rotate=is_k_rotate)
+                is_rotate=is_rotate)
 
         # Ｐ
         (p_srcloc,
@@ -133,7 +128,7 @@ class EvaluationPkTable():
                 dst_location=MoveDestinationLocation.from_sq(
                         sq=p_dst_sq),
                 promoted=p_promote,
-                is_rotate=is_p_rotate)
+                is_rotate=is_rotate)
 
         return (p_move_obj, k_move_obj)
 

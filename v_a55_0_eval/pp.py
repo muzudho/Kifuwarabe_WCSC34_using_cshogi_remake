@@ -79,12 +79,7 @@ class EvaluationPpTable():
 
 
         # 評価値テーブルは先手用の形なので、後手番は１８０°回転させる必要がある
-        if p1_turn == cshogi.BLACK:
-            is_p1_rotate = False
-            is_p2_rotate = True
-        else:
-            is_p1_rotate = True
-            is_p2_rotate = False
+        is_rotate = p1_turn == cshogi.WHITE
 
         # Ｐ２
         (p2_srcloc,
@@ -97,7 +92,7 @@ class EvaluationPpTable():
                 dst_location=MoveDestinationLocation.from_sq(
                         sq=p2_dst_sq),
                 promoted=p2_promote,
-                is_rotate=is_p2_rotate)
+                is_rotate=is_rotate)
 
         # Ｐ１
         (p1_srcloc,
@@ -110,7 +105,7 @@ class EvaluationPpTable():
                 dst_location=MoveDestinationLocation.from_sq(
                         sq=p1_dst_sq),
                 promoted=p1_promote,
-                is_rotate=is_p1_rotate)
+                is_rotate=is_rotate)
 
         return (p1_move_obj, p2_move_obj)
 

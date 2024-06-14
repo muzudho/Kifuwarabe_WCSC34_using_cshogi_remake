@@ -29,15 +29,10 @@ class EvaluationKkTable():
         """
 
         # 評価値テーブルは先手用の形なので、後手番は１８０°回転させる必要がある
-        if k_turn == cshogi.BLACK:
-            k_rotate = False
-            l_rotate = True
-        else:
-            k_rotate = True
-            l_rotate = False
+        is_rotate = k_turn == cshogi.WHITE
 
-        # 0 ～ 296_479 =                                                   0 ～ 543 *                                      544 +                                                 0 ～ 543
-        kk_index       = EvaluationKMove.get_index_by_k_move(k_move_obj, k_rotate) * EvaluationKMove.get_serial_number_size() + EvaluationKMove.get_index_by_k_move(l_move_obj, l_rotate)
+        # 0 ～ 296_479 =                                                    0 ～ 543 *                                      544 +                                                  0 ～ 543
+        kk_index       = EvaluationKMove.get_index_by_k_move(k_move_obj, is_rotate) * EvaluationKMove.get_serial_number_size() + EvaluationKMove.get_index_by_k_move(l_move_obj, is_rotate)
 
         # assert
         if EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size() <= kk_index:
