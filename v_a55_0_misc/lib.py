@@ -320,6 +320,14 @@ promoted:`{self._promoted}`
         return self._promoted
 
 
+    @property
+    def as_usi(self):
+        """USI形式の指し手の符号。
+        "7g7f" や "3d3c+"、 "R*5e" のような文字列を想定。 "resign" のような文字列は想定外
+        """
+        return f"{Usi.srcloc_to_code(self.srcloc)}{Usi.sq_to_code(self.dstsq)}{Usi.promotion_to_code(self.promoted)}"
+
+
     def rotate(self):
         """盤を１８０°回転させたときの指し手を返します"""
         rot_srcloc = Usi.rotate_srcloc(self.srcloc)
@@ -329,13 +337,6 @@ promoted:`{self._promoted}`
                 srcloc=rot_srcloc,
                 dstsq=rot_dstsq,
                 promoted=self.promoted)
-
-
-    def as_usi(self):
-        """USI形式の指し手の符号。
-        "7g7f" や "3d3c+"、 "R*5e" のような文字列を想定。 "resign" のような文字列は想定外
-        """
-        return f"{Usi.srcloc_to_code(self.srcloc)}{Usi.sq_to_code(self.dstsq)}{Usi.promotion_to_code(self.promoted)}"
 
 
 class MoveHelper():
