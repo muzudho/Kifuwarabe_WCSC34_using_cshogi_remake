@@ -5,7 +5,7 @@ import datetime
 from v_a55_0_eval.k import EvaluationKMove
 from v_a55_0_eval.lib import EvaluationLib
 from v_a55_0_eval.p import EvaluationPMove
-from v_a55_0_misc.lib import FileName, Turn, MoveSourceLocation, MoveDestinationLocation, Move, EvalutionMmTable
+from v_a55_0_misc.lib import FileName, Turn, MoveDestinationLocation, Move, EvalutionMmTable
 
 
 class EvaluationPkTable():
@@ -109,8 +109,7 @@ class EvaluationPkTable():
          k_dst_sq) = EvaluationKMove.destructure_srcsq_dst_sq_by_k_index(
                 k_index=k_index)
         k_move_obj = Move.from_src_dst_pro(
-                src_location=MoveSourceLocation.from_sq(
-                        sq=k_srcsq),
+                srcloc=k_srcsq,
                 dst_location=MoveDestinationLocation.from_sq(
                         sq=k_dst_sq),
                 # 玉に成りはありません
@@ -123,8 +122,7 @@ class EvaluationPkTable():
          p_promote) = EvaluationPMove.destructure_srcloc_dst_sq_promoted_by_p_index(
                 p_index=p_index)
         p_move_obj = Move.from_src_dst_pro(
-                src_location=MoveSourceLocation.from_sq(
-                        sq=p_srcloc),
+                srcloc=p_srcloc,
                 dst_location=MoveDestinationLocation.from_sq(
                         sq=p_dst_sq),
                 promoted=p_promote,

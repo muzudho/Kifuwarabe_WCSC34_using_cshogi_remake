@@ -388,10 +388,10 @@ class EvaluationPMove():
         """
 
         if is_rotate:
-            p_srcsq_or_none = p_move_obj.src_location.rot_sq
+            p_srcsq_or_none = Usi.srcloc_to_sq(Usi.rotate_srcloc(p_move_obj.srcloc))
             p_dst_sq = p_move_obj.dst_location.rot_sq
         else:
-            p_srcsq_or_none = p_move_obj.src_location.sq
+            p_srcsq_or_none = Usi.srcloc_to_sq(p_move_obj.srcloc)
             p_dst_sq = p_move_obj.dst_location.sq
 
         # 元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します
@@ -402,19 +402,19 @@ class EvaluationPMove():
 
 
         # 打か。打に成りはありません
-        if Usi.is_drop_by_srcloc(p_move_obj.src_location.srcloc):
+        if Usi.is_drop_by_srcloc(p_move_obj.srcloc):
             try:
-                dst_sq_to_index_dictionary = srcdrop_to_dst_sq_index[p_move_obj.src_location.srcloc]
+                dst_sq_to_index_dictionary = srcdrop_to_dst_sq_index[p_move_obj.srcloc]
 
             except KeyError as ex:
-                print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  P src:{Usi.srcloc_to_code(p_move_obj.src_location.srcloc)}  rotated:{is_rotate}  p_src_masu:{BoardHelper.sq_to_jsa(p_srcsq_or_none)}  成:{p_move_obj.promoted}  ex:{ex}")
+                print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  P srcloc_u:{Usi.srcloc_to_code(p_move_obj.srcloc)}  rotated:{is_rotate}  p_src_masu:{BoardHelper.sq_to_jsa(p_srcsq_or_none)}  成:{p_move_obj.promoted}  ex:{ex}")
                 raise
 
             try:
                 p_index = dst_sq_to_index_dictionary[p_dst_sq]
 
             except KeyError as ex:
-                print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  P src:{Usi.srcloc_to_code(p_move_obj.src_location.srcloc)}  rotated:{is_rotate}  p_src_masu:{BoardHelper.sq_to_jsa(p_srcsq_or_none)}  成:{p_move_obj.promoted}  p_dst_masu:{BoardHelper.sq_to_jsa(p_dst_sq)}  ex:{ex}")
+                print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  P srcloc_u:{Usi.srcloc_to_code(p_move_obj.srcloc)}  rotated:{is_rotate}  p_src_masu:{BoardHelper.sq_to_jsa(p_srcsq_or_none)}  成:{p_move_obj.promoted}  p_dst_masu:{BoardHelper.sq_to_jsa(p_dst_sq)}  ex:{ex}")
                 raise
 
         # 成りか。成りに打は有りません
@@ -423,14 +423,14 @@ class EvaluationPMove():
                 dst_sq_to_index_dictionary = srcsq_to_dst_sq_to_index_for_psi_dictionary[p_srcsq_or_none]
 
             except KeyError as ex:
-                print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  P src:{Usi.srcloc_to_code(p_move_obj.src_location.srcloc)}  rotated:{is_rotate}  p_src_masu:{BoardHelper.sq_to_jsa(p_srcsq_or_none)}  成:{p_move_obj.promoted}  ex:{ex}")
+                print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  P srcloc_u:{Usi.srcloc_to_code(p_move_obj.srcloc)}  rotated:{is_rotate}  p_src_masu:{BoardHelper.sq_to_jsa(p_srcsq_or_none)}  成:{p_move_obj.promoted}  ex:{ex}")
                 raise
 
             try:
                 p_index = dst_sq_to_index_dictionary[p_dst_sq]
 
             except KeyError as ex:
-                print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  P src:{Usi.srcloc_to_code(p_move_obj.src_location.srcloc)}  rotated:{is_rotate}  p_src_masu:{BoardHelper.sq_to_jsa(p_srcsq_or_none)}  成:{p_move_obj.promoted}  p_dst_masu:{BoardHelper.sq_to_jsa(p_dst_sq)}  ex:{ex}")
+                print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  P srcloc_u:{Usi.srcloc_to_code(p_move_obj.srcloc)}  rotated:{is_rotate}  p_src_masu:{BoardHelper.sq_to_jsa(p_srcsq_or_none)}  成:{p_move_obj.promoted}  p_dst_masu:{BoardHelper.sq_to_jsa(p_dst_sq)}  ex:{ex}")
                 raise
 
         # 成らずだ
@@ -439,14 +439,14 @@ class EvaluationPMove():
                 dst_sq_to_index_dictionary = srcsq_to_dst_sq_to_index_for_npsi_dictionary[p_srcsq_or_none]
 
             except KeyError as ex:
-                print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  P src:{Usi.srcloc_to_code(p_move_obj.src_location.srcloc)}  rotated:{is_rotate}  p_src_masu:{BoardHelper.sq_to_jsa(p_srcsq_or_none)}  成:{p_move_obj.promoted}  ex:{ex}")
+                print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  P srcloc_u:{Usi.srcloc_to_code(p_move_obj.srcloc)}  rotated:{is_rotate}  p_src_masu:{BoardHelper.sq_to_jsa(p_srcsq_or_none)}  成:{p_move_obj.promoted}  ex:{ex}")
                 raise
 
             try:
                 p_index = dst_sq_to_index_dictionary[p_dst_sq]
 
             except KeyError as ex:
-                print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  P src:{Usi.srcloc_to_code(p_move_obj.src_location.srcloc)}  rotated:{is_rotate}  p_src_masu:{BoardHelper.sq_to_jsa(p_srcsq_or_none)}  成:{p_move_obj.promoted}  p_dst_masu:{BoardHelper.sq_to_jsa(p_dst_sq)}  ex:{ex}")
+                print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  P srcloc_u:{Usi.srcloc_to_code(p_move_obj.srcloc)}  rotated:{is_rotate}  p_src_masu:{BoardHelper.sq_to_jsa(p_srcsq_or_none)}  成:{p_move_obj.promoted}  p_dst_masu:{BoardHelper.sq_to_jsa(p_dst_sq)}  ex:{ex}")
                 raise
 
         # assert

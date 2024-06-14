@@ -4,7 +4,7 @@ import datetime
 
 from v_a55_0_eval.lib import EvaluationLib
 from v_a55_0_eval.k import EvaluationKMove
-from v_a55_0_misc.lib import FileName, Turn, MoveSourceLocation, MoveDestinationLocation, Move, EvalutionMmTable
+from v_a55_0_misc.lib import FileName, Turn, MoveDestinationLocation, Move, EvalutionMmTable
 
 
 class EvaluationKkTable():
@@ -84,8 +84,7 @@ class EvaluationKkTable():
          l_dst_sq) = EvaluationKMove.destructure_srcsq_dst_sq_by_k_index(
                 k_index=l_index)
         l_move_obj = Move.from_src_dst_pro(
-                src_location=MoveSourceLocation.from_sq(
-                        sq=l_srcsq),
+                srcloc=l_srcsq,
                 dst_location=MoveDestinationLocation.from_sq(
                         sq=l_dst_sq),
                 # 玉に成りはありません
@@ -97,8 +96,7 @@ class EvaluationKkTable():
          k_dst_sq) = EvaluationKMove.destructure_srcsq_dst_sq_by_k_index(
                 k_index=k_index)
         k_move_obj = Move.from_src_dst_pro(
-                src_location=MoveSourceLocation.from_sq(
-                        sq=k_srcsq),
+                srcloc=k_srcsq,
                 dst_location=MoveDestinationLocation.from_sq(
                         sq=k_dst_sq),
                 # 玉に成りはありません

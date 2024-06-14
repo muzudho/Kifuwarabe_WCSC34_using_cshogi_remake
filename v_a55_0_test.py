@@ -8,7 +8,7 @@ from     v_a55_0_eval.p import EvaluationPMove
 from     v_a55_0_eval.pk import EvaluationPkTable
 from     v_a55_0_misc.bit_ope import BitOpe
 from     v_a55_0_misc.debug import DebugHelper
-from     v_a55_0_misc.lib import Turn, MoveSourceLocation, MoveDestinationLocation, Move, BoardHelper
+from     v_a55_0_misc.lib import Turn, MoveDestinationLocation, Move, BoardHelper
 from     v_a55_0_misc.usi import Usi
 
 
@@ -127,8 +127,7 @@ def test_p():
      p_promote) = EvaluationPMove.destructure_srcloc_dst_sq_promoted_by_p_index(
             p_index=p_index)
     actual_p_move_obj = Move.from_src_dst_pro(
-            src_location=MoveSourceLocation.from_sq(
-                    sq=p_srcloc),
+            srcloc=p_srcloc,
             dst_location=MoveDestinationLocation.from_sq(
                     sq=p_dst_sq),
             promoted=p_promote,
@@ -290,8 +289,7 @@ def test_lib():
         raise ValueError(f'unexpected error. move_obj.promoted expected:True  actual:`{move_obj.promoted}`')
 
     move_obj = Move.from_src_dst_pro(
-            src_location=MoveSourceLocation.from_sq(
-                sq=BoardHelper.jsa_to_sq(38)),
+            srcloc=BoardHelper.jsa_to_sq(38),
             dst_location=MoveDestinationLocation.from_sq(
                 sq=BoardHelper.jsa_to_sq(39)),
             promoted=True)
@@ -305,26 +303,25 @@ def test_lib():
 
 def test_move_rotate():
     # １８０°回転
-    src_location_u = "1g"
-    expected_rot_src_location_u = "9c"
-    src_location = MoveSourceLocation.from_code(src_location_u)
+    srcloc_u = "1g"
+    expected_rot_srcloc_u = "9c"
+    srcloc = Usi.code_to_srcloc(srcloc_u)
 
-    actual = Usi.srcloc_to_code(src_location.srcloc)
-    if src_location_u != actual:
-        raise ValueError(f"[test move rotate]  expected:{src_location_u}  actual:{actual}")
+    actual = Usi.srcloc_to_code(srcloc)
+    if srcloc_u != actual:
+        raise ValueError(f"[test move rotate]  expected:{srcloc_u}  actual:{actual}")
 
-    rot_src_location = src_location.rotate()
-    actual = Usi.srcloc_to_code(rot_src_location.srcloc)
-    if expected_rot_src_location_u != actual:
-        print(f"[test move rotate]  src_location.dump():{src_location.dump()}")
-        raise ValueError(f"[test move rotate]  expected:{expected_rot_src_location_u}  actual:{actual}")
+    rot_srcloc = Usi.rotate_srcloc(srcloc)
+    actual = Usi.srcloc_to_code(rot_srcloc)
+    if expected_rot_srcloc_u != actual:
+        raise ValueError(f"[test move rotate]  expected:{expected_rot_srcloc_u}  actual:{actual}")
 
     # １８０°回転
     dst_location_u = "1g"
     expected_rot_dst_location_u = "9c"
     dst_location = MoveDestinationLocation.from_code(dst_location_u)
     rot_dst_location = dst_location.rotate()
-    actual = Usi.srcloc_to_code(rot_dst_location.srcloc)
+    actual = Usi.srcloc_to_code(rot_dst_location.sq)
 
     if expected_rot_dst_location_u != actual:
         raise ValueError(f"[test move rotate]  expected:{expected_rot_dst_location_u}  actual:{actual}")

@@ -1,4 +1,5 @@
 from v_a55_0_misc.lib import BoardHelper
+from v_a55_0_misc.usi import Usi
 
 
 class EvaluationKMove():
@@ -368,16 +369,15 @@ class EvaluationKMove():
         """
 
         # assert
-        if k_move_obj.src_location.sq == None or k_move_obj.src_location.rot_sq == None:
-            raise ValueError(f"[evaluation k move > get index by k move] 玉の指し手で k_move_obj.src_location.sq が None （打？）なのはおかしい。 k_move_obj.src_location.masu:{BoardHelper.sq_to_jsa(k_move_obj.src_location.sq)}  k_move_obj.src_location.rot_masu:{BoardHelper.sq_to_jsa(k_move_obj.src_location.rot_sq)}  k_move_obj:{k_move_obj.dump()}")
+        if Usi.is_drop_by_srcloc(k_move_obj.srcloc):
+            raise ValueError(f"[evaluation k move > get index by k move] 玉の指し手で打なのはおかしい。 k_move_obj.srcloc_u:{Usi.srcloc_to_code(k_move_obj.srcloc)}  k_move_obj:{k_move_obj.dump()}")
 
         if is_rotate:
-            # 玉に打は無いので、 k_move_obj.src_location.sq は None にはなりません
-            k_srcsq = k_move_obj.src_location.rot_sq
+            k_srcsq = Usi.srcloc_to_sq(Usi.rotate_srcloc(k_move_obj.srcloc))
             k_dst_sq = k_move_obj.dst_location.rot_sq
 
         else:
-            k_srcsq = k_move_obj.src_location.sq
+            k_srcsq = Usi.srcloc_to_sq(k_move_obj.srcloc)
             k_dst_sq = k_move_obj.dst_location.sq
 
         # 玉は成らない

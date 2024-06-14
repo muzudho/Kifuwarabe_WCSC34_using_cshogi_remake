@@ -142,188 +142,6 @@ class Promotion():
             return ''
 
 
-class MoveSourceLocation():
-    """指し手の移動元は、マス番号と駒種類の２通りある"""
-
-
-    @staticmethod
-    def from_sq(sq):
-        (file_th, rank_th) = Usi.sq_to_file_th_rank_th(sq)
-
-        return MoveSourceLocation(
-                srcloc=sq,
-                file_th=file_th,
-                rank_th=rank_th)
-
-
-    @staticmethod
-    def from_srcloc(srcloc):
-        """マス番号か、打の駒種類か分かってない状態
-
-        Parameter
-        ---------
-        srcloc : int
-            盤上のマス番号 0～80、または、打の駒種類の番号 81～87 のどちらか
-        """
-
-        # 打なら
-        if 81 <= srcloc:
-            return MoveSourceLocation(
-                    srcloc=srcloc,
-                    file_th=None,
-                    rank_th=None)
-
-        # マス番号なら
-        else:
-            (file_th, rank_th) = Usi.sq_to_file_th_rank_th(sq=srcloc)
-
-            return MoveSourceLocation(
-                    srcloc=srcloc,
-                    file_th=file_th,
-                    rank_th=rank_th)
-
-
-    @staticmethod
-    def from_code(code):
-        """文字列から生成
-
-        Parameters
-        ----------
-        code : str
-            元位置。 '7g' とか 'R*' とか
-        """
-        file_th=None
-        rank_th=None
-
-        #
-        # 移動元の列番号を 1 から始まる整数で返す。打にはマス番号は無い
-        # 移動元の段番号を 1 から始まる整数で返す。打は無い
-        #
-        if code in Usi.get_srcdrop_str_list():
-            file_th = None
-            rank_th = None
-
-        else:
-            file_str = code[0]
-
-            try:
-                file_th = Move._file_th_str_to_num[file_str]
-            except:
-                raise Exception(f"src file error: `{file_str}` in code:`{code}`")
-
-            rank_str = code[1]
-
-            try:
-                rank_th = Move._rank_str_to_th_num[rank_str]
-            except:
-                raise Exception(f"src rank error: `{rank_str}` in code:'{code}'")
-
-        return MoveSourceLocation(
-                srcloc=Usi.code_to_srcloc(code),
-                file_th=file_th,
-                rank_th=rank_th)
-
-
-    def __init__(
-            self,
-            srcloc,
-            file_th,
-            rank_th):
-        """初期化
-
-        Parameters
-        ----------
-        srcloc : int
-            盤上のマス番号（0 ～ 80）、または打つ駒の種類番号（81 ～ 87）
-        file_th : int
-            列番号。 1 から始まる整数で返す。打には None を入れる
-        rank_th : int
-            段番号。 1 から始まる整数で返す。打には None を入れる
-        """
-
-        try:
-            self._srcloc = srcloc
-            self._file_th = file_th
-            self._rank_th = rank_th
-
-            #
-            # １８０°回転
-            #
-            # 盤上のマス
-            if self._srcloc <= 80:
-                self._rot_srcloc = self._srcloc
-                self._rot_file_th = None
-                self._rot_rank_th = None
-
-            else:
-                self._rot_srcloc = 80 - self._srcloc
-                self._rot_file_th = 10 - self._file_th
-                self._rot_rank_th = 10 - self._rank_th
-
-
-        except TypeError as ex:
-            # file_th:1  rank_th:7  ex:unsupported operand type(s) for -: 'tuple' and 'int'
-            print(f"[move source location > __init__]  file_th:{file_th}  rank_th:{rank_th}  ex:{ex}")
-            raise
-
-
-    def dump(self):
-        return f"""\
-srcloc  :{self._srcloc}
-srcloc_u:{Usi.srcloc_to_code(self._srcloc)}
-_file_th:{self._file_th}
-_rank_th:{self._rank_th}
-is_drop?:{Usi.is_drop_by_srcloc(self._srcloc)}
-_rot_masu:{BoardHelper.sq_to_jsa(self._rot_sq)}
-_rot_file_th:{self._rot_file_th}
-_rot_rank_th:{self._rot_rank_th}
-"""
-
-
-    @property
-    def file_th(self):
-        """列番号。 1 から始まる整数で返す。打には None を入れる"""
-        return self._file_th
-
-
-    @property
-    def rank_th(self):
-        """段番号。 1 から始まる整数で返す。打には None を入れる"""
-        return self._rank_th
-
-
-    @property
-    def srcloc(self):
-        """盤上のマス番号 0～80、または打つ駒の種類の番号 81～87"""
-        return self._srcloc
-
-
-    @property
-    def rot_file_th(self):
-        """指し手を盤上で１８０°回転したときの列番号。 1 から始まる整数で返す。打なら None を返す"""
-        return self._rot_file_th
-
-
-    @property
-    def rot_rank_th(self):
-        """指し手を盤上で１８０°回転したときの段番号。 1 から始まる整数で返す。打なら None を返す"""
-        return self._rot_rank_th
-
-
-    @property
-    def rot_srcloc(self):
-        """指し手を盤上で１８０°回転したときの元位置番号。 0 から始まる整数で返す。打なら、回転させずに返す"""
-        return self._rot_srcloc
-
-
-    def rotate(self):
-        """指し手を盤上で１８０°回転"""
-        return MoveSourceLocation(
-                srcloc=self._rot_srcloc,
-                file_th=self._rot_file_th,
-                rank_th=self._rot_rank_th)
-
-
 class MoveDestinationLocation():
     """移動先マス"""
 
@@ -343,7 +161,7 @@ class MoveDestinationLocation():
         try:
             file_th = Move._file_th_str_to_num[file_char]
         except:
-            raise Exception(f"dst file error: `{file_char}` in dst_str:`{dst_str}`")
+            raise Exception(f"dst file error: `{file_char}` in dst_str:`{code}`")
 
         #
         # 移動先の段番号を 1 から始まる整数で返す
@@ -568,8 +386,8 @@ class Move():
             "7g7f" や "3d3c+"、 "R*5e" のような文字列を想定。 "resign" のような文字列は想定外
         """
 
-        # 移動元オブジェクト生成
-        src_location = MoveSourceLocation.from_code(
+        # 移動元番号
+        srcloc = Usi.code_to_srcloc(
                 code=move_as_usi[0: 2])
 
         # 移動先オブジェクト生成
@@ -585,14 +403,14 @@ class Move():
 
         return Move(
                 as_usi=move_as_usi,
-                src_location=src_location,
+                srcloc=srcloc,
                 dst_location=dst_location,
                 promoted=promoted)
 
 
     @staticmethod
     def from_src_dst_pro(
-            src_location,
+            srcloc,
             dst_location,
             promoted,
             is_rotate=False):
@@ -600,8 +418,8 @@ class Move():
 
         Parameters
         ----------
-        src_location : MoveSourceLocation
-            移動元オブジェクト
+        srcloc : int
+            移動元番号
         dst_location : MoveDestinationLocation
             移動先オブジェクト
         promoted : bool
@@ -610,12 +428,12 @@ class Move():
             盤を１８０°回転させたときの指し手にするか？
         """
         if is_rotate:
-            src_location = src_location.rotate()
+            srcloc = Usi.rotate_srcloc(srcloc)
             dst_location = dst_location.rotate()
 
         return Move(
-                as_usi=f"{Usi.srcloc_to_code(src_location.srcloc)}{dst_location.usi_code}{Promotion.to_code(promoted)}",
-                src_location=src_location,
+                as_usi=f"{Usi.srcloc_to_code(srcloc)}{dst_location.usi_code}{Promotion.to_code(promoted)}",
+                srcloc=srcloc,
                 dst_location=dst_location,
                 promoted=promoted)
 
@@ -623,7 +441,7 @@ class Move():
     def __init__(
             self,
             as_usi,
-            src_location,
+            srcloc,
             dst_location,
             promoted):
         """初期化
@@ -633,15 +451,15 @@ class Move():
         as_usi:
             USI形式の指し手の符号。
             "7g7f" や "3d3c+"、 "R*5e" のような文字列を想定。 "resign" のような文字列は想定外
-        src_location : MoveSourceLocation
-            移動元オブジェクト
+        srcloc : int
+            移動元番号
         dst_location : MoveDestinationLocation
             移動先オブジェクト
         promoted : bool
             成ったか？
         """
         self._as_usi = as_usi
-        self._src_location = src_location
+        self._srcloc = srcloc
         self._dst_location = dst_location
         self._promoted = promoted
 
@@ -649,8 +467,7 @@ class Move():
     def dump(self):
         return f"""\
 _as_usi:`{self._as_usi}`
-_src_location:
-{self._src_location.dump()}
+srcloc:{self._srcloc}
 _dst_location:
 {self._dst_location.dump()}
 _promoted:`{self._promoted}`
@@ -662,9 +479,9 @@ _promoted:`{self._promoted}`
 
 
     @property
-    def src_location(self):
-        """移動元"""
-        return self._src_location
+    def srcloc(self):
+        """移動元番号"""
+        return self._srcloc
 
 
     @property
@@ -681,12 +498,12 @@ _promoted:`{self._promoted}`
 
     def rotate(self):
         """盤を１８０°回転させたときの指し手を返します"""
-        src_location = self.src_location.rotate()
+        rot_srcloc = Usi.rotate_srcloc(self.srcloc)
         dst_location = self.dst_location.rotate()
 
         return Move(
-                as_usi=f"{Usi.srcloc_to_code(src_location.srcloc)}{dst_location.usi_code}{Promotion.to_code(self.promoted)}",
-                src_location=src_location,
+                as_usi=f"{Usi.srcloc_to_code(rot_srcloc)}{dst_location.usi_code}{Promotion.to_code(self.promoted)}",
+                srcloc=rot_srcloc,
                 dst_location=dst_location,
                 promoted=self.promoted)
 
@@ -702,8 +519,11 @@ class MoveHelper():
         """自玉か？"""
 
         # 自玉の指し手か？（打なら None なので False）
-        #print(f"［自玉の指し手か？］ move_u: {move_obj.as_usi}, src sq:{move_obj.src_location.sq}, k_sq: {k_sq}, board.turn: {board.turn}")
-        return move_obj.src_location.sq == k_sq
+        #print(f"［自玉の指し手か？］ move_u: {move_obj.as_usi}, srcloc:{move_obj.srcloc}, k_sq: {k_sq}, board.turn: {board.turn}")
+        if move_obj.is_drop():
+            return False
+
+        return move_obj.srcloc == k_sq
 
 
 class BoardHelper():

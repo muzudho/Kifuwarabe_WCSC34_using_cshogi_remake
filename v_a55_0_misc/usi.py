@@ -154,3 +154,14 @@ class Usi():
             raise ValueError("[usi > srcloc to sq] 打はマス番号に変換できません")
 
         return srcloc
+
+
+    @staticmethod
+    def rotate_srcloc(srcloc):
+        # 打はそのまま返す
+        if Usi.is_drop_by_srcloc(srcloc):
+            return srcloc
+
+        # 盤上の升番号は、盤を１８０°回転したときの位置の番号を返す
+        return 80 - srcloc
+
