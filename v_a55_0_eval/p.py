@@ -1,4 +1,4 @@
-from v_a55_0_misc.lib import MoveSourceLocation, MoveDestinationLocation, Move, BoardHelper
+from v_a55_0_misc.lib import BoardHelper
 from v_a55_0_misc.usi import Usi
 
 
@@ -491,37 +491,3 @@ class EvaluationPMove():
         return (srcloc,
                 dst_sq,
                 promoted)
-
-
-    @staticmethod
-    def destructure_p_index(
-            p_index,
-            is_rotate):
-        """Ｐインデックス分解
-
-        Parameter
-        ---------
-        p_index : int
-            兵の指し手のインデックス
-        is_rotate : bool
-            後手なら真。指し手を１８０°回転させます
-
-        Returns
-        -------
-        - p_move_obj : Move
-            兵の指し手
-        """
-        (srcloc,
-         dst_sq,
-         promoted) = EvaluationPMove.destructure_srcloc_dst_sq_promoted_by_p_index(
-                p_index=p_index)
-
-        p_move_obj = Move.from_src_dst_pro(
-                src_location=MoveSourceLocation.from_srcloc(
-                        srcloc=srcloc),
-                dst_location=MoveDestinationLocation.from_sq(
-                        sq=dst_sq),
-                promoted=promoted,
-                is_rotate=is_rotate)
-
-        return p_move_obj

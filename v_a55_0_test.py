@@ -114,13 +114,24 @@ def test_p():
     expected_p_move_u = '3h3i+'
     expected_p_move_obj = Move.from_usi(expected_p_move_u)
 
+    is_p_rotate = True
+
     p_index = EvaluationPMove.get_index_by_p_move(
             p_move_obj=expected_p_move_obj,
-            is_rotate=True)
+            is_rotate=is_p_rotate)
 
-    actual_p_move_obj = EvaluationPMove.destructure_p_index(
-            p_index=p_index,
-            is_rotate=True)
+    # Ｐ
+    (p_srcloc,
+     p_dst_sq,
+     p_promote) = EvaluationPMove.destructure_srcloc_dst_sq_by_p_index(
+            k_index=p_index)
+    actual_p_move_obj = Move.from_src_dst_pro(
+            src_location=MoveSourceLocation.from_sq(
+                    sq=p_srcloc),
+            dst_location=MoveDestinationLocation.from_sq(
+                    sq=p_dst_sq),
+            promoted=p_promote,
+            is_rotate=is_p_rotate)
 
     if expected_p_move_obj.as_usi != actual_p_move_obj.as_usi:
         raise ValueError(f'unexpected error. move_obj expected P:`{expected_p_move_obj.as_usi}`  actual P:`{actual_p_move_obj.as_usi}`')

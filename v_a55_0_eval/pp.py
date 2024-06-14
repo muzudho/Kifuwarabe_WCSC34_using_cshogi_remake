@@ -4,7 +4,7 @@ import datetime
 
 from v_a55_0_eval.lib import EvaluationLib
 from v_a55_0_eval.p import EvaluationPMove
-from v_a55_0_misc.lib import FileName, Turn, Move, EvalutionMmTable
+from v_a55_0_misc.lib import FileName, Turn, MoveSourceLocation, MoveDestinationLocation, Move, EvalutionMmTable
 
 
 class EvaluationPpTable():
@@ -85,18 +85,37 @@ class EvaluationPpTable():
 
         # 評価値テーブルは先手用の形なので、後手番は１８０°回転させる必要がある
         if p1_turn == cshogi.BLACK:
-            p1_rotate = False
-            p2_rotate = True
+            is_p1_rotate = False
+            is_p2_rotate = True
         else:
-            p1_rotate = True
-            p2_rotate = False
+            is_p1_rotate = True
+            is_p2_rotate = False
 
-        p2_move_obj = EvaluationPMove.destructure_p_index(
-                p_index=p2_index,
-                is_rotate=p2_rotate)
-        p1_move_obj = EvaluationPMove.destructure_p_index(
-                p_index=p1_index,
-                is_rotate=p1_rotate)
+        # Ｐ２
+        (p2_srcloc,
+         p2_dst_sq,
+         p2_promote) = EvaluationPMove.destructure_srcloc_dst_sq_by_p_index(
+                k_index=p2_index)
+        p2_move_obj = Move.from_src_dst_pro(
+                src_location=MoveSourceLocation.from_sq(
+                        sq=p2_srcloc),
+                dst_location=MoveDestinationLocation.from_sq(
+                        sq=p2_dst_sq),
+                promoted=p2_promote,
+                is_rotate=is_p2_rotate)
+
+        # Ｐ１
+        (p1_srcloc,
+         p1_dst_sq,
+         p1_promote) = EvaluationPMove.destructure_srcloc_dst_sq_by_p_index(
+                k_index=p1_index)
+        p1_move_obj = Move.from_src_dst_pro(
+                src_location=MoveSourceLocation.from_sq(
+                        sq=p1_srcloc),
+                dst_location=MoveDestinationLocation.from_sq(
+                        sq=p1_dst_sq),
+                promoted=p1_promote,
+                is_rotate=is_p1_rotate)
 
         return (p1_move_obj, p2_move_obj)
 

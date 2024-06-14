@@ -5,7 +5,7 @@ import datetime
 from v_a55_0_eval.lib import EvaluationLib
 from v_a55_0_eval.k import EvaluationKMove
 from v_a55_0_eval.p import EvaluationPMove
-from v_a55_0_misc.lib import FileName, Turn, Move, EvalutionMmTable
+from v_a55_0_misc.lib import FileName, Turn, MoveSourceLocation, MoveDestinationLocation, Move, EvalutionMmTable
 
 
 class EvaluationKpTable():
@@ -86,18 +86,37 @@ class EvaluationKpTable():
 
         # 評価値テーブルは先手用の形なので、後手番は１８０°回転させる必要がある
         if k_turn == cshogi.BLACK:
-            k_rotate = False
-            l_rotate = True
+            is_k_rotate = False
+            is_p_rotate = True
         else:
-            k_rotate = True
-            l_rotate = False
+            is_k_rotate = True
+            is_p_rotate = False
 
-        p_move_obj = EvaluationPMove.destructure_p_index(
-                p_index=p_index,
-                is_rotate=l_rotate)
-        k_move_obj = EvaluationKMove.destructure_k_index(
-                k_index=k_index,
-                is_rotate=k_rotate)
+        # Ｐ
+        ((p_srcloc,
+         p_dst_sq,
+         p_promote)) = EvaluationPMove.destructure_srcloc_dst_sq_by_p_index(
+                k_index=p_index)
+        p_move_obj = Move.from_src_dst_pro(
+                src_location=MoveSourceLocation.from_sq(
+                        sq=p_srcloc),
+                dst_location=MoveDestinationLocation.from_sq(
+                        sq=p_dst_sq),
+                promoted=p_promote,
+                is_rotate=is_p_rotate)
+
+        # Ｋ
+        (k_srcsq,
+         k_dst_sq) = EvaluationKMove.destructure_srcsq_dst_sq_by_k_index(
+                k_index=k_index)
+        k_move_obj = Move.from_src_dst_pro(
+                src_location=MoveSourceLocation.from_sq(
+                        sq=k_srcsq),
+                dst_location=MoveDestinationLocation.from_sq(
+                        sq=k_dst_sq),
+                # 玉に成りはありません
+                promoted=False,
+                is_rotate=is_k_rotate)
 
         return (k_move_obj, p_move_obj)
 

@@ -688,7 +688,7 @@ class Move():
             src_location = src_location.rotate()
             dst_location = dst_location.rotate()
 
-        return Move.from_src_dst_pro(
+        return Move(
                 as_usi=f"{Usi.srcloc_to_code(src_location.srcloc)}{dst_location.usi_code}{pro_str}",
                 src_location=src_location,
                 dst_location=dst_location,

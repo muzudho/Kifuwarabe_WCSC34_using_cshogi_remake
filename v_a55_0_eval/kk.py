@@ -4,7 +4,7 @@ import datetime
 
 from v_a55_0_eval.lib import EvaluationLib
 from v_a55_0_eval.k import EvaluationKMove
-from v_a55_0_misc.lib import FileName, Turn, Move, EvalutionMmTable
+from v_a55_0_misc.lib import FileName, Turn, MoveSourceLocation, MoveDestinationLocation, Move, EvalutionMmTable
 
 
 class EvaluationKkTable():
@@ -83,18 +83,37 @@ class EvaluationKkTable():
 
         # 評価値テーブルは先手用の形なので、後手番は１８０°回転させる必要がある
         if k_turn == cshogi.BLACK:
-            k_rotate = False
-            l_rotate = True
+            is_k_rotate = False
+            is_l_rotate = True
         else:
-            k_rotate = True
-            l_rotate = False
+            is_k_rotate = True
+            is_l_rotate = False
 
-        l_move_obj = EvaluationKMove.destructure_k_index(
-                k_index=l_index,
-                is_rotate=l_rotate)
-        k_move_obj = EvaluationKMove.destructure_k_index(
-                k_index=k_index,
-                is_rotate=k_rotate)
+        # Ｌ
+        (l_srcsq,
+         l_dst_sq) = EvaluationKMove.destructure_srcsq_dst_sq_by_k_index(
+                k_index=l_index)
+        l_move_obj = Move.from_src_dst_pro(
+                src_location=MoveSourceLocation.from_sq(
+                        sq=l_srcsq),
+                dst_location=MoveDestinationLocation.from_sq(
+                        sq=l_dst_sq),
+                # 玉に成りはありません
+                promoted=False,
+                is_rotate=is_l_rotate)
+
+        # Ｋ
+        (k_srcsq,
+         k_dst_sq) = EvaluationKMove.destructure_srcsq_dst_sq_by_k_index(
+                k_index=k_index)
+        k_move_obj = Move.from_src_dst_pro(
+                src_location=MoveSourceLocation.from_sq(
+                        sq=k_srcsq),
+                dst_location=MoveDestinationLocation.from_sq(
+                        sq=k_dst_sq),
+                # 玉に成りはありません
+                promoted=False,
+                is_rotate=is_k_rotate)
 
         return (k_move_obj, l_move_obj)
 

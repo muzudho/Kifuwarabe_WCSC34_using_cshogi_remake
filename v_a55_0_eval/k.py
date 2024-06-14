@@ -1,4 +1,4 @@
-from v_a55_0_misc.lib import MoveSourceLocation, MoveDestinationLocation, Move, BoardHelper
+from v_a55_0_misc.lib import BoardHelper
 
 
 class EvaluationKMove():
@@ -451,37 +451,3 @@ class EvaluationKMove():
         (srcsq, dst_sq) = index_to_srcsq_dst_dictionary[k_index]
 
         return (srcsq, dst_sq)
-
-
-    @staticmethod
-    def destructure_k_index(
-            k_index,
-            is_rotate):
-        """Ｋインデックス分解
-
-        Parameter
-        ---------
-        k_index : int
-            玉の指し手のインデックス
-        is_rotate : bool
-            後手なら真。指し手を１８０°回転させます
-
-        Returns
-        -------
-        - k_move_obj : Move
-            玉の指し手
-        """
-        (srcsq,
-         dst_sq) = EvaluationKMove.destructure_srcsq_dst_sq_by_k_index(
-                k_index=k_index)
-
-        k_move_obj = Move.from_src_dst_pro(
-                src_location=MoveSourceLocation.from_sq(
-                        sq=srcsq),
-                dst_location=MoveDestinationLocation.from_sq(
-                        sq=dst_sq),
-                # 玉に成りはありません
-                promoted=False,
-                is_rotate=is_rotate)
-
-        return k_move_obj
