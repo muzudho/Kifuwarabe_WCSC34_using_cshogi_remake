@@ -7,8 +7,9 @@ from     v_a55_0_eval.kk import EvaluationKkTable
 from     v_a55_0_eval.p import EvaluationPMove
 from     v_a55_0_eval.pk import EvaluationPkTable
 from     v_a55_0_misc.bit_ope import BitOpe
-from     v_a55_0_misc.lib import Turn, MoveSourceLocation, MoveDestinationLocation, Move, BoardHelper
 from     v_a55_0_misc.debug import DebugHelper
+from     v_a55_0_misc.lib import Turn, MoveSourceLocation, MoveDestinationLocation, Move, BoardHelper
+from     v_a55_0_misc.usi import Usi
 
 
 def test_k():
@@ -303,8 +304,25 @@ def test_lib():
 
 
 def test_move_rotate():
-    
+    # １８０°回転
+    src_location_u = "1g"
+    expected_rot_src_location_u = "9c"
+    src_location = MoveSourceLocation.from_code(src_location_u)
+    rot_src_location = src_location.rotate()
+    actual = Usi.srcloc_to_code(rot_src_location.srcloc)
 
+    if expected_rot_src_location_u != actual:
+        raise ValueError(f"[test move rotate]  expected:{expected_rot_src_location_u}  actual:{actual}")
+
+    # １８０°回転
+    dst_location_u = "1g"
+    expected_rot_dst_location_u = "9c"
+    dst_location = MoveDestinationLocation.from_code(dst_location_u)
+    rot_dst_location = dst_location.rotate()
+    actual = Usi.srcloc_to_code(rot_dst_location.srcloc)
+
+    if expected_rot_dst_location_u != actual:
+        raise ValueError(f"[test move rotate]  expected:{expected_rot_dst_location_u}  actual:{actual}")
 
     # １８０°回転
     move_u = "1g1f"

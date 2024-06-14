@@ -192,7 +192,7 @@ class MoveSourceLocation():
 
 
     @staticmethod
-    def from_string(code):
+    def from_code(code):
         """文字列から生成
 
         Parameters
@@ -373,7 +373,7 @@ class MoveDestinationLocation():
 
 
     @staticmethod
-    def from_string(dst_str):
+    def from_code(code):
         """文字列からオブジェクトを生成"""
         file_th = None
         rank_th = None
@@ -382,7 +382,7 @@ class MoveDestinationLocation():
         #
         # 移動先の列番号を 1 から始まる整数で返す
         #
-        file_char = dst_str[0]
+        file_char = code[0]
 
         try:
             file_th = Move._file_th_str_to_num[file_char]
@@ -392,7 +392,7 @@ class MoveDestinationLocation():
         #
         # 移動先の段番号を 1 から始まる整数で返す
         #
-        rank_char = dst_str[1]
+        rank_char = code[1]
 
         try:
             rank_th = Move._rank_str_to_th_num[rank_char]
@@ -613,12 +613,12 @@ class Move():
         """
 
         # 移動元オブジェクト生成
-        src_location = MoveSourceLocation.from_string(
+        src_location = MoveSourceLocation.from_code(
                 code=move_as_usi[0: 2])
 
         # 移動先オブジェクト生成
-        dst_location = MoveDestinationLocation.from_string(
-                dst_str=move_as_usi[2: 4])
+        dst_location = MoveDestinationLocation.from_code(
+                code=move_as_usi[2: 4])
 
         #
         # 成ったか？
