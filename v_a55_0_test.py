@@ -123,8 +123,8 @@ def test_p():
     # Ｐ
     (p_srcloc,
      p_dst_sq,
-     p_promote) = EvaluationPMove.destructure_srcloc_dst_sq_by_p_index(
-            k_index=p_index)
+     p_promote) = EvaluationPMove.destructure_srcloc_dst_sq_promoted_by_p_index(
+            p_index=p_index)
     actual_p_move_obj = Move.from_src_dst_pro(
             src_location=MoveSourceLocation.from_sq(
                     sq=p_srcloc),
