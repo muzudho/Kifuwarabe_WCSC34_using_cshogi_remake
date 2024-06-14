@@ -141,9 +141,9 @@ def test_p():
     # 元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します
     #
     (srcsq_to_dstsq_to_index_for_npsi_dictionary,
-     srcsq_to_dst_sq_to_index_for_psi_dictionary,
-     srcdrop_to_dst_sq_index,
-     index_to_srcsq_dst_sq_promotion_dictionary) = EvaluationPMove.get_src_lists_to_dst_sq_index_dictionary_tuple()
+     srcsq_to_dstsq_to_index_for_psi_dictionary,
+     srcdrop_to_dstsq_index,
+     index_to_srcsq_dstsq_promotion_dictionary) = EvaluationPMove.get_src_lists_to_dstsq_index_dictionary_tuple()
 
     base_name = "test_eval_p.log"
     print(f"please read `{base_name}` file")
@@ -160,8 +160,8 @@ def test_p():
         # 元マス・先マス to インデックス
         #
         for srcsq in range(0,81):
-            dst_sq_to_index_for_npsi_dictionary = srcsq_to_dstsq_to_index_for_npsi_dictionary[srcsq]
-            dst_sq_to_index_for_b_dictionary = srcsq_to_dst_sq_to_index_for_psi_dictionary[srcsq]
+            dstsq_to_index_for_npsi_dictionary = srcsq_to_dstsq_to_index_for_npsi_dictionary[srcsq]
+            dstsq_to_index_for_b_dictionary = srcsq_to_dstsq_to_index_for_psi_dictionary[srcsq]
 
             # 成らない指し手（no promote）の各マス　値：通しインデックス（serial index）
             label_table_for_npsi = ["    "] * 81
@@ -180,13 +180,13 @@ def test_p():
             label_table_for_npsq[srcsq] = " you"
             label_table_for_psq[srcsq] = " you"
 
-            for dst_sq, effect_index in dst_sq_to_index_for_npsi_dictionary.items():
-                label_table_for_npsi[dst_sq] = f"{effect_index:4}"
-                label_table_for_npsq[dst_sq] = f"{dst_sq:4}"
+            for dstsq, effect_index in dstsq_to_index_for_npsi_dictionary.items():
+                label_table_for_npsi[dstsq] = f"{effect_index:4}"
+                label_table_for_npsq[dstsq] = f"{dstsq:4}"
 
-            for dst_sq, effect_index in dst_sq_to_index_for_b_dictionary.items():
-                label_table_for_psi[dst_sq] = f"{effect_index:4}"
-                label_table_for_psq[dst_sq] = f"{dst_sq:4}"
+            for dstsq, effect_index in dstsq_to_index_for_b_dictionary.items():
+                label_table_for_psi[dstsq] = f"{effect_index:4}"
+                label_table_for_psq[dstsq] = f"{dstsq:4}"
 
 
             f.write(f"""src_masu:{Usi.sq_to_jsa(srcsq)}
@@ -204,12 +204,12 @@ def test_p():
         #   - 打は SFEN では駒種類毎に分かれている。 R*, B*, G*, S*, N*, L*, P*
         #
         for drop in ['R*', 'B*', 'G*', 'S*', 'N*', 'L*', 'P*']:
-            dst_sq_to_index_dictionary = srcdrop_to_dst_sq_index[drop]
+            dstsq_to_index_dictionary = srcdrop_to_dstsq_index[drop]
 
             label_table_for_drop = ['    '] * 81
 
-            for dst_sq, effect_index in dst_sq_to_index_dictionary.items():
-                label_table_for_drop[dst_sq] = f"{effect_index:4}"
+            for dstsq, effect_index in dstsq_to_index_dictionary.items():
+                label_table_for_drop[dstsq] = f"{effect_index:4}"
 
             f.write(f"""
 drop:{drop}

@@ -83,23 +83,23 @@ class EvaluationPpTable():
 
         # Ｐ２
         (p2_srcloc,
-         p2_dst_sq,
+         p2_dstsq,
          p2_promote) = EvaluationPMove.destructure_srcloc_dstsq_promoted_by_p_index(
                 p_index=p2_index)
         p2_move_obj = Move.from_src_dst_pro(
                 srcloc=p2_srcloc,
-                dstsq=p2_dst_sq,
+                dstsq=p2_dstsq,
                 promoted=p2_promote,
                 is_rotate=is_rotate)
 
         # Ｐ１
         (p1_srcloc,
-         p1_dst_sq,
+         p1_dstsq,
          p1_promote) = EvaluationPMove.destructure_srcloc_dstsq_promoted_by_p_index(
                 p_index=p1_index)
         p1_move_obj = Move.from_src_dst_pro(
                 srcloc=p1_srcloc,
-                dstsq=p1_dst_sq,
+                dstsq=p1_dstsq,
                 promoted=p1_promote,
                 is_rotate=is_rotate)
 

@@ -115,18 +115,18 @@ class EvaluationPMove():
     _srcsq_to_dstsq_to_index_for_npsi_dictionary = None
     """先手成らず（no promote）　通しインデックス（serial index）"""
 
-    _srcsq_to_dst_sq_to_index_for_psi_dictionary = None
+    _srcsq_to_dstsq_to_index_for_psi_dictionary = None
     """先手成り（promote）　通しインデックス（serial index）"""
 
-    _srcdrop_to_dst_sq_index = None
+    _srcdrop_to_dstsq_index = None
     """先手持ち駒 to （移動先 to 通し番号）"""
 
-    _index_to_srcloc_dst_sq_promotion_dictionary = None
+    _index_to_srcloc_dstsq_promotion_dictionary = None
     """通しインデックスを渡すと、移動元、移動先、成りか、を返す辞書"""
 
 
     @classmethod
-    def get_src_lists_to_dst_sq_index_dictionary_tuple(clazz):
+    def get_src_lists_to_dstsq_index_dictionary_tuple(clazz):
 
         # 未生成なら生成（重い処理は１回だけ）
         if clazz._srcsq_to_dstsq_to_index_for_npsi_dictionary == None:
@@ -134,13 +134,13 @@ class EvaluationPMove():
             clazz._srcsq_to_dstsq_to_index_for_npsi_dictionary = dict()
 
             # 先手成り（promote）　通しインデックス（serial index）
-            clazz._srcsq_to_dst_sq_to_index_for_psi_dictionary = dict()
+            clazz._srcsq_to_dstsq_to_index_for_psi_dictionary = dict()
 
             # 持ち駒 to （移動先 to 通し番号）
-            clazz._srcdrop_to_dst_sq_index = dict()
+            clazz._srcdrop_to_dstsq_index = dict()
 
             # 通しインデックスを渡すと、移動元、移動先、成りか、を返す辞書
-            clazz._index_to_srcloc_dst_sq_promotion_dictionary = dict()
+            clazz._index_to_srcloc_dstsq_promotion_dictionary = dict()
 
             # 通しのインデックス
             effect_index = 0
@@ -152,17 +152,17 @@ class EvaluationPMove():
                             file=src_file,
                             rank=src_rank)
 
-                    dst_sq_to_index_for_npsi_dictionary = dict()
-                    dst_sq_to_index_for_b_dictionary = dict()
+                    dstsq_to_index_for_npsi_dictionary = dict()
+                    dstsq_to_index_for_b_dictionary = dict()
 
-                    clazz._srcsq_to_dstsq_to_index_for_npsi_dictionary[srcsq] = dst_sq_to_index_for_npsi_dictionary
-                    clazz._srcsq_to_dstsq_to_index_for_psi_dictionary[srcsq] = dst_sq_to_index_for_b_dictionary
+                    clazz._srcsq_to_dstsq_to_index_for_npsi_dictionary[srcsq] = dstsq_to_index_for_npsi_dictionary
+                    clazz._srcsq_to_dstsq_to_index_for_psi_dictionary[srcsq] = dstsq_to_index_for_b_dictionary
 
                     # 成らないことができる移動先
-                    no_pro_dst_sq_set = set()
+                    no_pro_dstsq_set = set()
 
                     # 成ることができる移動先
-                    pro_dst_sq_set = set()
+                    pro_dstsq_set = set()
 
                     #
                     # 飛車の動き
@@ -173,52 +173,52 @@ class EvaluationPMove():
                         # 上
                         next_rank = src_rank-delta_rank
                         if 0 <= next_rank:
-                            dst_sq = BoardHelper.get_sq_by_file_rank(
+                            dstsq = BoardHelper.get_sq_by_file_rank(
                                     file=src_file,
                                     rank=next_rank)
-                            no_pro_dst_sq_set.add(dst_sq)
+                            no_pro_dstsq_set.add(dstsq)
 
                             # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
                             if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
-                                pro_dst_sq_set.add(dst_sq)
+                                pro_dstsq_set.add(dstsq)
 
                         # 下
                         next_rank = src_rank+delta_rank
                         if next_rank < 9:
-                            dst_sq = BoardHelper.get_sq_by_file_rank(
+                            dstsq = BoardHelper.get_sq_by_file_rank(
                                     file=src_file,
                                     rank=next_rank)
-                            no_pro_dst_sq_set.add(dst_sq)
+                            no_pro_dstsq_set.add(dstsq)
 
                             # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
                             if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
-                                pro_dst_sq_set.add(dst_sq)
+                                pro_dstsq_set.add(dstsq)
 
                     # 水平
                     for delta_file in range(1,9):
                         # 右
                         next_file = src_file-delta_file
                         if 0 <= next_file:
-                            dst_sq = BoardHelper.get_sq_by_file_rank(
+                            dstsq = BoardHelper.get_sq_by_file_rank(
                                     file=next_file,
                                     rank=src_rank)
-                            no_pro_dst_sq_set.add(dst_sq)
+                            no_pro_dstsq_set.add(dstsq)
 
                             # １段目～３段目の水平の動きなら、成ることができる
                             if 0 <= src_rank and src_rank < 3:
-                                pro_dst_sq_set.add(dst_sq)
+                                pro_dstsq_set.add(dstsq)
 
                         # 左
                         next_file = src_file+delta_file
                         if next_file < 9:
-                            dst_sq = BoardHelper.get_sq_by_file_rank(
+                            dstsq = BoardHelper.get_sq_by_file_rank(
                                     file=next_file,
                                     rank=src_rank)
-                            no_pro_dst_sq_set.add(dst_sq)
+                            no_pro_dstsq_set.add(dstsq)
 
                             # １段目～３段目の水平の動きなら、成ることができる
                             if 0 <= src_rank and src_rank < 3:
-                                pro_dst_sq_set.add(dst_sq)
+                                pro_dstsq_set.add(dstsq)
 
                     #
                     # 角の動き
@@ -228,53 +228,53 @@ class EvaluationPMove():
                         next_file = src_file-delta
                         next_rank = src_rank-delta
                         if 0 <= next_file and 0 <= next_rank:
-                            dst_sq = BoardHelper.get_sq_by_file_rank(
+                            dstsq = BoardHelper.get_sq_by_file_rank(
                                     file=next_file,
                                     rank=next_rank)
-                            no_pro_dst_sq_set.add(dst_sq)
+                            no_pro_dstsq_set.add(dstsq)
 
                             # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
                             if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
-                                pro_dst_sq_set.add(dst_sq)
+                                pro_dstsq_set.add(dstsq)
 
                         # 右下
                         next_file = src_file-delta
                         next_rank = src_rank+delta
                         if 0 <= next_file and next_rank < 9:
-                            dst_sq = BoardHelper.get_sq_by_file_rank(
+                            dstsq = BoardHelper.get_sq_by_file_rank(
                                     file=next_file,
                                     rank=next_rank)
-                            no_pro_dst_sq_set.add(dst_sq)
+                            no_pro_dstsq_set.add(dstsq)
 
                             # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
                             if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
-                                pro_dst_sq_set.add(dst_sq)
+                                pro_dstsq_set.add(dstsq)
 
                         # 左上
                         next_file = src_file+delta
                         next_rank = src_rank-delta
                         if next_file < 9 and 0 <= next_rank:
-                            dst_sq = BoardHelper.get_sq_by_file_rank(
+                            dstsq = BoardHelper.get_sq_by_file_rank(
                                     file=next_file,
                                     rank=next_rank)
-                            no_pro_dst_sq_set.add(dst_sq)
+                            no_pro_dstsq_set.add(dstsq)
 
                             # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
                             if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
-                                pro_dst_sq_set.add(dst_sq)
+                                pro_dstsq_set.add(dstsq)
 
                         # 左下
                         next_file = src_file+delta
                         next_rank = src_rank+delta
                         if next_file < 9 and next_rank < 9:
-                            dst_sq = BoardHelper.get_sq_by_file_rank(
+                            dstsq = BoardHelper.get_sq_by_file_rank(
                                     file=next_file,
                                     rank=next_rank)
-                            no_pro_dst_sq_set.add(dst_sq)
+                            no_pro_dstsq_set.add(dstsq)
 
                             # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
                             if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
-                                pro_dst_sq_set.add(dst_sq)
+                                pro_dstsq_set.add(dstsq)
 
                     #
                     # 桂馬の動き
@@ -284,42 +284,42 @@ class EvaluationPMove():
                     next_file = src_file-1
                     next_rank = src_rank-2
                     if 0 <= next_file and 0 <= next_rank:
-                        dst_sq = BoardHelper.get_sq_by_file_rank(
+                        dstsq = BoardHelper.get_sq_by_file_rank(
                                 file=next_file,
                                 rank=next_rank)
-                        no_pro_dst_sq_set.add(dst_sq)
+                        no_pro_dstsq_set.add(dstsq)
 
                         # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
                         if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
-                            pro_dst_sq_set.add(dst_sq)
+                            pro_dstsq_set.add(dstsq)
 
                     # 先手左上
                     next_file = src_file+1
                     next_rank = src_rank-2
                     if next_file < 9 and 0 <= next_rank:
-                        dst_sq = BoardHelper.get_sq_by_file_rank(
+                        dstsq = BoardHelper.get_sq_by_file_rank(
                                 file=next_file,
                                 rank=next_rank)
-                        no_pro_dst_sq_set.add(dst_sq)
+                        no_pro_dstsq_set.add(dstsq)
 
                         # 移動元が１段目～３段目か、移動先が１段目～３段目なら、成ることができる
                         if (0 <= src_rank and src_rank < 3) or (0 <= next_rank and next_rank < 3):
-                            pro_dst_sq_set.add(dst_sq)
+                            pro_dstsq_set.add(dstsq)
 
                     #
                     # マス番号を昇順に並べ替える
                     #
-                    no_pro_dst_sq_list = sorted(list(no_pro_dst_sq_set))
-                    pro_dst_sq_list = sorted(list(pro_dst_sq_set))
+                    no_pro_dstsq_list = sorted(list(no_pro_dstsq_set))
+                    pro_dstsq_list = sorted(list(pro_dstsq_set))
 
-                    for dst_sq in no_pro_dst_sq_list:
-                        dst_sq_to_index_for_npsi_dictionary[dst_sq] = effect_index
-                        clazz._index_to_srcloc_dst_sq_promotion_dictionary[effect_index] = (srcsq, dst_sq, False)
+                    for dstsq in no_pro_dstsq_list:
+                        dstsq_to_index_for_npsi_dictionary[dstsq] = effect_index
+                        clazz._index_to_srcloc_dstsq_promotion_dictionary[effect_index] = (srcsq, dstsq, False)
                         effect_index += 1
 
-                    for dst_sq in pro_dst_sq_list:
-                        dst_sq_to_index_for_b_dictionary[dst_sq] = effect_index
-                        clazz._index_to_srcloc_dst_sq_promotion_dictionary[effect_index] = (srcsq, dst_sq, True)
+                    for dstsq in pro_dstsq_list:
+                        dstsq_to_index_for_b_dictionary[dstsq] = effect_index
+                        clazz._index_to_srcloc_dstsq_promotion_dictionary[effect_index] = (srcsq, dstsq, True)
                         effect_index += 1
 
 
@@ -328,9 +328,9 @@ class EvaluationPMove():
                 #
                 # 移動先 to 通し番号
                 #
-                dst_sq_to_index = dict()
+                dstsq_to_index = dict()
 
-                clazz._srcdrop_to_dst_sq_index[Usi.code_to_srcloc(drop_str)] = dst_sq_to_index
+                clazz._srcdrop_to_dstsq_index[Usi.code_to_srcloc(drop_str)] = dstsq_to_index
 
                 if drop_str == 'N*':
                     min_rank = 2
@@ -344,19 +344,19 @@ class EvaluationPMove():
 
                 for dst_file in range(0,9):
                     for dst_rank in range(min_rank,9):
-                        dst_sq = BoardHelper.get_sq_by_file_rank(
+                        dstsq = BoardHelper.get_sq_by_file_rank(
                                 file=dst_file,
                                 rank=dst_rank)
 
                         # 格納
-                        dst_sq_to_index[dst_sq] = effect_index
-                        clazz._index_to_srcloc_dst_sq_promotion_dictionary[effect_index] = (Usi.code_to_srcloc(drop_str), dst_sq, False)
+                        dstsq_to_index[dstsq] = effect_index
+                        clazz._index_to_srcloc_dstsq_promotion_dictionary[effect_index] = (Usi.code_to_srcloc(drop_str), dstsq, False)
                         effect_index += 1
 
         return (clazz._srcsq_to_dstsq_to_index_for_npsi_dictionary,
-                clazz._srcsq_to_dst_sq_to_index_for_psi_dictionary,
-                clazz._srcdrop_to_dst_sq_index,
-                clazz._index_to_srcloc_dst_sq_promotion_dictionary)
+                clazz._srcsq_to_dstsq_to_index_for_psi_dictionary,
+                clazz._srcdrop_to_dstsq_index,
+                clazz._index_to_srcloc_dstsq_promotion_dictionary)
 
 
     def get_serial_number_size():
@@ -396,22 +396,22 @@ class EvaluationPMove():
 
         # 元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します
         (srcsq_to_dstsq_to_index_for_npsi_dictionary,
-         srcsq_to_dst_sq_to_index_for_psi_dictionary,
-         srcdrop_to_dst_sq_index,
-         index_to_srcloc_dst_sq_promotion_dictionary) = EvaluationPMove.get_src_lists_to_dst_sq_index_dictionary_tuple()
+         srcsq_to_dstsq_to_index_for_psi_dictionary,
+         srcdrop_to_dstsq_index,
+         index_to_srcloc_dstsq_promotion_dictionary) = EvaluationPMove.get_src_lists_to_dstsq_index_dictionary_tuple()
 
 
         # 打か
         if Usi.is_drop_by_srcloc(p_move_obj.srcloc):
             try:
-                dst_sq_to_index_dictionary = srcdrop_to_dst_sq_index[p_move_obj.srcloc]
+                dstsq_to_index_dictionary = srcdrop_to_dstsq_index[p_move_obj.srcloc]
 
             except KeyError as ex:
                 print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  P srcloc_u:{Usi.srcloc_to_code(p_move_obj.srcloc)}  rotated:{is_rotate}  p_src_masu:{Usi.srcloc_to_jsa(p_srcloc)}  成:{p_move_obj.promoted}  ex:{ex}")
                 raise
 
             try:
-                p_index = dst_sq_to_index_dictionary[p_dstsq]
+                p_index = dstsq_to_index_dictionary[p_dstsq]
 
             except KeyError as ex:
                 print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  P srcloc_u:{Usi.srcloc_to_code(p_move_obj.srcloc)}  rotated:{is_rotate}  p_src_masu:{Usi.srcloc_to_jsa(p_srcloc)}  成:{p_move_obj.promoted}  p_dst_masu:{Usi.sq_to_jsa(p_dstsq)}  ex:{ex}")
@@ -422,14 +422,14 @@ class EvaluationPMove():
             p_srcsq = p_srcloc
 
             try:
-                dst_sq_to_index_dictionary = srcsq_to_dst_sq_to_index_for_psi_dictionary[p_srcsq]
+                dstsq_to_index_dictionary = srcsq_to_dstsq_to_index_for_psi_dictionary[p_srcsq]
 
             except KeyError as ex:
                 print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  P srcloc_u:{Usi.srcloc_to_code(p_move_obj.srcloc)}  rotated:{is_rotate}  p_src_masu:{Usi.srcloc_to_jsa(p_srcsq)}  成:{p_move_obj.promoted}  ex:{ex}")
                 raise
 
             try:
-                p_index = dst_sq_to_index_dictionary[p_dstsq]
+                p_index = dstsq_to_index_dictionary[p_dstsq]
 
             except KeyError as ex:
                 print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  P srcloc_u:{Usi.srcloc_to_code(p_move_obj.srcloc)}  rotated:{is_rotate}  p_src_masu:{Usi.srcloc_to_jsa(p_srcsq)}  成:{p_move_obj.promoted}  p_dst_masu:{Usi.sq_to_jsa(p_dstsq)}  ex:{ex}")
@@ -440,14 +440,14 @@ class EvaluationPMove():
             p_srcsq = p_srcloc
 
             try:
-                dst_sq_to_index_dictionary = srcsq_to_dstsq_to_index_for_npsi_dictionary[p_srcsq]
+                dstsq_to_index_dictionary = srcsq_to_dstsq_to_index_for_npsi_dictionary[p_srcsq]
 
             except KeyError as ex:
                 print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  P srcloc_u:{Usi.srcloc_to_code(p_move_obj.srcloc)}  rotated:{is_rotate}  p_src_masu:{Usi.srcloc_to_jsa(p_srcsq)}  成:{p_move_obj.promoted}  ex:{ex}")
                 raise
 
             try:
-                p_index = dst_sq_to_index_dictionary[p_dstsq]
+                p_index = dstsq_to_index_dictionary[p_dstsq]
 
             except KeyError as ex:
                 print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  P srcloc_u:{Usi.srcloc_to_code(p_move_obj.srcloc)}  rotated:{is_rotate}  p_src_masu:{Usi.srcloc_to_jsa(p_srcsq)}  成:{p_move_obj.promoted}  p_dst_masu:{Usi.sq_to_jsa(p_dstsq)}  ex:{ex}")
@@ -474,24 +474,24 @@ class EvaluationPMove():
         -------
         - srcloc : int
             移動元マス番号、または打つ駒種類の番号
-        - dst_sq : int
+        - dstsq : int
             移動先マス番号
         - promoted : bool
             成る手か？
         """
         # マスの通し番号を渡すと、元マスと移動先マスを返す入れ子の辞書を返します
         (srcsq_to_dstsq_to_index_for_npsi_dictionary,
-         srcsq_to_dst_sq_to_index_for_psi_dictionary,
-         srcdrop_to_dst_sq_index,
-         index_to_srcloc_dst_sq_promotion_dictionary) = EvaluationPMove.get_src_lists_to_dst_sq_index_dictionary_tuple()
+         srcsq_to_dstsq_to_index_for_psi_dictionary,
+         srcdrop_to_dstsq_index,
+         index_to_srcloc_dstsq_promotion_dictionary) = EvaluationPMove.get_src_lists_to_dstsq_index_dictionary_tuple()
 
         (srcloc,
-         dst_sq,
-         promoted) = index_to_srcloc_dst_sq_promotion_dictionary[p_index]
+         dstsq,
+         promoted) = index_to_srcloc_dstsq_promotion_dictionary[p_index]
 
         # assert: srcloc は数だ
         temp = srcloc + 1
 
         return (srcloc,
-                dst_sq,
+                dstsq,
                 promoted)

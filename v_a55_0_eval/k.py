@@ -132,7 +132,7 @@ class EvaluationKMove():
                 clazz._src_to_dst_index_dictionary[srcsq] = dstsq_to_index_dictionary
 
                 # 利きのマスの集合
-                dst_sq_set = set()
+                dstsq_set = set()
 
                 # 元マスの座標
                 (src_file,
@@ -146,7 +146,7 @@ class EvaluationKMove():
                 dst_file = src_file + right_file
                 dst_rank = src_rank + top_rank
                 if 0 <= dst_file and 0 <= dst_rank:
-                    dst_sq_set.add(BoardHelper.get_sq_by_file_rank(
+                    dstsq_set.add(BoardHelper.get_sq_by_file_rank(
                             file=dst_file,
                             rank=dst_rank))
 
@@ -154,7 +154,7 @@ class EvaluationKMove():
                 dst_file = src_file + right_file
                 dst_rank = src_rank
                 if 0 <= dst_file:
-                    dst_sq_set.add(BoardHelper.get_sq_by_file_rank(
+                    dstsq_set.add(BoardHelper.get_sq_by_file_rank(
                             file=dst_file,
                             rank=dst_rank))
 
@@ -162,7 +162,7 @@ class EvaluationKMove():
                 dst_file = src_file + right_file
                 dst_rank = src_rank + bottom_rank
                 if 0 <= dst_file and dst_rank < 9:
-                    dst_sq_set.add(BoardHelper.get_sq_by_file_rank(
+                    dstsq_set.add(BoardHelper.get_sq_by_file_rank(
                             file=dst_file,
                             rank=dst_rank))
 
@@ -170,7 +170,7 @@ class EvaluationKMove():
                 dst_file = src_file
                 dst_rank = src_rank + top_rank
                 if 0 <= dst_rank:
-                    dst_sq_set.add(BoardHelper.get_sq_by_file_rank(
+                    dstsq_set.add(BoardHelper.get_sq_by_file_rank(
                             file=dst_file,
                             rank=dst_rank))
 
@@ -178,7 +178,7 @@ class EvaluationKMove():
                 dst_file = src_file
                 dst_rank = src_rank + bottom_rank
                 if dst_rank < 9:
-                    dst_sq_set.add(BoardHelper.get_sq_by_file_rank(
+                    dstsq_set.add(BoardHelper.get_sq_by_file_rank(
                             file=dst_file,
                             rank=dst_rank))
 
@@ -186,7 +186,7 @@ class EvaluationKMove():
                 dst_file = src_file + left_file
                 dst_rank = src_rank + top_rank
                 if dst_file < 9 and 0 <= dst_rank:
-                    dst_sq_set.add(BoardHelper.get_sq_by_file_rank(
+                    dstsq_set.add(BoardHelper.get_sq_by_file_rank(
                             file=dst_file,
                             rank=dst_rank))
 
@@ -194,7 +194,7 @@ class EvaluationKMove():
                 dst_file = src_file + left_file
                 dst_rank = src_rank
                 if dst_file < 9:
-                    dst_sq_set.add(BoardHelper.get_sq_by_file_rank(
+                    dstsq_set.add(BoardHelper.get_sq_by_file_rank(
                             file=dst_file,
                             rank=dst_rank))
 
@@ -202,19 +202,19 @@ class EvaluationKMove():
                 dst_file = src_file + left_file
                 dst_rank = src_rank + bottom_rank
                 if dst_file < 9 and dst_rank < 9:
-                    dst_sq_set.add(BoardHelper.get_sq_by_file_rank(
+                    dstsq_set.add(BoardHelper.get_sq_by_file_rank(
                             file=dst_file,
                             rank=dst_rank))
 
                 #
                 # マス番号を昇順に並べ替える
                 #
-                dst_sq_list = sorted(list(dst_sq_set))
+                dstsq_list = sorted(list(dstsq_set))
 
                 #
                 # 左表の利きのマスに、通し番号を振っていく
                 #
-                for dstsq in dst_sq_list:
+                for dstsq in dstsq_list:
                     #print(f"[昇順] dstsq={dstsq}")
 
                     dstsq_to_index_dictionary[dstsq] = effect_serial_index
@@ -293,8 +293,8 @@ class EvaluationKMove():
             k_index = dstsq_to_index_dictionary[k_dstsq]
 
         except KeyError as ex:
-            # k_move_obj.as_usi:5a5b  k_srcsq:36  dst_sq:37
-            # k_move_obj.as_usi:5a4b  is_rotate:True  k_srcsq:44  dst_sq:52  src_masu:59  dst_masu:68  ex:28
+            # k_move_obj.as_usi:5a5b  k_srcsq:36  dstsq:37
+            # k_move_obj.as_usi:5a4b  is_rotate:True  k_srcsq:44  dstsq:52  src_masu:59  dst_masu:68  ex:28
             # k_move_obj.as_usi:6g4e  rotated:True  k_srcsq:29  k_dstsq:49  src_masu:43  dst_masu:65  ex:49
             # k_move_obj.as_usi:8i6g  rotated:True  len(dstsq_to_index_dictionary):5  k_src_masu:21  k_dst_masu:43  k_srcsq:9  k_dstsq:29  ex:29
             # [evaluation k move > get index by k move]  k_dstsq error. k_move_obj.as_usi:2h6h  rotated:True  len(dstsq_to_index_dictionary):8  k_src_masu:82  k_dst_masu:42  k_srcsq:64  k_dstsq:28  ex:28
@@ -329,7 +329,7 @@ class EvaluationKMove():
         -------
         - srcsq : int
             移動元マスの番号
-        - dst_sq : int
+        - dstsq : int
             移動先マスの番号
         """
         # マスの通し番号を渡すと、元マスと移動先マスを返す入れ子の辞書を返します
