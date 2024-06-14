@@ -129,3 +129,28 @@ class Usi():
             盤上のマス番号 0～80、または打つ駒の種類 81～87
         """
         return 80 <= srcloc and srcloc <= 87
+
+
+    @staticmethod
+    def srcloc_to_file_th_rank_th(srcloc):
+        """元位置番号を渡すと、 1 から始まる筋番号と、 1 から始まる段番号のタプルを返します"""
+        if Usi.is_drop_by_srcloc(srcloc):
+            raise ValueError("[usi > srcloc to file_th rank th] 打はマス番号に変換できません")
+
+        return (srcloc // 9 + 1,
+                srcloc % 9 + 1)
+
+
+    @staticmethod
+    def srcloc_to_sq(srcloc):
+        """元位置番号を受け取ると、マス番号を返します
+
+        Returns
+        -------
+        sq : int
+            マス番号。 0～80
+        """
+        if Usi.is_drop_by_srcloc(srcloc):
+            raise ValueError("[usi > srcloc to sq] 打はマス番号に変換できません")
+
+        return srcloc

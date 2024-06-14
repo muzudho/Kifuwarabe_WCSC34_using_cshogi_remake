@@ -152,7 +152,6 @@ class MoveSourceLocation():
 
         return MoveSourceLocation(
                 srcloc=sq,
-                sq=sq,
                 file_th=file_th,
                 rank_th=rank_th)
 
@@ -164,16 +163,13 @@ class MoveSourceLocation():
         Parameter
         ---------
         srcloc : int
-            マス番号か、打の駒種類の番号のどちらか
+            盤上のマス番号 0～80、または、打の駒種類の番号 81～87 のどちらか
         """
-
-        # TODO そもそも、この打とマス番号を分けるようにしなくていいようなフローにできないか？
 
         # 打なら
         if 81 <= srcloc:
             return MoveSourceLocation(
                     srcloc=srcloc,
-                    sq=None,
                     file_th=None,
                     rank_th=None)
 
@@ -183,7 +179,6 @@ class MoveSourceLocation():
 
             return MoveSourceLocation(
                     srcloc=srcloc,
-                    sq=int(srcloc),
                     file_th=file_th,
                     rank_th=rank_th)
 
@@ -199,7 +194,6 @@ class MoveSourceLocation():
         """
         file_th=None
         rank_th=None
-        sq=None
 
         #
         # 移動元の列番号を 1 から始まる整数で返す。打にはマス番号は無い
@@ -224,17 +218,8 @@ class MoveSourceLocation():
             except:
                 raise Exception(f"src rank error: `{rank_str}` in code:'{code}'")
 
-        #
-        # 移動元のマス番号を基数で。打なら None が入る
-        #
-        if file_th is not None and rank_th is not None:
-            sq = (file_th - 1) * 9 + (rank_th - 1)
-        else:
-            sq = None
-
         return MoveSourceLocation(
                 srcloc=Usi.code_to_srcloc(code),
-                sq=sq,
                 file_th=file_th,
                 rank_th=rank_th)
 
@@ -242,7 +227,6 @@ class MoveSourceLocation():
     def __init__(
             self,
             srcloc,
-            sq,
             file_th,
             rank_th):
         """初期化
@@ -251,8 +235,6 @@ class MoveSourceLocation():
         ----------
         srcloc : int
             盤上のマス番号（0 ～ 80）、または打つ駒の種類番号（81 ～ 87）
-        sq : int
-            マス番号。 0～80
         file_th : int
             列番号。 1 から始まる整数で返す。打には None を入れる
         rank_th : int
@@ -261,7 +243,6 @@ class MoveSourceLocation():
 
         try:
             self._srcloc = srcloc
-            self._sq = sq
             self._file_th = file_th
             self._rank_th = rank_th
 
@@ -271,27 +252,25 @@ class MoveSourceLocation():
             # 盤上のマス
             if self._srcloc <= 80:
                 self._rot_srcloc = self._srcloc
-                self._rot_sq = None
                 self._rot_file_th = None
                 self._rot_rank_th = None
 
             else:
                 self._rot_srcloc = 80 - self._srcloc
-                self._rot_sq = 80 - self._sq
                 self._rot_file_th = 10 - self._file_th
                 self._rot_rank_th = 10 - self._rank_th
 
 
         except TypeError as ex:
-            # file_th:1  rank_th:7  sq:6  ex:unsupported operand type(s) for -: 'tuple' and 'int'
-            print(f"[move source location > __init__]  file_th:{file_th}  rank_th:{rank_th}  sq:{sq}  ex:{ex}")
+            # file_th:1  rank_th:7  ex:unsupported operand type(s) for -: 'tuple' and 'int'
+            print(f"[move source location > __init__]  file_th:{file_th}  rank_th:{rank_th}  ex:{ex}")
             raise
 
 
     def dump(self):
         return f"""\
-_srcloc:{self._srcloc}
-_masu:{BoardHelper.sq_to_jsa(self._sq)}
+srcloc  :{self._srcloc}
+srcloc_u:{Usi.srcloc_to_code(self._srcloc)}
 _file_th:{self._file_th}
 _rank_th:{self._rank_th}
 is_drop?:{Usi.is_drop_by_srcloc(self._srcloc)}
@@ -320,12 +299,6 @@ _rot_rank_th:{self._rot_rank_th}
 
 
     @property
-    def sq(self):
-        """移動元のマス番号を 0 から始まる整数で返す。打には None を入れる"""
-        return self._sq
-
-
-    @property
     def rot_file_th(self):
         """指し手を盤上で１８０°回転したときの列番号。 1 から始まる整数で返す。打なら None を返す"""
         return self._rot_file_th
@@ -338,12 +311,6 @@ _rot_rank_th:{self._rot_rank_th}
 
 
     @property
-    def rot_sq(self):
-        """指し手を盤上で１８０°回転したときのマス番号。 0 から始まる整数で返す。打なら None を返す"""
-        return self._rot_sq
-
-
-    @property
     def rot_srcloc(self):
         """指し手を盤上で１８０°回転したときの元位置番号。 0 から始まる整数で返す。打なら、回転させずに返す"""
         return self._rot_srcloc
@@ -353,7 +320,6 @@ _rot_rank_th:{self._rot_rank_th}
         """指し手を盤上で１８０°回転"""
         return MoveSourceLocation(
                 srcloc=self._rot_srcloc,
-                sq=self._rot_sq,
                 file_th=self._rot_file_th,
                 rank_th=self._rot_rank_th)
 
