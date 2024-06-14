@@ -153,7 +153,6 @@ class MoveSourceLocation():
         return MoveSourceLocation(
                 srcloc=sq,
                 sq=sq,
-                drop=None,
                 file_th=file_th,
                 rank_th=rank_th)
 
@@ -175,7 +174,6 @@ class MoveSourceLocation():
             return MoveSourceLocation(
                     srcloc=srcloc,
                     sq=None,
-                    drop=srcloc,
                     file_th=None,
                     rank_th=None)
 
@@ -186,7 +184,6 @@ class MoveSourceLocation():
             return MoveSourceLocation(
                     srcloc=srcloc,
                     sq=int(srcloc),
-                    drop=None,
                     file_th=file_th,
                     rank_th=rank_th)
 
@@ -203,7 +200,6 @@ class MoveSourceLocation():
         file_th=None
         rank_th=None
         sq=None
-        drop=None
 
         #
         # 移動元の列番号を 1 から始まる整数で返す。打にはマス番号は無い
@@ -212,11 +208,9 @@ class MoveSourceLocation():
         if code in Usi.get_srcdrop_str_list():
             file_th = None
             rank_th = None
-            drop = code
 
         else:
             file_str = code[0]
-            drop = None
 
             try:
                 file_th = Move._file_th_str_to_num[file_str]
@@ -241,7 +235,6 @@ class MoveSourceLocation():
         return MoveSourceLocation(
                 srcloc=Usi.code_to_srcloc(code),
                 sq=sq,
-                drop=drop,
                 file_th=file_th,
                 rank_th=rank_th)
 
@@ -250,7 +243,6 @@ class MoveSourceLocation():
             self,
             srcloc,
             sq,
-            drop,
             file_th,
             rank_th):
         """初期化
@@ -261,8 +253,6 @@ class MoveSourceLocation():
             盤上のマス番号（0 ～ 80）、または打つ駒の種類番号（81 ～ 87）
         sq : int
             マス番号。 0～80
-        drop : str
-            打の駒種類
         file_th : int
             列番号。 1 から始まる整数で返す。打には None を入れる
         rank_th : int
@@ -272,35 +262,42 @@ class MoveSourceLocation():
         try:
             self._srcloc = srcloc
             self._sq = sq
-            self._drop = drop
             self._file_th = file_th
             self._rank_th = rank_th
 
             #
             # １８０°回転
             #
-            self._rot_file_th = 10 - self._file_th
-            self._rot_rank_th = 10 - self._rank_th
-            self._rot_sq = 80 - self._sq
+            # 盤上のマス
+            if self._srcloc <= 80:
+                self._rot_srcloc = self._srcloc
+                self._rot_sq = None
+                self._rot_file_th = None
+                self._rot_rank_th = None
+
+            else:
+                self._rot_srcloc = 80 - self._srcloc
+                self._rot_sq = 80 - self._sq
+                self._rot_file_th = 10 - self._file_th
+                self._rot_rank_th = 10 - self._rank_th
 
 
         except TypeError as ex:
-            # file_th:1  rank_th:7  sq:6  drop:None  ex:unsupported operand type(s) for -: 'tuple' and 'int'
-            print(f"[move source location > __init__]  file_th:{file_th}  rank_th:{rank_th}  sq:{sq}  drop:{drop}  ex:{ex}")
+            # file_th:1  rank_th:7  sq:6  ex:unsupported operand type(s) for -: 'tuple' and 'int'
+            print(f"[move source location > __init__]  file_th:{file_th}  rank_th:{rank_th}  sq:{sq}  ex:{ex}")
             raise
 
 
     def dump(self):
         return f"""\
 _srcloc:{self._srcloc}
-_sq:{self._sq}
-_drop:{self._drop}
-is_drop?:{self.is_drop()}
+_masu:{BoardHelper.sq_to_jsa(self._sq)}
 _file_th:{self._file_th}
 _rank_th:{self._rank_th}
+is_drop?:{self.is_drop()}
+_rot_masu:{BoardHelper.sq_to_jsa(self._rot_sq)}
 _rot_file_th:{self._rot_file_th}
 _rot_rank_th:{self._rot_rank_th}
-_rot_sq:{self._rot_sq}
 """
 
 
@@ -318,7 +315,7 @@ _rot_sq:{self._rot_sq}
 
     @property
     def srcloc(self):
-        """USI 形式の指し手符号の先頭2文字。盤上のマス、または打つ駒の種類"""
+        """盤上のマス番号 0～80、または打つ駒の種類の番号 81～87"""
         return self._srcloc
 
 
@@ -326,12 +323,6 @@ _rot_sq:{self._rot_sq}
     def sq(self):
         """移動元のマス番号を 0 から始まる整数で返す。打には None を入れる"""
         return self._sq
-
-
-    @property
-    def drop(self):
-        """打なら "R*" などを入れる。打でなければ None を入れる"""
-        return self._drop
 
 
     @property
@@ -352,18 +343,22 @@ _rot_sq:{self._rot_sq}
         return self._rot_sq
 
 
+    @property
+    def rot_srcloc(self):
+        """指し手を盤上で１８０°回転したときの元位置番号。 0 から始まる整数で返す。打なら、回転させずに返す"""
+        return self._rot_srcloc
+
+
     def is_drop(self):
         """駒を打つ手か？"""
-        return self._drop is not None
+        return 81 <= self._srcloc and self._srcloc <= 87
 
 
     def rotate(self):
         """指し手を盤上で１８０°回転"""
         return MoveSourceLocation(
-                srcloc=self._srcloc,
+                srcloc=self._rot_srcloc,
                 sq=self._rot_sq,
-                # 打の駒種類は回転しません
-                drop=self._drop,
                 file_th=self._rot_file_th,
                 rank_th=self._rot_rank_th)
 

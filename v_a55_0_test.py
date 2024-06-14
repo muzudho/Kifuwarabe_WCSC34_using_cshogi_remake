@@ -316,6 +316,7 @@ def test_move_rotate():
     rot_src_location = src_location.rotate()
     actual = Usi.srcloc_to_code(rot_src_location.srcloc)
     if expected_rot_src_location_u != actual:
+        print(f"[test move rotate]  src_location.dump():{src_location.dump()}")
         raise ValueError(f"[test move rotate]  expected:{expected_rot_src_location_u}  actual:{actual}")
 
     # １８０°回転
