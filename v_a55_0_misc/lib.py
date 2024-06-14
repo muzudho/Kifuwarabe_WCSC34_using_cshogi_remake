@@ -142,158 +142,6 @@ class Promotion():
             return ''
 
 
-class MoveDestinationLocation():
-    """移動先マス"""
-
-
-    @staticmethod
-    def from_code(code):
-        """文字列からオブジェクトを生成"""
-        file_th = None
-        rank_th = None
-        sq = None
-
-        #
-        # 移動先の列番号を 1 から始まる整数で返す
-        #
-        file_char = code[0]
-
-        try:
-            file_th = Move._file_th_str_to_num[file_char]
-        except:
-            raise Exception(f"dst file error: `{file_char}` in dst_str:`{code}`")
-
-        #
-        # 移動先の段番号を 1 から始まる整数で返す
-        #
-        rank_char = code[1]
-
-        try:
-            rank_th = Move._rank_str_to_th_num[rank_char]
-        except:
-            raise Exception(f"dst rank error: '{rank_char}' in rank_th:`{rank_th}`")
-
-        #
-        # 移動先のマス番号を 0 から始まる整数で返す
-        #
-        # 0～80 = (1～9     - 1) * 9 + (1～9    - 1)
-        sq  = (file_th - 1) * 9 + (rank_th - 1)
-
-        return MoveDestinationLocation(
-                sq=sq,
-                file_th=file_th,
-                rank_th=rank_th)
-
-
-    @staticmethod
-    def from_sq(sq):
-        return MoveDestinationLocation(
-                sq=sq,
-                file_th=sq // 9 + 1,
-                rank_th=sq % 9 + 1)
-
-
-    def __init__(
-            self,
-            sq,
-            file_th,
-            rank_th):
-        """初期化
-
-        Parameters
-        ----------
-        sq : int
-            マス番号。 0 ～ 80 の整数
-        file_th : int
-            筋番号。 1 から始まる整数
-        rank_th : int
-            段番号。 1 から始まる整数
-        """
-        self._file_th = file_th
-        self._rank_th = rank_th
-        self._sq = sq
-
-        self._usi_code = f"{self._file_th}{Usi._rank_th_num_to_alphabet[self._rank_th]}"
-
-        # 指し手を盤上で１８０°回転
-        #
-        #   例：９段目のとき１段目に変える
-        #   例：１段目のとき９段目に変える
-        #
-        self._rot_file_th = 10 - self._file_th
-        self._rot_rank_th = 10 - self._rank_th
-        #
-        #   例：８０のとき　０に変える
-        #   例：　０のとき８０に変える
-        #
-        self._rot_sq = 80 - self._sq
-
-
-    def dump(self):
-        return f"""\
-_file_th:{self._file_th}
-_rank_th:{self._rank_th}
-_sq:{self._sq}
-_usi_code:`{self._usi_code}`
-_rot_file_th:{self._rot_file_th}
-_rot_rank_th:{self._rot_rank_th}
-_rot_sq:{self._rot_sq}
-"""
-
-
-    @property
-    def file_th(self):
-        """筋番号。 1 から始まる整数"""
-        return self._file_th
-
-
-    @property
-    def rank_th(self):
-        """段番号。 1 から始まる整数"""
-        return self._rank_th
-
-
-    @property
-    def sq(self):
-        """マス番号。 0 ～ 80 の整数"""
-        return self._sq
-
-
-    @property
-    def rot_file_th(self):
-        """指し手を１８０°回転したときの筋番号。 1 から始まる整数"""
-        return self._rot_file_th
-
-
-    @property
-    def rot_rank_th(self):
-        """指し手を１８０°回転したときの段番号。 1 から始まる整数"""
-        return self._rot_rank_th
-
-
-    @property
-    def rot_sq(self):
-        """指し手を１８０°回転したときのマス番号。 0 ～ 80 の整数"""
-        return self._rot_sq
-
-
-    @property
-    def usi_code(self):
-        """USI形式文字列
-
-        例： `7g` など
-        """
-        return self._usi_code
-
-
-    def rotate(self):
-        """指し手を盤上で１８０°回転"""
-        return MoveDestinationLocation(
-                sq=self._rot_sq,
-                file_th=self._rot_file_th,
-                rank_th=self._rot_rank_th)
-
-
 class Move():
     """指し手"""
 
@@ -391,8 +239,8 @@ class Move():
                 code=move_as_usi[0: 2])
 
         # 移動先オブジェクト生成
-        dst_location = MoveDestinationLocation.from_code(
-                code=move_as_usi[2: 4])
+        dstsq = Usi.srcloc_to_sq(Usi.code_to_srcloc(
+                code=move_as_usi[2: 4]))
 
         #
         # 成ったか？
@@ -404,14 +252,14 @@ class Move():
         return Move(
                 as_usi=move_as_usi,
                 srcloc=srcloc,
-                dst_location=dst_location,
+                dstsq=dstsq,
                 promoted=promoted)
 
 
     @staticmethod
     def from_src_dst_pro(
             srcloc,
-            dst_location,
+            dstsq,
             promoted,
             is_rotate=False):
         """初期化
@@ -420,8 +268,8 @@ class Move():
         ----------
         srcloc : int
             移動元番号
-        dst_location : MoveDestinationLocation
-            移動先オブジェクト
+        dstsq : int
+            移動先マス番号
         promoted : bool
             成ったか？
         is_rotate : bool
@@ -429,12 +277,12 @@ class Move():
         """
         if is_rotate:
             srcloc = Usi.rotate_srcloc(srcloc)
-            dst_location = dst_location.rotate()
+            dstsq = Usi.rotate_srcloc(dstsq)
 
         return Move(
-                as_usi=f"{Usi.srcloc_to_code(srcloc)}{dst_location.usi_code}{Promotion.to_code(promoted)}",
+                as_usi=f"{Usi.srcloc_to_code(srcloc)}{Usi.sq_to_code(dstsq)}{Promotion.to_code(promoted)}",
                 srcloc=srcloc,
-                dst_location=dst_location,
+                dstsq=dstsq,
                 promoted=promoted)
 
 
@@ -442,7 +290,7 @@ class Move():
             self,
             as_usi,
             srcloc,
-            dst_location,
+            dstsq,
             promoted):
         """初期化
 
@@ -453,24 +301,23 @@ class Move():
             "7g7f" や "3d3c+"、 "R*5e" のような文字列を想定。 "resign" のような文字列は想定外
         srcloc : int
             移動元番号
-        dst_location : MoveDestinationLocation
-            移動先オブジェクト
+        dstsq : int
+            移動先マス番号
         promoted : bool
             成ったか？
         """
         self._as_usi = as_usi
         self._srcloc = srcloc
-        self._dst_location = dst_location
+        self._dstsq = dstsq
         self._promoted = promoted
 
 
     def dump(self):
         return f"""\
-_as_usi:`{self._as_usi}`
+as_usi:`{self._as_usi}`
 srcloc:{self._srcloc}
-_dst_location:
-{self._dst_location.dump()}
-_promoted:`{self._promoted}`
+dstsq :{self._dstsq}
+promoted:`{self._promoted}`
 """
 
     @property
@@ -485,9 +332,9 @@ _promoted:`{self._promoted}`
 
 
     @property
-    def dst_location(self):
-        """移動先"""
-        return self._dst_location
+    def dstsq(self):
+        """移動先マス番号"""
+        return self._dstsq
 
 
     @property
@@ -499,12 +346,12 @@ _promoted:`{self._promoted}`
     def rotate(self):
         """盤を１８０°回転させたときの指し手を返します"""
         rot_srcloc = Usi.rotate_srcloc(self.srcloc)
-        dst_location = self.dst_location.rotate()
+        rot_dstsq = Usi.rotate_srcloc(self._dstsq)
 
         return Move(
-                as_usi=f"{Usi.srcloc_to_code(rot_srcloc)}{dst_location.usi_code}{Promotion.to_code(self.promoted)}",
+                as_usi=f"{Usi.srcloc_to_code(rot_srcloc)}{Usi.srcloc_to_code(rot_dstsq)}{Promotion.to_code(self.promoted)}",
                 srcloc=rot_srcloc,
-                dst_location=dst_location,
+                dstsq=rot_dstsq,
                 promoted=self.promoted)
 
 

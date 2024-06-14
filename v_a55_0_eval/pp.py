@@ -4,7 +4,7 @@ import datetime
 
 from v_a55_0_eval.lib import EvaluationLib
 from v_a55_0_eval.p import EvaluationPMove
-from v_a55_0_misc.lib import FileName, Turn, MoveDestinationLocation, Move, EvalutionMmTable
+from v_a55_0_misc.lib import FileName, Turn, Move, EvalutionMmTable
 
 
 class EvaluationPpTable():
@@ -88,8 +88,7 @@ class EvaluationPpTable():
                 p_index=p2_index)
         p2_move_obj = Move.from_src_dst_pro(
                 srcloc=p2_srcloc,
-                dst_location=MoveDestinationLocation.from_sq(
-                        sq=p2_dst_sq),
+                dstsq=p2_dst_sq,
                 promoted=p2_promote,
                 is_rotate=is_rotate)
 
@@ -100,8 +99,7 @@ class EvaluationPpTable():
                 p_index=p1_index)
         p1_move_obj = Move.from_src_dst_pro(
                 srcloc=p1_srcloc,
-                dst_location=MoveDestinationLocation.from_sq(
-                        sq=p1_dst_sq),
+                dstsq=p1_dst_sq,
                 promoted=p1_promote,
                 is_rotate=is_rotate)
 
