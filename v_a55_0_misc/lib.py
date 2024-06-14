@@ -238,7 +238,6 @@ class Move():
         promoted = 4 < len(move_as_usi)
 
         return Move(
-                as_usi=move_as_usi,
                 srcloc=srcloc,
                 dstsq=dstsq,
                 promoted=promoted)
@@ -268,7 +267,6 @@ class Move():
             dstsq = Usi.rotate_srcloc(dstsq)
 
         return Move(
-                as_usi=f"{Usi.srcloc_to_code(srcloc)}{Usi.sq_to_code(dstsq)}{Usi.promotion_to_code(promoted)}",
                 srcloc=srcloc,
                 dstsq=dstsq,
                 promoted=promoted)
@@ -276,7 +274,6 @@ class Move():
 
     def __init__(
             self,
-            as_usi,
             srcloc,
             dstsq,
             promoted):
@@ -284,9 +281,6 @@ class Move():
 
         Parameters
         ----------
-        as_usi:
-            USI形式の指し手の符号。
-            "7g7f" や "3d3c+"、 "R*5e" のような文字列を想定。 "resign" のような文字列は想定外
         srcloc : int
             移動元番号
         dstsq : int
@@ -294,7 +288,6 @@ class Move():
         promoted : bool
             成ったか？
         """
-        self._as_usi = as_usi
         self._srcloc = srcloc
         self._dstsq = dstsq
         self._promoted = promoted
@@ -302,15 +295,11 @@ class Move():
 
     def dump(self):
         return f"""\
-as_usi:`{self._as_usi}`
+to_usi:`{Move.to_usi(self)}`
 srcloc:{self._srcloc}
 dstsq :{self._dstsq}
 promoted:`{self._promoted}`
 """
-
-    @property
-    def as_usi(self):
-        return self._as_usi
 
 
     @property
@@ -337,10 +326,16 @@ promoted:`{self._promoted}`
         rot_dstsq = Usi.rotate_srcloc(self._dstsq)
 
         return Move(
-                as_usi=f"{Usi.srcloc_to_code(rot_srcloc)}{Usi.srcloc_to_code(rot_dstsq)}{Usi.promotion_to_code(self.promoted)}",
                 srcloc=rot_srcloc,
                 dstsq=rot_dstsq,
                 promoted=self.promoted)
+
+
+    def as_usi(self):
+        """USI形式の指し手の符号。
+        "7g7f" や "3d3c+"、 "R*5e" のような文字列を想定。 "resign" のような文字列は想定外
+        """
+        return f"{Usi.srcloc_to_code(self.srcloc)}{Usi.sq_to_code(self.dstsq)}{Usi.promotion_to_code(self.promoted)}"
 
 
 class MoveHelper():
