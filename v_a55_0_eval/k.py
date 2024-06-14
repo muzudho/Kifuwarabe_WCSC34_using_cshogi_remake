@@ -394,7 +394,7 @@ class EvaluationKMove():
 
         except KeyError as ex:
             # k_srcsq error. k_move_obj.as_usi:S*3b  rotated:False  k_srcsq:None  src_masu:None  ex:None
-            print(f"[evaluation k move > get index by k move]  k_srcsq error. k_move_obj.as_usi:{k_move_obj.as_usi}  rotated:{is_rotate}  k_srcsq:{k_srcsq}  src_masu:{BoardHelper.sq_to_jsa(k_srcsq)}  k_move_obj:{k_move_obj.dump()}  k_move_obj.rot_dstsq:{Usi.rotate_srcloc(k_move_obj.dstsq)}  k_move_obj.dstsq:{k_move_obj.dstsq}  ex:{ex}")
+            print(f"[evaluation k move > get index by k move]  k_srcsq error. k_move_obj.as_usi:{k_move_obj.as_usi}  rotated:{is_rotate}  k_srcsq:{k_srcsq}  src_masu:{Usi.sq_to_jsa(k_srcsq)}  k_move_obj:{k_move_obj.dump()}  k_move_obj.rot_dstsq:{Usi.rotate_srcloc(k_move_obj.dstsq)}  k_move_obj.dstsq:{k_move_obj.dstsq}  ex:{ex}")
             raise
 
         #
@@ -411,12 +411,12 @@ class EvaluationKMove():
             # k_move_obj.as_usi:6g4e  rotated:True  k_srcsq:29  k_dst_sq:49  src_masu:43  dst_masu:65  ex:49
             # k_move_obj.as_usi:8i6g  rotated:True  len(dst_to_index_dictionary):5  k_src_masu:21  k_dst_masu:43  k_srcsq:9  k_dst_sq:29  ex:29
             # [evaluation k move > get index by k move]  k_dst_sq error. k_move_obj.as_usi:2h6h  rotated:True  len(dst_to_index_dictionary):8  k_src_masu:82  k_dst_masu:42  k_srcsq:64  k_dst_sq:28  ex:28
-            print(f"[evaluation k move > get index by k move]  k_dst_sq error. k_move_obj.as_usi:{k_move_obj.as_usi}  rotated:{is_rotate}  len(dst_to_index_dictionary):{len(dst_to_index_dictionary)}  k_src_masu:{BoardHelper.sq_to_jsa(k_srcsq)}  k_dst_masu:{BoardHelper.sq_to_jsa(k_dst_sq)}  k_srcsq:{k_srcsq}  k_dst_sq:{k_dst_sq}  k_move_obj.rot_dstsq:{Usi.rotate_srcloc(k_move_obj.dstsq)}  k_move_obj.dstsq:{k_move_obj.dstsq}  ex:{ex}")
+            print(f"[evaluation k move > get index by k move]  k_dst_sq error. k_move_obj.as_usi:{k_move_obj.as_usi}  rotated:{is_rotate}  len(dst_to_index_dictionary):{len(dst_to_index_dictionary)}  k_src_masu:{Usi.sq_to_jsa(k_srcsq)}  k_dst_masu:{Usi.sq_to_jsa(k_dst_sq)}  k_srcsq:{k_srcsq}  k_dst_sq:{k_dst_sq}  k_move_obj.rot_dstsq:{Usi.rotate_srcloc(k_move_obj.dstsq)}  k_move_obj.dstsq:{k_move_obj.dstsq}  ex:{ex}")
 
             # ダンプ
             i = 0
             for k_dst_sq, k_index in dst_to_index_dictionary.items():
-                print(f"[evaluation k move > get index by k move]  ({i:2})  k_dst_sq:{k_dst_sq}  k_dst_masu:{BoardHelper.sq_to_jsa(k_dst_sq)}  k_index:{k_index}")
+                print(f"[evaluation k move > get index by k move]  ({i:2})  k_dst_sq:{k_dst_sq}  k_dst_masu:{Usi.sq_to_jsa(k_dst_sq)}  k_index:{k_index}")
                 i += 1
 
             raise

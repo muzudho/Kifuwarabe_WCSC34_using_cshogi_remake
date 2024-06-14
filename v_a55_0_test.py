@@ -46,7 +46,7 @@ def test_k():
                 label_table_for_src_dst[dst_sq] = f'{dst_sq:3}'
 
             # 表示
-            f.write(f"""src_masu:{BoardHelper.sq_to_jsa(srcsq):2}
+            f.write(f"""src_masu:{Usi.sq_to_jsa(srcsq):2}
 src と dst                              通しインデックス
 {DebugHelper.stringify_double_3characters_boards(label_table_for_src_dst, label_table_for_serial_index)}
 """)
@@ -60,13 +60,13 @@ src と dst                              通しインデックス
         for serial_index in range(0, EvaluationKMove.get_serial_number_size()):
             (srcsq, dst_sq) = index_to_srcsq_dst_dictionary[serial_index]
 
-            print(f"(src_masu:{BoardHelper.sq_to_jsa(srcsq):2}, dst_masu:{BoardHelper.sq_to_jsa(dst_sq):2}) = dictionary[ serial_index:{serial_index:3} ]")
+            print(f"(src_masu:{Usi.sq_to_jsa(srcsq):2}, dst_masu:{Usi.sq_to_jsa(dst_sq):2}) = dictionary[ serial_index:{serial_index:3} ]")
 
             if previous_srcsq != srcsq:
 
                 if previous_srcsq != -1:
                     # 表示
-                    f.write(f"""src_masu:{BoardHelper.sq_to_jsa(srcsq):2}
+                    f.write(f"""src_masu:{Usi.sq_to_jsa(srcsq):2}
 通しインデックス                           src と dst
 {DebugHelper.stringify_double_3characters_boards(label_table_for_serial_index, label_table_for_src_dst)}
 """)
@@ -189,7 +189,7 @@ def test_p():
                 label_table_for_psq[dst_sq] = f"{dst_sq:4}"
 
 
-            f.write(f"""src_masu:{BoardHelper.sq_to_jsa(srcsq)}
+            f.write(f"""src_masu:{Usi.sq_to_jsa(srcsq)}
 先手成らず  通しインデックス                          先手成らず  絶対マス                                先手成り  通しインデックス                            先手成り  絶対マス
 {DebugHelper.stringify_quadruple_4characters_board(
         a=label_table_for_npsi,

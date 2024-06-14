@@ -77,6 +77,7 @@ class Usi():
         '1a' : 0,
         '1b' : 1,
         ...
+        '9i' : 80,
         'R*' : 81,
         ...
         'P*' : 87,
@@ -128,7 +129,7 @@ class Usi():
         srcloc : int
             盤上のマス番号 0～80、または打つ駒の種類 81～87
         """
-        return 80 <= srcloc and srcloc <= 87
+        return 81 <= srcloc and srcloc <= 87
 
 
     @staticmethod
@@ -173,3 +174,56 @@ class Usi():
             return '+'
         else:
             return ''
+
+
+    @staticmethod
+    def sq_to_jsa(sq):
+        """0 から始まるマスの通し番号は読みずらいので、
+        十の位を筋、一の位を段になるよう変換します。
+        これは将棋の棋士も棋譜に用いている記法です。
+        JSA は日本将棋連盟（Japan Shogi Association）
+
+        Parameters
+        ----------
+        serial_sq_or_none : int
+            0 から始まるマスの通し番号。打のときは None
+        """
+
+        (file_th,
+         rank_th) = Usi.sq_to_file_th_rank_th(sq)
+
+        return 10 * file_th + rank_th
+
+
+    _srcloc_to_jsa = None
+    """以下のような辞書を srcloc_to_jsa(...) 関数の初回使用時に自動生成する
+    {
+        0 : '1a',
+        1 : '1b',
+        ...
+        80 : '9i',
+        81 : 'R*',
+        ...
+        87 : 'P*',
+    }
+    """
+
+
+    @classmethod
+    def srcloc_to_jsa(clazz, srcloc):
+        """元位置番号を、日本将棋連盟式のマスの符号へ変換"""
+        if clazz._srcloc_to_jsa is None:
+            clazz._srcloc_to_jsa = {}
+
+            # 盤上のマス
+            for sq in range(0,81):
+                jsa_str = Usi.sq_to_jsa(sq)
+                clazz._srcloc_to_jsa[sq] = jsa_str
+
+            # 打
+            drop_num = 81
+            for drop_str in clazz._srcdrop_str_list:
+                clazz._code_to_srcloc[drop_num] = drop_str
+                drop_num += 1
+
+        return clazz._srcloc_to_jsa[srcloc]

@@ -399,28 +399,6 @@ class BoardHelper():
 
 
     @staticmethod
-    def sq_to_jsa(serial_sq_or_none):
-        """0 から始まるマスの通し番号は読みずらいので、
-        十の位を筋、一の位を段になるよう変換します。
-        これは将棋の棋士も棋譜に用いている記法です。
-        JSA は日本将棋連盟（Japan Shogi Association）
-
-        Parameters
-        ----------
-        serial_sq_or_none : int
-            0 から始まるマスの通し番号。打のときは None
-        """
-
-        if serial_sq_or_none is None:
-            return None
-
-        (file,
-         rank) = BoardHelper.get_file_rank_by_sq(serial_sq_or_none)
-
-        return 10 * (file + 1) + (rank + 1)
-
-
-    @staticmethod
     def get_king_square(board):
         """自玉のマス番号
 
@@ -552,7 +530,7 @@ class MoveListHelper():
         k_sq = BoardHelper.get_king_square(board)
 
         if is_debug and DebugPlan.create_k_and_p_legal_moves():
-            print(f"[{datetime.datetime.now()}] [create k and p legal moves]  k_masu:{BoardHelper.sq_to_jsa(k_sq)}")
+            print(f"[{datetime.datetime.now()}] [create k and p legal moves]  k_masu:{Usi.sq_to_jsa(k_sq)}")
 
         # USIプロトコルでの符号表記に変換
         k_moves_u = []
