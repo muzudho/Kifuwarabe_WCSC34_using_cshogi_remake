@@ -165,3 +165,11 @@ class Usi():
         # 盤上の升番号は、盤を１８０°回転したときの位置の番号を返す
         return 80 - srcloc
 
+
+    @staticmethod
+    def promotion_to_code(promoted):
+        """成る手"""
+        if promoted:
+            return '+'
+        else:
+            return ''

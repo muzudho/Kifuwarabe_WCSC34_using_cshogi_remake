@@ -130,18 +130,6 @@ class Turn():
         return clazz._flip[turn]
 
 
-class Promotion():
-    """成る手"""
-
-
-    @staticmethod
-    def to_code(promoted):
-        if promoted:
-            return '+'
-        else:
-            return ''
-
-
 class Move():
     """指し手"""
 
@@ -280,7 +268,7 @@ class Move():
             dstsq = Usi.rotate_srcloc(dstsq)
 
         return Move(
-                as_usi=f"{Usi.srcloc_to_code(srcloc)}{Usi.sq_to_code(dstsq)}{Promotion.to_code(promoted)}",
+                as_usi=f"{Usi.srcloc_to_code(srcloc)}{Usi.sq_to_code(dstsq)}{Usi.promotion_to_code(promoted)}",
                 srcloc=srcloc,
                 dstsq=dstsq,
                 promoted=promoted)
@@ -349,7 +337,7 @@ promoted:`{self._promoted}`
         rot_dstsq = Usi.rotate_srcloc(self._dstsq)
 
         return Move(
-                as_usi=f"{Usi.srcloc_to_code(rot_srcloc)}{Usi.srcloc_to_code(rot_dstsq)}{Promotion.to_code(self.promoted)}",
+                as_usi=f"{Usi.srcloc_to_code(rot_srcloc)}{Usi.srcloc_to_code(rot_dstsq)}{Usi.promotion_to_code(self.promoted)}",
                 srcloc=rot_srcloc,
                 dstsq=rot_dstsq,
                 promoted=self.promoted)
