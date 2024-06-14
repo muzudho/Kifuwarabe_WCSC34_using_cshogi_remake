@@ -28,11 +28,16 @@ class EvaluationPpTable():
             着手側の手番
         """
 
-        # 評価値テーブルは先手用の形なので、後手番は１８０°回転させる必要がある
-        is_rotate = p1_turn == cshogi.WHITE
+        # 評価値テーブルは先手用の形だ。着手と応手のどちらかは後手なので、後手番は１８０°回転させる必要がある
+        if p1_turn == cshogi.BLACK:
+            is_p1_rotate = False
+            is_p2_rotate = True
+        else:
+            is_p1_rotate = True
+            is_p2_rotate = False
 
-        # 0 ～ 14_542_781 =                                                   0 ～ 3812 *                                     3813 +                                                  0 ～ 3812
-        pp_index         = EvaluationPMove.get_index_by_p_move(p1_move_obj, is_rotate) * EvaluationPMove.get_serial_number_size() + EvaluationPMove.get_index_by_p_move(p2_move_obj, is_rotate)
+        # 0 ～ 14_542_781 =                                                      0 ～ 3812 *                                     3813 +                                                     0 ～ 3812
+        pp_index         = EvaluationPMove.get_index_by_p_move(p1_move_obj, is_p1_rotate) * EvaluationPMove.get_serial_number_size() + EvaluationPMove.get_index_by_p_move(p2_move_obj, is_p2_rotate)
 
         # assert
         if EvaluationPMove.get_serial_number_size() * EvaluationPMove.get_serial_number_size() <= pp_index:

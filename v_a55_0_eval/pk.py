@@ -29,11 +29,16 @@ class EvaluationPkTable():
             着手側の手番
         """
 
-        # 評価値テーブルは先手用の形なので、後手番は１８０°回転させる必要がある
-        is_rotate = p_turn == cshogi.WHITE
+        # 評価値テーブルは先手用の形だ。着手と応手のどちらかは後手なので、後手番は１８０°回転させる必要がある
+        if p_turn == cshogi.BLACK:
+            is_p_rotate = False
+            is_k_rotate = True
+        else:
+            is_p_rotate = True
+            is_k_rotate = False
 
-        # 0 ～ 2_074_815 =                                                   0 ～ 3812 *                                      544 +                                                  0 ～ 543
-        pk_index         = EvaluationPMove.get_index_by_p_move(p_move_obj, is_rotate) * EvaluationKMove.get_serial_number_size() + EvaluationKMove.get_index_by_k_move(k_move_obj, is_rotate)
+        # 0 ～ 2_074_815 =                                                     0 ～ 3812 *                                      544 +                                                    0 ～ 543
+        pk_index         = EvaluationPMove.get_index_by_p_move(p_move_obj, is_p_rotate) * EvaluationKMove.get_serial_number_size() + EvaluationKMove.get_index_by_k_move(k_move_obj, is_k_rotate)
 
         # assert
         if EvaluationPMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size() <= pk_index:
@@ -101,8 +106,13 @@ class EvaluationPkTable():
          k_index) = EvaluationPkTable.destructure_p_k_index_by_pk_index(
                 pk_index=pk_index)
 
-        # 評価値テーブルは先手用の形なので、後手番は１８０°回転させる必要がある
-        is_rotate = p_turn == cshogi.WHITE
+        # 評価値テーブルは先手用の形だ。着手と応手のどちらかは後手なので、後手番は１８０°回転させる必要がある
+        if p_turn == cshogi.BLACK:
+            is_p_rotate = False
+            is_k_rotate = True
+        else:
+            is_p_rotate = True
+            is_k_rotate = False
 
         # Ｋ
         (k_srcsq,
@@ -113,7 +123,7 @@ class EvaluationPkTable():
                 dstsq=k_dstsq,
                 # 玉に成りはありません
                 promoted=False,
-                is_rotate=is_rotate)
+                is_rotate=is_p_rotate)
 
         # Ｐ
         (p_srcloc,
@@ -124,7 +134,7 @@ class EvaluationPkTable():
                 srcloc=p_srcloc,
                 dstsq=p_dstsq,
                 promoted=p_promote,
-                is_rotate=is_rotate)
+                is_rotate=is_k_rotate)
 
         return (p_move_obj, k_move_obj)
 

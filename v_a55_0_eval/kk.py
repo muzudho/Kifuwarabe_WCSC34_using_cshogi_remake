@@ -28,11 +28,16 @@ class EvaluationKkTable():
             着手側の手番
         """
 
-        # 評価値テーブルは先手用の形なので、後手番は１８０°回転させる必要がある
-        is_rotate = k_turn == cshogi.WHITE
+        # 評価値テーブルは先手用の形だ。着手と応手のどちらかは後手なので、後手番は１８０°回転させる必要がある
+        if k_turn == cshogi.BLACK:
+            is_k_rotate = False
+            is_l_rotate = True
+        else:
+            is_k_rotate = True
+            is_l_rotate = False
 
-        # 0 ～ 296_479 =                                                    0 ～ 543 *                                      544 +                                                  0 ～ 543
-        kk_index       = EvaluationKMove.get_index_by_k_move(k_move_obj, is_rotate) * EvaluationKMove.get_serial_number_size() + EvaluationKMove.get_index_by_k_move(l_move_obj, is_rotate)
+        # 0 ～ 296_479 =                                                      0 ～ 543 *                                      544 +                                                    0 ～ 543
+        kk_index       = EvaluationKMove.get_index_by_k_move(k_move_obj, is_k_rotate) * EvaluationKMove.get_serial_number_size() + EvaluationKMove.get_index_by_k_move(l_move_obj, is_l_rotate)
 
         # assert
         if EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size() <= kk_index:
@@ -76,8 +81,13 @@ class EvaluationKkTable():
             raise ValueError(f"k_index:{k_index} out of range {EvaluationKMove.get_serial_number_size()}")
 
 
-        # 評価値テーブルは先手用の形なので、後手番は１８０°回転させる必要がある
-        is_rotate = k_turn == cshogi.WHITE
+        # 評価値テーブルは先手用の形だ。着手と応手のどちらかは後手なので、後手番は１８０°回転させる必要がある
+        if k_turn == cshogi.BLACK:
+            is_k_rotate = False
+            is_l_rotate = True
+        else:
+            is_k_rotate = True
+            is_l_rotate = False
 
         # Ｌ
         (l_srcsq,
@@ -88,7 +98,7 @@ class EvaluationKkTable():
                 dstsq=l_dstsq,
                 # 玉に成りはありません
                 promoted=False,
-                is_rotate=is_rotate)
+                is_rotate=is_l_rotate)
 
         # Ｋ
         (k_srcsq,
@@ -99,7 +109,7 @@ class EvaluationKkTable():
                 dstsq=k_dstsq,
                 # 玉に成りはありません
                 promoted=False,
-                is_rotate=is_rotate)
+                is_rotate=is_k_rotate)
 
         return (k_move_obj, l_move_obj)
 
