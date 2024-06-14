@@ -308,9 +308,13 @@ def test_move_rotate():
     src_location_u = "1g"
     expected_rot_src_location_u = "9c"
     src_location = MoveSourceLocation.from_code(src_location_u)
+
+    actual = Usi.srcloc_to_code(src_location.srcloc)
+    if src_location_u != actual:
+        raise ValueError(f"[test move rotate]  expected:{src_location_u}  actual:{actual}")
+
     rot_src_location = src_location.rotate()
     actual = Usi.srcloc_to_code(rot_src_location.srcloc)
-
     if expected_rot_src_location_u != actual:
         raise ValueError(f"[test move rotate]  expected:{expected_rot_src_location_u}  actual:{actual}")
 
