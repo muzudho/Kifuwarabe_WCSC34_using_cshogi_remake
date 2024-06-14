@@ -401,8 +401,8 @@ class EvaluationPMove():
          index_to_srcloc_dst_sq_promotion_dictionary) = EvaluationPMove.get_src_lists_to_dst_sq_index_dictionary_tuple()
 
 
-        # 打か。打に成りはありません。したがって None にはなりません
-        if p_move_obj.src_location.rank_th is None:
+        # 打か。打に成りはありません
+        if p_move_obj.src_location.is_drop():
             try:
                 dst_sq_to_index_dictionary = srcdrop_to_dst_sq_index[p_move_obj.src_location.srcloc]
 

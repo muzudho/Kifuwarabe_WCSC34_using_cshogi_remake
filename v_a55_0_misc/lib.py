@@ -147,21 +147,19 @@ class MoveSourceLocation():
 
 
     @staticmethod
-    def from_sq(
-            sq):
-            (file_th, rank_th) = Usi.sq_to_file_th_rank_th(sq)
+    def from_sq(sq):
+        (file_th, rank_th) = Usi.sq_to_file_th_rank_th(sq)
 
-            return MoveSourceLocation(
-                    srcloc=sq,
-                    sq=sq,
-                    drop=None,
-                    file_th=file_th,
-                    rank_th=rank_th)
+        return MoveSourceLocation(
+                srcloc=sq,
+                sq=sq,
+                drop=None,
+                file_th=file_th,
+                rank_th=rank_th)
 
 
     @staticmethod
-    def from_srcloc(
-            srcloc):
+    def from_srcloc(srcloc):
         """マス番号か、打の駒種類か分かってない状態
 
         Parameter
@@ -362,12 +360,12 @@ _rot_sq:{self._rot_sq}
     def rotate(self):
         """指し手を盤上で１８０°回転"""
         return MoveSourceLocation(
-            srcloc=self._srcloc,
-            sq=self._rot_sq,
-            # 打の駒種類は回転しません
-            drop=self._drop,
-            file_th=self._rot_file_th,
-            rank_th=self._rot_rank_th)
+                srcloc=self._srcloc,
+                sq=self._rot_sq,
+                # 打の駒種類は回転しません
+                drop=self._drop,
+                file_th=self._rot_file_th,
+                rank_th=self._rot_rank_th)
 
 
 class MoveDestinationLocation():
@@ -408,9 +406,9 @@ class MoveDestinationLocation():
         sq  = (file_th - 1) * 9 + (rank_th - 1)
 
         return MoveDestinationLocation(
-            sq=sq,
-            file_th=file_th,
-            rank_th=rank_th)
+                sq=sq,
+                file_th=file_th,
+                rank_th=rank_th)
 
 
     @staticmethod
@@ -517,9 +515,9 @@ _rot_sq:{self._rot_sq}
     def rotate(self):
         """指し手を盤上で１８０°回転"""
         return MoveDestinationLocation(
-            sq=self._rot_sq,
-            file_th=self._rot_file_th,
-            rank_th=self._rot_rank_th)
+                sq=self._rot_sq,
+                file_th=self._rot_file_th,
+                rank_th=self._rot_rank_th)
 
 
 class Move():

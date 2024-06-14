@@ -302,6 +302,20 @@ def test_lib():
         raise ValueError(f'unexpected error. move_obj.promoted expected:True  actual:`{move_obj.promoted}`')
 
 
+def test_move_rotate():
+    
+
+
+    # １８０°回転
+    move_u = "1g1f"
+    expected_move_rot_u = "9f9g"
+    move_obj = Move.from_usi(move_u)
+    move_rot_u = move_obj.rotate().as_usi
+
+    if expected_move_rot_u != move_rot_u:
+        raise ValueError(f"[test move rotate]  expected:{expected_move_rot_u}  actual:{move_rot_u}")
+
+
 ########################################
 # スクリプト実行時
 ########################################
@@ -328,6 +342,9 @@ if __name__ == '__main__':
 
     elif line == 'lib':
         test_lib()
+
+    elif line == 'move_rotate':
+        test_move_rotate()
 
     else:
         print("please input test name 'k', ...")
