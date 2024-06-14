@@ -147,36 +147,6 @@ class MoveSourceLocation():
 
 
     @staticmethod
-    def get_file_th_with_rotate(file_th):
-        """１８０°回転"""
-        if file_th is None:
-            return None
-
-        else:
-            #
-            #   例：９段目のとき１段目に変える
-            #   例：１段目のとき９段目に変える
-            #
-            return 10 - file_th
-
-
-    @staticmethod
-    def get_rank_th_with_rotate(rank_th):
-        return MoveSourceLocation.get_file_th_with_rotate(rank_th)
-
-
-    @staticmethod
-    def get_sq_with_rotate(sq):
-        """マス番号を１８０°回転"""
-        if sq is None:
-            # 打だろう。 None を返す
-            return None
-
-        else:
-            return 80 - sq
-
-
-    @staticmethod
     def from_sq(
             sq):
             (file_th, rank_th) = Usi.sq_to_file_th_rank_th(sq)
@@ -311,14 +281,9 @@ class MoveSourceLocation():
             #
             # １８０°回転
             #
-            # 筋
-            self._rot_file_th = MoveSourceLocation.get_file_th_with_rotate(self._file_th)
-
-            # 段
-            self._rot_rank_th = MoveSourceLocation.get_rank_th_with_rotate(self._file_th)
-
-            # 打
-            self._rot_sq = MoveSourceLocation.get_sq_with_rotate(self._sq)
+            self._rot_file_th = 10 - self._file_th
+            self._rot_rank_th = 10 - self._rank_th
+            self._rot_sq = 80 - self._sq
 
 
         except TypeError as ex:
