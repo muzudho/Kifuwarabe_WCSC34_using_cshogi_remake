@@ -355,7 +355,7 @@ class MoveHelper():
 
         # 自玉の指し手か？（打なら None なので False）
         #print(f"［自玉の指し手か？］ move_u: {move_obj.as_usi}, srcloc:{move_obj.srcloc}, k_sq: {k_sq}, board.turn: {board.turn}")
-        if move_obj.is_drop():
+        if Usi.is_drop_by_srcloc(move_obj.srcloc):
             return False
 
         return move_obj.srcloc == k_sq

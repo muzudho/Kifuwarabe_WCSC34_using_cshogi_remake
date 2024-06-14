@@ -316,13 +316,13 @@ def test_move_rotate():
 
     # １８０°回転
     dstsq_u = "1g"
-    expected_rot_dst_location_u = "9c"
+    expected_rot_dstsq_u = "9c"
     dstsq = Usi.srcloc_to_sq(Usi.code_to_srcloc(dstsq_u))
     rot_dstsq = Usi.rotate_srcloc(dstsq)
     actual = Usi.srcloc_to_code(rot_dstsq)
 
-    if expected_rot_dst_location_u != actual:
-        raise ValueError(f"[test move rotate]  expected:{expected_rot_dst_location_u}  actual:{actual}")
+    if expected_rot_dstsq_u != actual:
+        raise ValueError(f"[test move rotate]  expected:{expected_rot_dstsq_u}  actual:{actual}")
 
     # １８０°回転
     move_u = "1g1f"

@@ -389,10 +389,10 @@ class EvaluationPMove():
 
         if is_rotate:
             p_srcsq_or_none = Usi.srcloc_to_sq(Usi.rotate_srcloc(p_move_obj.srcloc))
-            p_dst_sq = p_move_obj.dst_location.rot_sq
+            p_dst_sq = Usi.rotate_srcloc(p_move_obj.dstsq)
         else:
             p_srcsq_or_none = Usi.srcloc_to_sq(p_move_obj.srcloc)
-            p_dst_sq = p_move_obj.dst_location.sq
+            p_dst_sq = p_move_obj.dstsq
 
         # 元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します
         (srcsq_to_dst_sq_to_index_for_npsi_dictionary,
