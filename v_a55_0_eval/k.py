@@ -429,6 +429,31 @@ class EvaluationKMove():
 
 
     @staticmethod
+    def destructure_srcsq_dst_sq_by_k_index(
+            k_index):
+        """Ｋインデックス分解
+
+        Parameter
+        ---------
+        k_index : int
+            玉の指し手のインデックス
+
+        Returns
+        -------
+        - srcsq : int
+            移動元マスの番号
+        - dst_sq : int
+            移動先マスの番号
+        """
+        # マスの通し番号を渡すと、元マスと移動先マスを返す入れ子の辞書を返します
+        (_, index_to_srcsq_dst_dictionary) = EvaluationKMove.get_srcsq_to_dst_sq_index_dictionary_tuple()
+
+        (srcsq, dst_sq) = index_to_srcsq_dst_dictionary[k_index]
+
+        return (srcsq, dst_sq)
+
+
+    @staticmethod
     def destructure_k_index(
             k_index,
             is_rotate):
@@ -446,11 +471,9 @@ class EvaluationKMove():
         - k_move_obj : Move
             玉の指し手
         """
-
-        # マスの通し番号を渡すと、元マスと移動先マスを返す入れ子の辞書を返します
-        (_, index_to_srcsq_dst_dictionary) = EvaluationKMove.get_srcsq_to_dst_sq_index_dictionary_tuple()
-
-        (srcsq, dst_sq) = index_to_srcsq_dst_dictionary[k_index]
+        (srcsq,
+         dst_sq) = EvaluationKMove.destructure_srcsq_dst_sq_by_k_index(
+                k_index=k_index)
 
         k_move_obj = Move.from_src_dst_pro(
                 src_location=MoveSourceLocation.from_sq(

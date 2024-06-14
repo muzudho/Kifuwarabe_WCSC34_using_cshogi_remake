@@ -457,6 +457,43 @@ class EvaluationPMove():
 
 
     @staticmethod
+    def destructure_srcloc_dst_sq_promoted_by_p_index(
+            p_index):
+        """Ｐインデックス分解
+
+        Parameter
+        ---------
+        p_index : int
+            兵の指し手のインデックス
+
+        Returns
+        -------
+        - srcloc : int
+            移動元マス番号、または打つ駒種類の番号
+        - dst_sq : int
+            移動先マス番号
+        - promoted : bool
+            成る手か？
+        """
+        # マスの通し番号を渡すと、元マスと移動先マスを返す入れ子の辞書を返します
+        (srcsq_to_dst_sq_to_index_for_npsi_dictionary,
+         srcsq_to_dst_sq_to_index_for_psi_dictionary,
+         srcdrop_to_dst_sq_index,
+         index_to_srcloc_dst_sq_promotion_dictionary) = EvaluationPMove.get_src_lists_to_dst_sq_index_dictionary_tuple()
+
+        (srcloc,
+         dst_sq,
+         promoted) = index_to_srcloc_dst_sq_promotion_dictionary[p_index]
+
+        # assert: srcloc は数だ
+        temp = srcloc + 1
+
+        return (srcloc,
+                dst_sq,
+                promoted)
+
+
+    @staticmethod
     def destructure_p_index(
             p_index,
             is_rotate):
@@ -474,19 +511,10 @@ class EvaluationPMove():
         - p_move_obj : Move
             兵の指し手
         """
-
-        # マスの通し番号を渡すと、元マスと移動先マスを返す入れ子の辞書を返します
-        (srcsq_to_dst_sq_to_index_for_npsi_dictionary,
-         srcsq_to_dst_sq_to_index_for_psi_dictionary,
-         srcdrop_to_dst_sq_index,
-         index_to_srcloc_dst_sq_promotion_dictionary) = EvaluationPMove.get_src_lists_to_dst_sq_index_dictionary_tuple()
-
         (srcloc,
          dst_sq,
-         promoted) = index_to_srcloc_dst_sq_promotion_dictionary[p_index]
-
-        # assert: srcloc は数だ
-        temp = srcloc + 1
+         promoted) = EvaluationPMove.destructure_srcloc_dst_sq_promoted_by_p_index(
+                p_index=p_index)
 
         p_move_obj = Move.from_src_dst_pro(
                 src_location=MoveSourceLocation.from_srcloc(
