@@ -450,7 +450,8 @@ class EvaluationPMove():
                 p_index = dstsq_to_index_dictionary[p_dstsq]
 
             except KeyError as ex:
-                print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  P srcloc_u:{Usi.srcloc_to_code(p_move_obj.srcloc)}  rotated:{is_rotate}  p_src_masu:{Usi.srcloc_to_jsa(p_srcsq)}  成:{p_move_obj.promoted}  p_dst_masu:{Usi.sq_to_jsa(p_dstsq)}  ex:{ex}")
+                # dstsq_to_index_dictionary配列のインデックス `26` （符号で言うと `9c`）は存在しない要素を指定しています。この配列は srcsq_to_dstsq_to_index_for_npsi_dictionary 配列の 7 （符号で言うと `8a`）要素に入っていたものです。この探索は、兵の指し手 `2i1g` を調べているところでした  ex:26
+                print(f"配列Ｂのインデックス `{p_dstsq}` （符号で言うと `{Usi.sq_to_code(p_dstsq)}`）は存在しない要素を指定しています。この配列Ｂは、配列Ａの {p_srcsq} （符号で言うと `{Usi.sq_to_code(p_srcsq)}`）要素に入っていたものです。この探索は、兵の指し手 `{p_move_obj.as_usi}` を調べているところでした  ex:{ex}")
                 raise
 
         # assert
