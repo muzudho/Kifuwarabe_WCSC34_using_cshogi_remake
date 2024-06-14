@@ -126,7 +126,6 @@ check_pl_index:{check_pl_index:10}
       l_move_u:{assert_l_move_obj.as_usi:5}
 """)
 
-
                 if assert_p_move_obj.as_usi != move_obj.as_usi:
                     print(board)
                     raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pl] 着手が変わっているエラー

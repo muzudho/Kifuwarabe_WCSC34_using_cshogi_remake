@@ -30,21 +30,51 @@ class EvaluationPkTable():
         """
 
         # 評価値テーブルは先手用の形なので、後手番は１８０°回転させる必要がある
-        if p_turn == cshogi.BLACK:
-            p_rotate = False
-            k_rotate = True
-        else:
-            p_rotate = True
-            k_rotate = False
+        is_rotate = p_turn == cshogi.WHITE
 
-        # 0 ～ 2_074_815 =                                                  0 ～ 3812 *                                      544 +                                                 0 ～ 543
-        pk_index         = EvaluationPMove.get_index_by_p_move(p_move_obj, p_rotate) * EvaluationKMove.get_serial_number_size() + EvaluationKMove.get_index_by_k_move(k_move_obj, k_rotate)
+        # 0 ～ 2_074_815 =                                                   0 ～ 3812 *                                      544 +                                                  0 ～ 543
+        pk_index         = EvaluationPMove.get_index_by_p_move(p_move_obj, is_rotate) * EvaluationKMove.get_serial_number_size() + EvaluationKMove.get_index_by_k_move(k_move_obj, is_rotate)
 
         # assert
         if EvaluationPMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size() <= pk_index:
             raise ValueError(f"pk_index:{pk_index} out of range {EvaluationPMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size()}")
 
         return pk_index
+
+
+    @staticmethod
+    def destructure_p_k_index_by_pk_index(
+            pk_index):
+        """ＰＫインデックスを渡すと、ＰインデックスとＫインデックスに分解して返します
+
+        Parameter
+        ---------
+        pk_index : int
+            兵と玉の関係の通しインデックス
+
+        Returns
+        -------
+        - p_index : int
+            兵の着手のインデックス
+        - k_index : int
+            玉の応手のインデックス
+        """
+        rest = pk_index
+
+        k_index = rest % EvaluationKMove.get_serial_number_size()
+        rest //= EvaluationKMove.get_serial_number_size()
+
+        p_index = rest % EvaluationPMove.get_serial_number_size()
+
+        # assert
+        if EvaluationKMove.get_serial_number_size() <= k_index:
+            raise ValueError(f"k_index:{k_index} out of range {EvaluationKMove.get_serial_number_size()}")
+
+        # assert
+        if EvaluationPMove.get_serial_number_size() <= p_index:
+            raise ValueError(f"p_index:{p_index} out of range {EvaluationPMove.get_serial_number_size()}")
+
+        return (p_index, k_index)
 
 
     @staticmethod
@@ -67,22 +97,9 @@ class EvaluationPkTable():
         - k_move_obj : Move
             玉の応手
         """
-
-        rest = pk_index
-
-        k_index = rest % EvaluationKMove.get_serial_number_size()
-        rest //= EvaluationKMove.get_serial_number_size()
-
-        p_index = rest % EvaluationPMove.get_serial_number_size()
-
-        # assert
-        if EvaluationKMove.get_serial_number_size() <= k_index:
-            raise ValueError(f"k_index:{k_index} out of range {EvaluationKMove.get_serial_number_size()}")
-
-        # assert
-        if EvaluationPMove.get_serial_number_size() <= p_index:
-            raise ValueError(f"p_index:{p_index} out of range {EvaluationPMove.get_serial_number_size()}")
-
+        (p_index,
+         k_index) = EvaluationKMove.destructure_p_k_index_by_pk_index(
+                pk_index=pk_index)
 
         # 評価値テーブルは先手用の形なので、後手番は１８０°回転させる必要がある
         if p_turn == cshogi.BLACK:

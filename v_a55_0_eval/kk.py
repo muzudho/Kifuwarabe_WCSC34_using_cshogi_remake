@@ -82,12 +82,7 @@ class EvaluationKkTable():
 
 
         # 評価値テーブルは先手用の形なので、後手番は１８０°回転させる必要がある
-        if k_turn == cshogi.BLACK:
-            is_k_rotate = False
-            is_l_rotate = True
-        else:
-            is_k_rotate = True
-            is_l_rotate = False
+        is_rotate = k_turn == cshogi.WHITE
 
         # Ｌ
         (l_srcsq,
@@ -100,7 +95,7 @@ class EvaluationKkTable():
                         sq=l_dst_sq),
                 # 玉に成りはありません
                 promoted=False,
-                is_rotate=is_l_rotate)
+                is_rotate=is_rotate)
 
         # Ｋ
         (k_srcsq,
@@ -113,7 +108,7 @@ class EvaluationKkTable():
                         sq=k_dst_sq),
                 # 玉に成りはありません
                 promoted=False,
-                is_rotate=is_k_rotate)
+                is_rotate=is_rotate)
 
         return (k_move_obj, l_move_obj)
 

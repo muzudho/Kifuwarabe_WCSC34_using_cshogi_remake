@@ -85,12 +85,7 @@ class EvaluationKpTable():
 
 
         # 評価値テーブルは先手用の形なので、後手番は１８０°回転させる必要がある
-        if k_turn == cshogi.BLACK:
-            is_k_rotate = False
-            is_p_rotate = True
-        else:
-            is_k_rotate = True
-            is_p_rotate = False
+        is_rotate = k_turn == cshogi.WHITE
 
         # Ｐ
         ((p_srcloc,
@@ -103,7 +98,7 @@ class EvaluationKpTable():
                 dst_location=MoveDestinationLocation.from_sq(
                         sq=p_dst_sq),
                 promoted=p_promote,
-                is_rotate=is_p_rotate)
+                is_rotate=is_rotate)
 
         # Ｋ
         (k_srcsq,
@@ -116,7 +111,7 @@ class EvaluationKpTable():
                         sq=k_dst_sq),
                 # 玉に成りはありません
                 promoted=False,
-                is_rotate=is_k_rotate)
+                is_rotate=is_rotate)
 
         return (k_move_obj, p_move_obj)
 
