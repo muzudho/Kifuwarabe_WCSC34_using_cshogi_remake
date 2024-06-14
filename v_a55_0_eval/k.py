@@ -281,7 +281,7 @@ class EvaluationKMove():
 
         except KeyError as ex:
             # k_srcsq error. k_move_obj.as_usi:S*3b  rotated:False  k_srcsq:None  src_masu:None  ex:None
-            print(f"[evaluation k move > get index by k move]  k_srcsq error. k_move_obj.as_usi:{k_move_obj.as_usi}  rotated:{is_rotate}  k_srcsq:{k_srcsq}  src_masu:{Usi.sq_to_jsa(k_srcsq)}  k_move_obj:{k_move_obj.dump()}  k_move_obj.rot_dstsq:{Usi.rotate_srcloc(k_move_obj.dstsq)}  k_move_obj.dstsq:{k_move_obj.dstsq}  ex:{ex}")
+            print(f"[evaluation k move > get index by k move]  k_srcsq error. k_move_obj.as_usi:{k_move_obj.as_usi}  rotated:{is_rotate}  k_srcsq:{k_srcsq}  src_masu:{Usi.sq_to_jsa(k_srcsq)}  k_move_obj:{k_move_obj.dump()}  k_dstsq:{k_dstsq}  ex:{ex}")
             raise
 
         #
@@ -298,7 +298,7 @@ class EvaluationKMove():
             # k_move_obj.as_usi:6g4e  rotated:True  k_srcsq:29  k_dstsq:49  src_masu:43  dst_masu:65  ex:49
             # k_move_obj.as_usi:8i6g  rotated:True  len(dstsq_to_index_dictionary):5  k_src_masu:21  k_dst_masu:43  k_srcsq:9  k_dstsq:29  ex:29
             # [evaluation k move > get index by k move]  k_dstsq error. k_move_obj.as_usi:2h6h  rotated:True  len(dstsq_to_index_dictionary):8  k_src_masu:82  k_dst_masu:42  k_srcsq:64  k_dstsq:28  ex:28
-            print(f"[evaluation k move > get index by k move]  k_dstsq error. k_move_obj.as_usi:{k_move_obj.as_usi}  rotated:{is_rotate}  len(dstsq_to_index_dictionary):{len(dstsq_to_index_dictionary)}  k_src_masu:{Usi.sq_to_jsa(k_srcsq)}  k_dst_masu:{Usi.sq_to_jsa(k_dstsq)}  k_srcsq:{k_srcsq}  k_dstsq:{k_dstsq}  k_move_obj.rot_dstsq:{Usi.rotate_srcloc(k_move_obj.dstsq)}  k_move_obj.dstsq:{k_move_obj.dstsq}  ex:{ex}")
+            print(f"[evaluation k move > get index by k move]  k_dstsq error. k_move_obj.as_usi:{k_move_obj.as_usi}  rotated:{is_rotate}  len(dstsq_to_index_dictionary):{len(dstsq_to_index_dictionary)}  k_src_masu:{Usi.sq_to_jsa(k_srcsq)}  k_dst_masu:{Usi.sq_to_jsa(k_dstsq)}  k_srcsq:{k_srcsq}  k_dstsq:{k_dstsq}  ex:{ex}")
 
             # ダンプ
             i = 0
