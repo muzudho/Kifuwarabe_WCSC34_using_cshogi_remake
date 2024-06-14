@@ -372,7 +372,8 @@ class EvaluationPMove():
     @staticmethod
     def get_index_by_p_move(
             p_move_obj,
-            is_rotate):
+            is_rotate,
+            ignore_error=False):
         """兵の指し手を指定すると、兵の指し手のインデックスを返す。
 
         Parameters
@@ -381,6 +382,8 @@ class EvaluationPMove():
             兵の指し手
         is_rotate : bool
             後手なら真。指し手を１８０°回転させます
+        ignore_error : bool
+            エラーが起きたら例外を投げ上げずに、 -1 を返します
 
         Returns
         -------
@@ -408,6 +411,10 @@ class EvaluationPMove():
 
             except KeyError as ex:
                 print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  P srcloc_u:{Usi.srcloc_to_code(p_move_obj.srcloc)}  rotated:{is_rotate}  p_src_masu:{Usi.srcloc_to_jsa(p_srcloc)}  成:{p_move_obj.promoted}  ex:{ex}")
+
+                if ignore_error:
+                    return -1
+                
                 raise
 
             try:
@@ -415,6 +422,10 @@ class EvaluationPMove():
 
             except KeyError as ex:
                 print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  P srcloc_u:{Usi.srcloc_to_code(p_move_obj.srcloc)}  rotated:{is_rotate}  p_src_masu:{Usi.srcloc_to_jsa(p_srcloc)}  成:{p_move_obj.promoted}  p_dst_masu:{Usi.sq_to_jsa(p_dstsq)}  ex:{ex}")
+
+                if ignore_error:
+                    return -1
+                
                 raise
 
         # 成りか。成りに打は有りません
@@ -426,13 +437,22 @@ class EvaluationPMove():
 
             except KeyError as ex:
                 print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  P srcloc_u:{Usi.srcloc_to_code(p_move_obj.srcloc)}  rotated:{is_rotate}  p_src_masu:{Usi.srcloc_to_jsa(p_srcsq)}  成:{p_move_obj.promoted}  ex:{ex}")
+
+                if ignore_error:
+                    return -1
+
                 raise
 
             try:
                 p_index = dstsq_to_index_dictionary[p_dstsq]
 
             except KeyError as ex:
-                print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  P srcloc_u:{Usi.srcloc_to_code(p_move_obj.srcloc)}  rotated:{is_rotate}  p_src_masu:{Usi.srcloc_to_jsa(p_srcsq)}  成:{p_move_obj.promoted}  p_dst_masu:{Usi.sq_to_jsa(p_dstsq)}  ex:{ex}")
+                # 配列Ｂのインデックス `6` （符号で言うと `7a`）は存在しない要素を指定しています。この配列Ｂは、配列Ａの 15 （符号で言うと `7b`）要素に入っていたものです。この探索は、兵の指し手 `3h3i+` を調べているところでした   ex:6
+                print(f"配列Ｂのインデックス `{p_dstsq}` （符号で言うと `{Usi.sq_to_code(p_dstsq)}`）は存在しない要素を指定しています。この配列Ｂは、配列Ａの {p_srcsq} （符号で言うと `{Usi.sq_to_code(p_srcsq)}`）要素に入っていたものです。この探索は、兵の指し手 `{p_move_obj.as_usi}` を調べているところでした   ex:{ex}")
+
+                if ignore_error:
+                    return -1
+
                 raise
 
         # 成らずだ
@@ -444,6 +464,10 @@ class EvaluationPMove():
 
             except KeyError as ex:
                 print(f"p_move_obj.as_usi:{p_move_obj.as_usi}  P srcloc_u:{Usi.srcloc_to_code(p_move_obj.srcloc)}  rotated:{is_rotate}  p_src_masu:{Usi.srcloc_to_jsa(p_srcsq)}  成:{p_move_obj.promoted}  ex:{ex}")
+
+                if ignore_error:
+                    return -1
+
                 raise
 
             try:
@@ -453,6 +477,10 @@ class EvaluationPMove():
                 # TODO 後手の桂馬の動きをしようとしている。評価値テーブルには後手の動きは入っていないので、回転させる必要がある
                 # 配列Ｂのインデックス `26` （符号で言うと `9c`）は存在しない要素を指定しています。この配列Ｂは、配列Ａの 7 （符号で言うと `8a`）要素に入っていたものです。この探索は、兵の指し手 `2i1g` を調べているところでした  ex:26
                 print(f"配列Ｂのインデックス `{p_dstsq}` （符号で言うと `{Usi.sq_to_code(p_dstsq)}`）は存在しない要素を指定しています。この配列Ｂは、配列Ａの {p_srcsq} （符号で言うと `{Usi.sq_to_code(p_srcsq)}`）要素に入っていたものです。この探索は、兵の指し手 `{p_move_obj.as_usi}` を調べているところでした  ex:{ex}")
+
+                if ignore_error:
+                    return -1
+
                 raise
 
         # assert

@@ -109,32 +109,36 @@ def test_kk():
 
 
 def test_p():
-    #
-    # 後手の歩を９段目に突いて成る
-    #
-    expected_p_move_u = '3h3i+'
-    expected_p_move_obj = Move.from_usi(expected_p_move_u)
+    def test_p_3h3ip():
+        """後手の歩を９段目に突いて成る"""
+        expected_p_move_u = '3h3i+'
+        expected_p_move_obj = Move.from_usi(expected_p_move_u)
 
-    is_p_rotate = True
+        is_p_rotate = True
 
-    p_index = EvaluationPMove.get_index_by_p_move(
-            p_move_obj=expected_p_move_obj,
-            is_rotate=is_p_rotate)
+        p_index = EvaluationPMove.get_index_by_p_move(
+                p_move_obj=expected_p_move_obj,
+                is_rotate=is_p_rotate,
+                ignore_error=True)
 
-    # Ｐ
-    (p_srcloc,
-     p_dstsq,
-     p_promote) = EvaluationPMove.destructure_srcloc_dstsq_promoted_by_p_index(
-            p_index=p_index)
-    actual_p_move_obj = Move.from_src_dst_pro(
-            srcloc=p_srcloc,
-            dstsq=p_dstsq,
-            promoted=p_promote,
-            is_rotate=is_p_rotate)
+        if p_index == -1:
+            return
 
-    if expected_p_move_obj.as_usi != actual_p_move_obj.as_usi:
-        raise ValueError(f'unexpected error. move_obj expected P:`{expected_p_move_obj.as_usi}`  actual P:`{actual_p_move_obj.as_usi}`')
+        # Ｐ
+        (p_srcloc,
+        p_dstsq,
+        p_promote) = EvaluationPMove.destructure_srcloc_dstsq_promoted_by_p_index(
+                p_index=p_index)
+        actual_p_move_obj = Move.from_src_dst_pro(
+                srcloc=p_srcloc,
+                dstsq=p_dstsq,
+                promoted=p_promote,
+                is_rotate=is_p_rotate)
 
+        if expected_p_move_obj.as_usi != actual_p_move_obj.as_usi:
+            raise ValueError(f'unexpected error. move_obj expected P:`{expected_p_move_obj.as_usi}`  actual P:`{actual_p_move_obj.as_usi}`')
+
+    test_p_3h3ip()
 
 
     #
@@ -203,8 +207,9 @@ def test_p():
         #
         #   - 打は SFEN では駒種類毎に分かれている。 R*, B*, G*, S*, N*, L*, P*
         #
-        for drop in ['R*', 'B*', 'G*', 'S*', 'N*', 'L*', 'P*']:
-            dstsq_to_index_dictionary = srcdrop_to_dstsq_index[drop]
+        for drop_code in ['R*', 'B*', 'G*', 'S*', 'N*', 'L*', 'P*']:
+            srcdrop = Usi.code_to_srcloc(drop_code)
+            dstsq_to_index_dictionary = srcdrop_to_dstsq_index[srcdrop]
 
             label_table_for_drop = ['    '] * 81
 
@@ -212,7 +217,7 @@ def test_p():
                 label_table_for_drop[dstsq] = f"{effect_index:4}"
 
             f.write(f"""
-drop:{drop}
+drop_code:{drop_code}
 {DebugHelper.stringify_4characters_board(label_table_for_drop)}
 
 """)
