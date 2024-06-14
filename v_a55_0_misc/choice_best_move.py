@@ -46,6 +46,10 @@ class ChoiceBestMove():
             自兵の着手と、敵兵の応手の関係の有無を格納した辞書
         """
 
+        # assert
+        is_rotate = board.turn == cshogi.WHITE
+        move_rot_obj = move_obj.rotate()
+
         # 応手の一覧を作成
         l_move_u_set, q_move_u_set = BoardHelper.create_counter_move_u_set(
                 board=board,
@@ -126,11 +130,13 @@ check_pl_index:{check_pl_index:10}
       l_move_u:{assert_l_move_obj.as_usi:5}
 """)
 
-                if assert_p_move_obj.as_usi != move_obj.as_usi:
+                if (not is_rotate and assert_p_move_obj.as_usi != move_obj.as_usi) or (is_rotate and assert_p_move_obj.as_usi != move_rot_obj.as_usi):
                     print(board)
                     raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pl] 着手が変わっているエラー
-move_u:{move_obj.as_usi:5} p_move_u:{assert_p_move_obj.as_usi:5}
-       {''             :5} l_move_u:{assert_l_move_obj.as_usi:5}
+is_rotate:{is_rotate}
+move_u    :{move_obj.as_usi    :5} p_move_u:{assert_p_move_obj.as_usi:5}
+move_rot_u:{move_rot_obj.as_usi:5}
+           {''                 :5} l_move_u:{assert_l_move_obj.as_usi:5}
 """)
 
             # 自兵の着手と、敵兵の応手の一覧から、ＰＱテーブルのインデックスと、関係の有無を格納した辞書を作成

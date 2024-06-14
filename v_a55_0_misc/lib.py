@@ -130,6 +130,18 @@ class Turn():
         return clazz._flip[turn]
 
 
+class Promotion():
+    """成る手"""
+
+
+    @staticmethod
+    def to_code(promoted):
+        if promoted:
+            return '+'
+        else:
+            return ''
+
+
 class MoveSourceLocation():
     """指し手の移動元は、マス番号と駒種類の２通りある"""
 
@@ -678,18 +690,12 @@ class Move():
         is_rotate : bool
             盤を１８０°回転させたときの指し手にするか？
         """
-
-        if promoted:
-            pro_str = "+"
-        else:
-            pro_str = ""
-
         if is_rotate:
             src_location = src_location.rotate()
             dst_location = dst_location.rotate()
 
         return Move(
-                as_usi=f"{Usi.srcloc_to_code(src_location.srcloc)}{dst_location.usi_code}{pro_str}",
+                as_usi=f"{Usi.srcloc_to_code(src_location.srcloc)}{dst_location.usi_code}{Promotion.to_code(promoted)}",
                 src_location=src_location,
                 dst_location=dst_location,
                 promoted=promoted)
@@ -752,6 +758,18 @@ _promoted:`{self._promoted}`
     def promoted(self):
         """成ったか？"""
         return self._promoted
+
+
+    def rotate(self):
+        """盤を１８０°回転させたときの指し手を返します"""
+        src_location = self.src_location.rotate()
+        dst_location = self.dst_location.rotate()
+
+        return Move(
+                as_usi=f"{Usi.srcloc_to_code(src_location.srcloc)}{dst_location.usi_code}{Promotion.to_code(self.promoted)}",
+                src_location=src_location,
+                dst_location=dst_location,
+                promoted=self.promoted)
 
 
 class MoveHelper():
