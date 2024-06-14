@@ -117,3 +117,15 @@ class Usi():
             file_th,
             rank_th):
         return f"{file_th}{clazz._rank_th_num_to_alphabet[rank_th]}"
+
+
+    @staticmethod
+    def is_drop_by_srcloc(srcloc):
+        """駒を打つ手か？
+
+        Parameters
+        ----------
+        srcloc : int
+            盤上のマス番号 0～80、または打つ駒の種類 81～87
+        """
+        return 80 <= srcloc and srcloc <= 87

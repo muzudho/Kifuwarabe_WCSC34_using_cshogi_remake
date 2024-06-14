@@ -294,7 +294,7 @@ _srcloc:{self._srcloc}
 _masu:{BoardHelper.sq_to_jsa(self._sq)}
 _file_th:{self._file_th}
 _rank_th:{self._rank_th}
-is_drop?:{self.is_drop()}
+is_drop?:{Usi.is_drop_by_srcloc(self._srcloc)}
 _rot_masu:{BoardHelper.sq_to_jsa(self._rot_sq)}
 _rot_file_th:{self._rot_file_th}
 _rot_rank_th:{self._rot_rank_th}
@@ -347,11 +347,6 @@ _rot_rank_th:{self._rot_rank_th}
     def rot_srcloc(self):
         """指し手を盤上で１８０°回転したときの元位置番号。 0 から始まる整数で返す。打なら、回転させずに返す"""
         return self._rot_srcloc
-
-
-    def is_drop(self):
-        """駒を打つ手か？"""
-        return 81 <= self._srcloc and self._srcloc <= 87
 
 
     def rotate(self):
