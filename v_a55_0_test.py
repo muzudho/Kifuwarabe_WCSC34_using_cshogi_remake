@@ -14,7 +14,7 @@ from     v_a55_0_misc.usi import Usi
 
 def test_k():
     # 元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します
-    (srcsq_to_dst_index_dictionary, index_to_srcsq_dst_dictionary) = EvaluationKMove.get_srcsq_to_dst_sq_index_dictionary_tuple()
+    (srcsq_to_dstsq_index_dictionary, index_to_srcsq_dstsq_dictionary) = EvaluationKMove.get_srcsq_to_dstsq_index_dictionary_tuple()
 
     base_name = "test_eval_k.log"
     print(f"please read `{base_name}` file")
@@ -31,7 +31,7 @@ def test_k():
         # 元マス・先マス to インデックス
         #
         for srcsq in range(0,81):
-            dst_to_index_dictionary = srcsq_to_dst_index_dictionary[srcsq]
+            dstsq_to_index_dictionary = srcsq_to_dstsq_index_dictionary[srcsq]
 
             #   - １マスが３桁の文字列の表
             #   - 元マス
@@ -41,9 +41,9 @@ def test_k():
             label_table_for_serial_index[srcsq] = 'you'
             label_table_for_src_dst[srcsq] = 'you'
 
-            for dst_sq, serial_index in dst_to_index_dictionary.items():
-                label_table_for_serial_index[dst_sq] = f'{serial_index:3}'
-                label_table_for_src_dst[dst_sq] = f'{dst_sq:3}'
+            for dstsq, serial_index in dstsq_to_index_dictionary.items():
+                label_table_for_serial_index[dstsq] = f'{serial_index:3}'
+                label_table_for_src_dst[dstsq] = f'{dstsq:3}'
 
             # 表示
             f.write(f"""src_masu:{Usi.sq_to_jsa(srcsq):2}
@@ -58,9 +58,9 @@ src と dst                              通しインデックス
         previous_srcsq = -1
 
         for serial_index in range(0, EvaluationKMove.get_serial_number_size()):
-            (srcsq, dst_sq) = index_to_srcsq_dst_dictionary[serial_index]
+            (srcsq, dstsq) = index_to_srcsq_dstsq_dictionary[serial_index]
 
-            print(f"(src_masu:{Usi.sq_to_jsa(srcsq):2}, dst_masu:{Usi.sq_to_jsa(dst_sq):2}) = dictionary[ serial_index:{serial_index:3} ]")
+            print(f"(src_masu:{Usi.sq_to_jsa(srcsq):2}, dst_masu:{Usi.sq_to_jsa(dstsq):2}) = dictionary[ serial_index:{serial_index:3} ]")
 
             if previous_srcsq != srcsq:
 
@@ -80,8 +80,8 @@ src と dst                              通しインデックス
                 label_table_for_serial_index = ['   '] * 81
                 label_table_for_serial_index[srcsq] = 'you'
 
-            label_table_for_src_dst[dst_sq] = f'{dst_sq:3}'
-            label_table_for_serial_index[dst_sq] = f'{serial_index:3}'
+            label_table_for_src_dst[dstsq] = f'{dstsq:3}'
+            label_table_for_serial_index[dstsq] = f'{serial_index:3}'
 
             previous_srcsq = srcsq
 
@@ -123,12 +123,12 @@ def test_p():
 
     # Ｐ
     (p_srcloc,
-     p_dst_sq,
-     p_promote) = EvaluationPMove.destructure_srcloc_dst_sq_promoted_by_p_index(
+     p_dstsq,
+     p_promote) = EvaluationPMove.destructure_srcloc_dstsq_promoted_by_p_index(
             p_index=p_index)
     actual_p_move_obj = Move.from_src_dst_pro(
             srcloc=p_srcloc,
-            dstsq=p_dst_sq,
+            dstsq=p_dstsq,
             promoted=p_promote,
             is_rotate=is_p_rotate)
 
@@ -140,7 +140,7 @@ def test_p():
     #
     # 元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します
     #
-    (srcsq_to_dst_sq_to_index_for_npsi_dictionary,
+    (srcsq_to_dstsq_to_index_for_npsi_dictionary,
      srcsq_to_dst_sq_to_index_for_psi_dictionary,
      srcdrop_to_dst_sq_index,
      index_to_srcsq_dst_sq_promotion_dictionary) = EvaluationPMove.get_src_lists_to_dst_sq_index_dictionary_tuple()
@@ -160,7 +160,7 @@ def test_p():
         # 元マス・先マス to インデックス
         #
         for srcsq in range(0,81):
-            dst_sq_to_index_for_npsi_dictionary = srcsq_to_dst_sq_to_index_for_npsi_dictionary[srcsq]
+            dst_sq_to_index_for_npsi_dictionary = srcsq_to_dstsq_to_index_for_npsi_dictionary[srcsq]
             dst_sq_to_index_for_b_dictionary = srcsq_to_dst_sq_to_index_for_psi_dictionary[srcsq]
 
             # 成らない指し手（no promote）の各マス　値：通しインデックス（serial index）

@@ -81,7 +81,7 @@ class EvaluationKkTable():
 
         # Ｌ
         (l_srcsq,
-         l_dst_sq) = EvaluationKMove.destructure_srcsq_dst_sq_by_k_index(
+         l_dst_sq) = EvaluationKMove.destructure_srcsq_dstsq_by_k_index(
                 k_index=l_index)
         l_move_obj = Move.from_src_dst_pro(
                 srcloc=l_srcsq,
@@ -92,11 +92,11 @@ class EvaluationKkTable():
 
         # Ｋ
         (k_srcsq,
-         k_dst_sq) = EvaluationKMove.destructure_srcsq_dst_sq_by_k_index(
+         k_dstsq) = EvaluationKMove.destructure_srcsq_dstsq_by_k_index(
                 k_index=k_index)
         k_move_obj = Move.from_src_dst_pro(
                 srcloc=k_srcsq,
-                dstsq=k_dst_sq,
+                dstsq=k_dstsq,
                 # 玉に成りはありません
                 promoted=False,
                 is_rotate=is_rotate)

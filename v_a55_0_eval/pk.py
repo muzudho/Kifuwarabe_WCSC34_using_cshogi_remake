@@ -106,23 +106,23 @@ class EvaluationPkTable():
 
         # Ｋ
         (k_srcsq,
-         k_dst_sq) = EvaluationKMove.destructure_srcsq_dst_sq_by_k_index(
+         k_dstsq) = EvaluationKMove.destructure_srcsq_dstsq_by_k_index(
                 k_index=k_index)
         k_move_obj = Move.from_src_dst_pro(
                 srcloc=k_srcsq,
-                dstsq=k_dst_sq,
+                dstsq=k_dstsq,
                 # 玉に成りはありません
                 promoted=False,
                 is_rotate=is_rotate)
 
         # Ｐ
         (p_srcloc,
-         p_dst_sq,
-         p_promote) = EvaluationPMove.destructure_srcloc_dst_sq_promoted_by_p_index(
+         p_dstsq,
+         p_promote) = EvaluationPMove.destructure_srcloc_dstsq_promoted_by_p_index(
                 p_index=p_index)
         p_move_obj = Move.from_src_dst_pro(
                 srcloc=p_srcloc,
-                dstsq=p_dst_sq,
+                dstsq=p_dstsq,
                 promoted=p_promote,
                 is_rotate=is_rotate)
 
