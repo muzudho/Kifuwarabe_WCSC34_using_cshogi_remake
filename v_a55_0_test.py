@@ -326,12 +326,12 @@ def test_move_rotate():
 
     # １８０°回転
     move_u = "1g1f"
-    expected_move_rot_u = "9f9g"
+    expected_rot_move_u = "9c9d"
     move_obj = Move.from_usi(move_u)
-    move_rot_u = move_obj.rotate().as_usi
+    rot_move_u = move_obj.rotate().as_usi
 
-    if expected_move_rot_u != move_rot_u:
-        raise ValueError(f"[test move rotate]  expected:{expected_move_rot_u}  actual:{move_rot_u}")
+    if expected_rot_move_u != rot_move_u:
+        raise ValueError(f"[test move rotate]  expected:{expected_rot_move_u}  actual:{rot_move_u}")
 
 
 ########################################
