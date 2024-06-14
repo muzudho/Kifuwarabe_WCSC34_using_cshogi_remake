@@ -240,6 +240,23 @@ class ChoiceBestMove():
                     board=board,
                     kifuwarabe=kifuwarabe)
 
+            # assert
+            for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
+                assert_k_move_obj, assert_l_move_obj = EvaluationKkTable.destructure_kk_index(
+                        kl_index=kl_index,
+                        k_turn=board.turn)
+                if assert_k_move_obj.as_usi != move_obj.as_usi:
+                    raise ValueError(f"[{datetime.datetime.now()}] [choice best move > kl] 着手が変わっているエラー  k_move_obj.as_usi:{assert_k_move_obj.as_usi}  move_u:{move_obj.as_usi}")
+
+            # assert
+            for kq_index, relation_exists in kq_index_to_relation_exists_dictionary.items():
+                assert_k_move_obj, assert_q_move_obj = EvaluationKpTable.destructure_kp_index(
+                        kp_index=kq_index,
+                        k_turn=board.turn)
+                if assert_k_move_obj.as_usi != move_obj.as_usi:
+                    raise ValueError(f"[{datetime.datetime.now()}] [choice best move > kq] 着手が変わっているエラー  k_move_obj.as_usi:{assert_k_move_obj.as_usi}  move_u:{move_obj.as_usi}")
+
+
             # ＫＬとＫＱの関係数
             total_of_relation = len(kl_index_to_relation_exists_dictionary) + len(kq_index_to_relation_exists_dictionary)
             #print(f"[{datetime.datetime.now()}] [get summary > kl and kq]   total_of_relation:{total_of_relation}  =  len(kl_index_to_relation_exists_dictionary):{len(kl_index_to_relation_exists_dictionary)}  +  len(kq_index_to_relation_exists_dictionary):{len(kq_index_to_relation_exists_dictionary)}")
@@ -269,6 +286,22 @@ class ChoiceBestMove():
                     is_king_move=is_king_move,
                     board=board,
                     kifuwarabe=kifuwarabe)
+
+            # assert
+            for pl_index, relation_exists in pl_index_to_relation_exists_dictionary.items():
+                assert_p_move_obj, assert_l_move_obj = EvaluationPkTable.destructure_pk_index(
+                        pl_index=pl_index,
+                        p_turn=board.turn)
+                if assert_p_move_obj.as_usi != move_obj.as_usi:
+                    raise ValueError(f"[{datetime.datetime.now()}] [choice best move > pl] 着手が変わっているエラー  p_move_obj.as_usi:{assert_p_move_obj.as_usi}  move_u:{move_obj.as_usi}")
+
+            # assert
+            for pq_index, relation_exists in pq_index_to_relation_exists_dictionary.items():
+                assert_p_move_obj, assert_q_move_obj = EvaluationPpTable.destructure_pp_index(
+                        pp_index=pq_index,
+                        p1_turn=board.turn)
+                if assert_p_move_obj.as_usi != move_obj.as_usi:
+                    raise ValueError(f"[{datetime.datetime.now()}] [choice best move > pq] 着手が変わっているエラー  p_move_obj.as_usi:{assert_p_move_obj.as_usi}  move_u:{move_obj.as_usi}")
 
             # ＰＬとＰＱの関係数
             total_of_relation = len(pl_index_to_relation_exists_dictionary) + len(pq_index_to_relation_exists_dictionary)
