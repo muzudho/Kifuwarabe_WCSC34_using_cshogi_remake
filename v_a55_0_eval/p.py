@@ -521,13 +521,7 @@ class EvaluationPMove():
                         srcloc=srcloc),
                 dst_location=MoveDestinationLocation.from_sq(
                         sq=dst_sq),
-                promoted=promoted)
-
-        if is_rotate:
-            # TODO ここでオブジェクトを生成しなくて済む方法はないか？
-            p_move_obj = Move.from_src_dst_pro(
-                    src_location=p_move_obj.src_location.rotate(),
-                    dst_location=p_move_obj.dst_location.rotate(),
-                    promoted=promoted)
+                promoted=promoted,
+                is_rotate=is_rotate)
 
         return p_move_obj

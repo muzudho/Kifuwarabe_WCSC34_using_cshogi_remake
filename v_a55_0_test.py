@@ -283,7 +283,7 @@ def test_lib():
             dst_location=MoveDestinationLocation.from_sq(
                 sq=BoardHelper.jsa_to_sq(39)),
             promoted=True)
-    
+
     if move_obj.as_usi != expected_move_u:
         raise ValueError(f'unexpected error. expected:`{expected_move_u}`  actual:`{move_obj.as_usi}`')
 

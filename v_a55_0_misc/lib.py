@@ -663,7 +663,8 @@ class Move():
     def from_src_dst_pro(
             src_location,
             dst_location,
-            promoted):
+            promoted,
+            is_rotate=False):
         """初期化
 
         Parameters
@@ -674,6 +675,8 @@ class Move():
             移動先オブジェクト
         promoted : bool
             成ったか？
+        is_rotate : bool
+            盤を１８０°回転させたときの指し手にするか？
         """
 
         if promoted:
@@ -681,7 +684,11 @@ class Move():
         else:
             pro_str = ""
 
-        return Move(
+        if is_rotate:
+            src_location = src_location.rotate()
+            dst_location = dst_location.rotate()
+
+        return Move.from_src_dst_pro(
                 as_usi=f"{Usi.srcloc_to_code(src_location.srcloc)}{dst_location.usi_code}{pro_str}",
                 src_location=src_location,
                 dst_location=dst_location,
