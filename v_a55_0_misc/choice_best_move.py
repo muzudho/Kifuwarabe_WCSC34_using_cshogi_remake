@@ -64,6 +64,30 @@ class ChoiceBestMove():
                     p_move_u_set=q_move_u_set,
                     k_turn=board.turn)
 
+            # assert
+            for kl_index, relation_exists in kl_index_to_relation_exists_dic.items():
+                assert_k_move_obj, assert_l_move_obj = EvaluationKkTable.destructure_kk_index(
+                        kl_index=kl_index,
+                        k_turn=board.turn)
+                if assert_k_move_obj.as_usi != move_obj.as_usi:
+                    print(board)
+                    raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > kl] 着手が変わっているエラー
+move_u:{move_obj.as_usi:5} k_move_u:{assert_k_move_obj.as_usi:5}
+       {''             :5} l_move_u:{assert_l_move_obj.as_usi:5}
+""")
+
+            # assert
+            for kq_index, relation_exists in kq_index_to_relation_exists_dic.items():
+                assert_k_move_obj, assert_q_move_obj = EvaluationKpTable.destructure_kp_index(
+                        kp_index=kq_index,
+                        k_turn=board.turn)
+                if assert_k_move_obj.as_usi != move_obj.as_usi:
+                    print(board)
+                    raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > kq] 着手が変わっているエラー
+move_u:{move_obj.as_usi:5} k_move_u:{assert_k_move_obj.as_usi:5}
+       {''             :5} k_move_u:{assert_q_move_obj.as_usi:5}
+""")
+
             return (kl_index_to_relation_exists_dic,
                     kq_index_to_relation_exists_dic,
                     None,
@@ -76,11 +100,57 @@ class ChoiceBestMove():
                     k_move_u_set=l_move_u_set,
                     p_turn=board.turn)
 
+            # assert
+            for pl_index, relation_exists in pl_index_to_relation_exists_dic.items():
+                assert_p_move_obj, assert_l_move_obj = EvaluationPkTable.destructure_pk_index(
+                        pk_index=pl_index,
+                        p_turn=board.turn)
+
+                check_pl_index = EvaluationPkTable.get_index_of_pk_table(
+                        p_move_obj=assert_p_move_obj,
+                        k_move_obj=assert_l_move_obj,
+                        p_turn=board.turn)
+
+                if pl_index != check_pl_index:
+                    raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pl] インデックスから指し手を復元し、さらにインデックスに圧縮すると、元のインデックスに復元しなかったエラー
+      pl_index:{      pl_index:10}
+check_pl_index:{check_pl_index:10}
+      p_move_u:{assert_p_move_obj.as_usi:5}
+      l_move_u:{assert_l_move_obj.as_usi:5}
+""")
+                else:
+                    print(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pl] インデックスから指し手を復元し、さらにインデックスに圧縮すると、元のインデックスに復元できた。Ok
+      pl_index:{      pl_index:10}
+check_pl_index:{check_pl_index:10}
+      p_move_u:{assert_p_move_obj.as_usi:5}
+      l_move_u:{assert_l_move_obj.as_usi:5}
+""")
+
+
+                if assert_p_move_obj.as_usi != move_obj.as_usi:
+                    print(board)
+                    raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pl] 着手が変わっているエラー
+move_u:{move_obj.as_usi:5} p_move_u:{assert_p_move_obj.as_usi:5}
+       {''             :5} l_move_u:{assert_l_move_obj.as_usi:5}
+""")
+
             # 自兵の着手と、敵兵の応手の一覧から、ＰＱテーブルのインデックスと、関係の有無を格納した辞書を作成
             pq_index_to_relation_exists_dic = kifuwarabe.evaluation_pq_table_obj_array[Turn.to_index(board.turn)].select_pp_index_and_relation_exists(
                     p1_move_obj=move_obj,
                     p2_move_u_set=q_move_u_set,
                     p1_turn=board.turn)
+
+            # assert
+            for pq_index, relation_exists in pq_index_to_relation_exists_dic.items():
+                assert_p_move_obj, assert_q_move_obj = EvaluationPpTable.destructure_pp_index(
+                        pp_index=pq_index,
+                        p1_turn=board.turn)
+                if assert_p_move_obj.as_usi != move_obj.as_usi:
+                    print(board)
+                    raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pq] 着手が変わっているエラー
+move_u:{move_obj.as_usi:5} p_move_u:{assert_p_move_obj.as_usi:5}
+       {''             :5} q_move_u:{assert_q_move_obj.as_usi:5}
+""")
 
             return (None,
                     None,
@@ -290,7 +360,7 @@ class ChoiceBestMove():
             # assert
             for pl_index, relation_exists in pl_index_to_relation_exists_dictionary.items():
                 assert_p_move_obj, assert_l_move_obj = EvaluationPkTable.destructure_pk_index(
-                        pl_index=pl_index,
+                        pk_index=pl_index,
                         p_turn=board.turn)
                 if assert_p_move_obj.as_usi != move_obj.as_usi:
                     raise ValueError(f"[{datetime.datetime.now()}] [choice best move > pl] 着手が変わっているエラー  p_move_obj.as_usi:{assert_p_move_obj.as_usi}  move_u:{move_obj.as_usi}")

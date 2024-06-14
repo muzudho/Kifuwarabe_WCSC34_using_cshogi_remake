@@ -1,0 +1,40 @@
+[2024-06-14 00:12:46.949251] [learn > 詰める方]  mate:1  ランク別着手数：  [0]0  [1]0  [2]1  [3]1  [4]0  [5]5  [6]23  [7]13  [8]51  [9]3  累計：97
+[2024-06-14 00:12:47.674662] [learn > 詰める方 > 好手] (  1/ 97)  2h6h   draw  [75手（差30）先]  max_playout_depth  [▼DOWN▼] 攻めてる間にプレイアウトが打ち切られた
+[evaluation k move > get index by k move]  k_dst_sq error. k_move_obj.as_usi:2h6h  rotated:True  len(dst_to_index_dictionary):8  k_src_masu:82  k_dst_masu:42  k_srcsq:64  k_dst_sq:28  ex:28
+[evaluation k move > get index by k move]  ( 0)  k_dst_sq:54  k_dst_masu:71  k_index:442
+[evaluation k move > get index by k move]  ( 1)  k_dst_sq:55  k_dst_masu:72  k_index:443
+[evaluation k move > get index by k move]  ( 2)  k_dst_sq:56  k_dst_masu:73  k_index:444
+[evaluation k move > get index by k move]  ( 3)  k_dst_sq:63  k_dst_masu:81  k_index:445
+[evaluation k move > get index by k move]  ( 4)  k_dst_sq:65  k_dst_masu:83  k_index:446
+[evaluation k move > get index by k move]  ( 5)  k_dst_sq:72  k_dst_masu:91  k_index:447
+[evaluation k move > get index by k move]  ( 6)  k_dst_sq:73  k_dst_masu:92  k_index:448
+[evaluation k move > get index by k move]  ( 7)  k_dst_sq:74  k_dst_masu:93  k_index:449
+[2024-06-14 00:12:47.676662] [learning framework > unexpected error] err=KeyError(28), type(err)=<class 'KeyError'>
+Traceback (most recent call last):
+  File "C:\Users\むずでょ\Documents\Muzudho Workspaces\shogi\Kifuwarabe_WCSC34R_using_cshogi_v_a55_0\v_a55_0_main_learn.py", line 166, in <module>
+    learning_framework.start_it(
+  File "C:\Users\むずでょ\Documents\Muzudho Workspaces\shogi\Kifuwarabe_WCSC34R_using_cshogi_v_a55_0\v_a55_0_main_learn.py", line 130, in start_it
+    is_debug=is_debug).learn_it()
+                       ^^^^^^^^^^
+  File "C:\Users\むずでょ\Documents\Muzudho Workspaces\shogi\Kifuwarabe_WCSC34R_using_cshogi_v_a55_0\v_a55_0_misc\learn.py", line 159, in learn_it
+    changed_count) = self.at_odd(
+                     ^^^^^^^^^^^^
+  File "C:\Users\むずでょ\Documents\Muzudho Workspaces\shogi\Kifuwarabe_WCSC34R_using_cshogi_v_a55_0\v_a55_0_misc\learn.py", line 380, in at_odd
+    result_str = self._kifuwarabe.weaken(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\むずでょ\Documents\Muzudho Workspaces\shogi\Kifuwarabe_WCSC34R_using_cshogi_v_a55_0\v_a55_0.py", line 840, in weaken
+    ).weaken(
+      ^^^^^^^
+  File "C:\Users\むずでょ\Documents\Muzudho Workspaces\shogi\Kifuwarabe_WCSC34R_using_cshogi_v_a55_0\v_a55_0_eval\edit.py", line 265, in weaken
+    is_changed_temp = self._kifuwarabe._evaluation_kl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_esixts_by_kl_moves(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\むずでょ\Documents\Muzudho Workspaces\shogi\Kifuwarabe_WCSC34R_using_cshogi_v_a55_0\v_a55_0_eval\kk.py", line 256, in set_relation_esixts_by_kl_moves
+    index=EvaluationKkTable.get_index_of_kk_table(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\むずでょ\Documents\Muzudho Workspaces\shogi\Kifuwarabe_WCSC34R_using_cshogi_v_a55_0\v_a55_0_eval\kk.py", line 40, in get_index_of_kk_table
+    kk_index       = EvaluationKMove.get_index_by_k_move(k_move_obj, k_rotate) * EvaluationKMove.get_serial_number_size() + EvaluationKMove.get_index_by_k_move(l_move_obj, l_rotate)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\むずでょ\Documents\Muzudho Workspaces\shogi\Kifuwarabe_WCSC34R_using_cshogi_v_a55_0\v_a55_0_eval\k.py", line 405, in get_index_by_k_move
+    k_index = dst_to_index_dictionary[k_dst_sq]
+              ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+KeyError: 28

@@ -78,6 +78,8 @@ class EvaluationEdit():
                     pk_index=fl_index,
                     p_turn=self._board.turn)
             if assert_p_move_obj.as_usi != move_u:
+                # FIXME Rotate でも絡んでいる不具合か？
+                # [2024-06-14 00:23:32.615808] [weaken > fl] 着手が変わっているエラー  p_move_obj.as_usi:7f3c  move_u:4c3c
                 raise ValueError(f"[{datetime.datetime.now()}] [weaken > fl] 着手が変わっているエラー  p_move_obj.as_usi:{assert_p_move_obj.as_usi}  move_u:{move_u}")
 
         # assert

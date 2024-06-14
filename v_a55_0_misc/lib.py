@@ -141,7 +141,11 @@ class MoveSourceLocation():
             return None
 
         else:
-            return 8 - (file_th - 1) + 1
+            #
+            #   例：９段目のとき１段目に変える
+            #   例：１段目のとき９段目に変える
+            #
+            return 10 - file_th
 
 
     @staticmethod
@@ -180,8 +184,8 @@ class MoveSourceLocation():
 
         Parameter
         ---------
-        srcloc : str
-            マス番号か、打の駒種類のどちらか
+        srcloc : int
+            マス番号か、打の駒種類の番号のどちらか
         """
 
         # TODO そもそも、この打とマス番号を分けるようにしなくていいようなフローにできないか？
@@ -463,8 +467,16 @@ class MoveDestinationLocation():
         self._usi_code = f"{self._file_th}{Usi._rank_th_num_to_alphabet[self._rank_th]}"
 
         # 指し手を盤上で１８０°回転
-        self._rot_file_th = 8 - (self._file_th - 1) + 1
-        self._rot_rank_th = 8 - (self._rank_th - 1) + 1
+        #
+        #   例：９段目のとき１段目に変える
+        #   例：１段目のとき９段目に変える
+        #
+        self._rot_file_th = 10 - self._file_th
+        self._rot_rank_th = 10 - self._rank_th
+        #
+        #   例：８０のとき　０に変える
+        #   例：　０のとき８０に変える
+        #
         self._rot_sq = 80 - self._sq
 
 
