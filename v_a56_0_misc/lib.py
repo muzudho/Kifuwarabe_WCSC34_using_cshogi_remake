@@ -295,10 +295,10 @@ class Move():
 
     def dump(self):
         return f"""\
-to_usi:`{Move.to_usi(self)}`
-srcloc:{self._srcloc}
-dstsq :{self._dstsq}
-promoted:`{self._promoted}`
+as_usi  :{self.as_usi}
+srcloc  :{self._srcloc}
+dstsq   :{self._dstsq}
+promoted:{self._promoted}
 """
 
 

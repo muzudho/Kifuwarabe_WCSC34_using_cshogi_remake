@@ -236,7 +236,12 @@ class Usi():
                 clazz._code_to_srcloc[drop_num] = drop_str
                 drop_num += 1
 
-        return clazz._srcloc_to_jsa[srcloc]
+        try:
+            return clazz._srcloc_to_jsa[srcloc]
+        
+        except KeyError as ex:
+            print(f"[usi > srcloc to jsa] len(clazz._srcloc_to_jsa):{len(clazz._srcloc_to_jsa)}  ex:{ex}")
+            raise
 
 
     #get_sq_by_file_rank

@@ -5,6 +5,7 @@ import datetime
 from v_a56_0_eval.lib import EvaluationLib
 from v_a56_0_eval.k import EvaluationKMove
 from v_a56_0_misc.lib import FileName, Turn, Move, EvalutionMmTable
+from v_a56_0_misc.usi import Usi
 
 
 class EvaluationKkTable():
@@ -27,6 +28,14 @@ class EvaluationKkTable():
         shall_k_white_to_black : bool
             評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
         """
+
+        # assert
+        if Usi.is_drop_by_srcloc(k_move_obj.srcloc):
+            raise ValueError(f"[evaluation kk table > get index of kk move > k] 玉の指し手で打なのはおかしい。 k_move_obj.srcloc_u:{Usi.srcloc_to_code(k_move_obj.srcloc)}  k_move_obj:{k_move_obj.dump()}")
+
+        # assert
+        if Usi.is_drop_by_srcloc(l_move_obj.srcloc):
+            raise ValueError(f"[evaluation kk table > get index of kk move > l] 玉の指し手で打なのはおかしい。 l_move_obj.srcloc_u:{Usi.srcloc_to_code(l_move_obj.srcloc)}  l_move_obj:{l_move_obj.dump()}")
 
         # 評価値テーブルは先手用の形だ。着手と応手のどちらかは後手なので、後手番は１８０°回転させる必要がある
         shall_l_white_to_black = not shall_k_white_to_black
