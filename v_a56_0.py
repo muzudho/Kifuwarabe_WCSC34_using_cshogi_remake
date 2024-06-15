@@ -777,7 +777,8 @@ class Kifuwarabe():
 
                 black_k_move_obj, black_l_move_obj = EvaluationKkTable.build_black_k_black_l_moves_by_black_k_black_l_index(
                         black_k_black_l_index=black_k_black_l_index,
-                        shall_k_white_to_black=self._board.turn==cshogi.WHITE)
+                        shall_k_white_to_black=self._board.turn==cshogi.WHITE,
+                        shall_l_white_to_black=self._board.turn==cshogi.BLACK)
 
                 print(f"  turn:{Turn.to_string(self._board.turn)}  black_k_black_l_index:{black_k_black_l_index:7}  K:{black_k_move_obj.as_usi:5}  L:{black_l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 

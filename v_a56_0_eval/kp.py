@@ -18,7 +18,8 @@ class EvaluationKpTable():
     def get_black_k_black_p_index(
             k_move_obj,
             p_move_obj,
-            shall_k_white_to_black):
+            shall_k_white_to_black,
+            shall_p_white_to_black):
         """ＫＰ評価値テーブルのインデックスを算出
 
         Parameters
@@ -29,14 +30,13 @@ class EvaluationKpTable():
             兵の応手
         shall_k_white_to_black : bool
             評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
+        shall_p_white_to_black : bool
+            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
         """
 
         # assert
         if Usi.is_drop_by_srcloc(k_move_obj.srcloc):
             raise ValueError(f"[evaluation kp table > get index of kp move > k] 玉の指し手で打なのはおかしい。 k_move_obj.srcloc_u:{Usi.srcloc_to_code(k_move_obj.srcloc)}  k_move_obj:{k_move_obj.dump()}")
-
-        # 評価値テーブルは先手用の形だ。着手と応手のどちらかは後手なので、後手番は１８０°回転させる必要がある
-        shall_p_white_to_black = not shall_k_white_to_black
 
         # 0 ～ 2_078_084      =                                                                       0 ～ 543 *                                     3813 +                                                                    0 ～ 3812
         black_k_black_p_index = EvaluationKMove.get_black_index_by_k_move(k_move_obj, shall_k_white_to_black) * EvaluationPMove.get_serial_number_size() + EvaluationPMove.get_black_index_by_p_move(p_move_obj, shall_p_white_to_black)
@@ -230,7 +230,8 @@ class EvaluationKpTable():
                 black_k_black_p_index=EvaluationKpTable.get_black_k_black_p_index(
                     k_move_obj=k_move_obj,
                     p_move_obj=p_move_obj,
-                    shall_k_white_to_black=is_rotate))
+                    shall_k_white_to_black=is_rotate,
+                    shall_p_white_to_black=not is_rotate))
 
 
     def get_relation_exists_by_index(
@@ -257,6 +258,7 @@ class EvaluationKpTable():
             k_move_obj,
             p_move_obj,
             shall_k_white_to_black,
+            shall_p_white_to_black,
             bit):
         """玉の着手と兵の応手を受け取って、関係の有無を設定します
 
@@ -267,6 +269,8 @@ class EvaluationKpTable():
         p_move_obj : Move
             兵の応手
         shall_k_white_to_black : bool
+            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
+        shall_p_white_to_black : bool
             評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
         bit : int
             0 か 1
@@ -280,7 +284,8 @@ class EvaluationKpTable():
                 index=EvaluationKpTable.get_black_k_black_p_index(
                     k_move_obj=k_move_obj,
                     p_move_obj=p_move_obj,
-                    shall_k_white_to_black=shall_k_white_to_black),
+                    shall_k_white_to_black=shall_k_white_to_black,
+                    shall_p_white_to_black=shall_p_white_to_black),
                 bit=bit)
 
         return is_changed
@@ -291,7 +296,8 @@ class EvaluationKpTable():
             self,
             k_move_obj,
             p_move_u_set,
-            k_turn):
+            shall_k_white_to_black,
+            shall_p_white_to_black):
         """玉の指し手と、兵の応手のリストを受け取ると、すべての関係の有無を辞書に入れて返します
         ＫＰ評価値テーブル用
 
@@ -301,8 +307,10 @@ class EvaluationKpTable():
             玉の着手
         p_move_u_set : List<str>
             兵の応手のリスト
-        k_turn : int
-            着手側の手番
+        shall_k_white_to_black : int
+            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
+        shall_p_white_to_black : int
+            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
 
         Returns
         -------
@@ -317,7 +325,8 @@ class EvaluationKpTable():
             black_k_black_p_index = EvaluationKpTable.get_black_k_black_p_index(
                 k_move_obj=k_move_obj,
                 p_move_obj=Move.from_usi(p_move_u),
-                shall_k_white_to_black=k_turn==cshogi.WHITE)
+                shall_k_white_to_black=shall_k_white_to_black,
+                shall_p_white_to_black=shall_p_white_to_black)
 
             relation_bit = self.get_relation_exists_by_index(
                     black_k_black_p_index=black_k_black_p_index)

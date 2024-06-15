@@ -56,7 +56,8 @@ class EvaluationKkTable():
     @staticmethod
     def build_black_k_black_l_moves_by_black_k_black_l_index(
             black_k_black_l_index,
-            shall_k_white_to_black):
+            shall_k_white_to_black,
+            shall_l_white_to_black):
         """ＫＬインデックス分解
 
         Parameter
@@ -64,6 +65,8 @@ class EvaluationKkTable():
         black_k_black_l_index : int
             自玉と敵玉の関係の通しインデックス
         shall_k_white_to_black : bool
+            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
+        shall_l_white_to_black : bool
             評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
 
         Returns
@@ -87,11 +90,6 @@ class EvaluationKkTable():
         if EvaluationKMove.get_serial_number_size() <= black_k_index:
             raise ValueError(f"black_k_index:{black_k_index} out of range {EvaluationKMove.get_serial_number_size()}")
 
-
-        # 評価値テーブルは先手用の形だ。着手と応手のどちらかは後手なので、後手番は１８０°回転させる必要がある
-        is_k_rotate = shall_k_white_to_black
-        is_l_rotate = not shall_k_white_to_black
-
         # Ｌ
         (l_srcsq,
          l_dstsq) = EvaluationKMove.destructure_srcsq_dstsq_by_k_index(
@@ -101,7 +99,7 @@ class EvaluationKkTable():
                 dstsq=l_dstsq,
                 # 玉に成りはありません
                 promoted=False,
-                is_rotate=is_l_rotate)
+                is_rotate=shall_l_white_to_black)
 
         # Ｋ
         (k_srcsq,
@@ -112,7 +110,7 @@ class EvaluationKkTable():
                 dstsq=k_dstsq,
                 # 玉に成りはありません
                 promoted=False,
-                is_rotate=is_k_rotate)
+                is_rotate=shall_k_white_to_black)
 
         return (black_k_move_obj, black_l_move_obj)
 
