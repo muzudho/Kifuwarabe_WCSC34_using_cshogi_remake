@@ -206,7 +206,7 @@ class EvaluationEdit():
                 is_changed_temp = self._kifuwarabe._evaluation_kl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_exsits_by_kl_moves(
                         k_move_obj=k_move_obj,
                         l_move_obj=l_move_obj,
-                        k_turn=self._board.turn,
+                        shall_k_white_to_black=self._board.turn==cshogi.WHITE,
                         bit=0)
 
                 if is_changed_temp:
@@ -236,7 +236,7 @@ class EvaluationEdit():
                 is_changed_temp = self._kifuwarabe._evaluation_kq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_exists_by_kp_moves(
                         k_move_obj=k_move_obj,
                         p_move_obj=q_move_obj,
-                        k_turn=self._board.turn,
+                        shall_k_white_to_black=self._board.turn==cshogi.WHITE,
                         bit=0)
 
                 if is_changed_temp:
@@ -343,7 +343,7 @@ class EvaluationEdit():
                 is_changed_temp = self._kifuwarabe._evaluation_pq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_exists_by_pp_moves(
                         p1_move_obj=p_move_obj,
                         p2_move_obj=q_move_obj,
-                        p1_turn=self._board.turn,
+                        shall_p1_white_to_black=self._board.turn==cshogi.WHITE,
                         bit=0)
 
                 if is_changed_temp:
@@ -527,7 +527,7 @@ class EvaluationEdit():
                 is_changed_temp = self._kifuwarabe._evaluation_kl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_exsits_by_kl_moves(
                         k_move_obj=k_move_obj,
                         l_move_obj=l_move_obj,
-                        k_turn=self._board.turn,
+                        shall_k_white_to_black=self._board.turn==cshogi.WHITE,
                         bit=1)
 
                 if is_changed_temp:
@@ -557,7 +557,7 @@ class EvaluationEdit():
                 is_changed_temp = self._kifuwarabe._evaluation_kq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_exists_by_kp_moves(
                         k_move_obj=k_move_obj,
                         p_move_obj=q_move_obj,
-                        k_turn=self._board.turn,
+                        shall_k_white_to_black=self._board.turn==cshogi.WHITE,
                         bit=1)
 
                 if is_changed_temp:
@@ -646,7 +646,7 @@ class EvaluationEdit():
                 is_changed_temp = self._kifuwarabe._evaluation_pl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_exists_by_pk_moves(
                         p_move_obj=p_move_obj,
                         k_move_obj=l_move_obj,
-                        p_turn=self._board.turn,
+                        shall_p_white_to_black=self._board.turn==cshogi.WHITE,
                         bit=1)
 
                 if is_changed_temp:
@@ -677,7 +677,7 @@ class EvaluationEdit():
                 is_changed_temp = self._kifuwarabe._evaluation_pq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_exists_by_pp_moves(
                         p1_move_obj=p_move_obj,
                         p2_move_obj=q_move_obj,
-                        p1_turn=self._board.turn,
+                        shall_p1_white_to_black=self._board.turn==cshogi.WHITE,
                         bit=1)
 
                 if is_changed_temp:

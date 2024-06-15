@@ -261,7 +261,7 @@ class EvaluationKkTable():
             self,
             k_move_obj,
             l_move_obj,
-            k_turn,
+            shall_k_white_to_black,
             bit):
         """自玉の着手と敵玉の応手を受け取って、関係の有無を設定します
 
@@ -271,8 +271,8 @@ class EvaluationKkTable():
             自玉の指し手
         l_move_obj : Move
             敵玉の指し手
-        k_turn : int
-            着手側の手番
+        shall_k_white_to_black : bool
+            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
         bit : int
             0 か 1
 
@@ -294,7 +294,7 @@ class EvaluationKkTable():
                 index=EvaluationKkTable.get_index_of_kk_table(
                         k_move_obj=k_move_obj,
                         l_move_obj=l_move_obj,
-                        shall_k_white_to_black=k_turn==cshogi.WHITE),
+                        shall_k_white_to_black=shall_k_white_to_black),
                 bit=bit)
 
         return is_changed

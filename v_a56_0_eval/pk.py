@@ -225,7 +225,7 @@ class EvaluationPkTable():
             self,
             p_move_obj,
             k_move_obj,
-            is_rotate):
+            shall_p_white_to_black):
         """玉と兵の指し手を受け取って、関係の有無を返します
 
         Parameters
@@ -234,8 +234,8 @@ class EvaluationPkTable():
             兵の指し手
         k_move_obj : Move
             玉の指し手
-        is_rotate : bool
-            後手なら真。指し手を１８０°回転させます
+        shall_p_white_to_black : bool
+            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
 
         Returns
         -------
@@ -251,7 +251,7 @@ class EvaluationPkTable():
                 kp_index=EvaluationPkTable.get_index_of_pk_table(
                     p_move_obj=p_move_obj,
                     k_move_obj=k_move_obj,
-                    shall_p_white_to_black=is_rotate))
+                    shall_p_white_to_black=shall_p_white_to_black))
 
 
     def get_relation_exists_by_index(
@@ -273,12 +273,11 @@ class EvaluationPkTable():
                 index=pk_index)
 
 
-    # 使ってない？
     def set_relation_exists_by_pk_moves(
             self,
             p_move_obj,
             k_move_obj,
-            p_turn,
+            shall_p_white_to_black,
             bit):
         """玉の着手と兵の応手を受け取って、関係の有無を設定します
 
@@ -288,8 +287,8 @@ class EvaluationPkTable():
             兵の着手
         k_move_obj : Move
             玉の応手
-        p_turn : int
-            着手側の手番
+        shall_p_white_to_black : bool
+            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
         bit : int
             0 か 1
 
@@ -300,9 +299,9 @@ class EvaluationPkTable():
         """
         is_changed = self._mm_table_obj.set_bit_by_index(
                 index=EvaluationPkTable.get_index_of_pk_table(
-                    p_move_obj=p_move_obj,
-                    k_move_obj=k_move_obj,
-                    shall_p_white_to_black=p_turn==cshogi.WHITE),
+                        p_move_obj=p_move_obj,
+                        k_move_obj=k_move_obj,
+                    shall_p_white_to_black=shall_p_white_to_black),
                 bit=bit)
 
         return is_changed

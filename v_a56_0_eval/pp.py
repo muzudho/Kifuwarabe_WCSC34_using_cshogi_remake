@@ -246,7 +246,7 @@ p2_move_obj:{p2_move_obj.as_usi:5}
             self,
             p1_move_obj,
             p2_move_obj,
-            p1_turn,
+            shall_p1_white_to_black,
             bit):
         """玉の着手と兵の応手を受け取って、関係の有無を設定します
 
@@ -256,8 +256,8 @@ p2_move_obj:{p2_move_obj.as_usi:5}
             兵１の着手
         p2_move_obj : Move
             兵２の応手
-        p1_turn : int
-            着手側の手番
+        shall_p1_white_to_black : bool
+            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
         bit : int
             0 か 1
         is_rotate : bool
@@ -272,7 +272,7 @@ p2_move_obj:{p2_move_obj.as_usi:5}
                 index=EvaluationPpTable.get_index_of_pp_table(
                     p1_move_obj=p1_move_obj,
                     p2_move_obj=p2_move_obj,
-                    shall_p1_white_to_black=p1_turn==cshogi.WHITE),
+                    shall_p1_white_to_black=shall_p1_white_to_black),
                 bit=bit)
 
         return is_changed
