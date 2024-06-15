@@ -94,7 +94,8 @@ def test_kk():
     black_k_black_l_index = EvaluationKkTable.get_black_k_black_l_index(
             k_move_obj=k_move_obj_expected,
             l_move_obj=l_move_obj_expected,
-            shall_k_white_to_black=k_turn==cshogi.WHITE)
+            shall_k_white_to_black=k_turn==cshogi.WHITE,
+            shall_l_white_to_black=k_turn==cshogi.BLACK)
 
     (black_k_move_obj_actual,
      black_l_move_obj_actual) = EvaluationKkTable.build_black_k_black_l_moves_by_black_k_black_l_index(

@@ -69,7 +69,8 @@ class ChoiceBestMove():
                     k_move_obj=move_obj,
                     l_move_u_set=l_move_u_set,
                     # 先手の指し手になるよう調整します
-                    shall_k_white_to_black=board.turn==cshogi.WHITE)
+                    shall_k_white_to_black=board.turn==cshogi.WHITE,
+                    shall_l_white_to_black=board.turn==cshogi.BLACK)
 
             # assert
             for black_k_black_l_index, relation_exists in black_k_black_l_index_to_relation_exists_dic.items():
@@ -420,8 +421,8 @@ move_rot_u:{move_rot_obj.as_usi:5}
                 else:
                     if assert_black_k_move_obj.rotate().as_usi != move_obj.as_usi:
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > kl] 指し手を先手の向きに変えて復元できなかったエラー
-                                           手番（Ｋ）:{Turn.to_string(board.turn)}
                                       元の指し手（Ｋ）:{move_obj.as_usi:5}
+                                           手番（Ｋ）:{Turn.to_string(board.turn)}
 １回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{assert_black_k_move_obj.rotate().as_usi:5}
 """)
 

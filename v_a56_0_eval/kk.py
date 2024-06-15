@@ -17,7 +17,8 @@ class EvaluationKkTable():
     def get_black_k_black_l_index(
             k_move_obj,
             l_move_obj,
-            shall_k_white_to_black):
+            shall_k_white_to_black,
+            shall_l_white_to_black):
         """ＫＫ評価値テーブルのインデックスを算出
 
         Parameters
@@ -28,6 +29,8 @@ class EvaluationKkTable():
             敵玉の応手
         shall_k_white_to_black : bool
             評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
+        shall_l_white_to_black : bool
+            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
         """
 
         # assert
@@ -37,9 +40,6 @@ class EvaluationKkTable():
         # assert
         if Usi.is_drop_by_srcloc(l_move_obj.srcloc):
             raise ValueError(f"[evaluation kk table > get index of kk move > l] 玉の指し手で打なのはおかしい。 l_move_obj.srcloc_u:{Usi.srcloc_to_code(l_move_obj.srcloc)}  l_move_obj:{l_move_obj.dump()}")
-
-        # 評価値テーブルは先手用の形だ。着手と応手のどちらかは後手なので、後手番は１８０°回転させる必要がある
-        shall_l_white_to_black = not shall_k_white_to_black
 
         # 0 ～ 296_479 =                                                                       0 ～ 543 *                                      544 +                                                                     0 ～ 543
         kk_index       = EvaluationKMove.get_black_index_by_k_move(k_move_obj, shall_k_white_to_black) * EvaluationKMove.get_serial_number_size() + EvaluationKMove.get_black_index_by_k_move(l_move_obj, shall_l_white_to_black)
@@ -231,7 +231,8 @@ class EvaluationKkTable():
                 black_k_black_l_index=EvaluationKkTable.get_black_k_black_l_index(
                         k_move_obj=k_move_obj,
                         l_move_obj=l_move_obj,
-                        shall_k_white_to_black=k_turn==cshogi.WHITE))
+                        shall_k_white_to_black=k_turn==cshogi.WHITE,
+                        shall_l_white_to_black=k_turn==cshogi.BLACK))
 
 
     def get_relation_exists_by_index(
@@ -258,6 +259,7 @@ class EvaluationKkTable():
             k_move_obj,
             l_move_obj,
             shall_k_white_to_black,
+            shall_l_white_to_black,
             bit):
         """自玉の着手と敵玉の応手を受け取って、関係の有無を設定します
 
@@ -268,6 +270,8 @@ class EvaluationKkTable():
         l_move_obj : Move
             敵玉の指し手
         shall_k_white_to_black : bool
+            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
+        shall_l_white_to_black : bool
             評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
         bit : int
             0 か 1
@@ -290,7 +294,8 @@ class EvaluationKkTable():
                 index=EvaluationKkTable.get_black_k_black_l_index(
                         k_move_obj=k_move_obj,
                         l_move_obj=l_move_obj,
-                        shall_k_white_to_black=shall_k_white_to_black),
+                        shall_k_white_to_black=shall_k_white_to_black,
+                        shall_l_white_to_black=shall_l_white_to_black),
                 bit=bit)
 
         return is_changed
@@ -302,7 +307,8 @@ class EvaluationKkTable():
             self,
             k_move_obj,
             l_move_u_set,
-            shall_k_white_to_black):
+            shall_k_white_to_black,
+            shall_l_white_to_black):
         """自玉の指し手と、敵玉の応手のリストを受け取ると、すべての関係の有無を辞書に入れて返します
         ＫＫ評価値テーブル用
 
@@ -313,6 +319,8 @@ class EvaluationKkTable():
         l_move_u_set : List<str>
             敵玉の応手のリスト
         shall_k_white_to_black : bool
+            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
+        shall_l_white_to_black : bool
             評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
 
         Returns
@@ -328,7 +336,8 @@ class EvaluationKkTable():
             black_k_black_l_index = EvaluationKkTable.get_black_k_black_l_index(
                     k_move_obj=k_move_obj,
                     l_move_obj=Move.from_usi(l_move_u),
-                    shall_k_white_to_black=shall_k_white_to_black)
+                    shall_k_white_to_black=shall_k_white_to_black,
+                    shall_l_white_to_black=shall_l_white_to_black)
 
             relation_bit = self.get_relation_exists_by_index(
                     black_k_black_l_index=black_k_black_l_index)
