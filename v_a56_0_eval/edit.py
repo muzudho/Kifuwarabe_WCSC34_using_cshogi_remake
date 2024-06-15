@@ -75,13 +75,25 @@ class EvaluationEdit():
             assert_black_p_move_obj, assert_white_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
                     pk_index=fl_index,
                     shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
-            if (self._kifuwarabe.board.turn==cshogi.BLACK and assert_black_p_move_obj.as_usi != move_u) or (self._kifuwarabe.board.turn==cshogi.BLACK and assert_black_p_move_obj.rotate().as_usi != move_u):
-                # FIXME Rotate でも絡んでいる不具合か？
-                # [2024-06-14 00:23:32.615808] [weaken > fl] 着手が変わっているエラー  p_move_obj.as_usi:7f3c  move_u:4c3c
-                raise ValueError(f"""[{datetime.datetime.now()}] [weaken > fl] 着手が変わっているエラー
+
+            # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
+            if self._kifuwarabe.board.turn==cshogi.BLACK:
+                if assert_black_p_move_obj.as_usi != move_u:
+                    # FIXME Rotate でも絡んでいる不具合か？
+                    # [2024-06-14 00:23:32.615808] [weaken > fl] 着手が変わっているエラー  p_move_obj.as_usi:7f3c  move_u:4c3c
+                    raise ValueError(f"""[{datetime.datetime.now()}] [weaken > fl] 着手が変わっているエラー
                                            手番:{Turn.to_string(self._kifuwarabe.board.turn)}
                                       元の指し手:{move_u}
 １回インデックスに変換し、インデックスから指し手を復元:{assert_black_p_move_obj.as_usi}
+""")
+
+            # 着手が後手なら、１８０°回転させるので、インデックスは変わる
+            else:
+                if assert_black_p_move_obj.rotate().as_usi != move_u:
+                    raise ValueError(f"""[{datetime.datetime.now()}] [weaken > fl] 指し手を先手の向きに変えて復元できなかったエラー
+                                           手番:{Turn.to_string(self._kifuwarabe.board.turn)}
+                                      元の指し手:{move_u}
+１回インデックスに変換し、インデックスから指し手を復元:{assert_black_p_move_obj.rotate().as_usi}
 """)
 
         # assert
@@ -90,12 +102,24 @@ class EvaluationEdit():
                     pp_index=fq_index,
                     shall_p1_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
 
-            if (self._kifuwarabe.board.turn==cshogi.BLACK and assert_black_p_move_obj.as_usi != move_u) or (self._kifuwarabe.board.turn==cshogi.BLACK and assert_black_p_move_obj.rotate().as_usi != move_u):
-                raise ValueError(f"""[{datetime.datetime.now()}] [weaken > fq] 着手が変わっているエラー
+            # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
+            if self._kifuwarabe.board.turn==cshogi.BLACK:
+                if assert_black_p_move_obj.as_usi != move_u:
+                    raise ValueError(f"""[{datetime.datetime.now()}] [weaken > fq] 着手が変わっているエラー
                                            手番:{Turn.to_string(self._kifuwarabe.board.turn)}
                                       元の指し手:{move_u}
 １回インデックスに変換し、インデックスから指し手を復元:{assert_black_p_move_obj.as_usi}
 """)
+
+            # 着手が後手なら、１８０°回転させるので、インデックスは変わる
+            else:
+                if assert_black_p_move_obj.rotate().as_usi != move_u:
+                    raise ValueError(f"""[{datetime.datetime.now()}] [weaken > fq] 指し手を先手の向きに変えて復元できなかったエラー
+                                           手番:{Turn.to_string(self._kifuwarabe.board.turn)}
+                                      元の指し手:{move_u}
+１回インデックスに変換し、インデックスから指し手を復元:{assert_black_p_move_obj.rotate().as_usi}
+""")
+
 
         # 減らすものがないので、弱化は不要です
         if positive_of_relation < 1:
@@ -188,12 +212,22 @@ class EvaluationEdit():
                 if Usi.is_drop_by_srcloc(white_l_move_obj.srcloc):
                     raise ValueError(f"[evaluation edit > weaken > l] 玉の指し手で打なのはおかしい。 white_l_move_obj.srcloc_u:{Usi.srcloc_to_code(white_l_move_obj.srcloc)}  white_l_move_obj:{white_l_move_obj.dump()}")
 
-                # assert
-                if (self._kifuwarabe.board.turn==cshogi.BLACK and black_k_move_obj.as_usi != move_u) or (self._kifuwarabe.board.turn==cshogi.BLACK and black_k_move_obj.rotate().as_usi != move_u):
-                    raise ValueError(f"""[{datetime.datetime.now()}] [weaken > kl] 着手が変わっているエラー
+                # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
+                if self._kifuwarabe.board.turn==cshogi.BLACK:
+                    if black_k_move_obj.as_usi != move_u:
+                        raise ValueError(f"""[{datetime.datetime.now()}] [weaken > kl] 着手が変わっているエラー
                                            手番（Ｋ）:{Turn.to_string(self._kifuwarabe.board.turn)}
                                       元の指し手（Ｋ）:{move_u}
 １回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{black_k_move_obj.as_usi}
+""")
+
+                # 着手が後手なら、１８０°回転させるので、インデックスは変わる
+                else:
+                    if black_k_move_obj.rotate().as_usi != move_u:
+                        raise ValueError(f"""[{datetime.datetime.now()}] [weaken > kl] 指し手を先手の向きに変えて復元できなかったエラー
+                                           手番（Ｋ）:{Turn.to_string(self._kifuwarabe.board.turn)}
+                                      元の指し手（Ｋ）:{move_u}
+１回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{black_k_move_obj.rotate().as_usi}
 """)
 
                 # デバッグ表示
@@ -218,12 +252,22 @@ class EvaluationEdit():
                         kp_index=target_fq_index,
                         shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
 
-                # assert
-                if (self._kifuwarabe.board.turn==cshogi.BLACK and black_k_move_obj.as_usi != move_u) or (self._kifuwarabe.board.turn==cshogi.BLACK and black_k_move_obj.rotate().as_usi != move_u):
-                    raise ValueError(f"""[{datetime.datetime.now()}] [weaken > kq] 着手が変わっているエラー
+                # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
+                if self._kifuwarabe.board.turn==cshogi.BLACK:
+                    if black_k_move_obj.as_usi != move_u:
+                        raise ValueError(f"""[{datetime.datetime.now()}] [weaken > kq] 着手が変わっているエラー
                                            手番（Ｋ）:{Turn.to_string(self._kifuwarabe.board.turn)}
                                      元の指し手（Ｋ）:{move_u}
 １回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{black_k_move_obj.as_usi}
+""")
+
+                # 着手が後手なら、１８０°回転させるので、インデックスは変わる
+                else:
+                    if black_k_move_obj.rotate().as_usi != move_u:
+                        raise ValueError(f"""[{datetime.datetime.now()}] [weaken > kq] 指し手を先手の向きに変えて復元できなかったエラー
+                                           手番（Ｋ）:{Turn.to_string(self._kifuwarabe.board.turn)}
+                                     元の指し手（Ｋ）:{move_u}
+１回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{black_k_move_obj.rotate().as_usi}
 """)
 
                 # デバッグ表示
@@ -295,12 +339,22 @@ class EvaluationEdit():
                         pk_index=target_fl_index,
                         shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
 
-                # assert
-                if (self._kifuwarabe.board.turn==cshogi.BLACK and black_p_move_obj.as_usi != move_u) or (self._kifuwarabe.board.turn==cshogi.BLACK and black_p_move_obj.rotate().as_usi != move_u):
-                    raise ValueError(f"""[{datetime.datetime.now()}] [weaken > pl] 着手が変わっているエラー
+                # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
+                if self._kifuwarabe.board.turn==cshogi.BLACK:
+                    if black_p_move_obj.as_usi != move_u:
+                        raise ValueError(f"""[{datetime.datetime.now()}] [weaken > pl] 着手が変わっているエラー
                                            手番（Ｐ）:{Turn.to_string(self._kifuwarabe.board.turn)}
                                       元の指し手（Ｐ）:{move_u}
 １回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{black_p_move_obj.as_usi}
+""")
+
+                # 着手が後手なら、１８０°回転させるので、インデックスは変わる
+                else:
+                    if black_p_move_obj.rotate().as_usi != move_u:
+                        raise ValueError(f"""[{datetime.datetime.now()}] [weaken > pl] 指し手を先手の向きに変えて復元できなかったエラー
+                                           手番（Ｐ）:{Turn.to_string(self._kifuwarabe.board.turn)}
+                                      元の指し手（Ｐ）:{move_u}
+１回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{black_p_move_obj.rotate().as_usi}
 """)
 
                 # デバッグ表示
@@ -325,12 +379,22 @@ class EvaluationEdit():
                         pp_index=target_fq_index,
                         shall_p1_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
 
-                # assert
-                if (self._kifuwarabe.board.turn==cshogi.BLACK and black_p_move_obj.as_usi != move_u) or (self._kifuwarabe.board.turn==cshogi.BLACK and black_p_move_obj.rotate().as_usi != move_u):
-                    raise ValueError(f"""[{datetime.datetime.now()}] [weaken > pq] 着手が変わっているエラー
+                # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
+                if self._kifuwarabe.board.turn==cshogi.BLACK:
+                    if black_p_move_obj.as_usi != move_u:
+                        raise ValueError(f"""[{datetime.datetime.now()}] [weaken > pq] 着手が変わっているエラー
                                            手番（Ｐ）:{Turn.to_string(self._kifuwarabe.board.turn)}
                                       元の指し手（Ｐ）:{move_u}
 １回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{black_p_move_obj.as_usi}
+""")
+
+                # 着手が後手なら、１８０°回転させるので、インデックスは変わる
+                else:
+                    if black_p_move_obj.rotate().as_usi != move_u:
+                        raise ValueError(f"""[{datetime.datetime.now()}] [weaken > pq] 指し手を先手の向きに変えて復元できなかったエラー
+                                           手番（Ｐ）:{Turn.to_string(self._kifuwarabe.board.turn)}
+                                      元の指し手（Ｐ）:{move_u}
+１回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{black_p_move_obj.rotate().as_usi}
 """)
 
                 # デバッグ表示
@@ -398,11 +462,23 @@ class EvaluationEdit():
             assert_black_p_move_obj, assert_white_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
                     pk_index=fl_index,
                     shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
-            if (self._kifuwarabe.board.turn==cshogi.BLACK and assert_black_p_move_obj.as_usi != move_u) or (self._kifuwarabe.board.turn==cshogi.BLACK and assert_black_p_move_obj.rotate().as_usi != move_u):
-                raise ValueError(f"""[{datetime.datetime.now()}] [strengthen > fl] 着手が変わっているエラー
+            
+            # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
+            if self._kifuwarabe.board.turn==cshogi.BLACK:
+                if assert_black_p_move_obj.as_usi != move_u:
+                    raise ValueError(f"""[{datetime.datetime.now()}] [strengthen > fl] 着手が変わっているエラー
                                            手番（Ｐ）:{Turn.to_string(self._kifuwarabe.board.turn)}
                                       元の指し手（Ｐ）:{move_u}
 １回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_black_p_move_obj.as_usi}
+""")
+
+            # 着手が後手なら、１８０°回転させるので、インデックスは変わる
+            else:
+                if assert_black_p_move_obj.rotate().as_usi != move_u:
+                    raise ValueError(f"""[{datetime.datetime.now()}] [strengthen > fl] 指し手を先手の向きに変えて復元できなかったエラー
+                                           手番（Ｐ）:{Turn.to_string(self._kifuwarabe.board.turn)}
+                                      元の指し手（Ｐ）:{move_u}
+１回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_black_p_move_obj.rotate().as_usi}
 """)
 
         # assert
@@ -410,13 +486,24 @@ class EvaluationEdit():
             assert_black_p_move_obj, assert_white_q_move_obj = EvaluationPpTable.build_p_p_moves_by_pp_index(
                     pp_index=fq_index,
                     shall_p1_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
-            if (self._kifuwarabe.board.turn==cshogi.BLACK and assert_black_p_move_obj.as_usi != move_u) or (self._kifuwarabe.board.turn==cshogi.BLACK and assert_black_p_move_obj.rotate().as_usi != move_u):
-                raise ValueError(f"""[{datetime.datetime.now()}] [strengthen > fq] 着手が変わっているエラー
+            
+            # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
+            if self._kifuwarabe.board.turn==cshogi.BLACK:
+                if assert_black_p_move_obj.as_usi != move_u:
+                    raise ValueError(f"""[{datetime.datetime.now()}] [strengthen > fq] 着手が変わっているエラー
                                            手番（Ｐ）:{Turn.to_string(self._kifuwarabe.board.turn)}
                                       元の指し手（Ｐ）:{move_u}
 １回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_black_p_move_obj.as_usi}
 """)
 
+            # 着手が後手なら、１８０°回転させるので、インデックスは変わる
+            else:
+                if assert_black_p_move_obj.rotate().as_usi != move_u:
+                    raise ValueError(f"""[{datetime.datetime.now()}] [strengthen > fq] 指し手を先手の向きに変えて復元できなかったエラー
+                                           手番（Ｐ）:{Turn.to_string(self._kifuwarabe.board.turn)}
+                                      元の指し手（Ｐ）:{move_u}
+１回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_black_p_move_obj.rotate().as_usi}
+""")
 
         # 既に全ての議席が挙手しているので、強化は不要です
         if total_of_relation <= positive_of_relation:
@@ -509,13 +596,24 @@ class EvaluationEdit():
                 if Usi.is_drop_by_srcloc(white_l_move_obj.srcloc):
                     raise ValueError(f"[evaluation edit > strengthen > l] 玉の指し手で打なのはおかしい。 white_l_move_obj.srcloc_u:{Usi.srcloc_to_code(white_l_move_obj.srcloc)}  white_l_move_obj:{white_l_move_obj.dump()}")
 
-                # assert
-                if (self._kifuwarabe.board.turn==cshogi.BLACK and black_k_move_obj.as_usi != move_u) or (self._kifuwarabe.board.turn==cshogi.BLACK and black_k_move_obj.rotate().as_usi != move_u):
-                    raise ValueError(f"""[{datetime.datetime.now()}] [strengthen > kl] 着手が変わっているエラー
+                # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
+                if self._kifuwarabe.board.turn==cshogi.BLACK:
+                    if black_k_move_obj.as_usi != move_u:
+                        raise ValueError(f"""[{datetime.datetime.now()}] [strengthen > kl] 着手が変わっているエラー
                                            手番（Ｋ）:{Turn.to_string(self._kifuwarabe.board.turn)}
                                       元の指し手（Ｋ）:{move_u}
 １回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{black_k_move_obj.as_usi}
 """)
+
+                # 着手が後手なら、１８０°回転させるので、インデックスは変わる
+                else:
+                    if black_k_move_obj.rotate().as_usi != move_u:
+                        raise ValueError(f"""[{datetime.datetime.now()}] [strengthen > kl] 指し手を先手の向きに変えて復元できなかったエラー
+                                           手番（Ｋ）:{Turn.to_string(self._kifuwarabe.board.turn)}
+                                      元の指し手（Ｋ）:{move_u}
+１回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{black_k_move_obj.rotate().as_usi}
+""")
+
 
                 # デバッグ表示
                 if is_debug and DebugPlan.evaluation_edit_strengthen:
@@ -539,12 +637,22 @@ class EvaluationEdit():
                         kp_index=target_fq_index,
                         shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
 
-                # assert
-                if (self._kifuwarabe.board.turn==cshogi.BLACK and black_k_move_obj.as_usi != move_u) or (self._kifuwarabe.board.turn==cshogi.BLACK and black_k_move_obj.rotate().as_usi != move_u):
-                    raise ValueError(f"""[{datetime.datetime.now()}] [strengthen > kq] 着手が変わっているエラー
+                # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
+                if self._kifuwarabe.board.turn==cshogi.BLACK:
+                    if black_k_move_obj.as_usi != move_u:
+                        raise ValueError(f"""[{datetime.datetime.now()}] [strengthen > kq] 着手が変わっているエラー
                                            手番（Ｋ）:{Turn.to_string(self._kifuwarabe.board.turn)}
                                       元の指し手（Ｋ）:{move_u}
 １回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{black_k_move_obj.as_usi}
+""")
+
+                # 着手が後手なら、１８０°回転させるので、インデックスは変わる
+                else:
+                    if black_k_move_obj.rotate().as_usi != move_u:
+                        raise ValueError(f"""[{datetime.datetime.now()}] [strengthen > kq] 指し手を先手の向きに変えて復元できなかったエラー
+                                           手番（Ｋ）:{Turn.to_string(self._kifuwarabe.board.turn)}
+                                      元の指し手（Ｋ）:{move_u}
+１回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{black_k_move_obj.rotate().as_usi}
 """)
 
                 # デバッグ表示
@@ -583,11 +691,23 @@ class EvaluationEdit():
                     assert_black_p_move_obj, assert_white_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
                             pk_index=fl_index,
                             shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
-                    if (self._kifuwarabe.board.turn==cshogi.BLACK and assert_black_p_move_obj.as_usi != move_u) or (self._kifuwarabe.board.turn==cshogi.BLACK and assert_black_p_move_obj.rotate().as_usi != move_u):
-                        raise ValueError(f"""[{datetime.datetime.now()}] [strengthen > pl and pq] 着手が変わっているエラー
+
+                    # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
+                    if self._kifuwarabe.board.turn==cshogi.BLACK:
+                        if assert_black_p_move_obj.as_usi != move_u:
+                            raise ValueError(f"""[{datetime.datetime.now()}] [strengthen > pl and pq] 着手が変わっているエラー
                                            手番（Ｐ）:{Turn.to_string(self._kifuwarabe.board.turn)}
                                       元の指し手（Ｐ）:{move_u}
 １回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_black_p_move_obj.as_usi}
+""")
+
+                    # 着手が後手なら、１８０°回転させるので、インデックスは変わる
+                    else:
+                        if assert_black_p_move_obj.rotate().as_usi != move_u:
+                            raise ValueError(f"""[{datetime.datetime.now()}] [strengthen > pl and pq] 指し手を先手の向きに変えて復元できなかったエラー
+                                           手番（Ｐ）:{Turn.to_string(self._kifuwarabe.board.turn)}
+                                      元の指し手（Ｐ）:{move_u}
+１回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_black_p_move_obj.rotate().as_usi}
 """)
 
                     target_fl_index_list.append(fl_index)
@@ -628,12 +748,22 @@ class EvaluationEdit():
                         pk_index=target_fl_index,
                         shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
 
-                # assert
-                if (self._kifuwarabe.board.turn==cshogi.BLACK and black_p_move_obj.as_usi != move_u) or (self._kifuwarabe.board.turn==cshogi.BLACK and black_p_move_obj.rotate().as_usi != move_u):
-                    raise ValueError(f"""[{datetime.datetime.now()}] [strengthen > pl] 着手が変わっているエラー
+                # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
+                if self._kifuwarabe.board.turn==cshogi.BLACK:
+                    if black_p_move_obj.as_usi != move_u:
+                        raise ValueError(f"""[{datetime.datetime.now()}] [strengthen > pl] 着手が変わっているエラー
                                            手番（Ｐ）:{Turn.to_string(self._kifuwarabe.board.turn)}
                                       元の指し手（Ｐ）:{move_u}
 １回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{black_p_move_obj.as_usi}
+""")
+
+                # 着手が後手なら、１８０°回転させるので、インデックスは変わる
+                else:
+                    if black_p_move_obj.rotate().as_usi != move_u:
+                        raise ValueError(f"""[{datetime.datetime.now()}] [strengthen > pl] 指し手を先手の向きに変えて復元できなかったエラー
+                                           手番（Ｐ）:{Turn.to_string(self._kifuwarabe.board.turn)}
+                                      元の指し手（Ｐ）:{move_u}
+１回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{black_p_move_obj.rotate().as_usi}
 """)
 
                 # デバッグ表示
@@ -658,13 +788,23 @@ class EvaluationEdit():
                         pp_index=target_fq_index,
                         shall_p1_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
 
-                # assert
-                if (self._kifuwarabe.board.turn==cshogi.BLACK and black_p_move_obj.as_usi != move_u) or (self._kifuwarabe.board.turn==cshogi.BLACK and black_p_move_obj.rotate().as_usi != move_u):
-                    # p_move_obj.as_usi:9d8e  move_u:4a4b
-                    raise ValueError(f"""[{datetime.datetime.now()}] [strengthen > pq] 着手が変わっているエラー
+                # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
+                if self._kifuwarabe.board.turn==cshogi.BLACK:
+                    if black_p_move_obj.as_usi != move_u:
+                        # p_move_obj.as_usi:9d8e  move_u:4a4b
+                        raise ValueError(f"""[{datetime.datetime.now()}] [strengthen > pq] 着手が変わっているエラー
                                            手番（Ｐ）:{Turn.to_string(self._kifuwarabe.board.turn)}
-                                      元の指し手（Ｐ）:{black_p_move_obj.as_usi}
-１回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{move_u}
+                                      元の指し手（Ｐ）:{move_u}
+１回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{black_p_move_obj.as_usi}
+""")
+
+                # 着手が後手なら、１８０°回転させるので、インデックスは変わる
+                else:
+                    if black_p_move_obj.rotate().as_usi != move_u:
+                        raise ValueError(f"""[{datetime.datetime.now()}] [strengthen > pq] 指し手を先手の向きに変えて復元できなかったエラー
+                                           手番（Ｐ）:{Turn.to_string(self._kifuwarabe.board.turn)}
+                                      元の指し手（Ｐ）:{move_u}
+１回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{black_p_move_obj.rotate().as_usi}
 """)
 
                 # デバッグ表示
