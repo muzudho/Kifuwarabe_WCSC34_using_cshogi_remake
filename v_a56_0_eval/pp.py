@@ -217,7 +217,7 @@ p2_move_obj:{p2_move_obj.as_usi:5}
             0 or 1
         """
         return self.get_relation_exists_by_index(
-                kp_index=EvaluationPpTable.get_black_p1_black_p2_index(
+                black_k_black_p_index=EvaluationPpTable.get_black_p1_black_p2_index(
                     p1_move_obj=p1_move_obj,
                     p2_move_obj=p2_move_obj,
                     shall_p1_white_to_black=is_rotate))
@@ -225,7 +225,7 @@ p2_move_obj:{p2_move_obj.as_usi:5}
 
     def get_relation_exists_by_index(
             self,
-            pp_index):
+            black_p1_black_p2_index):
         """配列のインデックスを受け取って、関係の有無を返します
 
         Parameters
@@ -239,7 +239,7 @@ p2_move_obj:{p2_move_obj.as_usi:5}
             0 or 1
         """
         return self._mm_table_obj.get_bit_by_index(
-                index=pp_index)
+                index=black_p1_black_p2_index)
 
 
     def set_relation_exists_by_pp_moves(
@@ -305,14 +305,14 @@ p2_move_obj:{p2_move_obj.as_usi:5}
         relations = {}
 
         for p2_move_u in p2_move_u_set:
-            pp_index = EvaluationPpTable.get_black_p1_black_p2_index(
+            black_p1_black_p2_index = EvaluationPpTable.get_black_p1_black_p2_index(
                 p1_move_obj=p1_move_obj,
                 p2_move_obj=Move.from_usi(p2_move_u),
                 shall_p1_white_to_black=p1_turn==cshogi.WHITE)
 
             relation_bit = self.get_relation_exists_by_index(
-                    pp_index=pp_index)
+                    black_p1_black_p2_index=black_p1_black_p2_index)
 
-            relations[pp_index] = relation_bit
+            relations[black_p1_black_p2_index] = relation_bit
 
         return relations

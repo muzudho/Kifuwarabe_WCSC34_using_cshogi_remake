@@ -38,14 +38,14 @@ class EvaluationKpTable():
         # 評価値テーブルは先手用の形だ。着手と応手のどちらかは後手なので、後手番は１８０°回転させる必要がある
         shall_p_white_to_black = not shall_k_white_to_black
 
-        # 0 ～ 2_078_084 =                                                                 0 ～ 543 *                                     3813 +                                                                    0 ～ 3812
-        kp_index         = EvaluationKMove.get_index_by_k_move(k_move_obj, shall_k_white_to_black) * EvaluationPMove.get_serial_number_size() + EvaluationPMove.get_black_index_by_p_move(p_move_obj, shall_p_white_to_black)
+        # 0 ～ 2_078_084      =                                                                       0 ～ 543 *                                     3813 +                                                                    0 ～ 3812
+        black_k_black_p_index = EvaluationKMove.get_black_index_by_k_move(k_move_obj, shall_k_white_to_black) * EvaluationPMove.get_serial_number_size() + EvaluationPMove.get_black_index_by_p_move(p_move_obj, shall_p_white_to_black)
 
         # assert
-        if EvaluationKMove.get_serial_number_size() * EvaluationPMove.get_serial_number_size() <= kp_index:
-            raise ValueError(f"kp_index:{kp_index} out of range {EvaluationKMove.get_serial_number_size() * EvaluationPMove.get_serial_number_size()}")
+        if EvaluationKMove.get_serial_number_size() * EvaluationPMove.get_serial_number_size() <= black_k_black_p_index:
+            raise ValueError(f"black_k_black_p_index:{black_k_black_p_index} out of range {EvaluationKMove.get_serial_number_size() * EvaluationPMove.get_serial_number_size()}")
 
-        return kp_index
+        return black_k_black_p_index
 
 
     #destructure_kp_index
@@ -227,7 +227,7 @@ class EvaluationKpTable():
             raise ValueError(f"[evaluation kp table > get relation exists by kp moves > k] 玉の指し手で打なのはおかしい。 k_move_obj.srcloc_u:{Usi.srcloc_to_code(k_move_obj.srcloc)}  k_move_obj:{k_move_obj.dump()}")
 
         return self.get_relation_exists_by_index(
-                kp_index=EvaluationKpTable.get_black_k_black_p_index(
+                black_k_black_p_index=EvaluationKpTable.get_black_k_black_p_index(
                     k_move_obj=k_move_obj,
                     p_move_obj=p_move_obj,
                     shall_k_white_to_black=is_rotate))
@@ -235,7 +235,7 @@ class EvaluationKpTable():
 
     def get_relation_exists_by_index(
             self,
-            kp_index):
+            black_k_black_p_index):
         """配列のインデックスを受け取って、関係の有無を返します
 
         Parameters
@@ -249,7 +249,7 @@ class EvaluationKpTable():
             0 or 1
         """
         return self._mm_table_obj.get_bit_by_index(
-                index=kp_index)
+                index=black_k_black_p_index)
 
 
     def set_relation_exists_by_kp_moves(
@@ -320,7 +320,7 @@ class EvaluationKpTable():
                 shall_k_white_to_black=k_turn==cshogi.WHITE)
 
             relation_bit = self.get_relation_exists_by_index(
-                    kp_index=black_k_black_p_index)
+                    black_k_black_p_index=black_k_black_p_index)
 
             relations[black_k_black_p_index] = relation_bit
 

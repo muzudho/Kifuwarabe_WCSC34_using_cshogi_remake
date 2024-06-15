@@ -250,7 +250,7 @@ class EvaluationPkTable():
             raise ValueError(f"[evaluation pk table > get relation exists by pk moves > k] 玉の指し手で打なのはおかしい。 k_move_obj.srcloc_u:{Usi.srcloc_to_code(k_move_obj.srcloc)}  k_move_obj:{k_move_obj.dump()}")
 
         return self.get_relation_exists_by_index(
-                kp_index=EvaluationPkTable.get_black_p_black_k_index(
+                black_k_black_p_index=EvaluationPkTable.get_black_p_black_k_index(
                     p_move_obj=p_move_obj,
                     k_move_obj=k_move_obj,
                     shall_p_white_to_black=shall_p_white_to_black))
@@ -258,7 +258,7 @@ class EvaluationPkTable():
 
     def get_relation_exists_by_index(
             self,
-            pk_index):
+            black_p_black_k_index):
         """配列のインデックスを受け取って、関係の有無を返します
 
         Parameters
@@ -272,7 +272,7 @@ class EvaluationPkTable():
             0 or 1
         """
         return self._mm_table_obj.get_bit_by_index(
-                index=pk_index)
+                index=black_p_black_k_index)
 
 
     def set_relation_exists_by_pk_moves(
@@ -342,7 +342,7 @@ class EvaluationPkTable():
                 shall_p_white_to_black=p_turn==cshogi.WHITE)
 
             relation_bit = self.get_relation_exists_by_index(
-                    pk_index=black_p_black_k_index)
+                    black_p_black_k_index=black_p_black_k_index)
 
             relations[black_p_black_k_index] = relation_bit
 
