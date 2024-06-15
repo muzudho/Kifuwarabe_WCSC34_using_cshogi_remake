@@ -36,18 +36,19 @@ class ChoiceBestMove():
 
         Returns
         -------
-        kl_index_to_relation_exists_dic
+        black_kl_index_to_relation_exists_dic
             自玉の着手と、敵玉の応手の関係の有無を格納した辞書
-        kq_index_to_relation_exists_dic
+        black_kq_index_to_relation_exists_dic
             自玉の着手と、敵兵の応手の関係の有無を格納した辞書
-        pl_index_to_relation_exists_dic
+        black_pl_index_to_relation_exists_dic
             自兵の着手と、敵玉の応手の関係の有無を格納した辞書
-        pq_index_to_relation_exists_dic
+        black_pq_index_to_relation_exists_dic
             自兵の着手と、敵兵の応手の関係の有無を格納した辞書
         """
 
         # assert
-        is_rotate = board.turn == cshogi.WHITE
+        # 着手は後手か？
+        is_white = board.turn == cshogi.WHITE
         move_rot_obj = move_obj.rotate()
 
         # 応手の一覧を作成
@@ -57,22 +58,26 @@ class ChoiceBestMove():
 
         if is_king_move:
             # 自玉の着手と、敵玉の応手の一覧から、ＫＬテーブルのインデックスと、関係の有無を格納した辞書を作成
-            kl_index_to_relation_exists_dic = kifuwarabe.evaluation_kl_table_obj_array[Turn.to_index(board.turn)].select_kl_index_and_relation_exists(
+            black_kl_index_to_relation_exists_dic = kifuwarabe.evaluation_kl_table_obj_array[Turn.to_index(board.turn)].select_kl_index_and_relation_exists(
                     k_move_obj=move_obj,
                     l_move_u_set=l_move_u_set,
+                    # 先手の指し手になるよう調整します
                     k_turn=board.turn)
 
             # 自玉の着手と、敵兵の応手の一覧から、ＫＱテーブルのインデックスと、関係の有無を格納した辞書を作成
-            kq_index_to_relation_exists_dic = kifuwarabe.evaluation_kq_table_obj_array[Turn.to_index(board.turn)].select_kp_index_and_relation_exists(
+            black_kq_index_to_relation_exists_dic = kifuwarabe.evaluation_kq_table_obj_array[Turn.to_index(board.turn)].select_kp_index_and_relation_exists(
                     k_move_obj=move_obj,
                     p_move_u_set=q_move_u_set,
+                    # 先手の指し手になるよう調整します
                     k_turn=board.turn)
 
             # assert
-            for kl_index, relation_exists in kl_index_to_relation_exists_dic.items():
+            for black_kl_index, relation_exists in black_kl_index_to_relation_exists_dic.items():
                 assert_k_move_obj, assert_l_move_obj = EvaluationKkTable.destructure_kl_index(
-                        kl_index=kl_index,
-                        k_turn=board.turn)
+                        kl_index=black_kl_index,
+                        # black_kl_index は先手なので、１８０°回転させてはいけません
+                        k_turn=False)
+
                 if assert_k_move_obj.as_usi != move_obj.as_usi:
                     print(board)
                     raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > kl] 着手が変わっているエラー
@@ -81,10 +86,12 @@ move_u:{move_obj.as_usi:5} k_move_u:{assert_k_move_obj.as_usi:5}
 """)
 
             # assert
-            for kq_index, relation_exists in kq_index_to_relation_exists_dic.items():
+            for black_kq_index, relation_exists in black_kq_index_to_relation_exists_dic.items():
                 assert_k_move_obj, assert_q_move_obj = EvaluationKpTable.destructure_kp_index(
-                        kp_index=kq_index,
-                        k_turn=board.turn)
+                        kp_index=black_kq_index,
+                        # black_kq_index は先手なので、１８０°回転させてはいけません
+                        k_turn=False)
+
                 if assert_k_move_obj.as_usi != move_obj.as_usi:
                     print(board)
                     raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > kq] 着手が変わっているエラー
@@ -92,79 +99,86 @@ move_u:{move_obj.as_usi:5} k_move_u:{assert_k_move_obj.as_usi:5}
        {''             :5} k_move_u:{assert_q_move_obj.as_usi:5}
 """)
 
-            return (kl_index_to_relation_exists_dic,
-                    kq_index_to_relation_exists_dic,
+            return (black_kl_index_to_relation_exists_dic,
+                    black_kq_index_to_relation_exists_dic,
                     None,
                     None)
 
         else:
             # 自兵の着手と、敵玉の応手の一覧から、ＰＬテーブルのインデックスと、関係の有無を格納した辞書を作成
-            pl_index_to_relation_exists_dic = kifuwarabe.evaluation_pl_table_obj_array[Turn.to_index(board.turn)].select_pk_index_and_relation_exists(
+            black_pl_index_to_relation_exists_dic = kifuwarabe.evaluation_pl_table_obj_array[Turn.to_index(board.turn)].select_pk_index_and_relation_exists(
                     p_move_obj=move_obj,
                     k_move_u_set=l_move_u_set,
+                    # 先手の指し手になるよう調整します
                     p_turn=board.turn)
 
             # assert
-            for pl_index, relation_exists in pl_index_to_relation_exists_dic.items():
-                assert_p_move_obj, assert_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
-                        pk_index=pl_index,
-                        p_turn=board.turn)
+            for black_pl_index, relation_exists in black_pl_index_to_relation_exists_dic.items():
+                assert_black_p_move_obj, assert_black_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
+                        pk_index=black_pl_index,
+                        # black_pl_index は先手なので、１８０°回転させてはいけません
+                        p_turn=False)
 
                 check_pl_index = EvaluationPkTable.get_index_of_pk_table(
-                        p_move_obj=assert_p_move_obj,
-                        k_move_obj=assert_l_move_obj,
-                        p_turn=board.turn)
+                        p_move_obj=assert_black_p_move_obj,
+                        k_move_obj=assert_black_l_move_obj,
+                        # assert_black_p_move_obj, assert_black_l_move_obj は先手なので、１８０°回転させてはいけません
+                        p_turn=False)
 
-                # １８０°回転させている場合、インデックスは変わる
-                if not is_rotate:
-                    if pl_index != check_pl_index:
+                # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
+                if not is_white:
+                    if black_pl_index != check_pl_index:
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pl] インデックスから指し手を復元し、さらにインデックスに圧縮すると、元のインデックスに復元しなかったエラー
-      pl_index:{      pl_index:10}
+      pl_index:{      black_pl_index:10}
 check_pl_index:{check_pl_index:10}
-      p_move_u:{assert_p_move_obj.as_usi:5}
-      l_move_u:{assert_l_move_obj.as_usi:5}
+      p_move_u:{assert_black_p_move_obj.as_usi:5}
+      l_move_u:{assert_black_l_move_obj.as_usi:5}
 """)
                     else:
                         print(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pl] インデックスから指し手を復元し、さらにインデックスに圧縮すると、元のインデックスに復元できた。Ok
-      pl_index:{      pl_index:10}
+      pl_index:{      black_pl_index:10}
 check_pl_index:{check_pl_index:10}
-      p_move_u:{assert_p_move_obj.as_usi:5}
-      l_move_u:{assert_l_move_obj.as_usi:5}
+      p_move_u:{assert_black_p_move_obj.as_usi:5}
+      l_move_u:{assert_black_l_move_obj.as_usi:5}
 """)
+                # 着手が後手なら、１８０°回転させるので、インデックスは変わる
                 else:
                     print(f"[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pl] １８０°回転しているので、インデックスのチェックはパス")
 
-                if (not is_rotate and assert_p_move_obj.as_usi != move_obj.as_usi) or (is_rotate and assert_p_move_obj.as_usi != move_rot_obj.as_usi):
+                if (not is_white and assert_black_p_move_obj.as_usi != move_obj.as_usi) or (is_white and assert_black_p_move_obj.as_usi != move_rot_obj.as_usi):
                     print(board)
                     raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pl] 着手が変わっているエラー
-is_rotate:{is_rotate}
-move_u    :{move_obj.as_usi    :5} p_move_u:{assert_p_move_obj.as_usi:5}
+is_white  :{is_white}
+move_u    :{move_obj.as_usi    :5} black_p_move_u:{assert_black_p_move_obj.as_usi:5}
 move_rot_u:{move_rot_obj.as_usi:5}
-           {''                 :5} l_move_u:{assert_l_move_obj.as_usi:5}
+           {''                 :5} black_l_move_u:{assert_black_l_move_obj.as_usi:5}
 """)
 
             # 自兵の着手と、敵兵の応手の一覧から、ＰＱテーブルのインデックスと、関係の有無を格納した辞書を作成
-            pq_index_to_relation_exists_dic = kifuwarabe.evaluation_pq_table_obj_array[Turn.to_index(board.turn)].select_pp_index_and_relation_exists(
+            black_pq_index_to_relation_exists_dic = kifuwarabe.evaluation_pq_table_obj_array[Turn.to_index(board.turn)].select_pp_index_and_relation_exists(
                     p1_move_obj=move_obj,
                     p2_move_u_set=q_move_u_set,
+                    # 先手の指し手になるよう調整します
                     p1_turn=board.turn)
 
             # assert
-            for pq_index, relation_exists in pq_index_to_relation_exists_dic.items():
-                assert_p_move_obj, assert_q_move_obj = EvaluationPpTable.destructure_pp_index(
-                        pp_index=pq_index,
-                        p1_turn=board.turn)
-                if assert_p_move_obj.as_usi != move_obj.as_usi:
+            for black_pq_index, relation_exists in black_pq_index_to_relation_exists_dic.items():
+                assert_black_p_move_obj, assert_black_q_move_obj = EvaluationPpTable.destructure_pp_index(
+                        pp_index=black_pq_index,
+                        # black_pq_index は先手なので、１８０°回転させてはいけません
+                        p1_turn=False)
+                
+                if assert_black_p_move_obj.as_usi != move_obj.as_usi:
                     print(board)
                     raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pq] 着手が変わっているエラー
-move_u:{move_obj.as_usi:5} p_move_u:{assert_p_move_obj.as_usi:5}
-       {''             :5} q_move_u:{assert_q_move_obj.as_usi:5}
+move_u:{move_obj.as_usi:5} black_p_move_u:{assert_black_p_move_obj.as_usi:5}
+       {''             :5} black_q_move_u:{assert_black_q_move_obj.as_usi:5}
 """)
 
             return (None,
                     None,
-                    pl_index_to_relation_exists_dic,
-                    pq_index_to_relation_exists_dic)
+                    black_pl_index_to_relation_exists_dic,
+                    black_pq_index_to_relation_exists_dic)
 
 
     @staticmethod
