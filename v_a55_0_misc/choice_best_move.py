@@ -117,7 +117,7 @@ move_u:{move_obj.as_usi:5} k_move_u:{assert_k_move_obj.as_usi:5}
                 assert_black_p_move_obj, assert_black_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
                         pk_index=black_pl_index,
                         # black_pl_index は先手なので、１８０°回転させてはいけません
-                        p_turn=False)
+                        flip_white_to_black=False)
 
                 check_pl_index = EvaluationPkTable.get_index_of_pk_table(
                         p_move_obj=assert_black_p_move_obj,
@@ -271,7 +271,7 @@ move_u:{move_obj.as_usi:5} black_p_move_u:{assert_black_p_move_obj.as_usi:5}
                 if is_debug and DebugPlan.get_number_of_connection_for_pl_pq:
                     p_move_obj, l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
                             pk_index=pl_index,
-                            p_turn=board.turn)
+                            flip_white_to_black=board.turn==cshogi.WHITE)
                     print(f"[{datetime.datetime.now()}] [get number of connection for pl pq > pl]  pl_index:{pl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
             # ＰＱ
@@ -384,7 +384,7 @@ move_u:{move_obj.as_usi:5} black_p_move_u:{assert_black_p_move_obj.as_usi:5}
             for pl_index, relation_exists in pl_index_to_relation_exists_dictionary.items():
                 assert_p_move_obj, assert_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
                         pk_index=pl_index,
-                        p_turn=board.turn)
+                        flip_white_to_black=board.turn==cshogi.WHITE)
                 if assert_p_move_obj.as_usi != move_obj.as_usi:
                     raise ValueError(f"[{datetime.datetime.now()}] [choice best move > pl] 着手が変わっているエラー  p_move_obj.as_usi:{assert_p_move_obj.as_usi}  move_u:{move_obj.as_usi}")
 

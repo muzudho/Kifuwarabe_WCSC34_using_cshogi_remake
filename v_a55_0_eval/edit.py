@@ -1,3 +1,4 @@
+import cshogi
 import datetime
 import random
 
@@ -76,7 +77,7 @@ class EvaluationEdit():
         for fl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
             assert_p_move_obj, assert_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
                     pk_index=fl_index,
-                    p_turn=self._board.turn)
+                    flip_white_to_black=self._board.turn==cshogi.WHITE)
             if assert_p_move_obj.as_usi != move_u:
                 # FIXME Rotate でも絡んでいる不具合か？
                 # [2024-06-14 00:23:32.615808] [weaken > fl] 着手が変わっているエラー  p_move_obj.as_usi:7f3c  move_u:4c3c
@@ -270,7 +271,7 @@ class EvaluationEdit():
             for target_fl_index in target_fl_index_list:
                 p_move_obj, l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
                         pk_index=target_fl_index,
-                        p_turn=self._board.turn)
+                        flip_white_to_black=self._board.turn==cshogi.WHITE)
 
                 # assert
                 if p_move_obj.as_usi != move_u:
@@ -366,7 +367,7 @@ class EvaluationEdit():
         for fl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
             assert_p_move_obj, assert_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
                     pk_index=fl_index,
-                    p_turn=self._board.turn)
+                    flip_white_to_black=self._board.turn==cshogi.WHITE)
             if assert_p_move_obj.as_usi != move_u:
                 raise ValueError(f"[{datetime.datetime.now()}] [strengthen > fl] 着手が変わっているエラー  p_move_obj.as_usi:{assert_p_move_obj.as_usi}  move_u:{move_u}")
 
@@ -527,7 +528,7 @@ class EvaluationEdit():
                     # assert
                     assert_p_move_obj, assert_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
                             pk_index=fl_index,
-                            p_turn=self._board.turn)
+                            p_turn=self._board.turn==cshogi.flip_white_to_black)
                     if assert_p_move_obj.as_usi != move_u:
                         raise ValueError(f"[{datetime.datetime.now()}] [strengthen > pl and pq] 着手が変わっているエラー  p_move_obj.as_usi:{assert_p_move_obj.as_usi}  move_u:{move_u}")
 
@@ -567,7 +568,7 @@ class EvaluationEdit():
             for target_fl_index in target_fl_index_list:
                 p_move_obj, l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
                         pk_index=target_fl_index,
-                        p_turn=self._board.turn)
+                        flip_white_to_black=self._board.turn==cshogi.WHITE)
 
                 # assert
                 if p_move_obj.as_usi != move_u:

@@ -257,7 +257,7 @@ def test_pk():
          actual_k_move_obj) = EvaluationPkTable.build_p_k_moves_by_pk_index(
                 pk_index=pk_index,
                 # （既に pk_index は１８０°回転しているので）１８０°回転はさせません
-                p_turn=False)
+                flip_white_to_black=False)
 
         rot_actual_p_move_obj = actual_p_move_obj.rotate()
         rot_actual_k_move_obj = actual_k_move_obj.rotate()

@@ -796,7 +796,7 @@ class Kifuwarabe():
 
                 display_p_move_obj, display_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
                         pk_index=pl_index,
-                        p_turn=self._board.turn)
+                        flip_white_to_black=self._board.turn==cshogi.WHITE)
 
                 print(f"  turn:{Turn.to_string(self._board.turn)}  pl_index:{pl_index:7}  P:{display_p_move_obj.as_usi:5}  L:{display_l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
