@@ -194,7 +194,7 @@ def test_p():
 
 
             f.write(f"""src_masu:{Usi.sq_to_jsa(srcsq)}
-先手成らず  通しインデックス                          先手成らず  絶対マス                                先手成り  通しインデックス                            先手成り  絶対マス
+先手成らず  通しインデックス                             先手成らず  絶対マス                                   先手成り  通しインデックス                               先手成り  絶対マス
 {DebugHelper.stringify_quadruple_4characters_board(
         a=label_table_for_npsi,
         b=label_table_for_npsq,

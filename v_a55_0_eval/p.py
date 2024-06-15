@@ -436,7 +436,7 @@ class EvaluationPMove():
                 dstsq_to_index_dictionary = srcsq_to_dstsq_to_index_for_psi_dictionary[p_srcsq]
 
             except KeyError as ex:
-                print(f"[evaluation p move > get index by p move > 成る手] p_move_obj.as_usi:{p_move_obj.as_usi}  P srcloc_u:{Usi.srcloc_to_code(p_srcloc)}  rotated:{is_rotate}  p_src_masu:{Usi.srcloc_to_jsa(p_srcsq)}  成:{p_move_obj.promoted}  ex:{ex}")
+                print(f"[evaluation p move > get index by p move > 成る手1] p_move_obj.as_usi:{p_move_obj.as_usi}  P srcloc_u:{Usi.srcloc_to_code(p_srcloc)}  rotated:{is_rotate}  p_src_masu:{Usi.srcloc_to_jsa(p_srcsq)}  成:{p_move_obj.promoted}  ex:{ex}")
 
                 if ignore_error:
                     return -1
@@ -448,7 +448,12 @@ class EvaluationPMove():
 
             except KeyError as ex:
                 # 配列Ｂのインデックス `6` （符号で言うと `7a`）は存在しない要素を指定しています。この配列Ｂは、配列Ａの 15 （符号で言うと `7b`）要素に入っていたものです。この探索は、兵の指し手 `3h3i+` を調べているところでした   ex:6
-                print(f"[evaluation p move > get index by p move > 成る手] 配列Ｂのインデックス `{p_dstsq}` （符号で言うと `{Usi.sq_to_code(p_dstsq)}`）は存在しない要素を指定しています。この配列Ｂは、配列Ａの {p_srcsq} （符号で言うと `{Usi.sq_to_code(p_srcsq)}`）要素に入っていたものです。この探索は、兵の指し手 `{p_move_obj.as_usi}` を調べているところでした  rotated:{is_rotate}  ex:{ex}")
+                print(f"[evaluation p move > get index by p move > 成る手2] 兵の指し手 `{p_move_obj.as_usi}` を調べていたところ、移動元マス `{Usi.sq_to_code(p_srcsq)}` から、移動先マス `{Usi.sq_to_code(p_dstsq)}` へ指す動作が、配列の要素に含まれていませんでした  rotated:{is_rotate}  ex:{ex}")
+
+                print(f"    p_srcmasu:{Usi.sq_to_code(p_srcsq):2}")
+
+                for p_dstsq, p_index in dstsq_to_index_dictionary.items():
+                    print(f"    p_dstmasu:{Usi.sq_to_code(p_dstsq):2}  p_index:{p_index:5}")
 
                 if ignore_error:
                     return -1
