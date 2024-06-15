@@ -163,10 +163,7 @@ move_rot_u:{move_rot_obj.as_usi:5}
             # assert
             for black_p_black_l_index, relation_exists in black_p_black_l_index_to_relation_exists_dic.items():
                 assert_black_p_move_obj, assert_black_l_move_obj = EvaluationPkTable.build_black_p_black_k_moves_by_black_p_black_k_index(
-                        pk_index=black_p_black_l_index,
-                        # black_p_black_l_index は先手なので、１８０°回転させてはいけません
-                        shall_p_white_to_black=False,
-                        shall_k_white_to_black=False)
+                        black_p_black_k_index=black_p_black_l_index)
 
                 check_black_p_black_l_index = EvaluationPkTable.get_black_p_black_k_index(
                         p_move_obj=assert_black_p_move_obj,
@@ -343,9 +340,7 @@ move_rot_u:{move_rot_obj.as_usi:5}
             for black_p_black_l_index, relation_exists in black_p_black_l_index_to_relation_exists_dictionary.items():
                 if is_debug and DebugPlan.get_number_of_connection_for_pl_pq:
                     black_p_move_obj, black_l_move_obj = EvaluationPkTable.build_black_p_black_k_moves_by_black_p_black_k_index(
-                            pk_index=black_p_black_l_index,
-                            shall_p_white_to_black=board.turn==cshogi.WHITE,
-                            shall_k_white_to_black=board.turn==cshogi.BLACK)
+                            black_p_black_k_index=black_p_black_l_index)
                     print(f"[{datetime.datetime.now()}] [get number of connection for pl pq > pl]  black_p_black_l_index:{black_p_black_l_index:7}  P:{black_p_move_obj.as_usi:5}  L:{black_l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
             # ＰＱ
@@ -495,10 +490,7 @@ move_rot_u:{move_rot_obj.as_usi:5}
             # assert
             for black_p_black_l_index, relation_exists in black_p_black_l_index_to_relation_exists_dictionary.items():
                 assert_black_p_move_obj, assert_black_l_move_obj = EvaluationPkTable.build_black_p_black_k_moves_by_black_p_black_k_index(
-                        pk_index=black_p_black_l_index,
-                        # black_p_black_l_index は両方先手のインデックスなので、これ以上変更しません
-                        shall_p_white_to_black=False,
-                        shall_k_white_to_black=False)
+                        black_p_black_k_index=black_p_black_l_index)
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                 if board.turn==cshogi.BLACK:

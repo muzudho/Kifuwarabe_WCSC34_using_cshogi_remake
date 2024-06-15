@@ -88,19 +88,13 @@ class EvaluationPkTable():
     # build_black_p_k_moves_by_pk_index
     @staticmethod
     def build_black_p_black_k_moves_by_black_p_black_k_index(
-            pk_index,
-            shall_p_white_to_black,
-            shall_k_white_to_black):
+            black_p_black_k_index):
         """ＰＫインデックス分解
 
         Parameter
         ---------
-        pk_index : int
+        black_p_black_k_index : int
             兵と玉の関係の通しインデックス
-        shall_p_white_to_black : bool
-            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
-        shall_k_white_to_black : bool
-            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
 
         Returns
         -------
@@ -111,7 +105,7 @@ class EvaluationPkTable():
         """
         (p_index,
          k_index) = EvaluationPkTable.destructure_p_k_index_by_pk_index(
-                pk_index=pk_index)
+                pk_index=black_p_black_k_index)
 
         # Ｋ
         (k_srcsq,
@@ -130,14 +124,16 @@ class EvaluationPkTable():
                 dstsq=k_dstsq,
                 # 玉に成りはありません
                 promoted=False,
-                is_rotate=shall_k_white_to_black)
+                # 先手のインデックスを渡されるので、回転して先手に合わせる必要はありません
+                is_rotate=False)
 
         # Ｐ
         black_p_move_obj = Move.from_src_dst_pro(
                 srcloc=p_srcloc,
                 dstsq=p_dstsq,
                 promoted=p_promote,
-                is_rotate=shall_p_white_to_black)
+                # 先手のインデックスを渡されるので、回転して先手に合わせる必要はありません
+                is_rotate=False)
 
         return (black_p_move_obj, black_k_move_obj)
 
@@ -267,7 +263,7 @@ class EvaluationPkTable():
 
         Parameters
         ----------
-        pk_index : int
+        black_p_black_k_index : int
             配列のインデックス
 
         Returns
