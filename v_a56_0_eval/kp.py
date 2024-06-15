@@ -286,8 +286,8 @@ class EvaluationKpTable():
         return is_changed
 
 
-    # 使ってない？
-    def select_kp_index_and_relation_exists(
+    #select_kp_index_and_relation_exists
+    def select_black_k_black_p_index_and_relation_exists(
             self,
             k_move_obj,
             p_move_u_set,

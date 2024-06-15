@@ -310,7 +310,8 @@ class EvaluationPkTable():
         return is_changed
 
 
-    def select_pk_index_and_relation_exists(
+    #select_pk_index_and_relation_exists
+    def select_black_p_black_k_index_and_relation_exists(
             self,
             p_move_obj,
             k_move_u_set,

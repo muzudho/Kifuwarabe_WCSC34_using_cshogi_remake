@@ -279,7 +279,8 @@ p2_move_obj:{p2_move_obj.as_usi:5}
         return is_changed
 
 
-    def select_pp_index_and_relation_exists(
+    #select_pp_index_and_relation_exists
+    def select_black_p_black_p_index_and_relation_exists(
             self,
             p1_move_obj,
             p2_move_u_set,

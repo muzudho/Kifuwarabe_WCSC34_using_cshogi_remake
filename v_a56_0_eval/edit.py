@@ -201,7 +201,7 @@ class EvaluationEdit():
             #
             for target_fl_index in target_fl_index_list:
                 black_k_move_obj, black_l_move_obj = EvaluationKkTable.build_black_k_black_l_moves_by_black_k_black_l_index(
-                        kl_index=target_fl_index,
+                        black_k_black_l_index=target_fl_index,
                         shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
 
                 # assert
@@ -585,7 +585,7 @@ class EvaluationEdit():
             #
             for target_fl_index in target_fl_index_list:
                 black_k_move_obj, black_l_move_obj = EvaluationKkTable.build_black_k_black_l_moves_by_black_k_black_l_index(
-                        kl_index=target_fl_index,
+                        black_k_black_l_index=target_fl_index,
                         shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
 
                 # assert
