@@ -135,19 +135,20 @@ check_pl_index:{check_pl_index:10}
       l_move_u:{assert_black_l_move_obj.as_usi:5}
 """)
                     else:
-                        print(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pl] インデックスから指し手を復元し、さらにインデックスに圧縮すると、元のインデックスに復元できた。Ok
-      pl_index:{      black_pl_index:10}
-check_pl_index:{check_pl_index:10}
-      p_move_u:{assert_black_p_move_obj.as_usi:5}
-      l_move_u:{assert_black_l_move_obj.as_usi:5}
-""")
+#                        print(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pl] インデックスから指し手を復元し、さらにインデックスに圧縮すると、元のインデックスに復元できた。Ok
+#      pl_index:{      black_pl_index:10}
+#check_pl_index:{check_pl_index:10}
+#      p_move_u:{assert_black_p_move_obj.as_usi:5}
+#      l_move_u:{assert_black_l_move_obj.as_usi:5}
+#""")
+                        pass
+
                 # 着手が後手なら、１８０°回転させるので、インデックスは変わる
                 else:
-                    print(f"[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pl] １８０°回転しているので、インデックスのチェックはパス")
 
-                if (not is_white and assert_black_p_move_obj.as_usi != move_obj.as_usi) or (is_white and assert_black_p_move_obj.as_usi != move_rot_obj.as_usi):
-                    print(board)
-                    raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pl] 着手が変わっているエラー
+                    if assert_black_p_move_obj.as_usi != move_rot_obj.as_usi:
+                        print(board)
+                        raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pl] 指し手を先手の向きに変えて復元できなかったエラー
 is_white  :{is_white}
 move_u    :{move_obj.as_usi    :5} black_p_move_u:{assert_black_p_move_obj.as_usi:5}
 move_rot_u:{move_rot_obj.as_usi:5}
@@ -167,12 +168,14 @@ move_rot_u:{move_rot_obj.as_usi:5}
                         pp_index=black_pq_index,
                         # black_pq_index は先手なので、１８０°回転させてはいけません
                         shall_p1_white_to_black=False)
-                
+
                 if assert_black_p_move_obj.as_usi != move_obj.as_usi:
                     print(board)
                     raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pq] 着手が変わっているエラー
-move_u:{move_obj.as_usi:5} black_p_move_u:{assert_black_p_move_obj.as_usi:5}
-       {''             :5} black_q_move_u:{assert_black_q_move_obj.as_usi:5}
+is_white  :{is_white}
+move_u    :{move_obj.as_usi    :5} black_p_move_u:{assert_black_p_move_obj.as_usi:5}
+move_rot_u:{move_rot_obj.as_usi:5}
+           {''                 :5} black_q_move_u:{assert_black_q_move_obj.as_usi:5}
 """)
 
             return (None,
