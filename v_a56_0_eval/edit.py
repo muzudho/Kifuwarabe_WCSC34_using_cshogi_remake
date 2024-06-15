@@ -81,8 +81,8 @@ class EvaluationEdit():
                     # FIXME Rotate でも絡んでいる不具合か？
                     # [2024-06-14 00:23:32.615808] [weaken > fl] 着手が変わっているエラー  p_move_obj.as_usi:7f3c  move_u:4c3c
                     raise ValueError(f"""[{datetime.datetime.now()}] [weaken > fl] 着手が変わっているエラー
-                                           手番:{Turn.to_string(self._kifuwarabe.board.turn)}
                                       元の指し手:{move_u}
+                                           手番:{Turn.to_string(self._kifuwarabe.board.turn)}
 １回インデックスに変換し、インデックスから指し手を復元:{assert_black_p_move_obj.as_usi}
 """)
 
@@ -229,11 +229,11 @@ class EvaluationEdit():
 
                 # デバッグ表示
                 if is_debug and DebugPlan.evaluation_edit_weaken:
-                    print(f"[{datetime.datetime.now()}] [weaken > kl] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  kl_index:{target_black_f_black_l_index:7}  K:{black_k_move_obj.as_usi:5}  L:{white_l_move_obj.as_usi:5}  remove relation")
+                    print(f"[{datetime.datetime.now()}] [weaken > kl] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  kl_index:{target_black_f_black_l_index:7}  K:{black_k_move_obj.as_usi:5}  L:{black_l_move_obj.as_usi:5}  remove relation")
 
                 is_changed_temp = self._kifuwarabe._evaluation_kl_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exsits_by_kl_moves(
                         k_move_obj=black_k_move_obj,
-                        l_move_obj=white_l_move_obj,
+                        l_move_obj=black_l_move_obj,
                         shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
                         bit=0)
 
@@ -246,9 +246,7 @@ class EvaluationEdit():
             #
             for target_black_f_black_q_index in target_black_f_black_q_index_list:
                 black_k_move_obj, white_q_move_obj = EvaluationKpTable.build_black_k_black_p_moves_by_black_k_black_p_index(
-                        kp_index=target_black_f_black_q_index,
-                        shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
-                        shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.BLACK)
+                        black_k_black_p_index=target_black_f_black_q_index)
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                 if self._kifuwarabe.board.turn==cshogi.BLACK:
@@ -613,7 +611,7 @@ class EvaluationEdit():
 
                 # デバッグ表示
                 if is_debug and DebugPlan.evaluation_edit_strengthen:
-                    print(f"[{datetime.datetime.now()}] [strengthen > kl] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  kl_index:{target_black_f_black_l_index:7}  K:{black_k_move_obj.as_usi:5}  L:{white_l_move_obj.as_usi:5}  remove relation")
+                    print(f"[{datetime.datetime.now()}] [strengthen > kl] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  kl_index:{target_black_f_black_l_index:7}  K:{black_k_move_obj.as_usi:5}  L:{black_l_move_obj.as_usi:5}  remove relation")
 
                 is_changed_temp = self._kifuwarabe._evaluation_kl_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exsits_by_kl_moves(
                         k_move_obj=black_k_move_obj,
@@ -630,9 +628,7 @@ class EvaluationEdit():
             #
             for target_black_f_black_q_index in target_black_f_black_q_index_list:
                 black_k_move_obj, black_q_move_obj = EvaluationKpTable.build_black_k_black_p_moves_by_black_k_black_p_index(
-                        kp_index=target_black_f_black_q_index,
-                        shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
-                        shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.BLACK)
+                        black_k_black_p_index=target_black_f_black_q_index)
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                 if self._kifuwarabe.board.turn==cshogi.BLACK:
@@ -804,7 +800,7 @@ class EvaluationEdit():
 
                 # デバッグ表示
                 if is_debug and DebugPlan.evaluation_edit_strengthen:
-                    print(f"[{datetime.datetime.now()}] [strengthen > pq] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  pq_index:{target_black_f_black_q_index:7}  P:{black_p_move_obj.as_usi:5}  Q:{white_q_move_obj.as_usi:5}  remove relation")
+                    print(f"[{datetime.datetime.now()}] [strengthen > pq] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  pq_index:{target_black_f_black_q_index:7}  P:{black_p_move_obj.as_usi:5}  Q:{black_q_move_obj.as_usi:5}  remove relation")
 
                 is_changed_temp = self._kifuwarabe._evaluation_pq_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exists_by_pp_moves(
                         p1_move_obj=black_p_move_obj,

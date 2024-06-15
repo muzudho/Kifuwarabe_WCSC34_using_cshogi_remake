@@ -784,9 +784,7 @@ class Kifuwarabe():
             for black_k_black_q_index, relation_exists in black_k_black_q_index_to_relation_exists_dictionary.items():
 
                 black_k_move_obj, black_q_move_obj = EvaluationKpTable.build_black_k_black_p_moves_by_black_k_black_p_index(
-                        kp_index=black_k_black_q_index,
-                        shall_k_white_to_black=self._board.turn==cshogi.WHITE,
-                        shall_p_white_to_black=self._board.turn==cshogi.BLACK)
+                        black_k_black_p_index=black_k_black_q_index)
 
                 print(f"  turn:{Turn.to_string(self._board.turn)}  black_k_black_q_index:{black_k_black_q_index:7}  K:{black_k_move_obj.as_usi:5}  Q:{black_q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 

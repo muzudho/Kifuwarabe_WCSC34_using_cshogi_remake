@@ -52,19 +52,13 @@ class EvaluationKpTable():
     #build_k_p_moves_by_kp_index
     @staticmethod
     def build_black_k_black_p_moves_by_black_k_black_p_index(
-            kp_index,
-            shall_k_white_to_black,
-            shall_p_white_to_black):
+            black_k_black_p_index):
         """ＫＰインデックス分解
 
         Parameter
         ---------
         kp_index : int
             玉と兵の関係の通しインデックス
-        shall_k_white_to_black : bool
-            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
-        shall_p_white_to_black : bool
-            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
 
         Returns
         -------
@@ -74,7 +68,7 @@ class EvaluationKpTable():
             兵の応手
         """
 
-        rest = kp_index
+        rest = black_k_black_p_index
 
         p_index = rest % EvaluationPMove.get_serial_number_size()
         rest //= EvaluationPMove.get_serial_number_size()
@@ -98,7 +92,8 @@ class EvaluationKpTable():
                 srcloc=p_srcloc,
                 dstsq=p_dstsq,
                 promoted=p_promote,
-                is_rotate=shall_p_white_to_black)
+                # 先手のインデックスが渡されるので、先手に揃えるように回転させる必要はありません
+                is_rotate=False)
 
         # Ｋ
         (k_srcsq,
@@ -109,7 +104,8 @@ class EvaluationKpTable():
                 dstsq=k_dstsq,
                 # 玉に成りはありません
                 promoted=False,
-                is_rotate=shall_k_white_to_black)
+                # 先手のインデックスが渡されるので、先手に揃えるように回転させる必要はありません
+                is_rotate=False)
 
         return (k_move_obj, p_move_obj)
 

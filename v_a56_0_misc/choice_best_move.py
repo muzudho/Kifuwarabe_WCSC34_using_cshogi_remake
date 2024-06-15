@@ -113,10 +113,7 @@ move_rot_u:{move_rot_obj.as_usi:5}
             # assert
             for black_k_black_q_index, relation_exists in black_k_black_q_index_to_relation_exists_dic.items():
                 assert_black_k_move_obj, assert_black_q_move_obj = EvaluationKpTable.build_black_k_black_p_moves_by_black_k_black_p_index(
-                        kp_index=black_k_black_q_index,
-                        # black_k_black_q_index は先手なので、１８０°回転させてはいけません
-                        shall_k_white_to_black=False,
-                        shall_p_white_to_black=False)
+                        black_k_black_p_index=black_k_black_q_index)
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                 if not is_white:
@@ -288,9 +285,7 @@ move_rot_u:{move_rot_obj.as_usi:5}
             for black_k_black_q_index, relation_exists in black_k_black_q_index_to_relation_exists_dictionary.items():
                 if DebugPlan.get_number_of_connection_for_kl_kq:
                     black_k_move_obj, black_q_move_obj = EvaluationKpTable.build_black_k_black_p_moves_by_black_k_black_p_index(
-                            kp_index=black_k_black_q_index,
-                            shall_k_white_to_black=board.turn==cshogi.WHITE,
-                            shall_p_white_to_black=board.turn==cshogi.BLACK)
+                            black_k_black_p_index=black_k_black_q_index)
                     print(f"[{datetime.datetime.now()}] [get number of connection for kl kq > kq]  black_k_black_q_index:{black_k_black_q_index:7}  K:{black_k_move_obj.as_usi:5}  Q:{black_q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
         return number_of_connection
@@ -421,10 +416,7 @@ move_rot_u:{move_rot_obj.as_usi:5}
             # assert
             for black_k_black_q_index, relation_exists in black_k_black_q_index_to_relation_exists_dictionary.items():
                 assert_black_k_move_obj, assert_black_q_move_obj = EvaluationKpTable.build_black_k_black_p_moves_by_black_k_black_p_index(
-                        kp_index=black_k_black_q_index,
-                        # black_k_black_q_index は両方先手のインデックスなので、これ以上変更しません
-                        shall_k_white_to_black=False,
-                        shall_p_white_to_black=False)
+                        black_k_black_p_index=black_k_black_q_index)
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                 if kifuwarabe.board.turn==cshogi.BLACK:
