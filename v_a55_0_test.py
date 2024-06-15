@@ -94,7 +94,7 @@ def test_kk():
     kk_index = EvaluationKkTable.get_index_of_kk_table(
             k_move_obj=k_move_obj_expected,
             l_move_obj=l_move_obj_expected,
-            k_turn=k_turn)
+            shall_k_white_to_black=k_turn==cshogi.WHITE)
 
     (k_move_obj_actual,
      l_move_obj_actual) = EvaluationKkTable.build_k_l_moves_by_kl_index(
@@ -247,7 +247,7 @@ def test_pk():
         pk_index = EvaluationPkTable.get_index_of_pk_table(
                 p_move_obj=Move.from_usi(expected_p_move_u),
                 k_move_obj=Move.from_usi(expected_k_move_u),
-                p_turn=f_turn)
+                shall_p_white_to_black=f_turn==cshogi.WHITE)
 
         # pi_index から、指し手オブジェクトを生成します
         #

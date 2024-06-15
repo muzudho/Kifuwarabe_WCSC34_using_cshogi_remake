@@ -15,7 +15,7 @@ class EvaluationPpTable():
     def get_index_of_pp_table(
             p1_move_obj,
             p2_move_obj,
-            p1_turn):
+            shall_p1_white_to_black):
         """ＰＫ評価値テーブルのインデックスを算出
 
         Parameters
@@ -24,13 +24,12 @@ class EvaluationPpTable():
             兵１の着手
         p2_move_obj : Move
             兵２の応手
-        p1_turn : int
+        shall_p1_white_to_black : bool
             着手側の手番
         """
 
         # 評価値テーブルは先手用の形だ。着手と応手のどちらかは後手なので、後手番は１８０°回転させる必要がある
-        shall_p1_white_to_black = p1_turn == cshogi.WHITE
-        shall_p2_white_to_black = p1_turn == cshogi.BLACK
+        shall_p2_white_to_black = not shall_p1_white_to_black
 
         # 0 ～ 14_542_781 =                                                                 0 ～ 3812 *                                     3813 +                                                                0 ～ 3812
         pp_index         = EvaluationPMove.get_index_by_p_move(p1_move_obj, shall_p1_white_to_black) * EvaluationPMove.get_serial_number_size() + EvaluationPMove.get_index_by_p_move(p2_move_obj, shall_p2_white_to_black)
@@ -213,7 +212,7 @@ class EvaluationPpTable():
                 kp_index=EvaluationPpTable.get_index_of_pp_table(
                     p1_move_obj=p1_move_obj,
                     p2_move_obj=p2_move_obj,
-                    is_rotate=is_rotate))
+                    shall_p1_white_to_black=is_rotate))
 
 
     def get_relation_esixts_by_index(
@@ -265,7 +264,7 @@ class EvaluationPpTable():
                 index=EvaluationPpTable.get_index_of_pp_table(
                     p1_move_obj=p1_move_obj,
                     p2_move_obj=p2_move_obj,
-                    p1_turn=p1_turn),
+                    shall_p1_white_to_black=p1_turn==cshogi.WHITE),
                 bit=bit)
 
         return is_changed
@@ -301,7 +300,7 @@ class EvaluationPpTable():
             pp_index = EvaluationPpTable.get_index_of_pp_table(
                 p1_move_obj=p1_move_obj,
                 p2_move_obj=Move.from_usi(p2_move_u),
-                p1_turn=p1_turn)
+                shall_p1_white_to_black=p1_turn==cshogi.WHITE)
 
             relation_bit = self.get_relation_esixts_by_index(
                     pp_index=pp_index)

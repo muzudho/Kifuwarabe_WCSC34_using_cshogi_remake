@@ -16,7 +16,7 @@ class EvaluationKpTable():
     def get_index_of_kp_table(
             k_move_obj,
             p_move_obj,
-            k_turn):
+            shall_k_white_to_black):
         """ＫＰ評価値テーブルのインデックスを算出
 
         Parameters
@@ -25,13 +25,12 @@ class EvaluationKpTable():
             玉の着手
         p_move_obj : Move
             兵の応手
-        k_turn : int
+        shall_k_white_to_black : bool
             着手側の手番
         """
 
         # 評価値テーブルは先手用の形だ。着手と応手のどちらかは後手なので、後手番は１８０°回転させる必要がある
-        shall_k_white_to_black = k_turn == cshogi.WHITE
-        shall_p_white_to_black = k_turn == cshogi.BLACK
+        shall_p_white_to_black = not shall_k_white_to_black
 
         # 0 ～ 2_078_084 =                                                                 0 ～ 543 *                                     3813 +                                                              0 ～ 3812
         kp_index         = EvaluationKMove.get_index_by_k_move(k_move_obj, shall_k_white_to_black) * EvaluationPMove.get_serial_number_size() + EvaluationPMove.get_index_by_p_move(p_move_obj, shall_p_white_to_black)
@@ -220,7 +219,7 @@ class EvaluationKpTable():
                 kp_index=EvaluationKpTable.get_index_of_kp_table(
                     k_move_obj=k_move_obj,
                     p_move_obj=p_move_obj,
-                    is_rotate=is_rotate))
+                    shall_k_white_to_black=is_rotate))
 
 
     def get_relation_esixts_by_index(
@@ -270,7 +269,7 @@ class EvaluationKpTable():
                 index=EvaluationKpTable.get_index_of_kp_table(
                     k_move_obj=k_move_obj,
                     p_move_obj=p_move_obj,
-                    k_turn=k_turn),
+                    shall_k_white_to_black=k_turn==cshogi.WHITE),
                 bit=bit)
 
         return is_changed
@@ -307,7 +306,7 @@ class EvaluationKpTable():
             kp_index = EvaluationKpTable.get_index_of_kp_table(
                 k_move_obj=k_move_obj,
                 p_move_obj=Move.from_usi(p_move_u),
-                k_turn=k_turn)
+                shall_k_white_to_black=k_turn==cshogi.WHITE)
 
             relation_bit = self.get_relation_esixts_by_index(
                     kp_index=kp_index)
