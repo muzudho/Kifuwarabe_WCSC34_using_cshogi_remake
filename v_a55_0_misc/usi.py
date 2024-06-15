@@ -217,6 +217,10 @@ class Usi():
 
     @classmethod
     def srcloc_to_jsa(clazz, srcloc):
+
+        # assert: srcloc は数
+        temp = srcloc + 1
+
         """元位置番号を、日本将棋連盟式のマスの符号へ変換"""
         if clazz._srcloc_to_jsa is None:
             clazz._srcloc_to_jsa = {}
