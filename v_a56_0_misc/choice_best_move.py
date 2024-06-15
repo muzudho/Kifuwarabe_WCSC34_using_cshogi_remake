@@ -155,13 +155,13 @@ move_rot_u:{move_rot_obj.as_usi:5}
                     p_turn=board.turn)
 
             # assert
-            for black_pl_index, relation_exists in black_pl_index_to_relation_exists_dic.items():
-                assert_black_p_move_obj, assert_black_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
-                        pk_index=black_pl_index,
+            for black_p_black_l_index, relation_exists in black_pl_index_to_relation_exists_dic.items():
+                assert_black_p_move_obj, assert_black_l_move_obj = EvaluationPkTable.build_black_p_k_moves_by_pk_index(
+                        pk_index=black_p_black_l_index,
                         # black_pl_index は先手なので、１８０°回転させてはいけません
                         shall_p_white_to_black=False)
 
-                check_pl_index = EvaluationPkTable.get_index_of_pk_table(
+                check_black_p_black_l_index = EvaluationPkTable.get_black_p_black_k_index(
                         p_move_obj=assert_black_p_move_obj,
                         k_move_obj=assert_black_l_move_obj,
                         # assert_black_p_move_obj, assert_black_l_move_obj は先手なので、１８０°回転させてはいけません
@@ -169,19 +169,19 @@ move_rot_u:{move_rot_obj.as_usi:5}
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                 if not is_white:
-                    if black_pl_index != check_pl_index:
+                    if black_p_black_l_index != check_black_p_black_l_index:
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pl] インデックスから指し手を復元し、さらにインデックスに圧縮すると、元のインデックスに復元しなかったエラー
-      pl_index:{      black_pl_index:10}
-check_pl_index:{check_pl_index:10}
-      p_move_u:{assert_black_p_move_obj.as_usi:5}
-      l_move_u:{assert_black_l_move_obj.as_usi:5}
+                   pl_index:{        black_p_black_l_index:10}
+check_black_p_black_l_index:{check_black_p_black_l_index  :10}
+                   p_move_u:{assert_black_p_move_obj.as_usi:5}
+                   l_move_u:{assert_black_l_move_obj.as_usi:5}
 """)
                     else:
 #                        print(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pl] インデックスから指し手を復元し、さらにインデックスに圧縮すると、元のインデックスに復元できた。Ok
-#      pl_index:{      black_pl_index:10}
-#check_pl_index:{check_pl_index:10}
-#      p_move_u:{assert_black_p_move_obj.as_usi:5}
-#      l_move_u:{assert_black_l_move_obj.as_usi:5}
+#                   pl_index:{        black_p_black_l_index:10}
+#check_black_p_black_l_index:{check_black_p_black_l_index  :10}
+#                   p_move_u:{assert_black_p_move_obj.as_usi:5}
+#                   l_move_u:{assert_black_l_move_obj.as_usi:5}
 #""")
                         pass
 
@@ -331,7 +331,7 @@ move_rot_u:{move_rot_obj.as_usi:5}
             # ＰＬ
             for pl_index, relation_exists in pl_index_to_relation_exists_dictionary.items():
                 if is_debug and DebugPlan.get_number_of_connection_for_pl_pq:
-                    p_move_obj, l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
+                    p_move_obj, l_move_obj = EvaluationPkTable.build_black_p_k_moves_by_pk_index(
                             pk_index=pl_index,
                             shall_p_white_to_black=board.turn==cshogi.WHITE)
                     print(f"[{datetime.datetime.now()}] [get number of connection for pl pq > pl]  pl_index:{pl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
@@ -476,7 +476,7 @@ move_rot_u:{move_rot_obj.as_usi:5}
 
             # assert
             for pl_index, relation_exists in pl_index_to_relation_exists_dictionary.items():
-                assert_black_p_move_obj, assert_white_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
+                assert_black_p_move_obj, assert_white_l_move_obj = EvaluationPkTable.build_black_p_k_moves_by_pk_index(
                         pk_index=pl_index,
                         shall_p_white_to_black=board.turn==cshogi.WHITE)
 

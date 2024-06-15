@@ -12,8 +12,9 @@ class EvaluationKkTable():
     """ＫＫ評価値テーブル"""
 
 
+    #get_index_of_kk_table
     @staticmethod
-    def get_index_of_kk_table(
+    def get_black_k_black_l_index(
             k_move_obj,
             l_move_obj,
             shall_k_white_to_black):
@@ -40,8 +41,8 @@ class EvaluationKkTable():
         # 評価値テーブルは先手用の形だ。着手と応手のどちらかは後手なので、後手番は１８０°回転させる必要がある
         shall_l_white_to_black = not shall_k_white_to_black
 
-        # 0 ～ 296_479 =                                                                 0 ～ 543 *                                      544 +                                                               0 ～ 543
-        kk_index       = EvaluationKMove.get_index_by_k_move(k_move_obj, shall_k_white_to_black) * EvaluationKMove.get_serial_number_size() + EvaluationKMove.get_index_by_k_move(l_move_obj, shall_l_white_to_black)
+        # 0 ～ 296_479 =                                                                       0 ～ 543 *                                      544 +                                                                     0 ～ 543
+        kk_index       = EvaluationKMove.get_black_index_by_k_move(k_move_obj, shall_k_white_to_black) * EvaluationKMove.get_serial_number_size() + EvaluationKMove.get_black_index_by_k_move(l_move_obj, shall_l_white_to_black)
 
         # assert
         if EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size() <= kk_index:
@@ -232,7 +233,7 @@ class EvaluationKkTable():
             raise ValueError(f"[evaluation kk table > get relation exists by kl moves > l] 玉の指し手で打なのはおかしい。 l_move_obj.srcloc_u:{Usi.srcloc_to_code(l_move_obj.srcloc)}  l_move_obj:{l_move_obj.dump()}")
 
         return self.get_relation_exists_by_index(
-                kl_index=EvaluationKkTable.get_index_of_kk_table(
+                kl_index=EvaluationKkTable.get_black_k_black_l_index(
                         k_move_obj=k_move_obj,
                         l_move_obj=l_move_obj,
                         shall_k_white_to_black=k_turn==cshogi.WHITE))
@@ -291,7 +292,7 @@ class EvaluationKkTable():
             raise ValueError(f"[evaluation kk table > set relation exists by kl moves > l] 玉の指し手で打なのはおかしい。 l_move_obj.srcloc_u:{Usi.srcloc_to_code(l_move_obj.srcloc)}  l_move_obj:{l_move_obj.dump()}")
 
         is_changed = self._mm_table_obj.set_bit_by_index(
-                index=EvaluationKkTable.get_index_of_kk_table(
+                index=EvaluationKkTable.get_black_k_black_l_index(
                         k_move_obj=k_move_obj,
                         l_move_obj=l_move_obj,
                         shall_k_white_to_black=shall_k_white_to_black),
@@ -328,14 +329,14 @@ class EvaluationKkTable():
         relations = {}
 
         for l_move_u in l_move_u_set:
-            kl_index = EvaluationKkTable.get_index_of_kk_table(
+            black_k_black_l_index = EvaluationKkTable.get_black_k_black_l_index(
                     k_move_obj=k_move_obj,
                     l_move_obj=Move.from_usi(l_move_u),
                     shall_k_white_to_black=k_turn==cshogi.WHITE)
 
             relation_bit = self.get_relation_exists_by_index(
-                    kl_index=kl_index)
+                    kl_index=black_k_black_l_index)
 
-            relations[kl_index] = relation_bit
+            relations[black_k_black_l_index] = relation_bit
 
         return relations

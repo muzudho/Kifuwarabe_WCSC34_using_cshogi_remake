@@ -13,8 +13,9 @@ class EvaluationKpTable():
     """ＫＰ評価値テーブル"""
 
 
+    #get_index_of_kp_table
     @staticmethod
-    def get_index_of_kp_table(
+    def get_black_k_black_p_index(
             k_move_obj,
             p_move_obj,
             shall_k_white_to_black):
@@ -37,8 +38,8 @@ class EvaluationKpTable():
         # 評価値テーブルは先手用の形だ。着手と応手のどちらかは後手なので、後手番は１８０°回転させる必要がある
         shall_p_white_to_black = not shall_k_white_to_black
 
-        # 0 ～ 2_078_084 =                                                                 0 ～ 543 *                                     3813 +                                                              0 ～ 3812
-        kp_index         = EvaluationKMove.get_index_by_k_move(k_move_obj, shall_k_white_to_black) * EvaluationPMove.get_serial_number_size() + EvaluationPMove.get_index_by_p_move(p_move_obj, shall_p_white_to_black)
+        # 0 ～ 2_078_084 =                                                                 0 ～ 543 *                                     3813 +                                                                    0 ～ 3812
+        kp_index         = EvaluationKMove.get_index_by_k_move(k_move_obj, shall_k_white_to_black) * EvaluationPMove.get_serial_number_size() + EvaluationPMove.get_black_index_by_p_move(p_move_obj, shall_p_white_to_black)
 
         # assert
         if EvaluationKMove.get_serial_number_size() * EvaluationPMove.get_serial_number_size() <= kp_index:
@@ -226,7 +227,7 @@ class EvaluationKpTable():
             raise ValueError(f"[evaluation kp table > get relation exists by kp moves > k] 玉の指し手で打なのはおかしい。 k_move_obj.srcloc_u:{Usi.srcloc_to_code(k_move_obj.srcloc)}  k_move_obj:{k_move_obj.dump()}")
 
         return self.get_relation_exists_by_index(
-                kp_index=EvaluationKpTable.get_index_of_kp_table(
+                kp_index=EvaluationKpTable.get_black_k_black_p_index(
                     k_move_obj=k_move_obj,
                     p_move_obj=p_move_obj,
                     shall_k_white_to_black=is_rotate))
@@ -276,7 +277,7 @@ class EvaluationKpTable():
             変更が有ったか？
         """
         is_changed = self._mm_table_obj.set_bit_by_index(
-                index=EvaluationKpTable.get_index_of_kp_table(
+                index=EvaluationKpTable.get_black_k_black_p_index(
                     k_move_obj=k_move_obj,
                     p_move_obj=p_move_obj,
                     shall_k_white_to_black=shall_k_white_to_black),
@@ -313,14 +314,14 @@ class EvaluationKpTable():
         relations = {}
 
         for p_move_u in p_move_u_set:
-            kp_index = EvaluationKpTable.get_index_of_kp_table(
+            black_k_black_p_index = EvaluationKpTable.get_black_k_black_p_index(
                 k_move_obj=k_move_obj,
                 p_move_obj=Move.from_usi(p_move_u),
                 shall_k_white_to_black=k_turn==cshogi.WHITE)
 
             relation_bit = self.get_relation_exists_by_index(
-                    kp_index=kp_index)
+                    kp_index=black_k_black_p_index)
 
-            relations[kp_index] = relation_bit
+            relations[black_k_black_p_index] = relation_bit
 
         return relations

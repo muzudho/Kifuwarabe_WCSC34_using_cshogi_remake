@@ -236,8 +236,9 @@ class EvaluationKMove():
 
 
     #get_index_of_k_move
+    #get_index_by_k_move
     @staticmethod
-    def get_index_by_k_move(
+    def get_black_index_by_k_move(
             k_move_obj,
             shall_k_white_to_black):
         """玉の指し手を指定すると、玉の指し手のインデックスを返す。

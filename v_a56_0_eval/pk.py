@@ -13,8 +13,9 @@ class EvaluationPkTable():
     """ＰＫ評価値テーブル"""
 
 
+    #get_index_of_pk_table
     @staticmethod
-    def get_index_of_pk_table(
+    def get_black_p_black_k_index(
             p_move_obj,
             k_move_obj,
             shall_p_white_to_black):
@@ -37,14 +38,14 @@ class EvaluationPkTable():
         # 評価値テーブルは先手用の形だ。着手と応手のどちらかは後手なので、後手番は１８０°回転させる必要がある
         shall_k_white_to_black = not shall_p_white_to_black
 
-        # 0 ～ 2_074_815 =                                                                0 ～ 3812 *                                      544 +                                                               0 ～ 543
-        pk_index         = EvaluationPMove.get_index_by_p_move(p_move_obj, shall_p_white_to_black) * EvaluationKMove.get_serial_number_size() + EvaluationKMove.get_index_by_k_move(k_move_obj, shall_k_white_to_black)
+        # 0 ～ 2_074_815      =                                                                      0 ～ 3812 *                                      544 +                                                                     0 ～ 543
+        black_p_black_k_index = EvaluationPMove.get_black_index_by_p_move(p_move_obj, shall_p_white_to_black) * EvaluationKMove.get_serial_number_size() + EvaluationKMove.get_black_index_by_k_move(k_move_obj, shall_k_white_to_black)
 
         # assert
-        if EvaluationPMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size() <= pk_index:
-            raise ValueError(f"pk_index:{pk_index} out of range {EvaluationPMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size()}")
+        if EvaluationPMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size() <= black_p_black_k_index:
+            raise ValueError(f"black_p_black_k_index:{black_p_black_k_index} out of range {EvaluationPMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size()}")
 
-        return pk_index
+        return black_p_black_k_index
 
 
     @staticmethod
@@ -83,8 +84,9 @@ class EvaluationPkTable():
 
 
     # destructure_pk_index
+    # build_p_k_moves_by_pk_index
     @staticmethod
-    def build_p_k_moves_by_pk_index(
+    def build_black_p_k_moves_by_pk_index(
             pk_index,
             shall_p_white_to_black):
         """ＰＫインデックス分解
@@ -107,19 +109,23 @@ class EvaluationPkTable():
          k_index) = EvaluationPkTable.destructure_p_k_index_by_pk_index(
                 pk_index=pk_index)
 
-        # 評価値テーブルは先手用の形だ。着手と応手のどちらかは後手なので、後手番は１８０°回転させる必要がある
-        if shall_p_white_to_black:
-            is_p_rotate = True
-            is_k_rotate = False
-        else:
-            is_p_rotate = False
-            is_k_rotate = True
-
         # Ｋ
         (k_srcsq,
          k_dstsq) = EvaluationKMove.destructure_srcsq_dstsq_by_k_index(
                 k_index=k_index)
-        k_move_obj = Move.from_src_dst_pro(
+
+        # Ｐ
+        (p_srcloc,
+         p_dstsq,
+         p_promote) = EvaluationPMove.destructure_srcloc_dstsq_promoted_by_p_index(
+                p_index=p_index)
+
+        # 評価値テーブルは先手用の形だ。着手と応手のどちらかは後手なので、後手番は１８０°回転させる必要がある
+        is_p_rotate = shall_p_white_to_black
+        is_k_rotate = not shall_p_white_to_black
+
+        # Ｋ
+        black_k_move_obj = Move.from_src_dst_pro(
                 srcloc=k_srcsq,
                 dstsq=k_dstsq,
                 # 玉に成りはありません
@@ -127,17 +133,13 @@ class EvaluationPkTable():
                 is_rotate=is_k_rotate)
 
         # Ｐ
-        (p_srcloc,
-         p_dstsq,
-         p_promote) = EvaluationPMove.destructure_srcloc_dstsq_promoted_by_p_index(
-                p_index=p_index)
-        p_move_obj = Move.from_src_dst_pro(
+        black_p_move_obj = Move.from_src_dst_pro(
                 srcloc=p_srcloc,
                 dstsq=p_dstsq,
                 promoted=p_promote,
                 is_rotate=is_p_rotate)
 
-        return (p_move_obj, k_move_obj)
+        return (black_p_move_obj, black_k_move_obj)
 
 
     def __init__(
@@ -248,7 +250,7 @@ class EvaluationPkTable():
             raise ValueError(f"[evaluation pk table > get relation exists by pk moves > k] 玉の指し手で打なのはおかしい。 k_move_obj.srcloc_u:{Usi.srcloc_to_code(k_move_obj.srcloc)}  k_move_obj:{k_move_obj.dump()}")
 
         return self.get_relation_exists_by_index(
-                kp_index=EvaluationPkTable.get_index_of_pk_table(
+                kp_index=EvaluationPkTable.get_black_p_black_k_index(
                     p_move_obj=p_move_obj,
                     k_move_obj=k_move_obj,
                     shall_p_white_to_black=shall_p_white_to_black))
@@ -298,7 +300,7 @@ class EvaluationPkTable():
             変更が有ったか？
         """
         is_changed = self._mm_table_obj.set_bit_by_index(
-                index=EvaluationPkTable.get_index_of_pk_table(
+                index=EvaluationPkTable.get_black_p_black_k_index(
                         p_move_obj=p_move_obj,
                         k_move_obj=k_move_obj,
                     shall_p_white_to_black=shall_p_white_to_black),
@@ -334,14 +336,14 @@ class EvaluationPkTable():
         relations = {}
 
         for k_move_u in k_move_u_set:
-            pk_index = EvaluationPkTable.get_index_of_pk_table(
+            black_p_black_k_index = EvaluationPkTable.get_black_p_black_k_index(
                 p_move_obj=p_move_obj,
                 k_move_obj=Move.from_usi(k_move_u),
                 shall_p_white_to_black=p_turn==cshogi.WHITE)
 
             relation_bit = self.get_relation_exists_by_index(
-                    pk_index=pk_index)
+                    pk_index=black_p_black_k_index)
 
-            relations[pk_index] = relation_bit
+            relations[black_p_black_k_index] = relation_bit
 
         return relations

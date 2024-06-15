@@ -72,7 +72,7 @@ class EvaluationEdit():
 
         # assert
         for fl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
-            assert_black_p_move_obj, assert_white_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
+            assert_black_p_move_obj, assert_white_l_move_obj = EvaluationPkTable.build_black_p_k_moves_by_pk_index(
                     pk_index=fl_index,
                     shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
 
@@ -335,7 +335,7 @@ class EvaluationEdit():
             # ＰＬ
             #
             for target_fl_index in target_fl_index_list:
-                black_p_move_obj, white_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
+                black_p_move_obj, white_l_move_obj = EvaluationPkTable.build_black_p_k_moves_by_pk_index(
                         pk_index=target_fl_index,
                         shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
 
@@ -459,7 +459,7 @@ class EvaluationEdit():
 
         # assert
         for fl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
-            assert_black_p_move_obj, assert_white_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
+            assert_black_p_move_obj, assert_white_l_move_obj = EvaluationPkTable.build_black_p_k_moves_by_pk_index(
                     pk_index=fl_index,
                     shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
             
@@ -688,7 +688,7 @@ class EvaluationEdit():
                 if relation_exists == 0:
 
                     # assert
-                    assert_black_p_move_obj, assert_white_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
+                    assert_black_p_move_obj, assert_white_l_move_obj = EvaluationPkTable.build_black_p_k_moves_by_pk_index(
                             pk_index=fl_index,
                             shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
 
@@ -744,7 +744,7 @@ class EvaluationEdit():
             # ＰＬ
             #
             for target_fl_index in target_fl_index_list:
-                black_p_move_obj, white_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
+                black_p_move_obj, white_l_move_obj = EvaluationPkTable.build_black_p_k_moves_by_pk_index(
                         pk_index=target_fl_index,
                         shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
 

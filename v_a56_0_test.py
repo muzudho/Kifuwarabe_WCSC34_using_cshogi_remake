@@ -91,14 +91,14 @@ def test_kk():
     l_move_obj_expected = Move.from_usi('5a5b')
     k_turn = cshogi.BLACK
 
-    kk_index = EvaluationKkTable.get_index_of_kk_table(
+    black_k_black_l_index = EvaluationKkTable.get_black_k_black_l_index(
             k_move_obj=k_move_obj_expected,
             l_move_obj=l_move_obj_expected,
             shall_k_white_to_black=k_turn==cshogi.WHITE)
 
     (k_move_obj_actual,
      l_move_obj_actual) = EvaluationKkTable.build_k_l_moves_by_kl_index(
-            kl_index=kk_index,
+            kl_index=black_k_black_l_index,
             shall_k_white_to_black=k_turn==cshogi.WHITE)
 
     if k_move_obj_expected.as_usi != k_move_obj_actual.as_usi:
@@ -116,7 +116,7 @@ def test_p():
 
         shall_p_white_to_black = True
 
-        p_index = EvaluationPMove.get_index_by_p_move(
+        p_index = EvaluationPMove.get_black_index_by_p_move(
                 p_move_obj=expected_p_move_obj,
                 shall_p_white_to_black=shall_p_white_to_black,
                 ignore_error=True)
@@ -227,50 +227,55 @@ drop_code:{drop_code}
 
 def test_pk():
     for data_set in [
-        [cshogi.BLACK, '7b7a+', '5b5a'],
-        [cshogi.WHITE, '3h3i+', '5h5i'],
+        # 着手側の手番   # 着手   # 応手   # 着手、応手ともに先手番にひっくり返したとき
+        [cshogi.BLACK, '7b7a+', '5b5a', '7b7a+', '5h5i'],
+        [cshogi.WHITE, '3h3i+', '5h5i', '7b7a+', '5h5i'],
         ]:
 
         # 着手側の手番
         f_turn = data_set[0]
 
         # 着手
-        expected_p_move_u = data_set[1]
+        input_p_move_u = data_set[1]
 
         # 応手
-        expected_k_move_u = data_set[2]
+        input_k_move_u = data_set[2]
+
+        # 着手
+        expected_black_p_move_u = data_set[3]
+
+        # 応手
+        expected_black_k_move_u = data_set[4]
 
         # 関連
         #
         #   後手では、指し手を盤上で１８０°回転させてインデックスを取得します
         #
-        pk_index = EvaluationPkTable.get_index_of_pk_table(
-                p_move_obj=Move.from_usi(expected_p_move_u),
-                k_move_obj=Move.from_usi(expected_k_move_u),
+        black_p_black_k_index = EvaluationPkTable.get_black_p_black_k_index(
+                p_move_obj=Move.from_usi(input_p_move_u),
+                k_move_obj=Move.from_usi(input_k_move_u),
+                # 着手が黒番なら、着手は先後反転せず、応手は先後反転させます
                 shall_p_white_to_black=f_turn==cshogi.WHITE)
 
         # pi_index から、指し手オブジェクトを生成します
         #
         #   １８０°回転はさせません
         #
-        (actual_p_move_obj,
-         actual_k_move_obj) = EvaluationPkTable.build_p_k_moves_by_pk_index(
-                pk_index=pk_index,
+        (remaked_black_p_move_obj,
+         remaked_black_k_move_obj) = EvaluationPkTable.build_black_p_k_moves_by_pk_index(
+                pk_index=black_p_black_k_index,
                 # （既に pk_index は１８０°回転しているので）１８０°回転はさせません
                 shall_p_white_to_black=False)
 
-        rot_actual_p_move_obj = actual_p_move_obj.rotate()
-        rot_actual_k_move_obj = actual_k_move_obj.rotate()
-
         # Ｐ
-        if (f_turn==cshogi.BLACK and expected_p_move_u != actual_p_move_obj.as_usi) or (f_turn==cshogi.WHITE and expected_p_move_u != rot_actual_p_move_obj.as_usi):
-            raise ValueError(f"""[test pk > p] 着手は{Turn.to_string(f_turn)}  P expected:{expected_p_move_u:5}  actual:{actual_p_move_obj.as_usi:5}  rot_actual:{rot_actual_p_move_obj.as_usi:5}
+        if expected_black_p_move_u != remaked_black_p_move_obj.as_usi:
+            raise ValueError(f"""[test pk > p] 着手は{Turn.to_string(f_turn)}  P expected:{expected_black_p_move_u:5}  remaked:{remaked_black_p_move_obj.as_usi:5}
 （指し手が１８０°ひっくり返っていないように注意）
 """)
 
         # Ｋ
-        if (f_turn==cshogi.BLACK and expected_k_move_u != actual_k_move_obj.as_usi) or (f_turn==cshogi.WHITE and expected_k_move_u != rot_actual_k_move_obj.as_usi):
-            raise ValueError(f"""[test pk > k] 着手は{Turn.to_string(f_turn)}  K expected:{expected_k_move_u:5}  actual:{actual_k_move_obj.as_usi:5}  rot_actual:{rot_actual_k_move_obj.as_usi:5}
+        if expected_black_k_move_u != remaked_black_k_move_obj.as_usi:
+            raise ValueError(f"""[test pk > k] 着手は{Turn.to_string(f_turn)}  K expected:{expected_black_k_move_u:5}  actual:{remaked_black_k_move_obj.as_usi:5}
 （指し手が１８０°ひっくり返っていないように注意）
 """)
 

@@ -368,8 +368,9 @@ class EvaluationPMove():
         return 3813
 
 
+    #get_index_by_p_move
     @staticmethod
-    def get_index_by_p_move(
+    def get_black_index_by_p_move(
             p_move_obj,
             shall_p_white_to_black,
             ignore_error=False):

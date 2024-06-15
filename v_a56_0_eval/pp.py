@@ -10,9 +10,9 @@ from v_a56_0_misc.lib import FileName, Turn, Move, EvalutionMmTable
 class EvaluationPpTable():
     """ＰＰ評価値テーブル"""
 
-
+    #get_index_of_pp_table
     @staticmethod
-    def get_index_of_pp_table(
+    def get_black_p1_black_p2_index(
             p1_move_obj,
             p2_move_obj,
             shall_p1_white_to_black):
@@ -32,8 +32,8 @@ class EvaluationPpTable():
         shall_p2_white_to_black = not shall_p1_white_to_black
 
         try:
-            # 0 ～ 14_542_781 =                                                                 0 ～ 3812 *                                     3813 +                                                                0 ～ 3812
-            pp_index         = EvaluationPMove.get_index_by_p_move(p1_move_obj, shall_p1_white_to_black) * EvaluationPMove.get_serial_number_size() + EvaluationPMove.get_index_by_p_move(p2_move_obj, shall_p2_white_to_black)
+            # 0 ～ 14_542_781 =                                                                       0 ～ 3812 *                                     3813 +                                                                      0 ～ 3812
+            pp_index         = EvaluationPMove.get_black_index_by_p_move(p1_move_obj, shall_p1_white_to_black) * EvaluationPMove.get_serial_number_size() + EvaluationPMove.get_black_index_by_p_move(p2_move_obj, shall_p2_white_to_black)
 
         except KeyError:
             print(f"""[evaluation pp table > get index of pp table] エラー
@@ -217,7 +217,7 @@ p2_move_obj:{p2_move_obj.as_usi:5}
             0 or 1
         """
         return self.get_relation_exists_by_index(
-                kp_index=EvaluationPpTable.get_index_of_pp_table(
+                kp_index=EvaluationPpTable.get_black_p1_black_p2_index(
                     p1_move_obj=p1_move_obj,
                     p2_move_obj=p2_move_obj,
                     shall_p1_white_to_black=is_rotate))
@@ -269,7 +269,7 @@ p2_move_obj:{p2_move_obj.as_usi:5}
             変更が有ったか？
         """
         is_changed = self._mm_table_obj.set_bit_by_index(
-                index=EvaluationPpTable.get_index_of_pp_table(
+                index=EvaluationPpTable.get_black_p1_black_p2_index(
                     p1_move_obj=p1_move_obj,
                     p2_move_obj=p2_move_obj,
                     shall_p1_white_to_black=shall_p1_white_to_black),
@@ -305,7 +305,7 @@ p2_move_obj:{p2_move_obj.as_usi:5}
         relations = {}
 
         for p2_move_u in p2_move_u_set:
-            pp_index = EvaluationPpTable.get_index_of_pp_table(
+            pp_index = EvaluationPpTable.get_black_p1_black_p2_index(
                 p1_move_obj=p1_move_obj,
                 p2_move_obj=Move.from_usi(p2_move_u),
                 shall_p1_white_to_black=p1_turn==cshogi.WHITE)
