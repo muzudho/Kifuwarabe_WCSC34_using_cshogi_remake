@@ -794,7 +794,7 @@ class Kifuwarabe():
             # ＰＬ
             for pl_index, relation_exists in pl_index_to_relation_exists_dictionary.items():
 
-                display_black_p_move_obj, display_black_l_move_obj = EvaluationPkTable.build_black_p_k_moves_by_pk_index(
+                display_black_p_move_obj, display_black_l_move_obj = EvaluationPkTable.build_black_p_black_k_moves_by_black_p_black_k_index(
                         pk_index=pl_index,
                         shall_p_white_to_black=self._board.turn==cshogi.WHITE)
 

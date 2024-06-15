@@ -85,8 +85,9 @@ class EvaluationPkTable():
 
     # destructure_pk_index
     # build_p_k_moves_by_pk_index
+    # build_black_p_k_moves_by_pk_index
     @staticmethod
-    def build_black_p_k_moves_by_pk_index(
+    def build_black_p_black_k_moves_by_black_p_black_k_index(
             pk_index,
             shall_p_white_to_black):
         """ＰＫインデックス分解
