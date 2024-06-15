@@ -776,9 +776,7 @@ class Kifuwarabe():
             for black_k_black_l_index, relation_exists in black_k_black_l_index_to_relation_exists_dictionary.items():
 
                 black_k_move_obj, black_l_move_obj = EvaluationKkTable.build_black_k_black_l_moves_by_black_k_black_l_index(
-                        black_k_black_l_index=black_k_black_l_index,
-                        shall_k_white_to_black=self._board.turn==cshogi.WHITE,
-                        shall_l_white_to_black=self._board.turn==cshogi.BLACK)
+                        black_k_black_l_index=black_k_black_l_index)
 
                 print(f"  turn:{Turn.to_string(self._board.turn)}  black_k_black_l_index:{black_k_black_l_index:7}  K:{black_k_move_obj.as_usi:5}  L:{black_l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
@@ -805,10 +803,7 @@ class Kifuwarabe():
             for black_p_black_q_index, relation_exists in black_p_black_q_index_to_relation_exists_dictionary.items():
 
                 display_black_p_move_obj, display_black_q_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
-                        pq_index=black_p_black_q_index,
-                        # black_p_black_q_index は両方先手のインデックスなので、これ以上変更しません
-                        shall_p1_white_to_black=False,
-                        shall_p2_white_to_black=False)
+                        black_p1_black_p2_index=black_p_black_q_index)
 
                 print(f"  turn:{Turn.to_string(self._board.turn)}  black_p_black_q_index:{black_p_black_q_index:7}  P:{display_black_p_move_obj.as_usi:5}  Q:{display_black_q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 

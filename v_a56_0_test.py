@@ -99,9 +99,7 @@ def test_kk():
 
     (black_k_move_obj_actual,
      black_l_move_obj_actual) = EvaluationKkTable.build_black_k_black_l_moves_by_black_k_black_l_index(
-            black_k_black_l_index=black_k_black_l_index,
-            shall_k_white_to_black=k_turn==cshogi.WHITE,
-            shall_l_white_to_black=k_turn==cshogi.BLACK)
+            black_k_black_l_index=black_k_black_l_index)
 
     if k_move_obj_expected.as_usi != black_k_move_obj_actual.as_usi:
         raise ValueError(f"not match. k_turn:{Turn.to_string(k_turn)} K expected:`{k_move_obj_expected.as_usi}`  actual:`{black_k_move_obj_actual.as_usi}`")

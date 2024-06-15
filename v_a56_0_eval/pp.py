@@ -15,7 +15,8 @@ class EvaluationPpTable():
     def get_black_p1_black_p2_index(
             p1_move_obj,
             p2_move_obj,
-            shall_p1_white_to_black):
+            shall_p1_white_to_black,
+            shall_p2_white_to_black):
         """ＰＫ評価値テーブルのインデックスを算出
 
         Parameters
@@ -26,10 +27,9 @@ class EvaluationPpTable():
             兵２の応手
         shall_p1_white_to_black : bool
             評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
+        shall_p2_white_to_black : bool
+            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
         """
-
-        # 評価値テーブルは先手用の形だ。着手と応手のどちらかは後手なので、後手番は１８０°回転させる必要がある
-        shall_p2_white_to_black = not shall_p1_white_to_black
 
         try:
             # 0 ～ 14_542_781 =                                                                       0 ～ 3812 *                                     3813 +                                                                      0 ～ 3812
@@ -53,9 +53,7 @@ p2_move_obj:{p2_move_obj.as_usi:5}
     #build_p_p_moves_by_pp_index
     @staticmethod
     def build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
-            pp_index,
-            shall_p1_white_to_black,
-            shall_p2_white_to_black):
+            black_p1_black_p2_index):
         """ＰＰインデックス分解
 
         Parameter
@@ -69,13 +67,13 @@ p2_move_obj:{p2_move_obj.as_usi:5}
 
         Returns
         -------
-        - p1_move_obj : Move
+        - black_p1_move_obj : Move
             兵１の着手
-        - p2_move_obj : Move
+        - black_p2_move_obj : Move
             兵２の応手
         """
 
-        rest = pp_index
+        rest = black_p1_black_p2_index
 
         p2_index = rest % EvaluationPMove.get_serial_number_size()
         rest //= EvaluationPMove.get_serial_number_size()
@@ -96,26 +94,26 @@ p2_move_obj:{p2_move_obj.as_usi:5}
          p2_dstsq,
          p2_promote) = EvaluationPMove.destructure_srcloc_dstsq_promoted_by_p_index(
                 p_index=p2_index)
-        p2_move_obj = Move.from_src_dst_pro(
+        black_p2_move_obj = Move.from_src_dst_pro(
                 srcloc=p2_srcloc,
                 dstsq=p2_dstsq,
                 promoted=p2_promote,
-                # 評価値テーブルは先手用の形なので、後手番は１８０°回転させる必要がある
-                is_rotate=shall_p2_white_to_black)
+                # 先手のインデックスが渡されるので、先手に揃えるために指し手を回転させる必要はありません
+                is_rotate=False)
 
         # Ｐ１
         (p1_srcloc,
          p1_dstsq,
          p1_promote) = EvaluationPMove.destructure_srcloc_dstsq_promoted_by_p_index(
                 p_index=p1_index)
-        p1_move_obj = Move.from_src_dst_pro(
+        black_p1_move_obj = Move.from_src_dst_pro(
                 srcloc=p1_srcloc,
                 dstsq=p1_dstsq,
                 promoted=p1_promote,
-                # 評価値テーブルは先手用の形なので、後手番は１８０°回転させる必要がある
-                is_rotate=shall_p1_white_to_black)
+                # 先手のインデックスが渡されるので、先手に揃えるために指し手を回転させる必要はありません
+                is_rotate=False)
 
-        return (p1_move_obj, p2_move_obj)
+        return (black_p1_move_obj, black_p2_move_obj)
 
 
     def __init__(
@@ -203,7 +201,8 @@ p2_move_obj:{p2_move_obj.as_usi:5}
             self,
             p1_move_obj,
             p2_move_obj,
-            is_rotate):
+            shall_p1_white_to_black,
+            shall_p2_white_to_black):
         """兵と兵の指し手を受け取って、関係の有無を返します
 
         Parameters
@@ -212,7 +211,7 @@ p2_move_obj:{p2_move_obj.as_usi:5}
             兵１の指し手
         p2_move_obj : Move
             兵２の指し手
-        is_rotate : bool
+        shall_p1_white_to_black : bool
             後手なら真。指し手を１８０°回転させます
 
         Returns
@@ -224,7 +223,8 @@ p2_move_obj:{p2_move_obj.as_usi:5}
                 black_k_black_p_index=EvaluationPpTable.get_black_p1_black_p2_index(
                     p1_move_obj=p1_move_obj,
                     p2_move_obj=p2_move_obj,
-                    shall_p1_white_to_black=is_rotate))
+                    shall_p1_white_to_black=shall_p1_white_to_black,
+                    shall_p2_white_to_black=shall_p2_white_to_black))
 
 
     def get_relation_exists_by_index(
@@ -251,6 +251,7 @@ p2_move_obj:{p2_move_obj.as_usi:5}
             p1_move_obj,
             p2_move_obj,
             shall_p1_white_to_black,
+            shall_p2_white_to_black,
             bit):
         """玉の着手と兵の応手を受け取って、関係の有無を設定します
 
@@ -261,6 +262,8 @@ p2_move_obj:{p2_move_obj.as_usi:5}
         p2_move_obj : Move
             兵２の応手
         shall_p1_white_to_black : bool
+            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
+        shall_p2_white_to_black : bool
             評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
         bit : int
             0 か 1
@@ -276,7 +279,8 @@ p2_move_obj:{p2_move_obj.as_usi:5}
                 index=EvaluationPpTable.get_black_p1_black_p2_index(
                     p1_move_obj=p1_move_obj,
                     p2_move_obj=p2_move_obj,
-                    shall_p1_white_to_black=shall_p1_white_to_black),
+                    shall_p1_white_to_black=shall_p1_white_to_black,
+                    shall_p2_white_to_black=shall_p2_white_to_black),
                 bit=bit)
 
         return is_changed
@@ -287,7 +291,8 @@ p2_move_obj:{p2_move_obj.as_usi:5}
             self,
             p1_move_obj,
             p2_move_u_set,
-            p1_turn):
+            shall_p1_white_to_black,
+            shall_p2_white_to_black):
         """兵１の指し手と、兵２の応手のリストを受け取ると、すべての関係の有無を辞書に入れて返します
         ＰＰ評価値テーブル用
 
@@ -297,8 +302,10 @@ p2_move_obj:{p2_move_obj.as_usi:5}
             兵１の着手
         p2_move_u_set : List<str>
             兵２の応手のリスト
-        p1_turn : int
-            着手側の手番
+        shall_p1_white_to_black : bool
+            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
+        shall_p2_white_to_black : bool
+            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
 
         Returns
         -------
@@ -313,7 +320,8 @@ p2_move_obj:{p2_move_obj.as_usi:5}
             black_p1_black_p2_index = EvaluationPpTable.get_black_p1_black_p2_index(
                 p1_move_obj=p1_move_obj,
                 p2_move_obj=Move.from_usi(p2_move_u),
-                shall_p1_white_to_black=p1_turn==cshogi.WHITE)
+                shall_p1_white_to_black=shall_p1_white_to_black,
+                shall_p2_white_to_black=shall_p2_white_to_black)
 
             relation_bit = self.get_relation_exists_by_index(
                     black_p1_black_p2_index=black_p1_black_p2_index)

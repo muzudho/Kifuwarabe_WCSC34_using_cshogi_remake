@@ -98,10 +98,7 @@ class EvaluationEdit():
         # assert
         for black_f_black_q_index, relation_exists in black_f_black_q_index_to_relation_exists_dictionary.items():
             assert_black_p_move_obj, assert_black_q_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
-                    pp_index=black_f_black_q_index,
-                    # black_f_black_q_index は両方先手のインデックスなので、これ以上変更しません
-                    shall_p1_white_to_black=False,
-                    shall_p2_white_to_black=False)
+                    black_p1_black_p2_index=black_f_black_q_index)
 
             # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
             if self._kifuwarabe.board.turn==cshogi.BLACK:
@@ -202,9 +199,7 @@ class EvaluationEdit():
             #
             for target_black_f_black_l_index in target_black_f_black_l_index_list:
                 black_k_move_obj, black_l_move_obj = EvaluationKkTable.build_black_k_black_l_moves_by_black_k_black_l_index(
-                        black_k_black_l_index=target_black_f_black_l_index,
-                        shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
-                        shall_l_white_to_black=self._kifuwarabe.board.turn==cshogi.BLACK)
+                        black_k_black_l_index=target_black_f_black_l_index)
 
                 # assert
                 if Usi.is_drop_by_srcloc(black_k_move_obj.srcloc):
@@ -379,10 +374,7 @@ class EvaluationEdit():
             #
             for target_black_f_black_q_index in target_black_f_black_q_index_list:
                 black_p_move_obj, black_q_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
-                        pp_index=target_black_f_black_q_index,
-                        # target_black_f_black_q_index は両方先手のインデックスなので、これ以上変更しません
-                        shall_p1_white_to_black=False,
-                        shall_p2_white_to_black=False)
+                        black_p1_black_p2_index=target_black_f_black_q_index)
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                 if self._kifuwarabe.board.turn==cshogi.BLACK:
@@ -409,7 +401,9 @@ class EvaluationEdit():
                 is_changed_temp = self._kifuwarabe._evaluation_pq_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exists_by_pp_moves(
                         p1_move_obj=black_p_move_obj,
                         p2_move_obj=black_q_move_obj,
-                        shall_p1_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
+                        # 既に先手の指し手なので、先手に合わせるために回転させる必要はありません
+                        shall_p1_white_to_black=False,
+                        shall_p2_white_to_black=False,
                         bit=0)
 
                 if is_changed_temp:
@@ -488,10 +482,7 @@ class EvaluationEdit():
         # assert
         for black_f_black_q_index, relation_exists in black_f_black_q_index_to_relation_exists_dictionary.items():
             assert_black_p_move_obj, assert_black_q_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
-                    pp_index=black_f_black_q_index,
-                    # black_f_black_q_index は両方先手のインデックスなので、これ以上変更しません
-                    shall_p1_white_to_black=False,
-                    shall_p2_white_to_black=False)
+                    black_p1_black_p2_index=black_f_black_q_index)
             
             # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
             if self._kifuwarabe.board.turn==cshogi.BLACK:
@@ -591,9 +582,7 @@ class EvaluationEdit():
             #
             for target_black_f_black_l_index in target_black_f_black_l_index_list:
                 black_k_move_obj, black_l_move_obj = EvaluationKkTable.build_black_k_black_l_moves_by_black_k_black_l_index(
-                        black_k_black_l_index=target_black_f_black_l_index,
-                        shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
-                        shall_l_white_to_black=self._kifuwarabe.board.turn==cshogi.BLACK)
+                        black_k_black_l_index=target_black_f_black_l_index)
 
                 # assert
                 if Usi.is_drop_by_srcloc(black_k_move_obj.srcloc):
@@ -792,10 +781,7 @@ class EvaluationEdit():
             #
             for target_black_f_black_q_index in target_black_f_black_q_index_list:
                 black_p_move_obj, black_q_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
-                        pp_index=target_black_f_black_q_index,
-                        # target_black_f_black_q_index は両方先手のインデックスなので、これ以上変更しません
-                        shall_p1_white_to_black=False,
-                        shall_p2_white_to_black=False)
+                        black_p1_black_p2_index=target_black_f_black_q_index)
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                 if self._kifuwarabe.board.turn==cshogi.BLACK:
@@ -822,8 +808,10 @@ class EvaluationEdit():
 
                 is_changed_temp = self._kifuwarabe._evaluation_pq_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exists_by_pp_moves(
                         p1_move_obj=black_p_move_obj,
-                        p2_move_obj=white_q_move_obj,
-                        shall_p1_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
+                        p2_move_obj=black_q_move_obj,
+                        # 既に先手の指し手なので、先手に合わせるために回転させる必要はありません
+                        shall_p1_white_to_black=False,
+                        shall_p2_white_to_black=False,
                         bit=1)
 
                 if is_changed_temp:
