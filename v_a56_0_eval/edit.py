@@ -77,7 +77,7 @@ class EvaluationEdit():
 
             # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
             if self._kifuwarabe.board.turn==cshogi.BLACK:
-                if assert_black_p_move_obj.as_usi != move_u:
+                if move_u != assert_black_p_move_obj.as_usi:
                     # FIXME Rotate でも絡んでいる不具合か？
                     # [2024-06-14 00:23:32.615808] [weaken > fl] 着手が変わっているエラー  p_move_obj.as_usi:7f3c  move_u:4c3c
                     raise ValueError(f"""[{datetime.datetime.now()}] [weaken > fl] 着手が変わっているエラー
@@ -111,7 +111,7 @@ class EvaluationEdit():
 
             # 着手が後手なら、１８０°回転
             else:
-                if move_obj.rotate().as_usi != assert_black_p_move_obj:
+                if move_obj.rotate().as_usi != assert_black_p_move_obj.as_usi:
                     raise ValueError(f"""[{datetime.datetime.now()}] [weaken > fq] 指し手を先手の向きに変えて復元できなかったエラー
                                  元の指し手を１８０°回転:{move_obj.rotate().as_usi}
                                                  手番:{Turn.to_string(self._kifuwarabe.board.turn)}
@@ -357,7 +357,7 @@ class EvaluationEdit():
                 if is_debug and DebugPlan.evaluation_edit_weaken:
                     print(f"[{datetime.datetime.now()}] [weaken > pl] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  pl_index:{target_black_f_black_l_index:7}  P:{black_p_move_obj.as_usi:5}  L:{black_l_move_obj.as_usi:5}  remove relation")
 
-                is_changed_temp = self._kifuwarabe._evaluation_pk_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exsits_by_pk_moves(
+                is_changed_temp = self._kifuwarabe._evaluation_pl_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exists_by_pk_moves(
                         k_move_obj=black_p_move_obj,
                         l_move_obj=black_l_move_obj,
                         k_turn=self._kifuwarabe.board.turn,
@@ -385,7 +385,7 @@ class EvaluationEdit():
 
                 # 着手が後手なら、１８０°回転
                 else:
-                    if move_obj.rotate().as_usi == black_p_move_obj.as_usi:
+                    if move_obj.rotate().as_usi != black_p_move_obj.as_usi:
                         raise ValueError(f"""[{datetime.datetime.now()}] [weaken > pq] 指し手を先手の向きに変えて復元できなかったエラー
                                  元の指し手を１８０°回転（Ｐ）:{move_obj.rotate().as_usi}
                                                  手番（Ｐ）:{Turn.to_string(self._kifuwarabe.board.turn)}
