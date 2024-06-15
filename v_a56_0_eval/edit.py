@@ -19,18 +19,14 @@ class EvaluationEdit():
 
     def __init__(
             self,
-            board,
             kifuwarabe):
         """初期化
 
         Parameters
         ----------
-        board : cshogi.Board
-            現局面
         kifuwarabe : Kifuwarabe
             きふわらべ
         """
-        self._board=board
         self._kifuwarabe=kifuwarabe
 
 
@@ -70,34 +66,35 @@ class EvaluationEdit():
          # 関係の総数
          total_of_relation) = ChoiceBestMove.get_summary(
                 move_obj=move_obj,
-                board=self._board,
+                board=self._kifuwarabe.board,
                 kifuwarabe=self._kifuwarabe,
                 is_debug=is_debug)
 
         # assert
         for fl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
-            assert_p_move_obj, assert_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
+            assert_black_p_move_obj, assert_white_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
                     pk_index=fl_index,
-                    shall_p_white_to_black=self._board.turn==cshogi.WHITE)
-            if assert_p_move_obj.as_usi != move_u:
+                    shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
+            if (self._kifuwarabe.board.turn==cshogi.BLACK and assert_black_p_move_obj.as_usi != move_u) or (self._kifuwarabe.board.turn==cshogi.BLACK and assert_black_p_move_obj.rotate().as_usi != move_u):
                 # FIXME Rotate でも絡んでいる不具合か？
                 # [2024-06-14 00:23:32.615808] [weaken > fl] 着手が変わっているエラー  p_move_obj.as_usi:7f3c  move_u:4c3c
                 raise ValueError(f"""[{datetime.datetime.now()}] [weaken > fl] 着手が変わっているエラー
-                                           手番:{Turn.to_string(self._board.turn)}
+                                           手番:{Turn.to_string(self._kifuwarabe.board.turn)}
                                       元の指し手:{move_u}
-１回インデックスに変換し、インデックスから指し手を復元:{assert_p_move_obj.as_usi}
+１回インデックスに変換し、インデックスから指し手を復元:{assert_black_p_move_obj.as_usi}
 """)
 
         # assert
         for fq_index, relation_exists in fq_index_to_relation_exists_dictionary.items():
-            assert_p_move_obj, assert_q_move_obj = EvaluationPpTable.build_p_p_moves_by_pp_index(
+            assert_black_p_move_obj, assert_white_q_move_obj = EvaluationPpTable.build_p_p_moves_by_pp_index(
                     pp_index=fq_index,
-                    shall_p1_white_to_black=self._board.turn==cshogi.WHITE)
-            if assert_p_move_obj.as_usi != move_u:
+                    shall_p1_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
+
+            if (self._kifuwarabe.board.turn==cshogi.BLACK and assert_black_p_move_obj.as_usi != move_u) or (self._kifuwarabe.board.turn==cshogi.BLACK and assert_black_p_move_obj.rotate().as_usi != move_u):
                 raise ValueError(f"""[{datetime.datetime.now()}] [weaken > fq] 着手が変わっているエラー
-                                           手番:{Turn.to_string(self._board.turn)}
+                                           手番:{Turn.to_string(self._kifuwarabe.board.turn)}
                                       元の指し手:{move_u}
-１回インデックスに変換し、インデックスから指し手を復元:{assert_p_move_obj.as_usi}
+１回インデックスに変換し、インデックスから指し手を復元:{assert_black_p_move_obj.as_usi}
 """)
 
         # 減らすものがないので、弱化は不要です
@@ -179,34 +176,34 @@ class EvaluationEdit():
             # ＫＬ
             #
             for target_fl_index in target_fl_index_list:
-                k_move_obj, l_move_obj = EvaluationKkTable.build_k_l_moves_by_kl_index(
+                black_k_move_obj, white_l_move_obj = EvaluationKkTable.build_k_l_moves_by_kl_index(
                         kl_index=target_fl_index,
-                        shall_k_white_to_black=self._board.turn==cshogi.WHITE)
+                        shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
 
                 # assert
-                if Usi.is_drop_by_srcloc(k_move_obj.srcloc):
-                    raise ValueError(f"[evaluation edit > weaken > k] 玉の指し手で打なのはおかしい。 k_move_obj.srcloc_u:{Usi.srcloc_to_code(k_move_obj.srcloc)}  k_move_obj:{k_move_obj.dump()}")
+                if Usi.is_drop_by_srcloc(black_k_move_obj.srcloc):
+                    raise ValueError(f"[evaluation edit > weaken > k] 玉の指し手で打なのはおかしい。 black_k_move_obj.srcloc_u:{Usi.srcloc_to_code(black_k_move_obj.srcloc)}  black_k_move_obj:{black_k_move_obj.dump()}")
 
                 # assert
-                if Usi.is_drop_by_srcloc(l_move_obj.srcloc):
-                    raise ValueError(f"[evaluation edit > weaken > l] 玉の指し手で打なのはおかしい。 l_move_obj.srcloc_u:{Usi.srcloc_to_code(l_move_obj.srcloc)}  l_move_obj:{l_move_obj.dump()}")
+                if Usi.is_drop_by_srcloc(white_l_move_obj.srcloc):
+                    raise ValueError(f"[evaluation edit > weaken > l] 玉の指し手で打なのはおかしい。 white_l_move_obj.srcloc_u:{Usi.srcloc_to_code(white_l_move_obj.srcloc)}  white_l_move_obj:{white_l_move_obj.dump()}")
 
                 # assert
-                if k_move_obj.as_usi != move_u:
+                if (self._kifuwarabe.board.turn==cshogi.BLACK and black_k_move_obj.as_usi != move_u) or (self._kifuwarabe.board.turn==cshogi.BLACK and black_k_move_obj.rotate().as_usi != move_u):
                     raise ValueError(f"""[{datetime.datetime.now()}] [weaken > kl] 着手が変わっているエラー
-                                           手番（Ｋ）:{Turn.to_string(self._board.turn)}
+                                           手番（Ｋ）:{Turn.to_string(self._kifuwarabe.board.turn)}
                                       元の指し手（Ｋ）:{move_u}
-１回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{k_move_obj.as_usi}
+１回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{black_k_move_obj.as_usi}
 """)
 
                 # デバッグ表示
                 if is_debug and DebugPlan.evaluation_edit_weaken:
-                    print(f"[{datetime.datetime.now()}] [weaken > kl] turn:{Turn.to_string(self._board.turn)}  kl_index:{target_fl_index:7}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  remove relation")
+                    print(f"[{datetime.datetime.now()}] [weaken > kl] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  kl_index:{target_fl_index:7}  K:{black_k_move_obj.as_usi:5}  L:{white_l_move_obj.as_usi:5}  remove relation")
 
-                is_changed_temp = self._kifuwarabe._evaluation_kl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_exsits_by_kl_moves(
-                        k_move_obj=k_move_obj,
-                        l_move_obj=l_move_obj,
-                        shall_k_white_to_black=self._board.turn==cshogi.WHITE,
+                is_changed_temp = self._kifuwarabe._evaluation_kl_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exsits_by_kl_moves(
+                        k_move_obj=black_k_move_obj,
+                        l_move_obj=white_l_move_obj,
+                        shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
                         bit=0)
 
                 if is_changed_temp:
@@ -217,26 +214,26 @@ class EvaluationEdit():
             # ＫＱ
             #
             for target_fq_index in target_fq_index_list:
-                k_move_obj, q_move_obj = EvaluationKpTable.build_k_p_moves_by_kp_index(
+                black_k_move_obj, white_q_move_obj = EvaluationKpTable.build_k_p_moves_by_kp_index(
                         kp_index=target_fq_index,
-                        shall_k_white_to_black=self._board.turn==cshogi.WHITE)
+                        shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
 
                 # assert
-                if k_move_obj.as_usi != move_u:
+                if (self._kifuwarabe.board.turn==cshogi.BLACK and black_k_move_obj.as_usi != move_u) or (self._kifuwarabe.board.turn==cshogi.BLACK and black_k_move_obj.rotate().as_usi != move_u):
                     raise ValueError(f"""[{datetime.datetime.now()}] [weaken > kq] 着手が変わっているエラー
-                                           手番（Ｋ）:{Turn.to_string(self._board.turn)}
+                                           手番（Ｋ）:{Turn.to_string(self._kifuwarabe.board.turn)}
                                      元の指し手（Ｋ）:{move_u}
-１回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{k_move_obj.as_usi}
+１回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{black_k_move_obj.as_usi}
 """)
 
                 # デバッグ表示
                 if is_debug and DebugPlan.evaluation_edit_weaken:
-                    print(f"[{datetime.datetime.now()}] [weaken > kq] turn:{Turn.to_string(self._board.turn)}  kq_index:{target_fq_index:7}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  remove relation")
+                    print(f"[{datetime.datetime.now()}] [weaken > kq] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  kq_index:{target_fq_index:7}  K:{black_k_move_obj.as_usi:5}  Q:{white_q_move_obj.as_usi:5}  remove relation")
 
-                is_changed_temp = self._kifuwarabe._evaluation_kq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_exists_by_kp_moves(
-                        k_move_obj=k_move_obj,
-                        p_move_obj=q_move_obj,
-                        shall_k_white_to_black=self._board.turn==cshogi.WHITE,
+                is_changed_temp = self._kifuwarabe._evaluation_kq_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exists_by_kp_moves(
+                        k_move_obj=black_k_move_obj,
+                        p_move_obj=white_q_move_obj,
+                        shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
                         bit=0)
 
                 if is_changed_temp:
@@ -294,26 +291,26 @@ class EvaluationEdit():
             # ＰＬ
             #
             for target_fl_index in target_fl_index_list:
-                p_move_obj, l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
+                black_p_move_obj, white_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
                         pk_index=target_fl_index,
-                        shall_p_white_to_black=self._board.turn==cshogi.WHITE)
+                        shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
 
                 # assert
-                if p_move_obj.as_usi != move_u:
+                if (self._kifuwarabe.board.turn==cshogi.BLACK and black_p_move_obj.as_usi != move_u) or (self._kifuwarabe.board.turn==cshogi.BLACK and black_p_move_obj.rotate().as_usi != move_u):
                     raise ValueError(f"""[{datetime.datetime.now()}] [weaken > pl] 着手が変わっているエラー
-                                           手番（Ｐ）:{Turn.to_string(self._board.turn)}
+                                           手番（Ｐ）:{Turn.to_string(self._kifuwarabe.board.turn)}
                                       元の指し手（Ｐ）:{move_u}
-１回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{p_move_obj.as_usi}
+１回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{black_p_move_obj.as_usi}
 """)
 
                 # デバッグ表示
                 if is_debug and DebugPlan.evaluation_edit_weaken:
-                    print(f"[{datetime.datetime.now()}] [weaken > pl] turn:{Turn.to_string(self._board.turn)}  pl_index:{target_fl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  remove relation")
+                    print(f"[{datetime.datetime.now()}] [weaken > pl] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  pl_index:{target_fl_index:7}  P:{black_p_move_obj.as_usi:5}  L:{white_l_move_obj.as_usi:5}  remove relation")
 
-                is_changed_temp = self._kifuwarabe._evaluation_pk_table_obj_array[Turn.to_index(self._board.turn)].set_relation_exsits_by_pk_moves(
-                        k_move_obj=p_move_obj,
-                        l_move_obj=l_move_obj,
-                        k_turn=self._board.turn,
+                is_changed_temp = self._kifuwarabe._evaluation_pk_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exsits_by_pk_moves(
+                        k_move_obj=black_p_move_obj,
+                        l_move_obj=white_l_move_obj,
+                        k_turn=self._kifuwarabe.board.turn,
                         bit=1)
 
                 if is_changed_temp:
@@ -324,26 +321,26 @@ class EvaluationEdit():
             # ＰＱ
             #
             for target_fq_index in target_fq_index_list:
-                p_move_obj, q_move_obj = EvaluationPpTable.build_p_p_moves_by_pp_index(
+                black_p_move_obj, white_q_move_obj = EvaluationPpTable.build_p_p_moves_by_pp_index(
                         pp_index=target_fq_index,
-                        shall_p1_white_to_black=self._board.turn==cshogi.WHITE)
+                        shall_p1_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
 
                 # assert
-                if p_move_obj.as_usi != move_u:
+                if (self._kifuwarabe.board.turn==cshogi.BLACK and black_p_move_obj.as_usi != move_u) or (self._kifuwarabe.board.turn==cshogi.BLACK and black_p_move_obj.rotate().as_usi != move_u):
                     raise ValueError(f"""[{datetime.datetime.now()}] [weaken > pq] 着手が変わっているエラー
-                                           手番（Ｐ）:{Turn.to_string(self._board.turn)}
+                                           手番（Ｐ）:{Turn.to_string(self._kifuwarabe.board.turn)}
                                       元の指し手（Ｐ）:{move_u}
-１回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{p_move_obj.as_usi}
+１回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{black_p_move_obj.as_usi}
 """)
 
                 # デバッグ表示
                 if is_debug and DebugPlan.evaluation_edit_weaken:
-                    print(f"[{datetime.datetime.now()}] [weaken > pq] turn:{Turn.to_string(self._board.turn)}  pq_index:{target_fq_index:7}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  remove relation")
+                    print(f"[{datetime.datetime.now()}] [weaken > pq] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  pq_index:{target_fq_index:7}  P:{black_p_move_obj.as_usi:5}  Q:{white_q_move_obj.as_usi:5}  remove relation")
 
-                is_changed_temp = self._kifuwarabe._evaluation_pq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_exists_by_pp_moves(
-                        p1_move_obj=p_move_obj,
-                        p2_move_obj=q_move_obj,
-                        shall_p1_white_to_black=self._board.turn==cshogi.WHITE,
+                is_changed_temp = self._kifuwarabe._evaluation_pq_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exists_by_pp_moves(
+                        p1_move_obj=black_p_move_obj,
+                        p2_move_obj=white_q_move_obj,
+                        shall_p1_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
                         bit=0)
 
                 if is_changed_temp:
@@ -392,32 +389,32 @@ class EvaluationEdit():
          # 関係の総数
          total_of_relation) = ChoiceBestMove.get_summary(
                 move_obj=move_obj,
-                board=self._board,
+                board=self._kifuwarabe.board,
                 kifuwarabe=self._kifuwarabe,
                 is_debug=is_debug)
 
         # assert
         for fl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
-            assert_p_move_obj, assert_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
+            assert_black_p_move_obj, assert_white_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
                     pk_index=fl_index,
-                    shall_p_white_to_black=self._board.turn==cshogi.WHITE)
-            if assert_p_move_obj.as_usi != move_u:
+                    shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
+            if (self._kifuwarabe.board.turn==cshogi.BLACK and assert_black_p_move_obj.as_usi != move_u) or (self._kifuwarabe.board.turn==cshogi.BLACK and assert_black_p_move_obj.rotate().as_usi != move_u):
                 raise ValueError(f"""[{datetime.datetime.now()}] [strengthen > fl] 着手が変わっているエラー
-                                           手番（Ｐ）:{Turn.to_string(self._board.turn)}
+                                           手番（Ｐ）:{Turn.to_string(self._kifuwarabe.board.turn)}
                                       元の指し手（Ｐ）:{move_u}
-１回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_p_move_obj.as_usi}
+１回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_black_p_move_obj.as_usi}
 """)
 
         # assert
         for fq_index, relation_exists in fq_index_to_relation_exists_dictionary.items():
-            assert_p_move_obj, assert_q_move_obj = EvaluationPpTable.build_p_p_moves_by_pp_index(
+            assert_black_p_move_obj, assert_white_q_move_obj = EvaluationPpTable.build_p_p_moves_by_pp_index(
                     pp_index=fq_index,
-                    shall_p1_white_to_black=self._board.turn==cshogi.WHITE)
-            if assert_p_move_obj.as_usi != move_u:
+                    shall_p1_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
+            if (self._kifuwarabe.board.turn==cshogi.BLACK and assert_black_p_move_obj.as_usi != move_u) or (self._kifuwarabe.board.turn==cshogi.BLACK and assert_black_p_move_obj.rotate().as_usi != move_u):
                 raise ValueError(f"""[{datetime.datetime.now()}] [strengthen > fq] 着手が変わっているエラー
-                                           手番（Ｐ）:{Turn.to_string(self._board.turn)}
+                                           手番（Ｐ）:{Turn.to_string(self._kifuwarabe.board.turn)}
                                       元の指し手（Ｐ）:{move_u}
-１回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_p_move_obj.as_usi}
+１回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_black_p_move_obj.as_usi}
 """)
 
 
@@ -500,34 +497,34 @@ class EvaluationEdit():
             # ＫＬ
             #
             for target_fl_index in target_fl_index_list:
-                k_move_obj, l_move_obj = EvaluationKkTable.build_k_l_moves_by_kl_index(
+                black_k_move_obj, white_l_move_obj = EvaluationKkTable.build_k_l_moves_by_kl_index(
                         kl_index=target_fl_index,
-                        shall_k_white_to_black=self._board.turn==cshogi.WHITE)
+                        shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
 
                 # assert
-                if Usi.is_drop_by_srcloc(k_move_obj.srcloc):
-                    raise ValueError(f"[evaluation edit > strengthen > k] 玉の指し手で打なのはおかしい。 k_move_obj.srcloc_u:{Usi.srcloc_to_code(k_move_obj.srcloc)}  k_move_obj:{k_move_obj.dump()}")
+                if Usi.is_drop_by_srcloc(black_k_move_obj.srcloc):
+                    raise ValueError(f"[evaluation edit > strengthen > k] 玉の指し手で打なのはおかしい。 black_k_move_obj.srcloc_u:{Usi.srcloc_to_code(black_k_move_obj.srcloc)}  black_k_move_obj:{black_k_move_obj.dump()}")
 
                 # assert
-                if Usi.is_drop_by_srcloc(l_move_obj.srcloc):
-                    raise ValueError(f"[evaluation edit > strengthen > l] 玉の指し手で打なのはおかしい。 l_move_obj.srcloc_u:{Usi.srcloc_to_code(l_move_obj.srcloc)}  l_move_obj:{l_move_obj.dump()}")
+                if Usi.is_drop_by_srcloc(white_l_move_obj.srcloc):
+                    raise ValueError(f"[evaluation edit > strengthen > l] 玉の指し手で打なのはおかしい。 white_l_move_obj.srcloc_u:{Usi.srcloc_to_code(white_l_move_obj.srcloc)}  white_l_move_obj:{white_l_move_obj.dump()}")
 
                 # assert
-                if k_move_obj.as_usi != move_u:
+                if (self._kifuwarabe.board.turn==cshogi.BLACK and black_k_move_obj.as_usi != move_u) or (self._kifuwarabe.board.turn==cshogi.BLACK and black_k_move_obj.rotate().as_usi != move_u):
                     raise ValueError(f"""[{datetime.datetime.now()}] [strengthen > kl] 着手が変わっているエラー
-                                           手番（Ｋ）:{Turn.to_string(self._board.turn)}
+                                           手番（Ｋ）:{Turn.to_string(self._kifuwarabe.board.turn)}
                                       元の指し手（Ｋ）:{move_u}
-１回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{k_move_obj.as_usi}
+１回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{black_k_move_obj.as_usi}
 """)
 
                 # デバッグ表示
                 if is_debug and DebugPlan.evaluation_edit_strengthen:
-                    print(f"[{datetime.datetime.now()}] [strengthen > kl] turn:{Turn.to_string(self._board.turn)}  kl_index:{target_fl_index:7}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  remove relation")
+                    print(f"[{datetime.datetime.now()}] [strengthen > kl] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  kl_index:{target_fl_index:7}  K:{black_k_move_obj.as_usi:5}  L:{white_l_move_obj.as_usi:5}  remove relation")
 
-                is_changed_temp = self._kifuwarabe._evaluation_kl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_exsits_by_kl_moves(
-                        k_move_obj=k_move_obj,
-                        l_move_obj=l_move_obj,
-                        shall_k_white_to_black=self._board.turn==cshogi.WHITE,
+                is_changed_temp = self._kifuwarabe._evaluation_kl_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exsits_by_kl_moves(
+                        k_move_obj=black_k_move_obj,
+                        l_move_obj=white_l_move_obj,
+                        shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
                         bit=1)
 
                 if is_changed_temp:
@@ -538,26 +535,26 @@ class EvaluationEdit():
             # ＫＱ
             #
             for target_fq_index in target_fq_index_list:
-                k_move_obj, q_move_obj = EvaluationKpTable.build_k_p_moves_by_kp_index(
+                black_k_move_obj, white_q_move_obj = EvaluationKpTable.build_k_p_moves_by_kp_index(
                         kp_index=target_fq_index,
-                        shall_k_white_to_black=self._board.turn==cshogi.WHITE)
+                        shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
 
                 # assert
-                if k_move_obj.as_usi != move_u:
+                if (self._kifuwarabe.board.turn==cshogi.BLACK and black_k_move_obj.as_usi != move_u) or (self._kifuwarabe.board.turn==cshogi.BLACK and black_k_move_obj.rotate().as_usi != move_u):
                     raise ValueError(f"""[{datetime.datetime.now()}] [strengthen > kq] 着手が変わっているエラー
-                                           手番（Ｋ）:{Turn.to_string(self._board.turn)}
+                                           手番（Ｋ）:{Turn.to_string(self._kifuwarabe.board.turn)}
                                       元の指し手（Ｋ）:{move_u}
-１回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{k_move_obj.as_usi}
+１回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{black_k_move_obj.as_usi}
 """)
 
                 # デバッグ表示
                 if is_debug and DebugPlan.evaluation_edit_strengthen:
-                    print(f"[{datetime.datetime.now()}] [strengthen > kq] turn:{Turn.to_string(self._board.turn)}  kq_index:{target_fq_index:7}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  remove relation")
+                    print(f"[{datetime.datetime.now()}] [strengthen > kq] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  kq_index:{target_fq_index:7}  K:{black_k_move_obj.as_usi:5}  Q:{white_q_move_obj.as_usi:5}  remove relation")
 
-                is_changed_temp = self._kifuwarabe._evaluation_kq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_exists_by_kp_moves(
-                        k_move_obj=k_move_obj,
-                        p_move_obj=q_move_obj,
-                        shall_k_white_to_black=self._board.turn==cshogi.WHITE,
+                is_changed_temp = self._kifuwarabe._evaluation_kq_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exists_by_kp_moves(
+                        k_move_obj=black_k_move_obj,
+                        p_move_obj=white_q_move_obj,
+                        shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
                         bit=1)
 
                 if is_changed_temp:
@@ -583,14 +580,14 @@ class EvaluationEdit():
                 if relation_exists == 0:
 
                     # assert
-                    assert_p_move_obj, assert_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
+                    assert_black_p_move_obj, assert_white_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
                             pk_index=fl_index,
-                            shall_p_white_to_black=self._board.turn==cshogi.WHITE)
-                    if assert_p_move_obj.as_usi != move_u:
+                            shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
+                    if (self._kifuwarabe.board.turn==cshogi.BLACK and assert_black_p_move_obj.as_usi != move_u) or (self._kifuwarabe.board.turn==cshogi.BLACK and assert_black_p_move_obj.rotate().as_usi != move_u):
                         raise ValueError(f"""[{datetime.datetime.now()}] [strengthen > pl and pq] 着手が変わっているエラー
-                                           手番（Ｐ）:{Turn.to_string(self._board.turn)}
+                                           手番（Ｐ）:{Turn.to_string(self._kifuwarabe.board.turn)}
                                       元の指し手（Ｐ）:{move_u}
-１回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_p_move_obj.as_usi}
+１回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_black_p_move_obj.as_usi}
 """)
 
                     target_fl_index_list.append(fl_index)
@@ -627,26 +624,26 @@ class EvaluationEdit():
             # ＰＬ
             #
             for target_fl_index in target_fl_index_list:
-                p_move_obj, l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
+                black_p_move_obj, white_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
                         pk_index=target_fl_index,
-                        shall_p_white_to_black=self._board.turn==cshogi.WHITE)
+                        shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
 
                 # assert
-                if p_move_obj.as_usi != move_u:
+                if (self._kifuwarabe.board.turn==cshogi.BLACK and black_p_move_obj.as_usi != move_u) or (self._kifuwarabe.board.turn==cshogi.BLACK and black_p_move_obj.rotate().as_usi != move_u):
                     raise ValueError(f"""[{datetime.datetime.now()}] [strengthen > pl] 着手が変わっているエラー
-                                           手番（Ｐ）:{Turn.to_string(self._board.turn)}
+                                           手番（Ｐ）:{Turn.to_string(self._kifuwarabe.board.turn)}
                                       元の指し手（Ｐ）:{move_u}
-１回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{p_move_obj.as_usi}
+１回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{black_p_move_obj.as_usi}
 """)
 
                 # デバッグ表示
                 if is_debug and DebugPlan.evaluation_edit_strengthen:
-                    print(f"[{datetime.datetime.now()}] [strengthen > pl] turn:{Turn.to_string(self._board.turn)}  pl_index:{target_fl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  remove relation")
+                    print(f"[{datetime.datetime.now()}] [strengthen > pl] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  pl_index:{target_fl_index:7}  P:{black_p_move_obj.as_usi:5}  L:{white_l_move_obj.as_usi:5}  remove relation")
 
-                is_changed_temp = self._kifuwarabe._evaluation_pl_table_obj_array[Turn.to_index(self._board.turn)].set_relation_exists_by_pk_moves(
-                        p_move_obj=p_move_obj,
-                        k_move_obj=l_move_obj,
-                        shall_p_white_to_black=self._board.turn==cshogi.WHITE,
+                is_changed_temp = self._kifuwarabe._evaluation_pl_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exists_by_pk_moves(
+                        p_move_obj=black_p_move_obj,
+                        k_move_obj=white_l_move_obj,
+                        shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
                         bit=1)
 
                 if is_changed_temp:
@@ -657,27 +654,27 @@ class EvaluationEdit():
             # ＰＱ
             #
             for target_fq_index in target_fq_index_list:
-                p_move_obj, q_move_obj = EvaluationPpTable.build_p_p_moves_by_pp_index(
+                black_p_move_obj, white_q_move_obj = EvaluationPpTable.build_p_p_moves_by_pp_index(
                         pp_index=target_fq_index,
-                        shall_p1_white_to_black=self._board.turn==cshogi.WHITE)
+                        shall_p1_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
 
                 # assert
-                if p_move_obj.as_usi != move_u:
+                if (self._kifuwarabe.board.turn==cshogi.BLACK and black_p_move_obj.as_usi != move_u) or (self._kifuwarabe.board.turn==cshogi.BLACK and black_p_move_obj.rotate().as_usi != move_u):
                     # p_move_obj.as_usi:9d8e  move_u:4a4b
                     raise ValueError(f"""[{datetime.datetime.now()}] [strengthen > pq] 着手が変わっているエラー
-                                           手番（Ｐ）:{Turn.to_string(self._board.turn)}
-                                      元の指し手（Ｐ）:{p_move_obj.as_usi}
+                                           手番（Ｐ）:{Turn.to_string(self._kifuwarabe.board.turn)}
+                                      元の指し手（Ｐ）:{black_p_move_obj.as_usi}
 １回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{move_u}
 """)
 
                 # デバッグ表示
                 if is_debug and DebugPlan.evaluation_edit_strengthen:
-                    print(f"[{datetime.datetime.now()}] [strengthen > pq] turn:{Turn.to_string(self._board.turn)}  pq_index:{target_fq_index:7}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  remove relation")
+                    print(f"[{datetime.datetime.now()}] [strengthen > pq] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  pq_index:{target_fq_index:7}  P:{black_p_move_obj.as_usi:5}  Q:{white_q_move_obj.as_usi:5}  remove relation")
 
-                is_changed_temp = self._kifuwarabe._evaluation_pq_table_obj_array[Turn.to_index(self._board.turn)].set_relation_exists_by_pp_moves(
-                        p1_move_obj=p_move_obj,
-                        p2_move_obj=q_move_obj,
-                        shall_p1_white_to_black=self._board.turn==cshogi.WHITE,
+                is_changed_temp = self._kifuwarabe._evaluation_pq_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exists_by_pp_moves(
+                        p1_move_obj=black_p_move_obj,
+                        p2_move_obj=white_q_move_obj,
+                        shall_p1_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
                         bit=1)
 
                 if is_changed_temp:
