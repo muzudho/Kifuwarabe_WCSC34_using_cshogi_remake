@@ -77,7 +77,7 @@ class EvaluationEdit():
         for fl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
             assert_p_move_obj, assert_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
                     pk_index=fl_index,
-                    flip_white_to_black=self._board.turn==cshogi.WHITE)
+                    shall_p_white_to_black=self._board.turn==cshogi.WHITE)
             if assert_p_move_obj.as_usi != move_u:
                 # FIXME Rotate でも絡んでいる不具合か？
                 # [2024-06-14 00:23:32.615808] [weaken > fl] 着手が変わっているエラー  p_move_obj.as_usi:7f3c  move_u:4c3c
@@ -85,9 +85,9 @@ class EvaluationEdit():
 
         # assert
         for fq_index, relation_exists in fq_index_to_relation_exists_dictionary.items():
-            assert_p_move_obj, assert_q_move_obj = EvaluationPpTable.destructure_pp_index(
+            assert_p_move_obj, assert_q_move_obj = EvaluationPpTable.build_p_p_moves_by_pp_index(
                     pp_index=fq_index,
-                    p1_turn=self._board.turn)
+                    shall_p1_white_to_black=self._board.turn==cshogi.WHITE)
             if assert_p_move_obj.as_usi != move_u:
                 raise ValueError(f"[{datetime.datetime.now()}] [weaken > fq] 着手が変わっているエラー  p_move_obj.as_usi:{assert_p_move_obj.as_usi}  move_u:{move_u}")
 
@@ -170,9 +170,9 @@ class EvaluationEdit():
             # ＫＬ
             #
             for target_fl_index in target_fl_index_list:
-                k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
+                k_move_obj, l_move_obj = EvaluationKkTable.build_k_l_moves_by_kl_index(
                         kl_index=target_fl_index,
-                        k_turn=self._board.turn)
+                        shall_k_white_to_black=self._board.turn==cshogi.WHITE)
 
                 # assert
                 if k_move_obj.as_usi != move_u:
@@ -196,9 +196,9 @@ class EvaluationEdit():
             # ＫＱ
             #
             for target_fq_index in target_fq_index_list:
-                k_move_obj, q_move_obj = EvaluationKpTable.destructure_kp_index(
+                k_move_obj, q_move_obj = EvaluationKpTable.build_k_p_moves_by_kp_index(
                         kp_index=target_fq_index,
-                        k_turn=self._board.turn)
+                        shall_k_white_to_black=self._board.turn==cshogi.WHITE)
 
                 # assert
                 if k_move_obj.as_usi != move_u:
@@ -271,7 +271,7 @@ class EvaluationEdit():
             for target_fl_index in target_fl_index_list:
                 p_move_obj, l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
                         pk_index=target_fl_index,
-                        flip_white_to_black=self._board.turn==cshogi.WHITE)
+                        shall_p_white_to_black=self._board.turn==cshogi.WHITE)
 
                 # assert
                 if p_move_obj.as_usi != move_u:
@@ -295,9 +295,9 @@ class EvaluationEdit():
             # ＰＱ
             #
             for target_fq_index in target_fq_index_list:
-                p_move_obj, q_move_obj = EvaluationPpTable.destructure_pp_index(
+                p_move_obj, q_move_obj = EvaluationPpTable.build_p_p_moves_by_pp_index(
                         pp_index=target_fq_index,
-                        p1_turn=self._board.turn)
+                        shall_p1_white_to_black=self._board.turn==cshogi.WHITE)
 
                 # assert
                 if p_move_obj.as_usi != move_u:
@@ -367,15 +367,15 @@ class EvaluationEdit():
         for fl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
             assert_p_move_obj, assert_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
                     pk_index=fl_index,
-                    flip_white_to_black=self._board.turn==cshogi.WHITE)
+                    shall_p_white_to_black=self._board.turn==cshogi.WHITE)
             if assert_p_move_obj.as_usi != move_u:
                 raise ValueError(f"[{datetime.datetime.now()}] [strengthen > fl] 着手が変わっているエラー  p_move_obj.as_usi:{assert_p_move_obj.as_usi}  move_u:{move_u}")
 
         # assert
         for fq_index, relation_exists in fq_index_to_relation_exists_dictionary.items():
-            assert_p_move_obj, assert_q_move_obj = EvaluationPpTable.destructure_pp_index(
+            assert_p_move_obj, assert_q_move_obj = EvaluationPpTable.build_p_p_moves_by_pp_index(
                     pp_index=fq_index,
-                    p1_turn=self._board.turn)
+                    shall_p1_white_to_black=self._board.turn==cshogi.WHITE)
             if assert_p_move_obj.as_usi != move_u:
                 raise ValueError(f"[{datetime.datetime.now()}] [strengthen > fq] 着手が変わっているエラー  p_move_obj.as_usi:{assert_p_move_obj.as_usi}  move_u:{move_u}")
 
@@ -459,9 +459,9 @@ class EvaluationEdit():
             # ＫＬ
             #
             for target_fl_index in target_fl_index_list:
-                k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
+                k_move_obj, l_move_obj = EvaluationKkTable.build_k_l_moves_by_kl_index(
                         kl_index=target_fl_index,
-                        k_turn=self._board.turn)
+                        shall_k_white_to_black=self._board.turn==cshogi.WHITE)
 
                 # assert
                 if k_move_obj.as_usi != move_u:
@@ -485,9 +485,9 @@ class EvaluationEdit():
             # ＫＱ
             #
             for target_fq_index in target_fq_index_list:
-                k_move_obj, q_move_obj = EvaluationKpTable.destructure_kp_index(
+                k_move_obj, q_move_obj = EvaluationKpTable.build_k_p_moves_by_kp_index(
                         kp_index=target_fq_index,
-                        k_turn=self._board.turn)
+                        shall_k_white_to_black=self._board.turn==cshogi.WHITE)
 
                 # assert
                 if k_move_obj.as_usi != move_u:
@@ -528,7 +528,7 @@ class EvaluationEdit():
                     # assert
                     assert_p_move_obj, assert_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
                             pk_index=fl_index,
-                            p_turn=self._board.turn==cshogi.flip_white_to_black)
+                            shall_p_white_to_black=self._board.turn==cshogi.WHITE)
                     if assert_p_move_obj.as_usi != move_u:
                         raise ValueError(f"[{datetime.datetime.now()}] [strengthen > pl and pq] 着手が変わっているエラー  p_move_obj.as_usi:{assert_p_move_obj.as_usi}  move_u:{move_u}")
 
@@ -568,7 +568,7 @@ class EvaluationEdit():
             for target_fl_index in target_fl_index_list:
                 p_move_obj, l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
                         pk_index=target_fl_index,
-                        flip_white_to_black=self._board.turn==cshogi.WHITE)
+                        shall_p_white_to_black=self._board.turn==cshogi.WHITE)
 
                 # assert
                 if p_move_obj.as_usi != move_u:
@@ -592,9 +592,9 @@ class EvaluationEdit():
             # ＰＱ
             #
             for target_fq_index in target_fq_index_list:
-                p_move_obj, q_move_obj = EvaluationPpTable.destructure_pp_index(
+                p_move_obj, q_move_obj = EvaluationPpTable.build_p_p_moves_by_pp_index(
                         pp_index=target_fq_index,
-                        p1_turn=self._board.turn)
+                        shall_p1_white_to_black=self._board.turn==cshogi.WHITE)
 
                 # assert
                 if p_move_obj.as_usi != move_u:

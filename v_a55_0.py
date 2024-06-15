@@ -775,18 +775,18 @@ class Kifuwarabe():
             # ＫＬ
             for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
 
-                k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
+                k_move_obj, l_move_obj = EvaluationKkTable.build_k_l_moves_by_kl_index(
                         kl_index=kl_index,
-                        k_turn=self._board.turn)
+                        shall_k_white_to_black=self._board.turn==cshogi.WHITE)
 
                 print(f"  turn:{Turn.to_string(self._board.turn)}  kl_index:{kl_index:7}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
             # ＫＱ
             for kq_index, relation_exists in kq_index_to_relation_exists_dictionary.items():
 
-                k_move_obj, q_move_obj = EvaluationKpTable.destructure_kp_index(
+                k_move_obj, q_move_obj = EvaluationKpTable.build_k_p_moves_by_kp_index(
                         kp_index=kq_index,
-                        k_turn=self._board.turn)
+                        shall_k_white_to_black=self._board.turn==cshogi.WHITE)
 
                 print(f"  turn:{Turn.to_string(self._board.turn)}  kq_index:{kq_index:7}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
@@ -796,16 +796,16 @@ class Kifuwarabe():
 
                 display_p_move_obj, display_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
                         pk_index=pl_index,
-                        flip_white_to_black=self._board.turn==cshogi.WHITE)
+                        shall_p_white_to_black=self._board.turn==cshogi.WHITE)
 
                 print(f"  turn:{Turn.to_string(self._board.turn)}  pl_index:{pl_index:7}  P:{display_p_move_obj.as_usi:5}  L:{display_l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
             # ＰＱ
             for pq_index, relation_exists in pq_index_to_relation_exists_dictionary.items():
 
-                display_p_move_obj, display_q_move_obj = EvaluationPpTable.destructure_pp_index(
+                display_p_move_obj, display_q_move_obj = EvaluationPpTable.build_p_p_moves_by_pp_index(
                         pq_index=pq_index,
-                        p1_turn=self._board.turn)
+                        shall_p1_white_to_black=self._board.turn==cshogi.WHITE)
 
                 print(f"  turn:{Turn.to_string(self._board.turn)}  pq_index:{pq_index:7}  P:{display_p_move_obj.as_usi:5}  Q:{display_q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 

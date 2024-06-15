@@ -86,15 +86,15 @@ class EvaluationPkTable():
     @staticmethod
     def build_p_k_moves_by_pk_index(
             pk_index,
-            flip_white_to_black):
+            shall_p_white_to_black):
         """ＰＫインデックス分解
 
         Parameter
         ---------
         pk_index : int
             兵と玉の関係の通しインデックス
-        flip_white_to_black : int
-            評価値テーブルの位置について、指し手を１８０°回転させた位置を見るか？
+        shall_p_white_to_black : int
+            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
 
         Returns
         -------
@@ -108,7 +108,7 @@ class EvaluationPkTable():
                 pk_index=pk_index)
 
         # 評価値テーブルは先手用の形だ。着手と応手のどちらかは後手なので、後手番は１８０°回転させる必要がある
-        if flip_white_to_black:
+        if shall_p_white_to_black:
             is_p_rotate = True
             is_k_rotate = False
         else:

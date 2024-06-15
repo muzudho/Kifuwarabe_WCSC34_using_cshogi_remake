@@ -47,17 +47,18 @@ class EvaluationKpTable():
         return kp_index
 
 
+    #destructure_kp_index
     @staticmethod
-    def destructure_kp_index(
+    def build_k_p_moves_by_kp_index(
             kp_index,
-            k_turn):
+            shall_k_white_to_black):
         """ＫＰインデックス分解
 
         Parameter
         ---------
         kp_index : int
             玉と兵の関係の通しインデックス
-        k_turn : int
+        shall_k_white_to_black : bool
             着手側の手番
 
         Returns
@@ -85,12 +86,12 @@ class EvaluationKpTable():
 
 
         # 評価値テーブルは先手用の形だ。着手と応手のどちらかは後手なので、後手番は１８０°回転させる必要がある
-        if k_turn == cshogi.BLACK:
-            is_k_rotate = False
-            is_p_rotate = True
-        else:
+        if shall_k_white_to_black:
             is_k_rotate = True
             is_p_rotate = False
+        else:
+            is_k_rotate = False
+            is_p_rotate = True
 
         # Ｐ
         ((p_srcloc,

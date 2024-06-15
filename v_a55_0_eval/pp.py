@@ -46,17 +46,18 @@ class EvaluationPpTable():
         return pp_index
 
 
+    #destructure_pp_index
     @staticmethod
-    def destructure_pp_index(
+    def build_p_p_moves_by_pp_index(
             pp_index,
-            p1_turn):
+            shall_p1_white_to_black):
         """ＰＰインデックス分解
 
         Parameter
         ---------
         pp_index : int
             兵１と兵２の関係の通しインデックス
-        p1_turn : int
+        shall_p1_white_to_black : bool
             着手側の手番
 
         Returns
@@ -83,9 +84,6 @@ class EvaluationPpTable():
             raise ValueError(f"p1_index:{p1_index} out of range {EvaluationPMove.get_serial_number_size()}")
 
 
-        # 評価値テーブルは先手用の形なので、後手番は１８０°回転させる必要がある
-        is_rotate = p1_turn == cshogi.WHITE
-
         # Ｐ２
         (p2_srcloc,
          p2_dstsq,
@@ -95,7 +93,8 @@ class EvaluationPpTable():
                 srcloc=p2_srcloc,
                 dstsq=p2_dstsq,
                 promoted=p2_promote,
-                is_rotate=is_rotate)
+                # 評価値テーブルは先手用の形なので、後手番は１８０°回転させる必要がある
+                is_rotate=shall_p1_white_to_black)
 
         # Ｐ１
         (p1_srcloc,
@@ -106,7 +105,8 @@ class EvaluationPpTable():
                 srcloc=p1_srcloc,
                 dstsq=p1_dstsq,
                 promoted=p1_promote,
-                is_rotate=is_rotate)
+                # 評価値テーブルは先手用の形なので、後手番は１８０°回転させる必要がある
+                is_rotate=shall_p1_white_to_black)
 
         return (p1_move_obj, p2_move_obj)
 

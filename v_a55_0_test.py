@@ -97,9 +97,9 @@ def test_kk():
             k_turn=k_turn)
 
     (k_move_obj_actual,
-     l_move_obj_actual) = EvaluationKkTable.destructure_kl_index(
+     l_move_obj_actual) = EvaluationKkTable.build_k_l_moves_by_kl_index(
             kl_index=kk_index,
-            k_turn=k_turn)
+            shall_k_white_to_black=k_turn==cshogi.WHITE)
 
     if k_move_obj_expected.as_usi != k_move_obj_actual.as_usi:
         raise ValueError(f"not match. k_turn:{Turn.to_string(k_turn)} K expected:`{k_move_obj_expected.as_usi}`  actual:`{k_move_obj_actual.as_usi}`")
@@ -257,7 +257,7 @@ def test_pk():
          actual_k_move_obj) = EvaluationPkTable.build_p_k_moves_by_pk_index(
                 pk_index=pk_index,
                 # （既に pk_index は１８０°回転しているので）１８０°回転はさせません
-                flip_white_to_black=False)
+                shall_p_white_to_black=False)
 
         rot_actual_p_move_obj = actual_p_move_obj.rotate()
         rot_actual_k_move_obj = actual_k_move_obj.rotate()

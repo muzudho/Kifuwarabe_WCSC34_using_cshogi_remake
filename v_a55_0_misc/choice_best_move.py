@@ -73,10 +73,10 @@ class ChoiceBestMove():
 
             # assert
             for black_kl_index, relation_exists in black_kl_index_to_relation_exists_dic.items():
-                assert_k_move_obj, assert_l_move_obj = EvaluationKkTable.destructure_kl_index(
+                assert_k_move_obj, assert_l_move_obj = EvaluationKkTable.build_k_l_moves_by_kl_index(
                         kl_index=black_kl_index,
                         # black_kl_index は先手なので、１８０°回転させてはいけません
-                        k_turn=False)
+                        shall_k_white_to_black=False)
 
                 if assert_k_move_obj.as_usi != move_obj.as_usi:
                     print(board)
@@ -87,10 +87,10 @@ move_u:{move_obj.as_usi:5} k_move_u:{assert_k_move_obj.as_usi:5}
 
             # assert
             for black_kq_index, relation_exists in black_kq_index_to_relation_exists_dic.items():
-                assert_k_move_obj, assert_q_move_obj = EvaluationKpTable.destructure_kp_index(
+                assert_k_move_obj, assert_q_move_obj = EvaluationKpTable.build_k_p_moves_by_kp_index(
                         kp_index=black_kq_index,
                         # black_kq_index は先手なので、１８０°回転させてはいけません
-                        k_turn=False)
+                        shall_k_white_to_black=False)
 
                 if assert_k_move_obj.as_usi != move_obj.as_usi:
                     print(board)
@@ -117,7 +117,7 @@ move_u:{move_obj.as_usi:5} k_move_u:{assert_k_move_obj.as_usi:5}
                 assert_black_p_move_obj, assert_black_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
                         pk_index=black_pl_index,
                         # black_pl_index は先手なので、１８０°回転させてはいけません
-                        flip_white_to_black=False)
+                        shall_p_white_to_black=False)
 
                 check_pl_index = EvaluationPkTable.get_index_of_pk_table(
                         p_move_obj=assert_black_p_move_obj,
@@ -163,10 +163,10 @@ move_rot_u:{move_rot_obj.as_usi:5}
 
             # assert
             for black_pq_index, relation_exists in black_pq_index_to_relation_exists_dic.items():
-                assert_black_p_move_obj, assert_black_q_move_obj = EvaluationPpTable.destructure_pp_index(
+                assert_black_p_move_obj, assert_black_q_move_obj = EvaluationPpTable.build_p_p_moves_by_pp_index(
                         pp_index=black_pq_index,
                         # black_pq_index は先手なので、１８０°回転させてはいけません
-                        p1_turn=False)
+                        shall_p1_white_to_black=False)
                 
                 if assert_black_p_move_obj.as_usi != move_obj.as_usi:
                     print(board)
@@ -217,17 +217,17 @@ move_u:{move_obj.as_usi:5} black_p_move_u:{assert_black_p_move_obj.as_usi:5}
             # ＫＬ
             for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
                 if DebugPlan.get_number_of_connection_for_kl_kq:
-                    k_move_obj, l_move_obj = EvaluationKkTable.destructure_kl_index(
+                    k_move_obj, l_move_obj = EvaluationKkTable.build_k_l_moves_by_kl_index(
                             kl_index=kl_index,
-                            k_turn=board.turn)
+                            shall_k_white_to_black=board.turn==cshogi.WHITE)
                     print(f"[{datetime.datetime.now()}] [get number of connection for kl kq > kl]  kl_index:{kl_index:7}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
             # ＫＱ
             for kq_index, relation_exists in kq_index_to_relation_exists_dictionary.items():
                 if DebugPlan.get_number_of_connection_for_kl_kq:
-                    k_move_obj, q_move_obj = EvaluationKpTable.destructure_kp_index(
+                    k_move_obj, q_move_obj = EvaluationKpTable.build_k_p_moves_by_kp_index(
                             kp_index=kq_index,
-                            k_turn=board.turn)
+                            shall_k_white_to_black=board.turn==cshogi.WHITE)
                     print(f"[{datetime.datetime.now()}] [get number of connection for kl kq > kq]  kq_index:{kq_index:7}  K:{k_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
         return number_of_connection
@@ -271,15 +271,15 @@ move_u:{move_obj.as_usi:5} black_p_move_u:{assert_black_p_move_obj.as_usi:5}
                 if is_debug and DebugPlan.get_number_of_connection_for_pl_pq:
                     p_move_obj, l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
                             pk_index=pl_index,
-                            flip_white_to_black=board.turn==cshogi.WHITE)
+                            shall_p_white_to_black=board.turn==cshogi.WHITE)
                     print(f"[{datetime.datetime.now()}] [get number of connection for pl pq > pl]  pl_index:{pl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
             # ＰＱ
             for pq_index, relation_exists in pq_index_to_relation_exists_dictionary.items():
                 if is_debug and DebugPlan.get_number_of_connection_for_pl_pq:
-                    p_move_obj, q_move_obj = EvaluationPpTable.destructure_pp_index(
+                    p_move_obj, q_move_obj = EvaluationPpTable.build_p_p_moves_by_pp_index(
                             pp_index=pq_index,
-                            p1_turn=board.turn)
+                            shall_p1_white_to_black=board.turn==cshogi.WHITE)
                     print(f"[{datetime.datetime.now()}] [get number of connection for pl pq > pq]  pq_index:{pq_index:7}  P:{p_move_obj.as_usi:5}  Q:{q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
         return number_of_connection
@@ -335,17 +335,17 @@ move_u:{move_obj.as_usi:5} black_p_move_u:{assert_black_p_move_obj.as_usi:5}
 
             # assert
             for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
-                assert_k_move_obj, assert_l_move_obj = EvaluationKkTable.destructure_kl_index(
+                assert_k_move_obj, assert_l_move_obj = EvaluationKkTable.build_k_l_moves_by_kl_index(
                         kl_index=kl_index,
-                        k_turn=board.turn)
+                        shall_k_white_to_black=board.turn==cshogi.WHITE)
                 if assert_k_move_obj.as_usi != move_obj.as_usi:
                     raise ValueError(f"[{datetime.datetime.now()}] [choice best move > kl] 着手が変わっているエラー  k_move_obj.as_usi:{assert_k_move_obj.as_usi}  move_u:{move_obj.as_usi}")
 
             # assert
             for kq_index, relation_exists in kq_index_to_relation_exists_dictionary.items():
-                assert_k_move_obj, assert_q_move_obj = EvaluationKpTable.destructure_kp_index(
+                assert_k_move_obj, assert_q_move_obj = EvaluationKpTable.build_k_p_moves_by_kp_index(
                         kp_index=kq_index,
-                        k_turn=board.turn)
+                        shall_k_white_to_black=board.turn==cshogi.WHITE)
                 if assert_k_move_obj.as_usi != move_obj.as_usi:
                     raise ValueError(f"[{datetime.datetime.now()}] [choice best move > kq] 着手が変わっているエラー  k_move_obj.as_usi:{assert_k_move_obj.as_usi}  move_u:{move_obj.as_usi}")
 
@@ -384,15 +384,15 @@ move_u:{move_obj.as_usi:5} black_p_move_u:{assert_black_p_move_obj.as_usi:5}
             for pl_index, relation_exists in pl_index_to_relation_exists_dictionary.items():
                 assert_p_move_obj, assert_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
                         pk_index=pl_index,
-                        flip_white_to_black=board.turn==cshogi.WHITE)
+                        shall_p_white_to_black=board.turn==cshogi.WHITE)
                 if assert_p_move_obj.as_usi != move_obj.as_usi:
                     raise ValueError(f"[{datetime.datetime.now()}] [choice best move > pl] 着手が変わっているエラー  p_move_obj.as_usi:{assert_p_move_obj.as_usi}  move_u:{move_obj.as_usi}")
 
             # assert
             for pq_index, relation_exists in pq_index_to_relation_exists_dictionary.items():
-                assert_p_move_obj, assert_q_move_obj = EvaluationPpTable.destructure_pp_index(
+                assert_p_move_obj, assert_q_move_obj = EvaluationPpTable.build_p_p_moves_by_pp_index(
                         pp_index=pq_index,
-                        p1_turn=board.turn)
+                        shall_p1_white_to_black=board.turn==cshogi.WHITE)
                 if assert_p_move_obj.as_usi != move_obj.as_usi:
                     raise ValueError(f"[{datetime.datetime.now()}] [choice best move > pq] 着手が変わっているエラー  p_move_obj.as_usi:{assert_p_move_obj.as_usi}  move_u:{move_obj.as_usi}")
 

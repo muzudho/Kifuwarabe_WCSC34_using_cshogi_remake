@@ -46,17 +46,18 @@ class EvaluationKkTable():
         return kk_index
 
 
+    #destructure_kl_index
     @staticmethod
-    def destructure_kl_index(
+    def build_k_l_moves_by_kl_index(
             kl_index,
-            k_turn):
+            shall_k_white_to_black):
         """ＫＬインデックス分解
 
         Parameter
         ---------
         kl_index : int
             自玉と敵玉の関係の通しインデックス
-        k_turn : int
+        shall_k_white_to_black : int
             着手側の手番
 
         Returns
@@ -82,12 +83,12 @@ class EvaluationKkTable():
 
 
         # 評価値テーブルは先手用の形だ。着手と応手のどちらかは後手なので、後手番は１８０°回転させる必要がある
-        if k_turn == cshogi.BLACK:
-            is_k_rotate = False
-            is_l_rotate = True
-        else:
+        if shall_k_white_to_black:
             is_k_rotate = True
             is_l_rotate = False
+        else:
+            is_k_rotate = False
+            is_l_rotate = True
 
         # Ｌ
         (l_srcsq,
