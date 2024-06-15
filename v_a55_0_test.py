@@ -226,26 +226,35 @@ drop_code:{drop_code}
 
 
 def test_pk():
-    # 後手
-    expected_p_move_u = '3h3i+'
-    expected_p_move_obj = Move.from_usi(expected_p_move_u)
+    for data_set in [
+        [cshogi.BLACK, '7b7a+', '5b5a'],
+        [cshogi.WHITE, '3h3i+', '5h5i']]:
 
-    # 先手
-    expected_k_move_u = '5h5i'
-    expected_k_move_obj = Move.from_usi(expected_k_move_u)
+        # 着手側の手番
+        f_turn = data_set[0]
 
-    pk_index = EvaluationPkTable.get_index_of_pk_table(
-            p_move_obj=expected_p_move_obj,
-            k_move_obj=expected_k_move_obj,
-            p_turn=cshogi.WHITE)
+        # 着手
+        expected_p_move_u = data_set[1]
 
-    (actual_p_move_obj,
-     actual_k_move_obj) = EvaluationPkTable.destructure_pk_index(
-            pk_index=pk_index,
-            p_turn=cshogi.WHITE)
+        # 応手
+        expected_k_move_u = data_set[2]
 
-    if expected_p_move_obj.as_usi != actual_p_move_obj.as_usi or expected_k_move_obj.as_usi != actual_k_move_obj.as_usi:
-        raise ValueError(f'unexpected error. move_obj expected P:`{expected_p_move_obj.as_usi}`  K:`{expected_k_move_obj.as_usi}`  actual P:`{actual_p_move_obj.as_usi}`  K:`{actual_k_move_obj.as_usi}`')
+        # 関連
+        pk_index = EvaluationPkTable.get_index_of_pk_table(
+                p_move_obj=Move.from_usi(expected_p_move_u),
+                k_move_obj=Move.from_usi(expected_k_move_u),
+                p_turn=f_turn)
+
+        (actual_p_move_obj,
+        actual_k_move_obj) = EvaluationPkTable.destructure_pk_index(
+                pk_index=pk_index,
+                p_turn=cshogi.WHITE)
+
+        if expected_p_move_u != actual_p_move_obj.as_usi:
+            raise ValueError(f'[test pk > p] 着手は{Turn.to_string(f_turn)}  P expected:{expected_p_move_u:5}  actual:{actual_p_move_obj.as_usi:5}')
+
+        if expected_k_move_u != actual_k_move_obj.as_usi:
+            raise ValueError(f'[test pk > k] 着手は{Turn.to_string(f_turn)}  K expected:{expected_k_move_u:5}  actual:{actual_k_move_obj.as_usi:5}')
 
 
 def test_bit_ope():

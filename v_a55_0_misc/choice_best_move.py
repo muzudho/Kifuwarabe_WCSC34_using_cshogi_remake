@@ -115,20 +115,24 @@ move_u:{move_obj.as_usi:5} k_move_u:{assert_k_move_obj.as_usi:5}
                         k_move_obj=assert_l_move_obj,
                         p_turn=board.turn)
 
-                if pl_index != check_pl_index:
-                    raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pl] インデックスから指し手を復元し、さらにインデックスに圧縮すると、元のインデックスに復元しなかったエラー
+                # １８０°回転させている場合、インデックスは変わる
+                if not is_rotate:
+                    if pl_index != check_pl_index:
+                        raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pl] インデックスから指し手を復元し、さらにインデックスに圧縮すると、元のインデックスに復元しなかったエラー
+      pl_index:{      pl_index:10}
+check_pl_index:{check_pl_index:10}
+      p_move_u:{assert_p_move_obj.as_usi:5}
+      l_move_u:{assert_l_move_obj.as_usi:5}
+""")
+                    else:
+                        print(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pl] インデックスから指し手を復元し、さらにインデックスに圧縮すると、元のインデックスに復元できた。Ok
       pl_index:{      pl_index:10}
 check_pl_index:{check_pl_index:10}
       p_move_u:{assert_p_move_obj.as_usi:5}
       l_move_u:{assert_l_move_obj.as_usi:5}
 """)
                 else:
-                    print(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pl] インデックスから指し手を復元し、さらにインデックスに圧縮すると、元のインデックスに復元できた。Ok
-      pl_index:{      pl_index:10}
-check_pl_index:{check_pl_index:10}
-      p_move_u:{assert_p_move_obj.as_usi:5}
-      l_move_u:{assert_l_move_obj.as_usi:5}
-""")
+                    print(f"[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pl] １８０°回転しているので、インデックスのチェックはパス")
 
                 if (not is_rotate and assert_p_move_obj.as_usi != move_obj.as_usi) or (is_rotate and assert_p_move_obj.as_usi != move_rot_obj.as_usi):
                     print(board)
