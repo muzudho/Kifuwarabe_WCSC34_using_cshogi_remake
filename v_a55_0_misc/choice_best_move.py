@@ -71,16 +71,29 @@ class ChoiceBestMove():
 
             # assert
             for black_kl_index, relation_exists in black_kl_index_to_relation_exists_dic.items():
-                assert_k_move_obj, assert_l_move_obj = EvaluationKkTable.build_k_l_moves_by_kl_index(
+                assert_black_k_move_obj, assert_white_l_move_obj = EvaluationKkTable.build_k_l_moves_by_kl_index(
                         kl_index=black_kl_index,
                         # black_kl_index は先手なので、１８０°回転させてはいけません
                         shall_k_white_to_black=False)
 
-                if assert_k_move_obj.as_usi != move_obj.as_usi:
-                    print(board)
-                    raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > kl] 着手が変わっているエラー
-move_u:{move_obj.as_usi:5} k_move_u:{assert_k_move_obj.as_usi:5}
-       {''             :5} l_move_u:{assert_l_move_obj.as_usi:5}
+                # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
+                if not is_white:
+                    if assert_black_k_move_obj.as_usi != move_obj.as_usi:
+                        print(board)
+                        raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > kl] 着手が変わっているエラー
+move_u:{move_obj.as_usi:5} k_move_u:{assert_black_k_move_obj.as_usi:5}
+       {''             :5} l_move_u:{assert_white_l_move_obj.as_usi:5}
+""")
+
+                # 着手が後手なら、１８０°回転させるので、インデックスは変わる
+                else:
+                    if assert_black_k_move_obj.as_usi != move_rot_obj.as_usi:
+                        print(board)
+                        raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > kl] 指し手を先手の向きに変えて復元できなかったエラー
+is_white  :{is_white}
+move_u    :{move_obj.as_usi    :5} black_p_move_u:{assert_black_k_move_obj.as_usi:5}
+move_rot_u:{move_rot_obj.as_usi:5}
+           {''                 :5} black_l_move_u:{assert_white_l_move_obj.as_usi:5}
 """)
 
             #
@@ -96,16 +109,29 @@ move_u:{move_obj.as_usi:5} k_move_u:{assert_k_move_obj.as_usi:5}
 
             # assert
             for black_kq_index, relation_exists in black_kq_index_to_relation_exists_dic.items():
-                assert_k_move_obj, assert_q_move_obj = EvaluationKpTable.build_k_p_moves_by_kp_index(
+                assert_black_k_move_obj, assert_white_q_move_obj = EvaluationKpTable.build_k_p_moves_by_kp_index(
                         kp_index=black_kq_index,
                         # black_kq_index は先手なので、１８０°回転させてはいけません
                         shall_k_white_to_black=False)
 
-                if assert_k_move_obj.as_usi != move_obj.as_usi:
-                    print(board)
-                    raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > kq] 着手が変わっているエラー
-move_u:{move_obj.as_usi:5} k_move_u:{assert_k_move_obj.as_usi:5}
-       {''             :5} k_move_u:{assert_q_move_obj.as_usi:5}
+                # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
+                if not is_white:
+                    if assert_black_k_move_obj.as_usi != move_obj.as_usi:
+                        print(board)
+                        raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > kq] 着手が変わっているエラー
+move_u:{move_obj.as_usi:5} k_move_u:{assert_black_k_move_obj.as_usi:5}
+       {''             :5} k_move_u:{assert_white_q_move_obj.as_usi:5}
+""")
+
+                # 着手が後手なら、１８０°回転させるので、インデックスは変わる
+                else:
+                    if assert_black_k_move_obj.as_usi != move_rot_obj.as_usi:
+                        print(board)
+                        raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > kq] 指し手を先手の向きに変えて復元できなかったエラー
+is_white  :{is_white}
+move_u    :{move_obj.as_usi    :5} black_p_move_u:{assert_black_k_move_obj.as_usi:5}
+move_rot_u:{move_rot_obj.as_usi:5}
+           {''                 :5} black_l_move_u:{assert_white_q_move_obj.as_usi:5}
 """)
 
             return (black_kl_index_to_relation_exists_dic,
