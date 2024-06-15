@@ -362,12 +362,6 @@ class BoardHelper():
 
 
     @staticmethod
-    def get_file_rank_by_sq(sq):
-        return (sq // 9,
-                sq % 9)
-
-
-    @staticmethod
     def get_king_square(board):
         """自玉のマス番号
 

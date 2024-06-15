@@ -136,7 +136,7 @@ class EvaluationKMove():
 
                 # 元マスの座標
                 (src_file,
-                src_rank) = BoardHelper.get_file_rank_by_sq(srcsq)
+                src_rank) = Usi.sq_to_file_rank(srcsq)
 
                 #
                 # 絶対マス番号を作成

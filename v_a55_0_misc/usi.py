@@ -22,6 +22,20 @@ class Usi():
         return clazz._rank_th_num_to_alphabet[rank_th]
 
 
+    @staticmethod
+    def sq_to_file_th_rank_th(sq):
+        """盤上のマス番号を渡すと、 1 から始まる筋番号と、 1 から始まる段番号のタプルを返します"""
+        return (sq // 9 + 1,
+                sq % 9 + 1)
+
+
+    #get_file_rank_by_sq
+    @staticmethod
+    def sq_to_file_rank(sq):
+        return (sq // 9,
+                sq % 9)
+
+
     _srcloc_to_code = None
     """以下のような辞書を srcloc_to_code(...) 関数の初回使用時に自動生成する。
     code は、ＵＳＩ形式の指し手符号の先頭２文字。 '7g' や 'R*' など
@@ -39,8 +53,8 @@ class Usi():
     @classmethod
     def sq_to_code(clazz, sq):
         """マス番号から、ＵＳＩ形式の符号の先頭２文字へ変換します"""
-        file_th = sq // 9 + 1
-        rank_th = sq % 9 + 1
+        (file_th,
+         rank_th) = Usi.sq_to_file_th_rank_th(sq)
         return f"{file_th}{clazz._rank_th_num_to_alphabet[rank_th]}"
 
 
@@ -105,13 +119,6 @@ class Usi():
         return clazz._code_to_srcloc[code]
 
 
-    @staticmethod
-    def sq_to_file_th_rank_th(sq):
-        """盤上のマス番号を渡すと、 1 から始まる筋番号と、 1 から始まる段番号のタプルを返します"""
-        return (sq // 9 + 1,
-                sq % 9 + 1)
-
-
     @classmethod
     def file_th_rank_th_to_code(
             clazz,
@@ -138,8 +145,7 @@ class Usi():
         if Usi.is_drop_by_srcloc(srcloc):
             raise ValueError("[usi > srcloc to file_th rank th] 打はマス番号に変換できません")
 
-        return (srcloc // 9 + 1,
-                srcloc % 9 + 1)
+        return Usi.sq_to_file_th_rank_th(sq=srcloc)
 
 
     @staticmethod
