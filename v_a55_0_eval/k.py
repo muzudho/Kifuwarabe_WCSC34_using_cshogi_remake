@@ -146,7 +146,7 @@ class EvaluationKMove():
                 dst_file = src_file + right_file
                 dst_rank = src_rank + top_rank
                 if 0 <= dst_file and 0 <= dst_rank:
-                    dstsq_set.add(BoardHelper.get_sq_by_file_rank(
+                    dstsq_set.add(Usi.file_rank_to_sq(
                             file=dst_file,
                             rank=dst_rank))
 
@@ -154,7 +154,7 @@ class EvaluationKMove():
                 dst_file = src_file + right_file
                 dst_rank = src_rank
                 if 0 <= dst_file:
-                    dstsq_set.add(BoardHelper.get_sq_by_file_rank(
+                    dstsq_set.add(Usi.file_rank_to_sq(
                             file=dst_file,
                             rank=dst_rank))
 
@@ -162,7 +162,7 @@ class EvaluationKMove():
                 dst_file = src_file + right_file
                 dst_rank = src_rank + bottom_rank
                 if 0 <= dst_file and dst_rank < 9:
-                    dstsq_set.add(BoardHelper.get_sq_by_file_rank(
+                    dstsq_set.add(Usi.file_rank_to_sq(
                             file=dst_file,
                             rank=dst_rank))
 
@@ -170,7 +170,7 @@ class EvaluationKMove():
                 dst_file = src_file
                 dst_rank = src_rank + top_rank
                 if 0 <= dst_rank:
-                    dstsq_set.add(BoardHelper.get_sq_by_file_rank(
+                    dstsq_set.add(Usi.file_rank_to_sq(
                             file=dst_file,
                             rank=dst_rank))
 
@@ -178,7 +178,7 @@ class EvaluationKMove():
                 dst_file = src_file
                 dst_rank = src_rank + bottom_rank
                 if dst_rank < 9:
-                    dstsq_set.add(BoardHelper.get_sq_by_file_rank(
+                    dstsq_set.add(Usi.file_rank_to_sq(
                             file=dst_file,
                             rank=dst_rank))
 
@@ -186,7 +186,7 @@ class EvaluationKMove():
                 dst_file = src_file + left_file
                 dst_rank = src_rank + top_rank
                 if dst_file < 9 and 0 <= dst_rank:
-                    dstsq_set.add(BoardHelper.get_sq_by_file_rank(
+                    dstsq_set.add(Usi.file_rank_to_sq(
                             file=dst_file,
                             rank=dst_rank))
 
@@ -194,7 +194,7 @@ class EvaluationKMove():
                 dst_file = src_file + left_file
                 dst_rank = src_rank
                 if dst_file < 9:
-                    dstsq_set.add(BoardHelper.get_sq_by_file_rank(
+                    dstsq_set.add(Usi.file_rank_to_sq(
                             file=dst_file,
                             rank=dst_rank))
 
@@ -202,7 +202,7 @@ class EvaluationKMove():
                 dst_file = src_file + left_file
                 dst_rank = src_rank + bottom_rank
                 if dst_file < 9 and dst_rank < 9:
-                    dstsq_set.add(BoardHelper.get_sq_by_file_rank(
+                    dstsq_set.add(Usi.file_rank_to_sq(
                             file=dst_file,
                             rank=dst_rank))
 

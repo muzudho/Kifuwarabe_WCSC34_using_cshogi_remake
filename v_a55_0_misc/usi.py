@@ -227,3 +227,40 @@ class Usi():
                 drop_num += 1
 
         return clazz._srcloc_to_jsa[srcloc]
+
+
+    #get_sq_by_file_rank
+    @staticmethod
+    def file_rank_to_sq(file, rank):
+        """
+        Parameters
+        ----------
+        file : int
+            0 から始まる筋の番号
+        rank : int
+            0 から始まる段の番号
+        """
+        return file * 9 + rank
+
+
+    @staticmethod
+    def jsa_to_sq(jsa_sq):
+        """プロ棋士も使っているマス番号の書き方は
+        コンピューターには使いづらいので、
+        0 から始まるマスの通し番号に変換します
+
+        豆知識：　十の位を筋、一の位を段とするマス番号は、
+                将棋の棋士も棋譜に用いている記法です。
+                JSA は日本将棋連盟（Japan Shogi Association）
+
+        Parameters
+        ----------
+        jsa_sq : int
+            筋と段は 1 から始まる整数とし、
+            十の位を筋、一の位を段とするマス番号
+        """
+
+        file = jsa_sq // 10 - 1
+        rank = jsa_sq % 10 - 1
+
+        return Usi.file_rank_to_sq(file, rank)

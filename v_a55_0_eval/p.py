@@ -148,7 +148,7 @@ class EvaluationPMove():
             # 範囲外チェックを行いたいので、ループカウンタ―は sq ではなく file と rank の２重ループにする
             for src_file in range(0,9):
                 for src_rank in range(0,9):
-                    srcsq = BoardHelper.get_sq_by_file_rank(
+                    srcsq = Usi.file_rank_to_sq(
                             file=src_file,
                             rank=src_rank)
 
@@ -173,7 +173,7 @@ class EvaluationPMove():
                         # 上
                         next_rank = src_rank-delta_rank
                         if 0 <= next_rank:
-                            dstsq = BoardHelper.get_sq_by_file_rank(
+                            dstsq = Usi.file_rank_to_sq(
                                     file=src_file,
                                     rank=next_rank)
                             no_pro_dstsq_set.add(dstsq)
@@ -185,7 +185,7 @@ class EvaluationPMove():
                         # 下
                         next_rank = src_rank+delta_rank
                         if next_rank < 9:
-                            dstsq = BoardHelper.get_sq_by_file_rank(
+                            dstsq = Usi.file_rank_to_sq(
                                     file=src_file,
                                     rank=next_rank)
                             no_pro_dstsq_set.add(dstsq)
@@ -199,7 +199,7 @@ class EvaluationPMove():
                         # 右
                         next_file = src_file-delta_file
                         if 0 <= next_file:
-                            dstsq = BoardHelper.get_sq_by_file_rank(
+                            dstsq = Usi.file_rank_to_sq(
                                     file=next_file,
                                     rank=src_rank)
                             no_pro_dstsq_set.add(dstsq)
@@ -211,7 +211,7 @@ class EvaluationPMove():
                         # 左
                         next_file = src_file+delta_file
                         if next_file < 9:
-                            dstsq = BoardHelper.get_sq_by_file_rank(
+                            dstsq = Usi.file_rank_to_sq(
                                     file=next_file,
                                     rank=src_rank)
                             no_pro_dstsq_set.add(dstsq)
@@ -228,7 +228,7 @@ class EvaluationPMove():
                         next_file = src_file-delta
                         next_rank = src_rank-delta
                         if 0 <= next_file and 0 <= next_rank:
-                            dstsq = BoardHelper.get_sq_by_file_rank(
+                            dstsq = Usi.file_rank_to_sq(
                                     file=next_file,
                                     rank=next_rank)
                             no_pro_dstsq_set.add(dstsq)
@@ -241,7 +241,7 @@ class EvaluationPMove():
                         next_file = src_file-delta
                         next_rank = src_rank+delta
                         if 0 <= next_file and next_rank < 9:
-                            dstsq = BoardHelper.get_sq_by_file_rank(
+                            dstsq = Usi.file_rank_to_sq(
                                     file=next_file,
                                     rank=next_rank)
                             no_pro_dstsq_set.add(dstsq)
@@ -254,7 +254,7 @@ class EvaluationPMove():
                         next_file = src_file+delta
                         next_rank = src_rank-delta
                         if next_file < 9 and 0 <= next_rank:
-                            dstsq = BoardHelper.get_sq_by_file_rank(
+                            dstsq = Usi.file_rank_to_sq(
                                     file=next_file,
                                     rank=next_rank)
                             no_pro_dstsq_set.add(dstsq)
@@ -267,7 +267,7 @@ class EvaluationPMove():
                         next_file = src_file+delta
                         next_rank = src_rank+delta
                         if next_file < 9 and next_rank < 9:
-                            dstsq = BoardHelper.get_sq_by_file_rank(
+                            dstsq = Usi.file_rank_to_sq(
                                     file=next_file,
                                     rank=next_rank)
                             no_pro_dstsq_set.add(dstsq)
@@ -284,7 +284,7 @@ class EvaluationPMove():
                     next_file = src_file-1
                     next_rank = src_rank-2
                     if 0 <= next_file and 0 <= next_rank:
-                        dstsq = BoardHelper.get_sq_by_file_rank(
+                        dstsq = Usi.file_rank_to_sq(
                                 file=next_file,
                                 rank=next_rank)
                         no_pro_dstsq_set.add(dstsq)
@@ -297,7 +297,7 @@ class EvaluationPMove():
                     next_file = src_file+1
                     next_rank = src_rank-2
                     if next_file < 9 and 0 <= next_rank:
-                        dstsq = BoardHelper.get_sq_by_file_rank(
+                        dstsq = Usi.file_rank_to_sq(
                                 file=next_file,
                                 rank=next_rank)
                         no_pro_dstsq_set.add(dstsq)
@@ -344,7 +344,7 @@ class EvaluationPMove():
 
                 for dst_file in range(0,9):
                     for dst_rank in range(min_rank,9):
-                        dstsq = BoardHelper.get_sq_by_file_rank(
+                        dstsq = Usi.file_rank_to_sq(
                                 file=dst_file,
                                 rank=dst_rank)
 

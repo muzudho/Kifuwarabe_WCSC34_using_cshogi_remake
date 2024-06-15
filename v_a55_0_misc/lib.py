@@ -360,38 +360,11 @@ class MoveHelper():
 class BoardHelper():
     """局面のヘルパー"""
 
-    @staticmethod
-    def get_sq_by_file_rank(file, rank):
-        return file * 9 + rank
-
 
     @staticmethod
     def get_file_rank_by_sq(sq):
         return (sq // 9,
                 sq % 9)
-
-
-    @staticmethod
-    def jsa_to_sq(jsa_sq):
-        """プロ棋士も使っているマス番号の書き方は
-        コンピューターには使いづらいので、
-        0 から始まるマスの通し番号に変換します
-
-        豆知識：　十の位を筋、一の位を段とするマス番号は、
-                将棋の棋士も棋譜に用いている記法です。
-                JSA は日本将棋連盟（Japan Shogi Association）
-
-        Parameters
-        ----------
-        jsa_sq : int
-            筋と段は 1 から始まる整数とし、
-            十の位を筋、一の位を段とするマス番号
-        """
-
-        file = jsa_sq // 10 - 1
-        rank = jsa_sq % 10 - 1
-
-        return BoardHelper.get_sq_by_file_rank(file, rank)
 
 
     @staticmethod

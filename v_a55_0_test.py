@@ -293,8 +293,8 @@ def test_lib():
         raise ValueError(f'unexpected error. move_obj.promoted expected:True  actual:`{move_obj.promoted}`')
 
     move_obj = Move.from_src_dst_pro(
-            srcloc=BoardHelper.jsa_to_sq(38),
-            dstsq=BoardHelper.jsa_to_sq(39),
+            srcloc=Usi.jsa_to_sq(38),
+            dstsq=Usi.jsa_to_sq(39),
             promoted=True)
 
     if move_obj.as_usi != expected_move_u:
