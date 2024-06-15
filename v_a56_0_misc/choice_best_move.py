@@ -344,7 +344,6 @@ move_rot_u:{move_rot_obj.as_usi:5}
     @staticmethod
     def get_summary(
             move_obj,
-            board,
             kifuwarabe,
             is_debug=False):
         """集計を取得
@@ -353,8 +352,6 @@ move_rot_u:{move_rot_obj.as_usi:5}
         ----------
         move_obj : Move
             着手オブジェクト
-        board : cshogi.Board
-            現局面
         kifuwarabe : Kifuwarabe
             きふわらべ
         is_debug : bool
@@ -371,7 +368,7 @@ move_rot_u:{move_rot_obj.as_usi:5}
 
         # 投了局面時、入玉宣言局面時、１手詰めは無視
 
-        k_sq = BoardHelper.get_king_square(board)
+        k_sq = BoardHelper.get_king_square(kifuwarabe.board)
 
         # 自玉の指し手か？
         is_king_move = MoveHelper.is_king(k_sq, move_obj)
@@ -386,7 +383,7 @@ move_rot_u:{move_rot_obj.as_usi:5}
              _) = ChoiceBestMove.select_black_f_black_o_index_to_relation_exists(
                     move_obj=move_obj,
                     is_king_move=is_king_move,
-                    board=board,
+                    board=kifuwarabe.board,
                     kifuwarabe=kifuwarabe)
 
             # assert
@@ -398,7 +395,7 @@ move_rot_u:{move_rot_obj.as_usi:5}
                 if kifuwarabe.board.turn==cshogi.BLACK:
                     if assert_black_k_move_obj.as_usi != move_obj.as_usi:
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > kl] 着手が変わっているエラー
-                                           手番（Ｋ）:{Turn.to_string(board.turn)}
+                                           手番（Ｋ）:{Turn.to_string(kifuwarabe.board.turn)}
                                       元の指し手（Ｋ）:{move_obj.as_usi:5}
 １回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{assert_black_k_move_obj.as_usi:5}
 """)
@@ -408,7 +405,7 @@ move_rot_u:{move_rot_obj.as_usi:5}
                     if assert_black_k_move_obj.rotate().as_usi != move_obj.as_usi:
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > kl] 指し手を先手の向きに変えて復元できなかったエラー
                                       元の指し手（Ｋ）:{move_obj.as_usi:5}
-                                           手番（Ｋ）:{Turn.to_string(board.turn)}
+                                           手番（Ｋ）:{Turn.to_string(kifuwarabe.board.turn)}
 １回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{assert_black_k_move_obj.rotate().as_usi:5}
 """)
 
@@ -422,7 +419,7 @@ move_rot_u:{move_rot_obj.as_usi:5}
                 if kifuwarabe.board.turn==cshogi.BLACK:
                     if assert_black_k_move_obj.as_usi != move_obj.as_usi:
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > kq] 着手が変わっているエラー
-                                           手番（Ｋ）:{Turn.to_string(board.turn)}
+                                           手番（Ｋ）:{Turn.to_string(kifuwarabe.board.turn)}
                                       元の指し手（Ｋ）:{move_obj.as_usi:5}
 １回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{assert_black_k_move_obj.as_usi:5}
 """)
@@ -431,7 +428,7 @@ move_rot_u:{move_rot_obj.as_usi:5}
                 else:
                     if assert_black_k_move_obj.rotate().as_usi != move_obj.as_usi:
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > kq] 指し手を先手の向きに変えて復元できなかったエラー
-                                           手番（Ｋ）:{Turn.to_string(board.turn)}
+                                           手番（Ｋ）:{Turn.to_string(kifuwarabe.board.turn)}
                                       元の指し手（Ｋ）:{move_obj.as_usi:5}
 １回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{assert_black_k_move_obj.rotate().as_usi:5}
 """)
@@ -444,7 +441,7 @@ move_rot_u:{move_rot_obj.as_usi:5}
             positive_of_relation = ChoiceBestMove.get_number_of_connection_for_kl_kq(
                     black_k_black_l_index_to_relation_exists_dictionary,
                     black_k_black_q_index_to_relation_exists_dictionary,
-                    board=board,
+                    board=kifuwarabe.board,
                     is_debug=is_debug)
 
             return (black_k_black_l_index_to_relation_exists_dictionary,
@@ -463,7 +460,7 @@ move_rot_u:{move_rot_obj.as_usi:5}
              black_p_black_q_index_to_relation_exists_dictionary) = ChoiceBestMove.select_black_f_black_o_index_to_relation_exists(
                     move_obj=move_obj,
                     is_king_move=is_king_move,
-                    board=board,
+                    board=kifuwarabe.board,
                     kifuwarabe=kifuwarabe)
 
             # assert
@@ -472,10 +469,10 @@ move_rot_u:{move_rot_obj.as_usi:5}
                         black_p_black_k_index=black_p_black_l_index)
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
-                if board.turn==cshogi.BLACK:
+                if kifuwarabe.board.turn==cshogi.BLACK:
                     if assert_black_p_move_obj.as_usi != move_obj.as_usi:
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > pl] 着手が変わっているエラー
-                                           手番（Ｐ）:{Turn.to_string(board.turn)}
+                                           手番（Ｐ）:{Turn.to_string(kifuwarabe.board.turn)}
                                       元の指し手（Ｐ）:{move_obj.as_usi:5}
 １回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_black_p_move_obj.as_usi:5}
 """)
@@ -485,7 +482,7 @@ move_rot_u:{move_rot_obj.as_usi:5}
                     if assert_black_p_move_obj.rotate().as_usi != move_obj.as_usi:
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > pl] 指し手を先手の向きに変えて復元できなかったエラー
                                       元の指し手（Ｐ）:{move_obj.as_usi:5}
-                                           手番（Ｐ）:{Turn.to_string(board.turn)}
+                                           手番（Ｐ）:{Turn.to_string(kifuwarabe.board.turn)}
 １回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_black_p_move_obj.rotate().as_usi:5}
 """)
 
@@ -495,10 +492,10 @@ move_rot_u:{move_rot_obj.as_usi:5}
                         black_p1_black_p2_index=black_p_black_q_index)
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
-                if board.turn==cshogi.BLACK:
+                if kifuwarabe.board.turn==cshogi.BLACK:
                     if assert_black_p_move_obj.as_usi != move_obj.as_usi:
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > pq] 着手が変わっているエラー
-                                           手番（Ｐ）:{Turn.to_string(board.turn)}
+                                           手番（Ｐ）:{Turn.to_string(kifuwarabe.board.turn)}
                                       元の指し手（Ｐ）:{move_obj.as_usi:5}
 １回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_black_p_move_obj.as_usi:5}
 """)
@@ -508,7 +505,7 @@ move_rot_u:{move_rot_obj.as_usi:5}
                     if assert_black_p_move_obj.rotate().as_usi != move_obj.as_usi:
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > pq] 指し手を先手の向きに変えて復元できなかったエラー
                                       元の指し手（Ｐ）:{move_obj.as_usi:5}
-                                           手番（Ｐ）:{Turn.to_string(board.turn)}
+                                           手番（Ｐ）:{Turn.to_string(kifuwarabe.board.turn)}
 １回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_black_p_move_obj.rotate().as_usi:5}
 """)
 
@@ -521,7 +518,7 @@ move_rot_u:{move_rot_obj.as_usi:5}
             positive_of_relation = ChoiceBestMove.get_number_of_connection_for_pl_pq(
                     black_p_black_l_index_to_relation_exists_dictionary,
                     black_p_black_q_index_to_relation_exists_dictionary,
-                    board=board,
+                    board=kifuwarabe.board,
                     is_debug=is_debug)
 
             return (black_p_black_l_index_to_relation_exists_dictionary,
@@ -534,7 +531,6 @@ move_rot_u:{move_rot_obj.as_usi:5}
     @staticmethod
     def select_ranked_f_move_u_set_facade(
             legal_moves,
-            board,
             kifuwarabe,
             is_debug=False):
         """ランク付けされた指し手一覧（好手、悪手）を作成
@@ -543,8 +539,6 @@ move_rot_u:{move_rot_obj.as_usi:5}
         ----------
         legal_moves :
             合法手
-        board : Board
-            局面
         kifuwarabe : Kifuwarabe
             きふわらべ
         is_debug : bool
@@ -584,7 +578,6 @@ move_rot_u:{move_rot_obj.as_usi:5}
              # 関係の総数
              total_of_relation) = ChoiceBestMove.get_summary(
                     move_obj=move_obj,
-                    board=board,
                     kifuwarabe=kifuwarabe,
                     is_debug=is_debug)
 
@@ -624,7 +617,6 @@ move_rot_u:{move_rot_obj.as_usi:5}
     @staticmethod
     def do_it(
             legal_moves,
-            board,
             kifuwarabe,
             is_debug=False):
         """最善の着手を選ぶ
@@ -633,8 +625,6 @@ move_rot_u:{move_rot_obj.as_usi:5}
         ----------
         legal_moves : list<int>
             合法手のリスト : cshogi の指し手整数
-        board : Board
-            局面
         kifuwarabe : Kifuwarabe
             評価値テーブルを持っている
         is_debug : bool
@@ -644,7 +634,6 @@ move_rot_u:{move_rot_obj.as_usi:5}
         # ランク付けされた指し手一覧
         ranked_move_u_set_list = ChoiceBestMove.select_ranked_f_move_u_set_facade(
                 legal_moves=legal_moves,
-                board=board,
                 kifuwarabe=kifuwarabe,
                 is_debug=is_debug)
 

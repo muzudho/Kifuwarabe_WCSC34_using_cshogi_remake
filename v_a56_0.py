@@ -551,7 +551,6 @@ class Kifuwarabe():
         # くじを引く（投了のケースは対応済みなので、ここで対応しなくていい）
         best_move_str = ChoiceBestMove.do_it(
                 legal_moves=list(self._board.legal_moves),
-                board=self._board,
                 kifuwarabe=self,
                 is_debug=is_debug)
 
@@ -726,7 +725,6 @@ class Kifuwarabe():
         #
         ranked_move_u_set_list = ChoiceBestMove.select_ranked_f_move_u_set_facade(
                 legal_moves=list(self._board.legal_moves),
-                board=self._board,
                 kifuwarabe=self,
                 is_debug=is_debug)
 
@@ -919,7 +917,6 @@ class Kifuwarabe():
                 # くじを引く（投了のケースは対応済みなので、ここで対応しなくていい）
                 best_move_str = ChoiceBestMove.do_it(
                         legal_moves=list(self._board.legal_moves),
-                        board=self._board,
                         kifuwarabe=self)
 
                 if is_debug:

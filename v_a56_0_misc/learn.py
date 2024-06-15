@@ -255,7 +255,6 @@ class LearnAboutOneGame():
         #
         ranked_move_u_set_list = ChoiceBestMove.select_ranked_f_move_u_set_facade(
                 legal_moves=list(self._board.legal_moves),
-                board=self._board,
                 kifuwarabe=self._kifuwarabe,
                 is_debug=self._is_debug)
 
@@ -541,7 +540,6 @@ class LearnAboutOneGame():
         #
         ranked_move_u_set_list = ChoiceBestMove.select_ranked_f_move_u_set_facade(
                 legal_moves=list(self._board.legal_moves),
-                board=self._board,
                 kifuwarabe=self._kifuwarabe,
                 is_debug=self._is_debug)
 
