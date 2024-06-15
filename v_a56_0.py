@@ -803,7 +803,7 @@ class Kifuwarabe():
             # ＰＱ
             for pq_index, relation_exists in pq_index_to_relation_exists_dictionary.items():
 
-                display_black_p_move_obj, display_black_q_move_obj = EvaluationPpTable.build_p_p_moves_by_pp_index(
+                display_black_p_move_obj, display_black_q_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
                         pq_index=pq_index,
                         shall_p1_white_to_black=self._board.turn==cshogi.WHITE)
 

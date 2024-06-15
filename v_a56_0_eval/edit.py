@@ -98,7 +98,7 @@ class EvaluationEdit():
 
         # assert
         for fq_index, relation_exists in fq_index_to_relation_exists_dictionary.items():
-            assert_black_p_move_obj, assert_white_q_move_obj = EvaluationPpTable.build_p_p_moves_by_pp_index(
+            assert_black_p_move_obj, assert_black_q_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
                     pp_index=fq_index,
                     shall_p1_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
 
@@ -375,7 +375,7 @@ class EvaluationEdit():
             # ＰＱ
             #
             for target_fq_index in target_fq_index_list:
-                black_p_move_obj, white_q_move_obj = EvaluationPpTable.build_p_p_moves_by_pp_index(
+                black_p_move_obj, black_q_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
                         pp_index=target_fq_index,
                         shall_p1_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
 
@@ -399,11 +399,11 @@ class EvaluationEdit():
 
                 # デバッグ表示
                 if is_debug and DebugPlan.evaluation_edit_weaken:
-                    print(f"[{datetime.datetime.now()}] [weaken > pq] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  pq_index:{target_fq_index:7}  P:{black_p_move_obj.as_usi:5}  Q:{white_q_move_obj.as_usi:5}  remove relation")
+                    print(f"[{datetime.datetime.now()}] [weaken > pq] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  pq_index:{target_fq_index:7}  P:{black_p_move_obj.as_usi:5}  Q:{black_q_move_obj.as_usi:5}  remove relation")
 
                 is_changed_temp = self._kifuwarabe._evaluation_pq_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exists_by_pp_moves(
                         p1_move_obj=black_p_move_obj,
-                        p2_move_obj=white_q_move_obj,
+                        p2_move_obj=black_q_move_obj,
                         shall_p1_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
                         bit=0)
 
@@ -483,7 +483,7 @@ class EvaluationEdit():
 
         # assert
         for fq_index, relation_exists in fq_index_to_relation_exists_dictionary.items():
-            assert_black_p_move_obj, assert_white_q_move_obj = EvaluationPpTable.build_p_p_moves_by_pp_index(
+            assert_black_p_move_obj, assert_black_q_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
                     pp_index=fq_index,
                     shall_p1_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
             
@@ -784,7 +784,7 @@ class EvaluationEdit():
             # ＰＱ
             #
             for target_fq_index in target_fq_index_list:
-                black_p_move_obj, white_q_move_obj = EvaluationPpTable.build_p_p_moves_by_pp_index(
+                black_p_move_obj, black_q_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
                         pp_index=target_fq_index,
                         shall_p1_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
 

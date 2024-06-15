@@ -210,7 +210,7 @@ move_rot_u:{move_rot_obj.as_usi:5}
 
             # assert
             for black_pq_index, relation_exists in black_pq_index_to_relation_exists_dic.items():
-                assert_black_p_move_obj, assert_black_q_move_obj = EvaluationPpTable.build_p_p_moves_by_pp_index(
+                assert_black_p_move_obj, assert_black_q_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
                         pp_index=black_pq_index,
                         # black_pq_index は先手なので、１８０°回転させてはいけません
                         shall_p1_white_to_black=False)
@@ -339,7 +339,7 @@ move_rot_u:{move_rot_obj.as_usi:5}
             # ＰＱ
             for pq_index, relation_exists in pq_index_to_relation_exists_dictionary.items():
                 if is_debug and DebugPlan.get_number_of_connection_for_pl_pq:
-                    black_p_move_obj, black_q_move_obj = EvaluationPpTable.build_p_p_moves_by_pp_index(
+                    black_p_move_obj, black_q_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
                             pp_index=pq_index,
                             shall_p1_white_to_black=board.turn==cshogi.WHITE)
                     print(f"[{datetime.datetime.now()}] [get number of connection for pl pq > pq]  pq_index:{pq_index:7}  P:{black_p_move_obj.as_usi:5}  Q:{black_q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
@@ -500,7 +500,7 @@ move_rot_u:{move_rot_obj.as_usi:5}
 
             # assert
             for pq_index, relation_exists in pq_index_to_relation_exists_dictionary.items():
-                assert_black_p_move_obj, assert_black_q_move_obj = EvaluationPpTable.build_p_p_moves_by_pp_index(
+                assert_black_p_move_obj, assert_black_q_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
                         pp_index=pq_index,
                         shall_p1_white_to_black=board.turn==cshogi.WHITE)
 

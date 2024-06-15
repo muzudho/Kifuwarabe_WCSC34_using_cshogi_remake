@@ -50,8 +50,9 @@ p2_move_obj:{p2_move_obj.as_usi:5}
 
 
     #destructure_pp_index
+    #build_p_p_moves_by_pp_index
     @staticmethod
-    def build_p_p_moves_by_pp_index(
+    def build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
             pp_index,
             shall_p1_white_to_black):
         """ＰＰインデックス分解
