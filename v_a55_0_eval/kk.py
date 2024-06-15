@@ -24,8 +24,8 @@ class EvaluationKkTable():
             自玉の着手
         l_move_obj : Move
             敵玉の応手
-        shall_k_white_to_black : black
-            着手側の手番
+        shall_k_white_to_black : bool
+            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
         """
 
         # 評価値テーブルは先手用の形だ。着手と応手のどちらかは後手なので、後手番は１８０°回転させる必要がある
@@ -52,8 +52,8 @@ class EvaluationKkTable():
         ---------
         kl_index : int
             自玉と敵玉の関係の通しインデックス
-        shall_k_white_to_black : int
-            着手側の手番
+        shall_k_white_to_black : bool
+            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
 
         Returns
         -------

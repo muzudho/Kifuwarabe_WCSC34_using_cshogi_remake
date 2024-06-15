@@ -133,7 +133,7 @@ def test_p():
                 srcloc=p_srcloc,
                 dstsq=p_dstsq,
                 promoted=p_promote,
-                is_rotate=is_p_rotate)
+                is_rotate=shall_p_white_to_black)
 
         if expected_p_move_obj.as_usi != actual_p_move_obj.as_usi:
             raise ValueError(f'unexpected error. move_obj expected P:`{expected_p_move_obj.as_usi}`  actual P:`{actual_p_move_obj.as_usi}`')

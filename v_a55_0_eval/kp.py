@@ -26,7 +26,7 @@ class EvaluationKpTable():
         p_move_obj : Move
             兵の応手
         shall_k_white_to_black : bool
-            着手側の手番
+            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
         """
 
         # 評価値テーブルは先手用の形だ。着手と応手のどちらかは後手なので、後手番は１８０°回転させる必要がある
@@ -54,7 +54,7 @@ class EvaluationKpTable():
         kp_index : int
             玉と兵の関係の通しインデックス
         shall_k_white_to_black : bool
-            着手側の手番
+            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
 
         Returns
         -------
