@@ -502,7 +502,7 @@ class EvaluationPMove():
                 # 配列Ｂのインデックス `59` （符号で言うと `7f`）は存在しない要素を指定しています。この配列Ｂは、配列Ａの 66 （符号で言うと `8d`）要素に入っていたものです。この探索は、兵の指し手 `8d7f` を調べているところでした  shall_p_white_to_black:False  ex:59
                 print(f"""[evaluation p move > get index by p move > 成らない手]
 （後手は、盤を１８０°回転する必要があるか？：{shall_p_white_to_black}）
-兵の指し手 `{p_move_obj.as_usi}` を調べていたところ、移動元マス `{Usi.sq_to_code(p_srcsq)}` から、移動先マス `{Usi.sq_to_code(p_dstsq)}` ）へ指す動作が、配列の要素に含まれていませんでした  ex:{ex}""")
+兵の指し手 `{p_move_obj.as_usi}` を調べていたところ、移動元マス `{Usi.sq_to_jsa(p_srcsq)}` から、移動先マス `{Usi.sq_to_jsa(p_dstsq)}` ）へ指す動作が、配列の要素に含まれていませんでした  ex:{ex}""")
 
                 # debug
                 print(f"    p_srcmasu:{Usi.sq_to_jsa(p_srcsq):2}")
