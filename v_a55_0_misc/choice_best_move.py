@@ -57,17 +57,15 @@ class ChoiceBestMove():
                 move_obj=move_obj)
 
         if is_king_move:
+
+            #
+            # ＫＬ
+            #
+
             # 自玉の着手と、敵玉の応手の一覧から、ＫＬテーブルのインデックスと、関係の有無を格納した辞書を作成
             black_kl_index_to_relation_exists_dic = kifuwarabe.evaluation_kl_table_obj_array[Turn.to_index(board.turn)].select_kl_index_and_relation_exists(
                     k_move_obj=move_obj,
                     l_move_u_set=l_move_u_set,
-                    # 先手の指し手になるよう調整します
-                    k_turn=board.turn)
-
-            # 自玉の着手と、敵兵の応手の一覧から、ＫＱテーブルのインデックスと、関係の有無を格納した辞書を作成
-            black_kq_index_to_relation_exists_dic = kifuwarabe.evaluation_kq_table_obj_array[Turn.to_index(board.turn)].select_kp_index_and_relation_exists(
-                    k_move_obj=move_obj,
-                    p_move_u_set=q_move_u_set,
                     # 先手の指し手になるよう調整します
                     k_turn=board.turn)
 
@@ -84,6 +82,17 @@ class ChoiceBestMove():
 move_u:{move_obj.as_usi:5} k_move_u:{assert_k_move_obj.as_usi:5}
        {''             :5} l_move_u:{assert_l_move_obj.as_usi:5}
 """)
+
+            #
+            # ＫＱ
+            #
+
+            # 自玉の着手と、敵兵の応手の一覧から、ＫＱテーブルのインデックスと、関係の有無を格納した辞書を作成
+            black_kq_index_to_relation_exists_dic = kifuwarabe.evaluation_kq_table_obj_array[Turn.to_index(board.turn)].select_kp_index_and_relation_exists(
+                    k_move_obj=move_obj,
+                    p_move_u_set=q_move_u_set,
+                    # 先手の指し手になるよう調整します
+                    k_turn=board.turn)
 
             # assert
             for black_kq_index, relation_exists in black_kq_index_to_relation_exists_dic.items():
@@ -105,6 +114,11 @@ move_u:{move_obj.as_usi:5} k_move_u:{assert_k_move_obj.as_usi:5}
                     None)
 
         else:
+
+            #
+            # ＰＬ
+            #
+
             # 自兵の着手と、敵玉の応手の一覧から、ＰＬテーブルのインデックスと、関係の有無を格納した辞書を作成
             black_pl_index_to_relation_exists_dic = kifuwarabe.evaluation_pl_table_obj_array[Turn.to_index(board.turn)].select_pk_index_and_relation_exists(
                     p_move_obj=move_obj,
@@ -155,6 +169,10 @@ move_rot_u:{move_rot_obj.as_usi:5}
            {''                 :5} black_l_move_u:{assert_black_l_move_obj.as_usi:5}
 """)
 
+            #
+            # ＰＱ
+            #
+
             # 自兵の着手と、敵兵の応手の一覧から、ＰＱテーブルのインデックスと、関係の有無を格納した辞書を作成
             black_pq_index_to_relation_exists_dic = kifuwarabe.evaluation_pq_table_obj_array[Turn.to_index(board.turn)].select_pp_index_and_relation_exists(
                     p1_move_obj=move_obj,
@@ -169,13 +187,26 @@ move_rot_u:{move_rot_obj.as_usi:5}
                         # black_pq_index は先手なので、１８０°回転させてはいけません
                         shall_p1_white_to_black=False)
 
-                if assert_black_p_move_obj.as_usi != move_obj.as_usi:
-                    print(board)
-                    raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pq] 着手が変わっているエラー
+                # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
+                if not is_white:
+                    if assert_black_p_move_obj.as_usi != move_obj.as_usi:
+                        print(board)
+                        raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pq] 着手が変わっているエラー
 is_white  :{is_white}
 move_u    :{move_obj.as_usi    :5} black_p_move_u:{assert_black_p_move_obj.as_usi:5}
 move_rot_u:{move_rot_obj.as_usi:5}
            {''                 :5} black_q_move_u:{assert_black_q_move_obj.as_usi:5}
+""")
+
+                # 着手が後手なら、１８０°回転させるので、インデックスは変わる
+                else:
+                    if assert_black_p_move_obj.as_usi != move_rot_obj.as_usi:
+                        print(board)
+                        raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pq] 指し手を先手の向きに変えて復元できなかったエラー
+is_white  :{is_white}
+move_u    :{move_obj.as_usi    :5} black_p_move_u:{assert_black_p_move_obj.as_usi:5}
+move_rot_u:{move_rot_obj.as_usi:5}
+           {''                 :5} black_l_move_u:{assert_black_q_move_obj.as_usi:5}
 """)
 
             return (None,
