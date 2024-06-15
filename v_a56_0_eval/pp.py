@@ -31,8 +31,16 @@ class EvaluationPpTable():
         # 評価値テーブルは先手用の形だ。着手と応手のどちらかは後手なので、後手番は１８０°回転させる必要がある
         shall_p2_white_to_black = not shall_p1_white_to_black
 
-        # 0 ～ 14_542_781 =                                                                 0 ～ 3812 *                                     3813 +                                                                0 ～ 3812
-        pp_index         = EvaluationPMove.get_index_by_p_move(p1_move_obj, shall_p1_white_to_black) * EvaluationPMove.get_serial_number_size() + EvaluationPMove.get_index_by_p_move(p2_move_obj, shall_p2_white_to_black)
+        try:
+            # 0 ～ 14_542_781 =                                                                 0 ～ 3812 *                                     3813 +                                                                0 ～ 3812
+            pp_index         = EvaluationPMove.get_index_by_p_move(p1_move_obj, shall_p1_white_to_black) * EvaluationPMove.get_serial_number_size() + EvaluationPMove.get_index_by_p_move(p2_move_obj, shall_p2_white_to_black)
+
+        except KeyError:
+            print(f"""[evaluation pp table > get index of pp table] エラー
+p1_move_obj:{p1_move_obj.as_usi:5}  shall_p1_white_to_black:{shall_p1_white_to_black}
+p2_move_obj:{p2_move_obj.as_usi:5}
+""")
+            raise
 
         # assert
         if EvaluationPMove.get_serial_number_size() * EvaluationPMove.get_serial_number_size() <= pp_index:
@@ -187,7 +195,7 @@ class EvaluationPpTable():
 
 
     # 使ってない？
-    def get_relation_esixts_by_pp_moves(
+    def get_relation_exists_by_pp_moves(
             self,
             p1_move_obj,
             p2_move_obj,
@@ -208,14 +216,14 @@ class EvaluationPpTable():
         bit : int
             0 or 1
         """
-        return self.get_relation_esixts_by_index(
+        return self.get_relation_exists_by_index(
                 kp_index=EvaluationPpTable.get_index_of_pp_table(
                     p1_move_obj=p1_move_obj,
                     p2_move_obj=p2_move_obj,
                     shall_p1_white_to_black=is_rotate))
 
 
-    def get_relation_esixts_by_index(
+    def get_relation_exists_by_index(
             self,
             pp_index):
         """配列のインデックスを受け取って、関係の有無を返します
@@ -234,7 +242,7 @@ class EvaluationPpTable():
                 index=pp_index)
 
 
-    def set_relation_esixts_by_pp_moves(
+    def set_relation_exists_by_pp_moves(
             self,
             p1_move_obj,
             p2_move_obj,
@@ -302,7 +310,7 @@ class EvaluationPpTable():
                 p2_move_obj=Move.from_usi(p2_move_u),
                 shall_p1_white_to_black=p1_turn==cshogi.WHITE)
 
-            relation_bit = self.get_relation_esixts_by_index(
+            relation_bit = self.get_relation_exists_by_index(
                     pp_index=pp_index)
 
             relations[pp_index] = relation_bit

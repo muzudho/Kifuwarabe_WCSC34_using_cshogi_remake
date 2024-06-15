@@ -446,6 +446,22 @@ class EvaluationPMove():
                 p_index = dstsq_to_index_dictionary[p_dstsq]
 
             except KeyError as ex:
+
+                # 9f9g+ とか、そんな操作で成ることはできない
+                """
+[evaluation p move > get index by p move > 成る手2]
+（後手は、盤を１８０°回転する必要があるか？：False）
+兵の指し手 `9f9g+` を調べていたところ、移動元マス `96` から、移動先マス `97` へ指す動作が、配列の要素に含まれていませんでした  ex:78
+
+    p_srcmasu:96
+    p_dstmasu:41  p_index: 3183
+    p_dstmasu:52  p_index: 3184
+    p_dstmasu:63  p_index: 3185
+    p_dstmasu:91  p_index: 3186
+    p_dstmasu:92  p_index: 3187
+    p_dstmasu:93  p_index: 3188
+                """
+
                 # 配列Ｂのインデックス `6` （符号で言うと `7a`）は存在しない要素を指定しています。この配列Ｂは、配列Ａの 15 （符号で言うと `7b`）要素に入っていたものです。この探索は、兵の指し手 `3h3i+` を調べているところでした   ex:6
                 print(f"""[evaluation p move > get index by p move > 成る手2]
 （後手は、盤を１８０°回転する必要があるか？：{shall_p_white_to_black}）

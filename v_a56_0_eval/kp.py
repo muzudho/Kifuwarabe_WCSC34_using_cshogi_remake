@@ -199,7 +199,7 @@ class EvaluationKpTable():
 
 
     # 使ってない？
-    def get_relation_esixts_by_kp_moves(
+    def get_relation_exists_by_kp_moves(
             self,
             k_move_obj,
             p_move_obj,
@@ -220,14 +220,19 @@ class EvaluationKpTable():
         bit : int
             0 or 1
         """
-        return self.get_relation_esixts_by_index(
+
+        # assert
+        if Usi.is_drop_by_srcloc(k_move_obj.srcloc):
+            raise ValueError(f"[evaluation kp table > get relation exists by kp moves > k] 玉の指し手で打なのはおかしい。 k_move_obj.srcloc_u:{Usi.srcloc_to_code(k_move_obj.srcloc)}  k_move_obj:{k_move_obj.dump()}")
+
+        return self.get_relation_exists_by_index(
                 kp_index=EvaluationKpTable.get_index_of_kp_table(
                     k_move_obj=k_move_obj,
                     p_move_obj=p_move_obj,
                     shall_k_white_to_black=is_rotate))
 
 
-    def get_relation_esixts_by_index(
+    def get_relation_exists_by_index(
             self,
             kp_index):
         """配列のインデックスを受け取って、関係の有無を返します
@@ -246,7 +251,7 @@ class EvaluationKpTable():
                 index=kp_index)
 
 
-    def set_relation_esixts_by_kp_moves(
+    def set_relation_exists_by_kp_moves(
             self,
             k_move_obj,
             p_move_obj,
@@ -313,7 +318,7 @@ class EvaluationKpTable():
                 p_move_obj=Move.from_usi(p_move_u),
                 shall_k_white_to_black=k_turn==cshogi.WHITE)
 
-            relation_bit = self.get_relation_esixts_by_index(
+            relation_bit = self.get_relation_exists_by_index(
                     kp_index=kp_index)
 
             relations[kp_index] = relation_bit

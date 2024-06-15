@@ -81,8 +81,9 @@ class ChoiceBestMove():
                     if assert_black_k_move_obj.as_usi != move_obj.as_usi:
                         print(board)
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > kl] 着手が変わっているエラー
-move_u:{move_obj.as_usi:5} k_move_u:{assert_black_k_move_obj.as_usi:5}
-       {''             :5} l_move_u:{assert_white_l_move_obj.as_usi:5}
+                                           手番（Ｋ）:{Turn.to_string(board.turn)}
+                                      元の指し手（Ｋ）:{move_obj.as_usi:5}
+１回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{assert_black_k_move_obj.as_usi:5}
 """)
 
                 # 着手が後手なら、１８０°回転させるので、インデックスは変わる
@@ -119,8 +120,9 @@ move_rot_u:{move_rot_obj.as_usi:5}
                     if assert_black_k_move_obj.as_usi != move_obj.as_usi:
                         print(board)
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > kq] 着手が変わっているエラー
-move_u:{move_obj.as_usi:5} k_move_u:{assert_black_k_move_obj.as_usi:5}
-       {''             :5} k_move_u:{assert_white_q_move_obj.as_usi:5}
+                                           手番（Ｋ）:{Turn.to_string(board.turn)}
+                                      元の指し手（Ｋ）:{move_obj.as_usi:5}
+１回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{assert_black_k_move_obj.as_usi:5}
 """)
 
                 # 着手が後手なら、１８０°回転させるので、インデックスは変わる
@@ -219,9 +221,9 @@ move_rot_u:{move_rot_obj.as_usi:5}
                         print(board)
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pq] 着手が変わっているエラー
 is_white  :{is_white}
-move_u    :{move_obj.as_usi    :5} black_p_move_u:{assert_black_p_move_obj.as_usi:5}
-move_rot_u:{move_rot_obj.as_usi:5}
-           {''                 :5} black_q_move_u:{assert_black_q_move_obj.as_usi:5}
+                                           手番（Ｐ）:{Turn.to_string(board.turn)}
+                                      元の指し手（Ｐ）:{move_obj.as_usi:5}
+１回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_black_p_move_obj.as_usi:5}
 """)
 
                 # 着手が後手なら、１８０°回転させるので、インデックスは変わる
@@ -395,19 +397,27 @@ move_rot_u:{move_rot_obj.as_usi:5}
 
             # assert
             for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
-                assert_k_move_obj, assert_l_move_obj = EvaluationKkTable.build_k_l_moves_by_kl_index(
+                assert_black_k_move_obj, assert_white_l_move_obj = EvaluationKkTable.build_k_l_moves_by_kl_index(
                         kl_index=kl_index,
                         shall_k_white_to_black=board.turn==cshogi.WHITE)
-                if assert_k_move_obj.as_usi != move_obj.as_usi:
-                    raise ValueError(f"[{datetime.datetime.now()}] [choice best move > kl] 着手が変わっているエラー  k_move_obj.as_usi:{assert_k_move_obj.as_usi}  move_u:{move_obj.as_usi}")
+                if assert_black_k_move_obj.as_usi != move_obj.as_usi:
+                    raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > kl] 着手が変わっているエラー
+                                           手番（Ｋ）:{Turn.to_string(board.turn)}
+                                      元の指し手（Ｋ）:{move_obj.as_usi:5}
+１回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{assert_black_k_move_obj.as_usi:5}
+""")
 
             # assert
             for kq_index, relation_exists in kq_index_to_relation_exists_dictionary.items():
-                assert_k_move_obj, assert_q_move_obj = EvaluationKpTable.build_k_p_moves_by_kp_index(
+                assert_black_k_move_obj, assert_white_q_move_obj = EvaluationKpTable.build_k_p_moves_by_kp_index(
                         kp_index=kq_index,
                         shall_k_white_to_black=board.turn==cshogi.WHITE)
-                if assert_k_move_obj.as_usi != move_obj.as_usi:
-                    raise ValueError(f"[{datetime.datetime.now()}] [choice best move > kq] 着手が変わっているエラー  k_move_obj.as_usi:{assert_k_move_obj.as_usi}  move_u:{move_obj.as_usi}")
+                if assert_black_k_move_obj.as_usi != move_obj.as_usi:
+                    raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > kq] 着手が変わっているエラー
+                                           手番（Ｋ）:{Turn.to_string(board.turn)}
+                                      元の指し手（Ｋ）:{move_obj.as_usi:5}
+１回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{assert_black_k_move_obj.as_usi:5}
+""")
 
 
             # ＫＬとＫＱの関係数
@@ -442,19 +452,27 @@ move_rot_u:{move_rot_obj.as_usi:5}
 
             # assert
             for pl_index, relation_exists in pl_index_to_relation_exists_dictionary.items():
-                assert_p_move_obj, assert_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
+                assert_black_p_move_obj, assert_white_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
                         pk_index=pl_index,
                         shall_p_white_to_black=board.turn==cshogi.WHITE)
-                if assert_p_move_obj.as_usi != move_obj.as_usi:
-                    raise ValueError(f"[{datetime.datetime.now()}] [choice best move > pl] 着手が変わっているエラー  p_move_obj.as_usi:{assert_p_move_obj.as_usi}  move_u:{move_obj.as_usi}")
+                if assert_black_p_move_obj.as_usi != move_obj.as_usi:
+                    raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > pl] 着手が変わっているエラー
+                                           手番（Ｐ）:{Turn.to_string(board.turn)}
+                                      元の指し手（Ｐ）:{move_obj.as_usi:5}
+１回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_black_p_move_obj.as_usi:5}
+""")
 
             # assert
             for pq_index, relation_exists in pq_index_to_relation_exists_dictionary.items():
-                assert_p_move_obj, assert_q_move_obj = EvaluationPpTable.build_p_p_moves_by_pp_index(
+                assert_black_p_move_obj, assert_white_q_move_obj = EvaluationPpTable.build_p_p_moves_by_pp_index(
                         pp_index=pq_index,
                         shall_p1_white_to_black=board.turn==cshogi.WHITE)
-                if assert_p_move_obj.as_usi != move_obj.as_usi:
-                    raise ValueError(f"[{datetime.datetime.now()}] [choice best move > pq] 着手が変わっているエラー  p_move_obj.as_usi:{assert_p_move_obj.as_usi}  move_u:{move_obj.as_usi}")
+                if assert_black_p_move_obj.as_usi != move_obj.as_usi:
+                    raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > pq] 着手が変わっているエラー
+                                           手番（Ｐ）:{Turn.to_string(board.turn)}
+                                      元の指し手（Ｐ）:{move_obj.as_usi:5}
+１回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_black_p_move_obj.as_usi:5}
+""")
 
             # ＰＬとＰＱの関係数
             total_of_relation = len(pl_index_to_relation_exists_dictionary) + len(pq_index_to_relation_exists_dictionary)
