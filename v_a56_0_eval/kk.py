@@ -52,15 +52,16 @@ class EvaluationKkTable():
 
 
     #destructure_kl_index
+    #build_k_l_moves_by_kl_index
     @staticmethod
-    def build_k_l_moves_by_kl_index(
-            kl_index,
+    def build_black_k_black_l_moves_by_black_k_black_l_index(
+            black_k_black_l_index,
             shall_k_white_to_black):
         """ＫＬインデックス分解
 
         Parameter
         ---------
-        kl_index : int
+        black_k_black_l_index : int
             自玉と敵玉の関係の通しインデックス
         shall_k_white_to_black : bool
             評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
@@ -75,31 +76,27 @@ class EvaluationKkTable():
 
         king_serial_number_size = EvaluationKMove.get_serial_number_size()
 
-        l_index = kl_index % king_serial_number_size
-        k_index = kl_index // king_serial_number_size
+        black_l_index = black_k_black_l_index % king_serial_number_size
+        black_k_index = black_k_black_l_index // king_serial_number_size
 
         # assert
-        if EvaluationKMove.get_serial_number_size() <= l_index:
-            raise ValueError(f"l_index:{l_index} out of range {EvaluationKMove.get_serial_number_size()}")
+        if EvaluationKMove.get_serial_number_size() <= black_l_index:
+            raise ValueError(f"black_l_index:{black_l_index} out of range {EvaluationKMove.get_serial_number_size()}")
 
         # assert
-        if EvaluationKMove.get_serial_number_size() <= k_index:
-            raise ValueError(f"k_index:{k_index} out of range {EvaluationKMove.get_serial_number_size()}")
+        if EvaluationKMove.get_serial_number_size() <= black_k_index:
+            raise ValueError(f"black_k_index:{black_k_index} out of range {EvaluationKMove.get_serial_number_size()}")
 
 
         # 評価値テーブルは先手用の形だ。着手と応手のどちらかは後手なので、後手番は１８０°回転させる必要がある
-        if shall_k_white_to_black:
-            is_k_rotate = True
-            is_l_rotate = False
-        else:
-            is_k_rotate = False
-            is_l_rotate = True
+        is_k_rotate = shall_k_white_to_black
+        is_l_rotate = not shall_k_white_to_black
 
         # Ｌ
         (l_srcsq,
          l_dstsq) = EvaluationKMove.destructure_srcsq_dstsq_by_k_index(
-                k_index=l_index)
-        l_move_obj = Move.from_src_dst_pro(
+                k_index=black_l_index)
+        black_l_move_obj = Move.from_src_dst_pro(
                 srcloc=l_srcsq,
                 dstsq=l_dstsq,
                 # 玉に成りはありません
@@ -109,15 +106,15 @@ class EvaluationKkTable():
         # Ｋ
         (k_srcsq,
          k_dstsq) = EvaluationKMove.destructure_srcsq_dstsq_by_k_index(
-                k_index=k_index)
-        k_move_obj = Move.from_src_dst_pro(
+                k_index=black_k_index)
+        black_k_move_obj = Move.from_src_dst_pro(
                 srcloc=k_srcsq,
                 dstsq=k_dstsq,
                 # 玉に成りはありません
                 promoted=False,
                 is_rotate=is_k_rotate)
 
-        return (k_move_obj, l_move_obj)
+        return (black_k_move_obj, black_l_move_obj)
 
 
     def __init__(
@@ -301,12 +298,13 @@ class EvaluationKkTable():
         return is_changed
 
 
-    # create_relation_exists_dictionary_by_k_move_and_l_moves
-    def select_kl_index_and_relation_exists(
+    #create_relation_exists_dictionary_by_k_move_and_l_moves
+    #select_kl_index_and_relation_exists
+    def select_black_k_black_l_index_and_relation_exists(
             self,
             k_move_obj,
             l_move_u_set,
-            k_turn):
+            shall_k_white_to_black):
         """自玉の指し手と、敵玉の応手のリストを受け取ると、すべての関係の有無を辞書に入れて返します
         ＫＫ評価値テーブル用
 
@@ -316,8 +314,8 @@ class EvaluationKkTable():
             自玉の着手
         l_move_u_set : List<str>
             敵玉の応手のリスト
-        k_turn : int
-            着手側の手番
+        shall_k_white_to_black : bool
+            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
 
         Returns
         -------
@@ -332,7 +330,7 @@ class EvaluationKkTable():
             black_k_black_l_index = EvaluationKkTable.get_black_k_black_l_index(
                     k_move_obj=k_move_obj,
                     l_move_obj=Move.from_usi(l_move_u),
-                    shall_k_white_to_black=k_turn==cshogi.WHITE)
+                    shall_k_white_to_black=shall_k_white_to_black)
 
             relation_bit = self.get_relation_exists_by_index(
                     black_k_black_l_index=black_k_black_l_index)

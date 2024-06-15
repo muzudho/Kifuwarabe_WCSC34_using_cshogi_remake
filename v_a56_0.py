@@ -775,11 +775,11 @@ class Kifuwarabe():
             # ＫＬ
             for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
 
-                k_move_obj, l_move_obj = EvaluationKkTable.build_k_l_moves_by_kl_index(
+                black_k_move_obj, black_l_move_obj = EvaluationKkTable.build_black_k_black_l_moves_by_black_k_black_l_index(
                         kl_index=kl_index,
                         shall_k_white_to_black=self._board.turn==cshogi.WHITE)
 
-                print(f"  turn:{Turn.to_string(self._board.turn)}  kl_index:{kl_index:7}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                print(f"  turn:{Turn.to_string(self._board.turn)}  kl_index:{kl_index:7}  K:{black_k_move_obj.as_usi:5}  L:{black_l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
             # ＫＱ
             for kq_index, relation_exists in kq_index_to_relation_exists_dictionary.items():

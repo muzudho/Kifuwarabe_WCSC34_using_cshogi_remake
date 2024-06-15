@@ -36,7 +36,7 @@ class ChoiceBestMove():
 
         Returns
         -------
-        black_kl_index_to_relation_exists_dic
+        black_k_black_l_index_to_relation_exists_dic
             自玉の着手と、敵玉の応手の関係の有無を格納した辞書
         black_kq_index_to_relation_exists_dic
             自玉の着手と、敵兵の応手の関係の有無を格納した辞書
@@ -63,17 +63,17 @@ class ChoiceBestMove():
             #
 
             # 自玉の着手と、敵玉の応手の一覧から、ＫＬテーブルのインデックスと、関係の有無を格納した辞書を作成
-            black_kl_index_to_relation_exists_dic = kifuwarabe.evaluation_kl_table_obj_array[Turn.to_index(board.turn)].select_kl_index_and_relation_exists(
+            black_k_black_l_index_to_relation_exists_dic = kifuwarabe.evaluation_kl_table_obj_array[Turn.to_index(board.turn)].select_black_k_black_l_index_and_relation_exists(
                     k_move_obj=move_obj,
                     l_move_u_set=l_move_u_set,
                     # 先手の指し手になるよう調整します
-                    k_turn=board.turn)
+                    shall_k_white_to_black=board.turn==cshogi.WHITE)
 
             # assert
-            for black_kl_index, relation_exists in black_kl_index_to_relation_exists_dic.items():
-                assert_black_k_move_obj, assert_white_l_move_obj = EvaluationKkTable.build_k_l_moves_by_kl_index(
-                        kl_index=black_kl_index,
-                        # black_kl_index は先手なので、１８０°回転させてはいけません
+            for black_k_black_l_index, relation_exists in black_k_black_l_index_to_relation_exists_dic.items():
+                assert_black_k_move_obj, assert_black_l_move_obj = EvaluationKkTable.build_black_k_black_l_moves_by_black_k_black_l_index(
+                        kl_index=black_k_black_l_index,
+                        # black_k_black_l_index は先手なので、１８０°回転させてはいけません
                         shall_k_white_to_black=False)
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
@@ -94,7 +94,7 @@ class ChoiceBestMove():
 is_white  :{is_white}
 move_u    :{move_obj.as_usi    :5} black_p_move_u:{assert_black_k_move_obj.as_usi:5}
 move_rot_u:{move_rot_obj.as_usi:5}
-           {''                 :5} black_l_move_u:{assert_white_l_move_obj.as_usi:5}
+           {''                 :5} black_l_move_u:{assert_black_l_move_obj.as_usi:5}
 """)
 
             #
@@ -136,7 +136,7 @@ move_rot_u:{move_rot_obj.as_usi:5}
            {''                 :5} black_l_move_u:{assert_white_q_move_obj.as_usi:5}
 """)
 
-            return (black_kl_index_to_relation_exists_dic,
+            return (black_k_black_l_index_to_relation_exists_dic,
                     black_kq_index_to_relation_exists_dic,
                     None,
                     None)
@@ -279,10 +279,10 @@ move_rot_u:{move_rot_obj.as_usi:5}
             # ＫＬ
             for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
                 if DebugPlan.get_number_of_connection_for_kl_kq:
-                    k_move_obj, l_move_obj = EvaluationKkTable.build_k_l_moves_by_kl_index(
+                    black_k_move_obj, black_l_move_obj = EvaluationKkTable.build_black_k_black_l_moves_by_black_k_black_l_index(
                             kl_index=kl_index,
                             shall_k_white_to_black=board.turn==cshogi.WHITE)
-                    print(f"[{datetime.datetime.now()}] [get number of connection for kl kq > kl]  kl_index:{kl_index:7}  K:{k_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                    print(f"[{datetime.datetime.now()}] [get number of connection for kl kq > kl]  kl_index:{kl_index:7}  K:{black_k_move_obj.as_usi:5}  L:{black_l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
             # ＫＱ
             for kq_index, relation_exists in kq_index_to_relation_exists_dictionary.items():
@@ -397,7 +397,7 @@ move_rot_u:{move_rot_obj.as_usi:5}
 
             # assert
             for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
-                assert_black_k_move_obj, assert_white_l_move_obj = EvaluationKkTable.build_k_l_moves_by_kl_index(
+                assert_black_k_move_obj, assert_black_l_move_obj = EvaluationKkTable.build_black_k_black_l_moves_by_black_k_black_l_index(
                         kl_index=kl_index,
                         shall_k_white_to_black=board.turn==cshogi.WHITE)
 

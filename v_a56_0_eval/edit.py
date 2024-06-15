@@ -200,7 +200,7 @@ class EvaluationEdit():
             # ＫＬ
             #
             for target_fl_index in target_fl_index_list:
-                black_k_move_obj, white_l_move_obj = EvaluationKkTable.build_k_l_moves_by_kl_index(
+                black_k_move_obj, black_l_move_obj = EvaluationKkTable.build_black_k_black_l_moves_by_black_k_black_l_index(
                         kl_index=target_fl_index,
                         shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
 
@@ -209,8 +209,8 @@ class EvaluationEdit():
                     raise ValueError(f"[evaluation edit > weaken > k] 玉の指し手で打なのはおかしい。 black_k_move_obj.srcloc_u:{Usi.srcloc_to_code(black_k_move_obj.srcloc)}  black_k_move_obj:{black_k_move_obj.dump()}")
 
                 # assert
-                if Usi.is_drop_by_srcloc(white_l_move_obj.srcloc):
-                    raise ValueError(f"[evaluation edit > weaken > l] 玉の指し手で打なのはおかしい。 white_l_move_obj.srcloc_u:{Usi.srcloc_to_code(white_l_move_obj.srcloc)}  white_l_move_obj:{white_l_move_obj.dump()}")
+                if Usi.is_drop_by_srcloc(black_l_move_obj.srcloc):
+                    raise ValueError(f"[evaluation edit > weaken > l] 玉の指し手で打なのはおかしい。 black_l_move_obj.srcloc_u:{Usi.srcloc_to_code(black_l_move_obj.srcloc)}  black_l_move_obj:{black_l_move_obj.dump()}")
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                 if self._kifuwarabe.board.turn==cshogi.BLACK:
@@ -584,7 +584,7 @@ class EvaluationEdit():
             # ＫＬ
             #
             for target_fl_index in target_fl_index_list:
-                black_k_move_obj, white_l_move_obj = EvaluationKkTable.build_k_l_moves_by_kl_index(
+                black_k_move_obj, black_l_move_obj = EvaluationKkTable.build_black_k_black_l_moves_by_black_k_black_l_index(
                         kl_index=target_fl_index,
                         shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
 
@@ -593,8 +593,8 @@ class EvaluationEdit():
                     raise ValueError(f"[evaluation edit > strengthen > k] 玉の指し手で打なのはおかしい。 black_k_move_obj.srcloc_u:{Usi.srcloc_to_code(black_k_move_obj.srcloc)}  black_k_move_obj:{black_k_move_obj.dump()}")
 
                 # assert
-                if Usi.is_drop_by_srcloc(white_l_move_obj.srcloc):
-                    raise ValueError(f"[evaluation edit > strengthen > l] 玉の指し手で打なのはおかしい。 white_l_move_obj.srcloc_u:{Usi.srcloc_to_code(white_l_move_obj.srcloc)}  white_l_move_obj:{white_l_move_obj.dump()}")
+                if Usi.is_drop_by_srcloc(black_l_move_obj.srcloc):
+                    raise ValueError(f"[evaluation edit > strengthen > l] 玉の指し手で打なのはおかしい。 black_l_move_obj.srcloc_u:{Usi.srcloc_to_code(black_l_move_obj.srcloc)}  black_l_move_obj:{black_l_move_obj.dump()}")
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                 if self._kifuwarabe.board.turn==cshogi.BLACK:
