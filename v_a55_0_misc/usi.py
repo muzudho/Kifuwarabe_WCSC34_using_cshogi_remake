@@ -39,8 +39,8 @@ class Usi():
     @classmethod
     def sq_to_code(clazz, sq):
         """マス番号から、ＵＳＩ形式の符号の先頭２文字へ変換します"""
-        file_th = sq % 9 + 1
-        rank_th = sq // 9 + 1
+        file_th = sq // 9 + 1
+        rank_th = sq % 9 + 1
         return f"{file_th}{clazz._rank_th_num_to_alphabet[rank_th]}"
 
 
