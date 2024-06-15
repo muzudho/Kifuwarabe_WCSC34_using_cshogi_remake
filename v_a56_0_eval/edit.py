@@ -74,7 +74,8 @@ class EvaluationEdit():
         for fl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
             assert_black_p_move_obj, assert_black_l_move_obj = EvaluationPkTable.build_black_p_black_k_moves_by_black_p_black_k_index(
                     pk_index=fl_index,
-                    shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
+                    shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
+                    shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.BLACK)
 
             # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
             if self._kifuwarabe.board.turn==cshogi.BLACK:
@@ -249,9 +250,10 @@ class EvaluationEdit():
             # ＫＱ
             #
             for target_fq_index in target_fq_index_list:
-                black_k_move_obj, white_q_move_obj = EvaluationKpTable.build_k_p_moves_by_kp_index(
+                black_k_move_obj, white_q_move_obj = EvaluationKpTable.build_black_k_black_p_moves_by_black_k_black_p_index(
                         kp_index=target_fq_index,
-                        shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
+                        shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
+                        shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.BLACK)
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                 if self._kifuwarabe.board.turn==cshogi.BLACK:
@@ -339,7 +341,8 @@ class EvaluationEdit():
             for target_fl_index in target_fl_index_list:
                 black_p_move_obj, black_l_move_obj = EvaluationPkTable.build_black_p_black_k_moves_by_black_p_black_k_index(
                         pk_index=target_fl_index,
-                        shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
+                        shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
+                        shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.BLACK)
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                 if self._kifuwarabe.board.turn==cshogi.BLACK:
@@ -463,7 +466,8 @@ class EvaluationEdit():
         for fl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
             assert_black_p_move_obj, assert_black_l_move_obj = EvaluationPkTable.build_black_p_black_k_moves_by_black_p_black_k_index(
                     pk_index=fl_index,
-                    shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
+                    shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
+                    shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.BLACK)
             
             # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
             if self._kifuwarabe.board.turn==cshogi.BLACK:
@@ -624,7 +628,7 @@ class EvaluationEdit():
 
                 is_changed_temp = self._kifuwarabe._evaluation_kl_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exsits_by_kl_moves(
                         k_move_obj=black_k_move_obj,
-                        l_move_obj=white_l_move_obj,
+                        l_move_obj=black_l_move_obj,
                         shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
                         bit=1)
 
@@ -636,9 +640,10 @@ class EvaluationEdit():
             # ＫＱ
             #
             for target_fq_index in target_fq_index_list:
-                black_k_move_obj, white_q_move_obj = EvaluationKpTable.build_k_p_moves_by_kp_index(
+                black_k_move_obj, black_q_move_obj = EvaluationKpTable.build_black_k_black_p_moves_by_black_k_black_p_index(
                         kp_index=target_fq_index,
-                        shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
+                        shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
+                        shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.BLACK)
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                 if self._kifuwarabe.board.turn==cshogi.BLACK:
@@ -660,11 +665,11 @@ class EvaluationEdit():
 
                 # デバッグ表示
                 if is_debug and DebugPlan.evaluation_edit_strengthen:
-                    print(f"[{datetime.datetime.now()}] [strengthen > kq] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  kq_index:{target_fq_index:7}  K:{black_k_move_obj.as_usi:5}  Q:{white_q_move_obj.as_usi:5}  remove relation")
+                    print(f"[{datetime.datetime.now()}] [strengthen > kq] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  kq_index:{target_fq_index:7}  K:{black_k_move_obj.as_usi:5}  Q:{black_q_move_obj.as_usi:5}  remove relation")
 
                 is_changed_temp = self._kifuwarabe._evaluation_kq_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exists_by_kp_moves(
                         k_move_obj=black_k_move_obj,
-                        p_move_obj=white_q_move_obj,
+                        p_move_obj=black_q_move_obj,
                         shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
                         shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.BLACK,
                         bit=1)
@@ -694,7 +699,8 @@ class EvaluationEdit():
                     # assert
                     assert_black_p_move_obj, assert_black_l_move_obj = EvaluationPkTable.build_black_p_black_k_moves_by_black_p_black_k_index(
                             pk_index=fl_index,
-                            shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
+                            shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
+                            shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.BLACK)
 
                     # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                     if self._kifuwarabe.board.turn==cshogi.BLACK:
@@ -750,7 +756,8 @@ class EvaluationEdit():
             for target_fl_index in target_fl_index_list:
                 black_p_move_obj, black_l_move_obj = EvaluationPkTable.build_black_p_black_k_moves_by_black_p_black_k_index(
                         pk_index=target_fl_index,
-                        shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
+                        shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
+                        shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.BLACK)
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                 if self._kifuwarabe.board.turn==cshogi.BLACK:

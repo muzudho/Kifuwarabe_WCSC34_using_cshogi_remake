@@ -18,7 +18,8 @@ class EvaluationPkTable():
     def get_black_p_black_k_index(
             p_move_obj,
             k_move_obj,
-            shall_p_white_to_black):
+            shall_p_white_to_black,
+            shall_k_white_to_black):
         """ＰＫ評価値テーブルのインデックスを算出
 
         Parameters
@@ -29,14 +30,13 @@ class EvaluationPkTable():
             玉の応手
         shall_p_white_to_black : bool
             評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
+        shall_k_white_to_black : bool
+            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
         """
 
         # assert
         if Usi.is_drop_by_srcloc(k_move_obj.srcloc):
             raise ValueError(f"[evaluation pk table > get index of pk move > k] 玉の指し手で打なのはおかしい。 k_move_obj.srcloc_u:{Usi.srcloc_to_code(k_move_obj.srcloc)}  k_move_obj:{k_move_obj.dump()}")
-
-        # 評価値テーブルは先手用の形だ。着手と応手のどちらかは後手なので、後手番は１８０°回転させる必要がある
-        shall_k_white_to_black = not shall_p_white_to_black
 
         # 0 ～ 2_074_815      =                                                                      0 ～ 3812 *                                      544 +                                                                     0 ～ 543
         black_p_black_k_index = EvaluationPMove.get_black_index_by_p_move(p_move_obj, shall_p_white_to_black) * EvaluationKMove.get_serial_number_size() + EvaluationKMove.get_black_index_by_k_move(k_move_obj, shall_k_white_to_black)
@@ -89,7 +89,8 @@ class EvaluationPkTable():
     @staticmethod
     def build_black_p_black_k_moves_by_black_p_black_k_index(
             pk_index,
-            shall_p_white_to_black):
+            shall_p_white_to_black,
+            shall_k_white_to_black):
         """ＰＫインデックス分解
 
         Parameter
@@ -97,6 +98,8 @@ class EvaluationPkTable():
         pk_index : int
             兵と玉の関係の通しインデックス
         shall_p_white_to_black : bool
+            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
+        shall_k_white_to_black : bool
             評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
 
         Returns
@@ -121,24 +124,20 @@ class EvaluationPkTable():
          p_promote) = EvaluationPMove.destructure_srcloc_dstsq_promoted_by_p_index(
                 p_index=p_index)
 
-        # 評価値テーブルは先手用の形だ。着手と応手のどちらかは後手なので、後手番は１８０°回転させる必要がある
-        is_p_rotate = shall_p_white_to_black
-        is_k_rotate = not shall_p_white_to_black
-
         # Ｋ
         black_k_move_obj = Move.from_src_dst_pro(
                 srcloc=k_srcsq,
                 dstsq=k_dstsq,
                 # 玉に成りはありません
                 promoted=False,
-                is_rotate=is_k_rotate)
+                is_rotate=shall_k_white_to_black)
 
         # Ｐ
         black_p_move_obj = Move.from_src_dst_pro(
                 srcloc=p_srcloc,
                 dstsq=p_dstsq,
                 promoted=p_promote,
-                is_rotate=is_p_rotate)
+                is_rotate=shall_p_white_to_black)
 
         return (black_p_move_obj, black_k_move_obj)
 
@@ -228,7 +227,8 @@ class EvaluationPkTable():
             self,
             p_move_obj,
             k_move_obj,
-            shall_p_white_to_black):
+            shall_p_white_to_black,
+            shall_k_white_to_black):
         """玉と兵の指し手を受け取って、関係の有無を返します
 
         Parameters
@@ -238,6 +238,8 @@ class EvaluationPkTable():
         k_move_obj : Move
             玉の指し手
         shall_p_white_to_black : bool
+            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
+        shall_k_white_to_black : bool
             評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
 
         Returns
@@ -254,7 +256,8 @@ class EvaluationPkTable():
                 black_k_black_p_index=EvaluationPkTable.get_black_p_black_k_index(
                     p_move_obj=p_move_obj,
                     k_move_obj=k_move_obj,
-                    shall_p_white_to_black=shall_p_white_to_black))
+                    shall_p_white_to_black=shall_p_white_to_black,
+                    shall_k_white_to_black=shall_k_white_to_black))
 
 
     def get_relation_exists_by_index(
@@ -281,6 +284,7 @@ class EvaluationPkTable():
             p_move_obj,
             k_move_obj,
             shall_p_white_to_black,
+            shall_k_white_to_black,
             bit):
         """玉の着手と兵の応手を受け取って、関係の有無を設定します
 
@@ -291,6 +295,8 @@ class EvaluationPkTable():
         k_move_obj : Move
             玉の応手
         shall_p_white_to_black : bool
+            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
+        shall_k_white_to_black : bool
             評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
         bit : int
             0 か 1
@@ -304,7 +310,8 @@ class EvaluationPkTable():
                 index=EvaluationPkTable.get_black_p_black_k_index(
                         p_move_obj=p_move_obj,
                         k_move_obj=k_move_obj,
-                    shall_p_white_to_black=shall_p_white_to_black),
+                    shall_p_white_to_black=shall_p_white_to_black,
+                    shall_k_white_to_black=shall_k_white_to_black),
                 bit=bit)
 
         return is_changed
@@ -341,7 +348,8 @@ class EvaluationPkTable():
             black_p_black_k_index = EvaluationPkTable.get_black_p_black_k_index(
                 p_move_obj=p_move_obj,
                 k_move_obj=Move.from_usi(k_move_u),
-                shall_p_white_to_black=p_turn==cshogi.WHITE)
+                shall_p_white_to_black=p_turn==cshogi.WHITE,
+                shall_k_white_to_black=p_turn==cshogi.BLACK)
 
             relation_bit = self.get_relation_exists_by_index(
                     black_p_black_k_index=black_p_black_k_index)

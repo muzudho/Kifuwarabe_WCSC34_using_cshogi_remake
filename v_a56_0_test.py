@@ -257,7 +257,8 @@ def test_pk():
                 p_move_obj=Move.from_usi(input_p_move_u),
                 k_move_obj=Move.from_usi(input_k_move_u),
                 # 着手が黒番なら、着手は先後反転せず、応手は先後反転させます
-                shall_p_white_to_black=f_turn==cshogi.WHITE)
+                shall_p_white_to_black=f_turn==cshogi.WHITE,
+                shall_k_white_to_black=f_turn==cshogi.BLACK)
 
         # pi_index から、指し手オブジェクトを生成します
         #
@@ -267,7 +268,8 @@ def test_pk():
          remaked_black_k_move_obj) = EvaluationPkTable.build_black_p_black_k_moves_by_black_p_black_k_index(
                 pk_index=black_p_black_k_index,
                 # （既に pk_index は１８０°回転しているので）１８０°回転はさせません
-                shall_p_white_to_black=False)
+                shall_p_white_to_black=False,
+                shall_k_white_to_black=False)
 
         # Ｐ
         if expected_black_p_move_u != remaked_black_p_move_obj.as_usi:

@@ -49,10 +49,12 @@ class EvaluationKpTable():
 
 
     #destructure_kp_index
+    #build_k_p_moves_by_kp_index
     @staticmethod
-    def build_k_p_moves_by_kp_index(
+    def build_black_k_black_p_moves_by_black_k_black_p_index(
             kp_index,
-            shall_k_white_to_black):
+            shall_k_white_to_black,
+            shall_p_white_to_black):
         """ＫＰインデックス分解
 
         Parameter
@@ -60,6 +62,8 @@ class EvaluationKpTable():
         kp_index : int
             玉と兵の関係の通しインデックス
         shall_k_white_to_black : bool
+            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
+        shall_p_white_to_black : bool
             評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
 
         Returns
@@ -85,15 +89,6 @@ class EvaluationKpTable():
         if EvaluationKMove.get_serial_number_size() <= k_index:
             raise ValueError(f"k_index:{k_index} out of range {EvaluationKMove.get_serial_number_size()}")
 
-
-        # 評価値テーブルは先手用の形だ。着手と応手のどちらかは後手なので、後手番は１８０°回転させる必要がある
-        if shall_k_white_to_black:
-            is_k_rotate = True
-            is_p_rotate = False
-        else:
-            is_k_rotate = False
-            is_p_rotate = True
-
         # Ｐ
         ((p_srcloc,
          p_dstsq,
@@ -103,7 +98,7 @@ class EvaluationKpTable():
                 srcloc=p_srcloc,
                 dstsq=p_dstsq,
                 promoted=p_promote,
-                is_rotate=is_p_rotate)
+                is_rotate=shall_p_white_to_black)
 
         # Ｋ
         (k_srcsq,
@@ -114,7 +109,7 @@ class EvaluationKpTable():
                 dstsq=k_dstsq,
                 # 玉に成りはありません
                 promoted=False,
-                is_rotate=is_k_rotate)
+                is_rotate=shall_k_white_to_black)
 
         return (k_move_obj, p_move_obj)
 
