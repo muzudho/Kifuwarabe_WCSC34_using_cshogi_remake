@@ -70,7 +70,7 @@ class ChoiceBestMove():
 
             # assert
             for kl_index, relation_exists in kl_index_to_relation_exists_dic.items():
-                assert_k_move_obj, assert_l_move_obj = EvaluationKkTable.destructure_kk_index(
+                assert_k_move_obj, assert_l_move_obj = EvaluationKkTable.destructure_kl_index(
                         kl_index=kl_index,
                         k_turn=board.turn)
                 if assert_k_move_obj.as_usi != move_obj.as_usi:
@@ -321,7 +321,7 @@ move_u:{move_obj.as_usi:5} p_move_u:{assert_p_move_obj.as_usi:5}
 
             # assert
             for kl_index, relation_exists in kl_index_to_relation_exists_dictionary.items():
-                assert_k_move_obj, assert_l_move_obj = EvaluationKkTable.destructure_kk_index(
+                assert_k_move_obj, assert_l_move_obj = EvaluationKkTable.destructure_kl_index(
                         kl_index=kl_index,
                         k_turn=board.turn)
                 if assert_k_move_obj.as_usi != move_obj.as_usi:
