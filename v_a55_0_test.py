@@ -228,7 +228,8 @@ drop_code:{drop_code}
 def test_pk():
     for data_set in [
         [cshogi.BLACK, '7b7a+', '5b5a'],
-        [cshogi.WHITE, '3h3i+', '5h5i']]:
+        [cshogi.WHITE, '3h3i+', '5h5i'],
+        ]:
 
         # 着手側の手番
         f_turn = data_set[0]
@@ -240,21 +241,34 @@ def test_pk():
         expected_k_move_u = data_set[2]
 
         # 関連
+        #
+        #   後手では、指し手を盤上で１８０°回転させてインデックスを取得します
+        #
         pk_index = EvaluationPkTable.get_index_of_pk_table(
                 p_move_obj=Move.from_usi(expected_p_move_u),
                 k_move_obj=Move.from_usi(expected_k_move_u),
                 p_turn=f_turn)
 
+        # pi_index から、指し手オブジェクトを生成します
         (actual_p_move_obj,
-        actual_k_move_obj) = EvaluationPkTable.destructure_pk_index(
+         actual_k_move_obj) = EvaluationPkTable.build_p_k_moves_by_pk_index(
                 pk_index=pk_index,
-                p_turn=cshogi.WHITE)
+                p_turn=f_turn)
 
-        if expected_p_move_u != actual_p_move_obj.as_usi:
-            raise ValueError(f'[test pk > p] 着手は{Turn.to_string(f_turn)}  P expected:{expected_p_move_u:5}  actual:{actual_p_move_obj.as_usi:5}')
+        rot_actual_p_move_obj = actual_p_move_obj.rotate()
+        rot_actual_k_move_obj = actual_k_move_obj.rotate()
 
-        if expected_k_move_u != actual_k_move_obj.as_usi:
-            raise ValueError(f'[test pk > k] 着手は{Turn.to_string(f_turn)}  K expected:{expected_k_move_u:5}  actual:{actual_k_move_obj.as_usi:5}')
+        # Ｐ
+        if (f_turn==cshogi.BLACK and expected_p_move_u != actual_p_move_obj.as_usi) or (f_turn==cshogi.WHITE and expected_p_move_u != rot_actual_p_move_obj.as_usi):
+            raise ValueError(f"""[test pk > p] 着手は{Turn.to_string(f_turn)}  P expected:{expected_p_move_u:5}  actual:{actual_p_move_obj.as_usi:5}
+（指し手が１８０°ひっくり返っていないように注意）
+""")
+
+        # Ｋ
+        if (f_turn==cshogi.BLACK and expected_k_move_u != actual_k_move_obj.as_usi) or (f_turn==cshogi.WHITE and expected_k_move_u != rot_actual_k_move_obj.as_usi):
+            raise ValueError(f"""[test pk > k] 着手は{Turn.to_string(f_turn)}  K expected:{expected_k_move_u:5}  actual:{actual_k_move_obj.as_usi:5}
+（指し手が１８０°ひっくり返っていないように注意）
+""")
 
 
 def test_bit_ope():

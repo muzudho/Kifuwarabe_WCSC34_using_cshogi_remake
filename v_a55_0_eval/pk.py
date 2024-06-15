@@ -82,8 +82,9 @@ class EvaluationPkTable():
         return (p_index, k_index)
 
 
+    # destructure_pk_index
     @staticmethod
-    def destructure_pk_index(
+    def build_p_k_moves_by_pk_index(
             pk_index,
             p_turn):
         """ＰＫインデックス分解
@@ -123,7 +124,7 @@ class EvaluationPkTable():
                 dstsq=k_dstsq,
                 # 玉に成りはありません
                 promoted=False,
-                is_rotate=is_p_rotate)
+                is_rotate=is_k_rotate)
 
         # Ｐ
         (p_srcloc,
@@ -134,7 +135,7 @@ class EvaluationPkTable():
                 srcloc=p_srcloc,
                 dstsq=p_dstsq,
                 promoted=p_promote,
-                is_rotate=is_k_rotate)
+                is_rotate=is_p_rotate)
 
         return (p_move_obj, k_move_obj)
 

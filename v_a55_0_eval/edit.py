@@ -74,7 +74,7 @@ class EvaluationEdit():
 
         # assert
         for fl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
-            assert_p_move_obj, assert_l_move_obj = EvaluationPkTable.destructure_pk_index(
+            assert_p_move_obj, assert_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
                     pk_index=fl_index,
                     p_turn=self._board.turn)
             if assert_p_move_obj.as_usi != move_u:
@@ -268,7 +268,7 @@ class EvaluationEdit():
             # ＰＬ
             #
             for target_fl_index in target_fl_index_list:
-                p_move_obj, l_move_obj = EvaluationPkTable.destructure_pk_index(
+                p_move_obj, l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
                         pk_index=target_fl_index,
                         p_turn=self._board.turn)
 
@@ -364,7 +364,7 @@ class EvaluationEdit():
 
         # assert
         for fl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
-            assert_p_move_obj, assert_l_move_obj = EvaluationPkTable.destructure_pk_index(
+            assert_p_move_obj, assert_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
                     pk_index=fl_index,
                     p_turn=self._board.turn)
             if assert_p_move_obj.as_usi != move_u:
@@ -525,7 +525,7 @@ class EvaluationEdit():
                 if relation_exists == 0:
 
                     # assert
-                    assert_p_move_obj, assert_l_move_obj = EvaluationPkTable.destructure_pk_index(
+                    assert_p_move_obj, assert_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
                             pk_index=fl_index,
                             p_turn=self._board.turn)
                     if assert_p_move_obj.as_usi != move_u:
@@ -565,7 +565,7 @@ class EvaluationEdit():
             # ＰＬ
             #
             for target_fl_index in target_fl_index_list:
-                p_move_obj, l_move_obj = EvaluationPkTable.destructure_pk_index(
+                p_move_obj, l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
                         pk_index=target_fl_index,
                         p_turn=self._board.turn)
 

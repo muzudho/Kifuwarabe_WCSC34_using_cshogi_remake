@@ -106,7 +106,7 @@ move_u:{move_obj.as_usi:5} k_move_u:{assert_k_move_obj.as_usi:5}
 
             # assert
             for pl_index, relation_exists in pl_index_to_relation_exists_dic.items():
-                assert_p_move_obj, assert_l_move_obj = EvaluationPkTable.destructure_pk_index(
+                assert_p_move_obj, assert_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
                         pk_index=pl_index,
                         p_turn=board.turn)
 
@@ -255,7 +255,7 @@ move_u:{move_obj.as_usi:5} p_move_u:{assert_p_move_obj.as_usi:5}
             # ＰＬ
             for pl_index, relation_exists in pl_index_to_relation_exists_dictionary.items():
                 if is_debug and DebugPlan.get_number_of_connection_for_pl_pq:
-                    p_move_obj, l_move_obj = EvaluationPkTable.destructure_pk_index(
+                    p_move_obj, l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
                             pk_index=pl_index,
                             p_turn=board.turn)
                     print(f"[{datetime.datetime.now()}] [get number of connection for pl pq > pl]  pl_index:{pl_index:7}  P:{p_move_obj.as_usi:5}  L:{l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
@@ -368,7 +368,7 @@ move_u:{move_obj.as_usi:5} p_move_u:{assert_p_move_obj.as_usi:5}
 
             # assert
             for pl_index, relation_exists in pl_index_to_relation_exists_dictionary.items():
-                assert_p_move_obj, assert_l_move_obj = EvaluationPkTable.destructure_pk_index(
+                assert_p_move_obj, assert_l_move_obj = EvaluationPkTable.build_p_k_moves_by_pk_index(
                         pk_index=pl_index,
                         p_turn=board.turn)
                 if assert_p_move_obj.as_usi != move_obj.as_usi:

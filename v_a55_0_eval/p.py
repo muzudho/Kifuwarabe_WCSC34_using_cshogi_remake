@@ -1,4 +1,6 @@
-from v_a55_0_misc.lib import BoardHelper
+import cshogi
+
+from v_a55_0_misc.lib import Turn
 from v_a55_0_misc.usi import Usi
 
 
@@ -372,7 +374,7 @@ class EvaluationPMove():
     @staticmethod
     def get_index_by_p_move(
             p_move_obj,
-            is_rotate,
+            p_turn,
             ignore_error=False):
         """兵の指し手を指定すると、兵の指し手のインデックスを返す。
 
@@ -380,8 +382,8 @@ class EvaluationPMove():
         ----------
         p_move_obj : Move
             兵の指し手
-        is_rotate : bool
-            後手なら真。指し手を１８０°回転させます
+        p_turn : bool
+            指し手の手番。（評価値テーブルは先手用として作られているので）後手なら指し手を１８０°回転させる必要があります
         ignore_error : bool
             エラーが起きたら例外を投げ上げずに、 -1 を返します
 
@@ -390,7 +392,7 @@ class EvaluationPMove():
             - 兵の指し手のインデックス
         """
 
-        if is_rotate:
+        if p_turn==cshogi.WHITE:
             p_srcloc = Usi.rotate_srcloc(p_move_obj.srcloc)
             p_dstsq = Usi.rotate_srcloc(p_move_obj.dstsq)
         else:
@@ -410,7 +412,7 @@ class EvaluationPMove():
                 dstsq_to_index_dictionary = srcdrop_to_dstsq_index[p_srcloc]
 
             except KeyError as ex:
-                print(f"[evaluation p move > get index by p move > 打つ手] p_move_obj.as_usi:{p_move_obj.as_usi}  P srcloc_u:{Usi.srcloc_to_code(p_srcloc)}  rotated:{is_rotate}  p_src_masu:{Usi.srcloc_to_jsa(p_srcloc)}  成:{p_move_obj.promoted}  ex:{ex}")
+                print(f"[evaluation p move > get index by p move > 打つ手] p_move_obj.as_usi:{p_move_obj.as_usi}  P srcloc_u:{Usi.srcloc_to_code(p_srcloc)}  p_turn:{Turn.to_string(p_turn)}  p_src_masu:{Usi.srcloc_to_jsa(p_srcloc)}  成:{p_move_obj.promoted}  ex:{ex}")
 
                 if ignore_error:
                     return -1
@@ -421,7 +423,7 @@ class EvaluationPMove():
                 p_index = dstsq_to_index_dictionary[p_dstsq]
 
             except KeyError as ex:
-                print(f"[evaluation p move > get index by p move > 打つ手] p_move_obj.as_usi:{p_move_obj.as_usi}  P srcloc_u:{Usi.srcloc_to_code(p_srcloc)}  rotated:{is_rotate}  p_src_masu:{Usi.srcloc_to_jsa(p_srcloc)}  成:{p_move_obj.promoted}  p_dst_masu:{Usi.sq_to_jsa(p_dstsq)}  ex:{ex}")
+                print(f"[evaluation p move > get index by p move > 打つ手] p_move_obj.as_usi:{p_move_obj.as_usi}  P srcloc_u:{Usi.srcloc_to_code(p_srcloc)}  p_turn:{Turn.to_string(p_turn)}  p_src_masu:{Usi.srcloc_to_jsa(p_srcloc)}  成:{p_move_obj.promoted}  p_dst_masu:{Usi.sq_to_jsa(p_dstsq)}  ex:{ex}")
 
                 if ignore_error:
                     return -1
@@ -436,7 +438,7 @@ class EvaluationPMove():
                 dstsq_to_index_dictionary = srcsq_to_dstsq_to_index_for_psi_dictionary[p_srcsq]
 
             except KeyError as ex:
-                print(f"[evaluation p move > get index by p move > 成る手1] p_move_obj.as_usi:{p_move_obj.as_usi}  P srcloc_u:{Usi.srcloc_to_code(p_srcloc)}  rotated:{is_rotate}  p_src_masu:{Usi.srcloc_to_jsa(p_srcsq)}  成:{p_move_obj.promoted}  ex:{ex}")
+                print(f"[evaluation p move > get index by p move > 成る手1] p_move_obj.as_usi:{p_move_obj.as_usi}  P srcloc_u:{Usi.srcloc_to_code(p_srcloc)}  p_turn:{Turn.to_string(p_turn)}  p_src_masu:{Usi.srcloc_to_jsa(p_srcsq)}  成:{p_move_obj.promoted}  ex:{ex}")
 
                 if ignore_error:
                     return -1
@@ -448,7 +450,10 @@ class EvaluationPMove():
 
             except KeyError as ex:
                 # 配列Ｂのインデックス `6` （符号で言うと `7a`）は存在しない要素を指定しています。この配列Ｂは、配列Ａの 15 （符号で言うと `7b`）要素に入っていたものです。この探索は、兵の指し手 `3h3i+` を調べているところでした   ex:6
-                print(f"[evaluation p move > get index by p move > 成る手2] 兵の指し手 `{p_move_obj.as_usi}` を調べていたところ、移動元マス `{Usi.sq_to_jsa(p_srcsq)}` から、移動先マス `{Usi.sq_to_jsa(p_dstsq)}` へ指す動作が、配列の要素に含まれていませんでした  rotated:{is_rotate}  ex:{ex}")
+                print(f"""[evaluation p move > get index by p move > 成る手2]
+（後手は、盤を１８０°回転していることを確認してください p_turn:{Turn.to_string(p_turn)}）
+兵の指し手 `{p_move_obj.as_usi}` を調べていたところ、移動元マス `{Usi.sq_to_jsa(p_srcsq)}` から、移動先マス `{Usi.sq_to_jsa(p_dstsq)}` へ指す動作が、配列の要素に含まれていませんでした  ex:{ex}
+""")
 
                 print(f"    p_srcmasu:{Usi.sq_to_jsa(p_srcsq):2}")
 
@@ -468,7 +473,7 @@ class EvaluationPMove():
                 dstsq_to_index_dictionary = srcsq_to_dstsq_to_index_for_npsi_dictionary[p_srcsq]
 
             except KeyError as ex:
-                print(f"[evaluation p move > get index by p move > 成らない手] p_move_obj.as_usi:{p_move_obj.as_usi}  P srcloc_u:{Usi.srcloc_to_code(p_srcloc)}  rotated:{is_rotate}  p_src_masu:{Usi.srcloc_to_jsa(p_srcsq)}  成:{p_move_obj.promoted}  ex:{ex}")
+                print(f"[evaluation p move > get index by p move > 成らない手] p_move_obj.as_usi:{p_move_obj.as_usi}  P srcloc_u:{Usi.srcloc_to_code(p_srcloc)}  p_turn:{Turn.to_string(p_turn)}  p_src_masu:{Usi.srcloc_to_jsa(p_srcsq)}  成:{p_move_obj.promoted}  ex:{ex}")
 
                 if ignore_error:
                     return -1
@@ -481,7 +486,7 @@ class EvaluationPMove():
             except KeyError as ex:
                 # TODO 後手の桂馬の動きをしようとしている。評価値テーブルには後手の動きは入っていないので、回転させる必要がある
                 # 配列Ｂのインデックス `26` （符号で言うと `9c`）は存在しない要素を指定しています。この配列Ｂは、配列Ａの 7 （符号で言うと `8a`）要素に入っていたものです。この探索は、兵の指し手 `2i1g` を調べているところでした  ex:26
-                print(f"[evaluation p move > get index by p move > 成らない手] 配列Ｂのインデックス `{p_dstsq}` （符号で言うと `{Usi.sq_to_code(p_dstsq)}`）は存在しない要素を指定しています。この配列Ｂは、配列Ａの {p_srcsq} （符号で言うと `{Usi.sq_to_code(p_srcsq)}`）要素に入っていたものです。この探索は、兵の指し手 `{p_move_obj.as_usi}` を調べているところでした  rotated:{is_rotate}  ex:{ex}")
+                print(f"[evaluation p move > get index by p move > 成らない手] 配列Ｂのインデックス `{p_dstsq}` （符号で言うと `{Usi.sq_to_code(p_dstsq)}`）は存在しない要素を指定しています。この配列Ｂは、配列Ａの {p_srcsq} （符号で言うと `{Usi.sq_to_code(p_srcsq)}`）要素に入っていたものです。この探索は、兵の指し手 `{p_move_obj.as_usi}` を調べているところでした  p_turn:{Turn.to_string(p_turn)}  ex:{ex}")
 
                 if ignore_error:
                     return -1
