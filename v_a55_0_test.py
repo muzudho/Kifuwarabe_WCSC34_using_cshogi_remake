@@ -114,11 +114,11 @@ def test_p():
         expected_p_move_u = '3h3i+'
         expected_p_move_obj = Move.from_usi(expected_p_move_u)
 
-        is_p_rotate = True
+        shall_p_white_to_black = True
 
         p_index = EvaluationPMove.get_index_by_p_move(
                 p_move_obj=expected_p_move_obj,
-                is_rotate=is_p_rotate,
+                shall_p_white_to_black=shall_p_white_to_black,
                 ignore_error=True)
 
         if p_index == -1:

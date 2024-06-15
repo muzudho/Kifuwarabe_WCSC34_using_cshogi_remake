@@ -30,15 +30,11 @@ class EvaluationKpTable():
         """
 
         # 評価値テーブルは先手用の形だ。着手と応手のどちらかは後手なので、後手番は１８０°回転させる必要がある
-        if k_turn == cshogi.BLACK:
-            is_k_rotate = False
-            is_p_rotate = True
-        else:
-            is_k_rotate = True
-            is_p_rotate = False
+        shall_k_white_to_black = k_turn == cshogi.WHITE
+        shall_p_white_to_black = k_turn == cshogi.BLACK
 
-        # 0 ～ 2_078_084 =                                                      0 ～ 543 *                                     3813 +                                                   0 ～ 3812
-        kp_index         = EvaluationKMove.get_index_by_k_move(k_move_obj, is_k_rotate) * EvaluationPMove.get_serial_number_size() + EvaluationPMove.get_index_by_p_move(p_move_obj, is_p_rotate)
+        # 0 ～ 2_078_084 =                                                                 0 ～ 543 *                                     3813 +                                                              0 ～ 3812
+        kp_index         = EvaluationKMove.get_index_by_k_move(k_move_obj, shall_k_white_to_black) * EvaluationPMove.get_serial_number_size() + EvaluationPMove.get_index_by_p_move(p_move_obj, shall_p_white_to_black)
 
         # assert
         if EvaluationKMove.get_serial_number_size() * EvaluationPMove.get_serial_number_size() <= kp_index:
