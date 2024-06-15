@@ -808,7 +808,9 @@ class Kifuwarabe():
 
                 display_black_p_move_obj, display_black_q_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
                         pq_index=black_p_black_q_index,
-                        shall_p1_white_to_black=self._board.turn==cshogi.WHITE)
+                        # black_p_black_q_index は両方先手のインデックスなので、これ以上変更しません
+                        shall_p1_white_to_black=False,
+                        shall_p2_white_to_black=False)
 
                 print(f"  turn:{Turn.to_string(self._board.turn)}  black_p_black_q_index:{black_p_black_q_index:7}  P:{display_black_p_move_obj.as_usi:5}  Q:{display_black_q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
@@ -838,7 +840,6 @@ class Kifuwarabe():
             return 'failed'
 
         return EvaluationEdit(
-                board=self._board,
                 kifuwarabe=self
         ).weaken(
                 move_u=cmd_tail,

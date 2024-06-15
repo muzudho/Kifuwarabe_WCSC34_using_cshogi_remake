@@ -54,7 +54,8 @@ p2_move_obj:{p2_move_obj.as_usi:5}
     @staticmethod
     def build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
             pp_index,
-            shall_p1_white_to_black):
+            shall_p1_white_to_black,
+            shall_p2_white_to_black):
         """ＰＰインデックス分解
 
         Parameter
@@ -62,6 +63,8 @@ p2_move_obj:{p2_move_obj.as_usi:5}
         pp_index : int
             兵１と兵２の関係の通しインデックス
         shall_p1_white_to_black : bool
+            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
+        shall_p2_white_to_black : bool
             評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
 
         Returns
@@ -98,7 +101,7 @@ p2_move_obj:{p2_move_obj.as_usi:5}
                 dstsq=p2_dstsq,
                 promoted=p2_promote,
                 # 評価値テーブルは先手用の形なので、後手番は１８０°回転させる必要がある
-                is_rotate=shall_p1_white_to_black)
+                is_rotate=shall_p2_white_to_black)
 
         # Ｐ１
         (p1_srcloc,

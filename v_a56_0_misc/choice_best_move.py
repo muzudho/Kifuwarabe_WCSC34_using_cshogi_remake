@@ -220,8 +220,9 @@ move_rot_u:{move_rot_obj.as_usi:5}
             for black_p_black_q_index, relation_exists in black_p_black_q_index_to_relation_exists_dic.items():
                 assert_black_p_move_obj, assert_black_q_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
                         pp_index=black_p_black_q_index,
-                        # black_p_black_q_index は先手なので、１８０°回転させてはいけません
-                        shall_p1_white_to_black=False)
+                        # black_p_black_q_index は両方先手のインデックスなので、これ以上変更しません
+                        shall_p1_white_to_black=False,
+                        shall_p2_white_to_black=False)
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                 if not is_white:
@@ -352,7 +353,9 @@ move_rot_u:{move_rot_obj.as_usi:5}
                 if is_debug and DebugPlan.get_number_of_connection_for_pl_pq:
                     black_p_move_obj, black_q_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
                             pp_index=black_p_black_q_index,
-                            shall_p1_white_to_black=board.turn==cshogi.WHITE)
+                            # black_p_black_q_index は両方先手のインデックスなので、これ以上変更しません
+                            shall_p1_white_to_black=False,
+                            shall_p2_white_to_black=False)
                     print(f"[{datetime.datetime.now()}] [get number of connection for pl pq > pq]  black_p_black_q_index:{black_p_black_q_index:7}  P:{black_p_move_obj.as_usi:5}  Q:{black_q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
         return number_of_connection
@@ -379,8 +382,8 @@ move_rot_u:{move_rot_obj.as_usi:5}
 
         Returns
         -------
-        - fl_index_to_relation_exists_dictionary
-        - fq_index_to_relation_exists_dictionary
+        - black_f_black_l_index_to_relation_exists_dictionary
+        - black_f_black_q_index_to_relation_exists_dictionary
         - is_king_move
         - positive_of_relation
         - total_of_relation
@@ -410,8 +413,9 @@ move_rot_u:{move_rot_obj.as_usi:5}
             for black_k_black_l_index, relation_exists in black_k_black_l_index_to_relation_exists_dictionary.items():
                 assert_black_k_move_obj, assert_black_l_move_obj = EvaluationKkTable.build_black_k_black_l_moves_by_black_k_black_l_index(
                         black_k_black_l_index=black_k_black_l_index,
-                        shall_k_white_to_black=board.turn==cshogi.WHITE,
-                        shall_l_white_to_black=board.turn==cshogi.BLACK)
+                        # black_k_black_l_index は両方先手のインデックスなので、これ以上変更しません
+                        shall_k_white_to_black=False,
+                        shall_l_white_to_black=False)
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                 if kifuwarabe.board.turn==cshogi.BLACK:
@@ -436,8 +440,9 @@ move_rot_u:{move_rot_obj.as_usi:5}
             for black_k_black_q_index, relation_exists in black_k_black_q_index_to_relation_exists_dictionary.items():
                 assert_black_k_move_obj, assert_black_q_move_obj = EvaluationKpTable.build_black_k_black_p_moves_by_black_k_black_p_index(
                         kp_index=black_k_black_q_index,
-                        shall_k_white_to_black=board.turn==cshogi.WHITE,
-                        shall_p_white_to_black=board.turn==cshogi.BLACK)
+                        # black_k_black_q_index は両方先手のインデックスなので、これ以上変更しません
+                        shall_k_white_to_black=False,
+                        shall_p_white_to_black=False)
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                 if kifuwarabe.board.turn==cshogi.BLACK:
@@ -491,8 +496,9 @@ move_rot_u:{move_rot_obj.as_usi:5}
             for black_p_black_l_index, relation_exists in black_p_black_l_index_to_relation_exists_dictionary.items():
                 assert_black_p_move_obj, assert_black_l_move_obj = EvaluationPkTable.build_black_p_black_k_moves_by_black_p_black_k_index(
                         pk_index=black_p_black_l_index,
-                        shall_p_white_to_black=board.turn==cshogi.WHITE,
-                        shall_k_white_to_black=board.turn==cshogi.BLACK)
+                        # black_p_black_l_index は両方先手のインデックスなので、これ以上変更しません
+                        shall_p_white_to_black=False,
+                        shall_k_white_to_black=False)
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                 if board.turn==cshogi.BLACK:
@@ -516,7 +522,9 @@ move_rot_u:{move_rot_obj.as_usi:5}
             for black_p_black_q_index, relation_exists in black_p_black_q_index_to_relation_exists_dictionary.items():
                 assert_black_p_move_obj, assert_black_q_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
                         pp_index=black_p_black_q_index,
-                        shall_p1_white_to_black=board.turn==cshogi.WHITE)
+                        # black_p_black_q_index は両方先手のインデックスなので、これ以上変更しません
+                        shall_p1_white_to_black=False,
+                        shall_p2_white_to_black=False)
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                 if board.turn==cshogi.BLACK:
@@ -531,8 +539,8 @@ move_rot_u:{move_rot_obj.as_usi:5}
                 else:
                     if assert_black_p_move_obj.rotate().as_usi != move_obj.as_usi:
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > pq] 指し手を先手の向きに変えて復元できなかったエラー
-                                           手番（Ｐ）:{Turn.to_string(board.turn)}
                                       元の指し手（Ｐ）:{move_obj.as_usi:5}
+                                           手番（Ｐ）:{Turn.to_string(board.turn)}
 １回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_black_p_move_obj.rotate().as_usi:5}
 """)
 

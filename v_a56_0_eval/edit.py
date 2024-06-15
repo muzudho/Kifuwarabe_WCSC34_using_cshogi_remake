@@ -56,9 +56,9 @@ class EvaluationEdit():
         move_obj = Move.from_usi(move_u)
 
         # 自駒と敵玉に対する関係の辞書
-        (fl_index_to_relation_exists_dictionary,
+        (black_f_black_l_index_to_relation_exists_dictionary,
          # 自駒と敵兵に対する関係の辞書
-         fq_index_to_relation_exists_dictionary,
+         black_f_black_q_index_to_relation_exists_dictionary,
          # 玉の指し手か？
          is_king_move,
          # 関係が陽性の総数
@@ -71,11 +71,12 @@ class EvaluationEdit():
                 is_debug=is_debug)
 
         # assert
-        for fl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
+        for black_f_black_l_index, relation_exists in black_f_black_l_index_to_relation_exists_dictionary.items():
             assert_black_p_move_obj, assert_black_l_move_obj = EvaluationPkTable.build_black_p_black_k_moves_by_black_p_black_k_index(
-                    pk_index=fl_index,
-                    shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
-                    shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.BLACK)
+                    pk_index=black_f_black_l_index,
+                    # black_f_black_l_index は両方先手のインデックスなので、これ以上変更しません
+                    shall_p_white_to_black=False,
+                    shall_k_white_to_black=False)
 
             # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
             if self._kifuwarabe.board.turn==cshogi.BLACK:
@@ -98,10 +99,12 @@ class EvaluationEdit():
 """)
 
         # assert
-        for fq_index, relation_exists in fq_index_to_relation_exists_dictionary.items():
+        for black_f_black_q_index, relation_exists in black_f_black_q_index_to_relation_exists_dictionary.items():
             assert_black_p_move_obj, assert_black_q_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
-                    pp_index=fq_index,
-                    shall_p1_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
+                    pp_index=black_f_black_q_index,
+                    # black_f_black_q_index は両方先手のインデックスなので、これ以上変更しません
+                    shall_p1_white_to_black=False,
+                    shall_p2_white_to_black=False)
 
             # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
             if self._kifuwarabe.board.turn==cshogi.BLACK:
@@ -164,15 +167,15 @@ class EvaluationEdit():
             #
 
             # ビットが立っている項目だけ残します
-            target_fl_index_list = list()
-            for key, relation_exists in fl_index_to_relation_exists_dictionary.items():
+            target_black_f_black_l_index_list = list()
+            for black_f_black_l_index, relation_exists in black_f_black_l_index_to_relation_exists_dictionary.items():
                 if relation_exists == 1:
-                    target_fl_index_list.append(key)
+                    target_black_f_black_l_index_list.append(black_f_black_l_index)
 
-            target_fq_index_list = list()
-            for key, relation_exists in fq_index_to_relation_exists_dictionary.items():
+            target_black_f_black_q_index_list = list()
+            for black_f_black_q_index, relation_exists in black_f_black_q_index_to_relation_exists_dictionary.items():
                 if relation_exists == 1:
-                    target_fq_index_list.append(key)
+                    target_black_f_black_q_index_list.append(black_f_black_q_index)
 
             # 例えばＦＬが２個、ＦＱが３０個あり、削除したい関係が９個の場合の配分
             # 　　　　１／１６　＝　２／（２＋３０）　　……　ＦＬの割合は１／１６
@@ -180,9 +183,9 @@ class EvaluationEdit():
             #        １　＝　ｒｏｕｎｄ（９　×　０．１２５）　　……削除するＦＬの個数は１
             #      　８　＝　９　ー　１　　……　削除するＦＱの個数は８
             # 例：ＦＬの個数　２
-            fl_size = len(target_fl_index_list)
+            fl_size = len(target_black_f_black_l_index_list)
             # 例：ＦＱの個数　３０
-            fq_size = len(target_fq_index_list)
+            fq_size = len(target_black_f_black_q_index_list)
 
             if fl_size + fq_size < 1:
                 return "empty_moves"
@@ -194,13 +197,13 @@ class EvaluationEdit():
             # 例：削除するＦＱの個数　８
             fq_target_size = int(rest - fl_target_size)
             # TODO 辞書のキーから何個抽出するとかできないか？ random.choices(sequence, k)
-            target_fl_index_list = random.choices(target_fl_index_list, k=fl_target_size)
-            target_fq_index_list = random.choices(target_fq_index_list, k=fq_target_size)
+            target_black_f_black_l_index_list = random.choices(target_black_f_black_l_index_list, k=fl_target_size)
+            target_black_f_black_q_index_list = random.choices(target_black_f_black_q_index_list, k=fq_target_size)
 
             #
             # ＫＬ
             #
-            for target_fl_index in target_fl_index_list:
+            for target_fl_index in target_black_f_black_l_index_list:
                 black_k_move_obj, black_l_move_obj = EvaluationKkTable.build_black_k_black_l_moves_by_black_k_black_l_index(
                         black_k_black_l_index=target_fl_index,
                         shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
@@ -249,9 +252,9 @@ class EvaluationEdit():
             #
             # ＫＱ
             #
-            for target_fq_index in target_fq_index_list:
+            for target_black_f_black_q_index in target_black_f_black_q_index_list:
                 black_k_move_obj, white_q_move_obj = EvaluationKpTable.build_black_k_black_p_moves_by_black_k_black_p_index(
-                        kp_index=target_fq_index,
+                        kp_index=target_black_f_black_q_index,
                         shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
                         shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.BLACK)
 
@@ -275,7 +278,7 @@ class EvaluationEdit():
 
                 # デバッグ表示
                 if is_debug and DebugPlan.evaluation_edit_weaken:
-                    print(f"[{datetime.datetime.now()}] [weaken > kq] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  kq_index:{target_fq_index:7}  K:{black_k_move_obj.as_usi:5}  Q:{white_q_move_obj.as_usi:5}  remove relation")
+                    print(f"[{datetime.datetime.now()}] [weaken > kq] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  kq_index:{target_black_f_black_q_index:7}  K:{black_k_move_obj.as_usi:5}  Q:{white_q_move_obj.as_usi:5}  remove relation")
 
                 is_changed_temp = self._kifuwarabe._evaluation_kq_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exists_by_kp_moves(
                         k_move_obj=black_k_move_obj,
@@ -302,15 +305,15 @@ class EvaluationEdit():
             #
 
             # ビットが下りている項目だけ残します
-            target_fl_index_list = list()
-            for key, relation_exists in fl_index_to_relation_exists_dictionary.items():
+            target_black_f_black_l_index_list = list()
+            for black_f_black_l_index, relation_exists in black_f_black_l_index_to_relation_exists_dictionary.items():
                 if relation_exists == 0:
-                    target_fl_index_list.append(key)
+                    target_black_f_black_l_index_list.append(black_f_black_l_index)
 
-            target_fq_index_list = list()
-            for key, relation_exists in fq_index_to_relation_exists_dictionary.items():
+            target_black_f_black_q_index_list = list()
+            for black_f_black_q_index, relation_exists in black_f_black_q_index_to_relation_exists_dictionary.items():
                 if relation_exists == 0:
-                    target_fq_index_list.append(key)
+                    target_black_f_black_q_index_list.append(black_f_black_q_index)
 
             # 例えばＦＬが２個、ＦＱが３０個あり、削除したい関係が９個の場合の配分
             # 　　　　１／１６　＝　２／（２＋３０）　　……　ＦＬの割合は１／１６
@@ -318,9 +321,9 @@ class EvaluationEdit():
             #        １　＝　ｒｏｕｎｄ（９　×　０．１２５）　　……削除するＦＬの個数は１
             #      　８　＝　９　ー　１　　……　削除するＦＱの個数は８
             # 例：ＦＬの個数　２
-            fl_size = len(target_fl_index_list)
+            fl_size = len(target_black_f_black_l_index_list)
             # 例：ＦＱの個数　３０
-            fq_size = len(target_fq_index_list)
+            fq_size = len(target_black_f_black_q_index_list)
 
             if fl_size + fq_size < 1:
                 return "empty_moves"
@@ -332,13 +335,13 @@ class EvaluationEdit():
             # 例：削除するＦＱの個数　８
             fq_target_size = int(rest - fl_target_size)
             # TODO 辞書のキーから何個抽出するとかできないか？ random.choices(sequence, k)
-            target_fl_index_list = random.choices(target_fl_index_list, k=fl_target_size)
-            target_fq_index_list = random.choices(target_fq_index_list, k=fq_target_size)
+            target_black_f_black_l_index_list = random.choices(target_black_f_black_l_index_list, k=fl_target_size)
+            target_black_f_black_q_index_list = random.choices(target_black_f_black_q_index_list, k=fq_target_size)
 
             #
             # ＰＬ
             #
-            for target_fl_index in target_fl_index_list:
+            for target_fl_index in target_black_f_black_l_index_list:
                 black_p_move_obj, black_l_move_obj = EvaluationPkTable.build_black_p_black_k_moves_by_black_p_black_k_index(
                         pk_index=target_fl_index,
                         shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
@@ -379,10 +382,12 @@ class EvaluationEdit():
             #
             # ＰＱ
             #
-            for target_fq_index in target_fq_index_list:
+            for target_black_f_black_q_index in target_black_f_black_q_index_list:
                 black_p_move_obj, black_q_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
-                        pp_index=target_fq_index,
-                        shall_p1_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
+                        pp_index=target_black_f_black_q_index,
+                        # target_black_f_black_q_index は両方先手のインデックスなので、これ以上変更しません
+                        shall_p1_white_to_black=False,
+                        shall_p2_white_to_black=False)
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                 if self._kifuwarabe.board.turn==cshogi.BLACK:
@@ -404,7 +409,7 @@ class EvaluationEdit():
 
                 # デバッグ表示
                 if is_debug and DebugPlan.evaluation_edit_weaken:
-                    print(f"[{datetime.datetime.now()}] [weaken > pq] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  pq_index:{target_fq_index:7}  P:{black_p_move_obj.as_usi:5}  Q:{black_q_move_obj.as_usi:5}  remove relation")
+                    print(f"[{datetime.datetime.now()}] [weaken > pq] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  pq_index:{target_black_f_black_q_index:7}  P:{black_p_move_obj.as_usi:5}  Q:{black_q_move_obj.as_usi:5}  remove relation")
 
                 is_changed_temp = self._kifuwarabe._evaluation_pq_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exists_by_pp_moves(
                         p1_move_obj=black_p_move_obj,
@@ -448,9 +453,9 @@ class EvaluationEdit():
         move_obj = Move.from_usi(move_u)
 
         # 自駒と敵玉に対する関係の辞書
-        (fl_index_to_relation_exists_dictionary,
+        (black_f_black_l_index_to_relation_exists_dictionary,
          # 自駒と敵兵に対する関係の辞書
-         fq_index_to_relation_exists_dictionary,
+         black_f_black_q_index_to_relation_exists_dictionary,
          # 玉の指し手か？
          is_king_move,
          # 関係が陽性の総数
@@ -463,9 +468,9 @@ class EvaluationEdit():
                 is_debug=is_debug)
 
         # assert
-        for fl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
+        for black_f_black_l_index, relation_exists in black_f_black_l_index_to_relation_exists_dictionary.items():
             assert_black_p_move_obj, assert_black_l_move_obj = EvaluationPkTable.build_black_p_black_k_moves_by_black_p_black_k_index(
-                    pk_index=fl_index,
+                    pk_index=black_f_black_l_index,
                     shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
                     shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.BLACK)
             
@@ -488,10 +493,12 @@ class EvaluationEdit():
 """)
 
         # assert
-        for fq_index, relation_exists in fq_index_to_relation_exists_dictionary.items():
+        for black_f_black_q_index, relation_exists in black_f_black_q_index_to_relation_exists_dictionary.items():
             assert_black_p_move_obj, assert_black_q_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
-                    pp_index=fq_index,
-                    shall_p1_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
+                    pp_index=black_f_black_q_index,
+                    # black_f_black_q_index は両方先手のインデックスなので、これ以上変更しません
+                    shall_p1_white_to_black=False,
+                    shall_p2_white_to_black=False)
             
             # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
             if self._kifuwarabe.board.turn==cshogi.BLACK:
@@ -553,15 +560,15 @@ class EvaluationEdit():
             #
 
             # ビットが下りている項目だけ残します
-            target_fl_index_list = list()
-            for fl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
+            target_black_f_black_l_index_list = list()
+            for black_f_black_l_index, relation_exists in black_f_black_l_index_to_relation_exists_dictionary.items():
                 if relation_exists == 0:
-                    target_fl_index_list.append(fl_index)
+                    target_black_f_black_l_index_list.append(black_f_black_l_index)
 
-            target_fq_index_list = list()
-            for fq_index, relation_exists in fq_index_to_relation_exists_dictionary.items():
+            target_black_f_black_q_index_list = list()
+            for black_f_black_q_index, relation_exists in black_f_black_q_index_to_relation_exists_dictionary.items():
                 if relation_exists == 0:
-                    target_fq_index_list.append(fq_index)
+                    target_black_f_black_q_index_list.append(black_f_black_q_index)
 
             # 例えばＦＬが２個、ＦＱが３０個あり、削除したい関係が９個の場合の配分
             # 　　　　１／１６　＝　２／（２＋３０）　　……　ＦＬの割合は１／１６
@@ -569,9 +576,9 @@ class EvaluationEdit():
             #        １　＝　ｒｏｕｎｄ（９　×　０．１２５）　　……削除するＦＬの個数は１
             #      　８　＝　９　ー　１　　……　削除するＦＱの個数は８
             # 例：ＦＬの個数　２
-            fl_size = len(target_fl_index_list)
+            fl_size = len(target_black_f_black_l_index_list)
             # 例：ＦＱの個数　３０
-            fq_size = len(target_fq_index_list)
+            fq_size = len(target_black_f_black_q_index_list)
 
             if fl_size + fq_size < 1:
                 return "empty_moves"
@@ -583,13 +590,13 @@ class EvaluationEdit():
             # 例：削除するＦＱの個数　８
             fq_target_size = int(rest - fl_target_size)
             # TODO 辞書のキーから何個抽出するとかできないか？ random.choices(sequence, k)
-            target_fl_index_list = random.choices(target_fl_index_list, k=fl_target_size)
-            target_fq_index_list = random.choices(target_fq_index_list, k=fq_target_size)
+            target_black_f_black_l_index_list = random.choices(target_black_f_black_l_index_list, k=fl_target_size)
+            target_black_f_black_q_index_list = random.choices(target_black_f_black_q_index_list, k=fq_target_size)
 
             #
             # ＫＬ
             #
-            for target_fl_index in target_fl_index_list:
+            for target_fl_index in target_black_f_black_l_index_list:
                 black_k_move_obj, black_l_move_obj = EvaluationKkTable.build_black_k_black_l_moves_by_black_k_black_l_index(
                         black_k_black_l_index=target_fl_index,
                         shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
@@ -639,9 +646,9 @@ class EvaluationEdit():
             #
             # ＫＱ
             #
-            for target_fq_index in target_fq_index_list:
+            for target_black_f_black_q_index in target_black_f_black_q_index_list:
                 black_k_move_obj, black_q_move_obj = EvaluationKpTable.build_black_k_black_p_moves_by_black_k_black_p_index(
-                        kp_index=target_fq_index,
+                        kp_index=target_black_f_black_q_index,
                         shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
                         shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.BLACK)
 
@@ -665,7 +672,7 @@ class EvaluationEdit():
 
                 # デバッグ表示
                 if is_debug and DebugPlan.evaluation_edit_strengthen:
-                    print(f"[{datetime.datetime.now()}] [strengthen > kq] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  kq_index:{target_fq_index:7}  K:{black_k_move_obj.as_usi:5}  Q:{black_q_move_obj.as_usi:5}  remove relation")
+                    print(f"[{datetime.datetime.now()}] [strengthen > kq] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  kq_index:{target_black_f_black_q_index:7}  K:{black_k_move_obj.as_usi:5}  Q:{black_q_move_obj.as_usi:5}  remove relation")
 
                 is_changed_temp = self._kifuwarabe._evaluation_kq_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exists_by_kp_moves(
                         k_move_obj=black_k_move_obj,
@@ -692,13 +699,13 @@ class EvaluationEdit():
             #
 
             # ビットが下りている項目だけ残します
-            target_fl_index_list = list()
-            for fl_index, relation_exists in fl_index_to_relation_exists_dictionary.items():
+            target_black_f_black_l_index_list = list()
+            for black_f_black_l_index, relation_exists in black_f_black_l_index_to_relation_exists_dictionary.items():
                 if relation_exists == 0:
 
                     # assert
                     assert_black_p_move_obj, assert_black_l_move_obj = EvaluationPkTable.build_black_p_black_k_moves_by_black_p_black_k_index(
-                            pk_index=fl_index,
+                            pk_index=black_f_black_l_index,
                             shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
                             shall_k_white_to_black=self._kifuwarabe.board.turn==cshogi.BLACK)
 
@@ -720,12 +727,12 @@ class EvaluationEdit():
 １回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_black_p_move_obj.rotate().as_usi}
 """)
 
-                    target_fl_index_list.append(fl_index)
+                    target_black_f_black_l_index_list.append(black_f_black_l_index)
 
-            target_fq_index_list = list()
-            for fq_index, relation_exists in fq_index_to_relation_exists_dictionary.items():
+            target_black_f_black_q_index_list = list()
+            for black_f_black_q_index, relation_exists in black_f_black_q_index_to_relation_exists_dictionary.items():
                 if relation_exists == 0:
-                    target_fq_index_list.append(fq_index)
+                    target_black_f_black_q_index_list.append(black_f_black_q_index)
 
             # 例えばＦＬが２個、ＦＱが３０個あり、削除したい関係が９個の場合の配分
             # 　　　　１／１６　＝　２／（２＋３０）　　……　ＦＬの割合は１／１６
@@ -733,9 +740,9 @@ class EvaluationEdit():
             #        １　＝　ｒｏｕｎｄ（９　×　０．１２５）　　……削除するＦＬの個数は１
             #      　８　＝　９　ー　１　　……　削除するＦＱの個数は８
             # 例：ＦＬの個数　２
-            fl_size = len(target_fl_index_list)
+            fl_size = len(target_black_f_black_l_index_list)
             # 例：ＦＱの個数　３０
-            fq_size = len(target_fq_index_list)
+            fq_size = len(target_black_f_black_q_index_list)
 
             if fl_size + fq_size < 1:
                 return "empty_moves"
@@ -747,13 +754,13 @@ class EvaluationEdit():
             # 例：削除するＦＱの個数　８
             fq_target_size = int(rest - fl_target_size)
             # TODO 辞書のキーから何個抽出するとかできないか？ random.choices(sequence, k)
-            target_fl_index_list = random.choices(target_fl_index_list, k=fl_target_size)
-            target_fq_index_list = random.choices(target_fq_index_list, k=fq_target_size)
+            target_black_f_black_l_index_list = random.choices(target_black_f_black_l_index_list, k=fl_target_size)
+            target_black_f_black_q_index_list = random.choices(target_black_f_black_q_index_list, k=fq_target_size)
 
             #
             # ＰＬ
             #
-            for target_fl_index in target_fl_index_list:
+            for target_fl_index in target_black_f_black_l_index_list:
                 black_p_move_obj, black_l_move_obj = EvaluationPkTable.build_black_p_black_k_moves_by_black_p_black_k_index(
                         pk_index=target_fl_index,
                         shall_p_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
@@ -794,10 +801,12 @@ class EvaluationEdit():
             #
             # ＰＱ
             #
-            for target_fq_index in target_fq_index_list:
+            for target_black_f_black_q_index in target_black_f_black_q_index_list:
                 black_p_move_obj, black_q_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
-                        pp_index=target_fq_index,
-                        shall_p1_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
+                        pp_index=target_black_f_black_q_index,
+                        # target_black_f_black_q_index は両方先手のインデックスなので、これ以上変更しません
+                        shall_p1_white_to_black=False,
+                        shall_p2_white_to_black=False)
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                 if self._kifuwarabe.board.turn==cshogi.BLACK:
@@ -820,7 +829,7 @@ class EvaluationEdit():
 
                 # デバッグ表示
                 if is_debug and DebugPlan.evaluation_edit_strengthen:
-                    print(f"[{datetime.datetime.now()}] [strengthen > pq] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  pq_index:{target_fq_index:7}  P:{black_p_move_obj.as_usi:5}  Q:{white_q_move_obj.as_usi:5}  remove relation")
+                    print(f"[{datetime.datetime.now()}] [strengthen > pq] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  pq_index:{target_black_f_black_q_index:7}  P:{black_p_move_obj.as_usi:5}  Q:{white_q_move_obj.as_usi:5}  remove relation")
 
                 is_changed_temp = self._kifuwarabe._evaluation_pq_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exists_by_pp_moves(
                         p1_move_obj=black_p_move_obj,
