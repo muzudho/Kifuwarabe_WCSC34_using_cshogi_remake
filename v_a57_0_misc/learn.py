@@ -349,9 +349,8 @@ class LearnAboutOneGame():
 
                     # プレイアウトの深さの上限に達した
                     elif reason == 'max_playout_depth':
-                        # （評価値テーブルを動かしたいので）好手の評価を取り下げる
-                        is_weak_move = True
-                        log_progress(f"[▼DOWN▼] 攻めてる間にプレイアウトが打ち切られた")
+                        # ノーカウント
+                        log_progress(f"[ ] 攻めてる間にプレイアウトが打ち切られた")
 
                     else:
                         # 好手の評価はそのまま
@@ -452,7 +451,7 @@ class LearnAboutOneGame():
                         log_progress(f"[　] 攻めてる間に手数上限で打ち切られた")
 
                     elif reason == 'max_playout_depth':
-                        # 悪手の評価はそのまま
+                        # ノーカウント
                         log_progress(f"[　] 攻めてる間にプレイアウトが打ち切られた")
 
                     else:
@@ -623,12 +622,12 @@ class LearnAboutOneGame():
 
                     # 手数の上限に達した
                     elif reason == 'max_move':
-                        # 好手の評価はそのまま
+                        # ノーカウント
                         log_progress(f"[　] 手数上限で打ち切られるまで逃げ切った")
 
                     # プレイアウトの深さの上限に達した
                     elif reason == 'max_playout_depth':
-                        # 好手の評価はそのまま
+                        # ノーカウント
                         log_progress(f"[　] プレイアウトが打ち切られるまで逃げ切った")
 
                     else:
@@ -730,15 +729,13 @@ class LearnAboutOneGame():
 
                     # 手数の上限に達した
                     elif reason == 'max_move':
-                        # （評価値テーブルを動かしたいので）悪手の評価を取り下げる
-                        is_strong_move = True
-                        log_progress(f"[▲UP▲] 手数上限で打ち切られるまで逃げ切った")
+                        # ノーカウント
+                        log_progress(f"[ ] 手数上限で打ち切られるまで逃げ切った")
 
                     # プレイアウトの深さの上限に達した
                     elif reason == 'max_playout_depth':
-                        # （評価値テーブルを動かしたいので）悪手の評価を取り下げる
-                        is_strong_move = True
-                        log_progress(f"[▲UP▲] プレイアウトが打ち切られるまで逃げ切った")
+                        # ノーカウント
+                        log_progress(f"[ ] プレイアウトが打ち切られるまで逃げ切った")
 
                     else:
                         # この悪手の評価はそのまま
