@@ -149,7 +149,7 @@ class LearnAboutOneGame():
         if self._is_debug:
             print(f"[{datetime.datetime.now()}] move_number_at_end:{self._move_number_at_end}")
 
-        mate = 1
+        mate_th = 1
 
         max_depth = self._move_number_at_end
 
@@ -162,7 +162,7 @@ class LearnAboutOneGame():
         # ２手詰めを４手詰めまで引き延ばせれば、逃げるのが上手くなったと言えるので、そのような場合 4-2 で、 escape_extension=2 とします
         escape_extension = 30
 
-        while mate <= max_depth:
+        while mate_th <= max_depth:
 
             #
             # 奇数：　詰める方
@@ -170,12 +170,12 @@ class LearnAboutOneGame():
             #
             (result_str,
              changed_count) = self.at_position(
-                    mate=mate,
-                    playout_extension_depth=mate+attack_extension)
+                    mate_th=mate_th,
+                    playout_extension_depth=mate_th+attack_extension)
 
-            mate += 1
+            mate_th += 1
 
-            if self._move_number_at_end < mate or result_str == 'can not rewind':
+            if self._move_number_at_end < mate_th or result_str == 'can not rewind':
                 break
 
             #
@@ -184,20 +184,20 @@ class LearnAboutOneGame():
             #
             (result_str,
              changed_count) = self.at_position(
-                    mate=mate,
-                    playout_extension_depth=mate+escape_extension)
+                    mate_th=mate_th,
+                    playout_extension_depth=mate_th+escape_extension)
 
-            mate += 1
+            mate_th += 1
 
-            if self._move_number_at_end < mate or result_str == 'can not rewind':
+            if self._move_number_at_end < mate_th or result_str == 'can not rewind':
                 break
 
             #
             # ２０手毎にコマメに保存する
             #
-            #   mate = 1 から始まることに注意
+            #   mate_th = 1 から始まることに注意
             #
-            if mate % 20 == 1:
+            if mate_th % 20 == 1:
                 # 全ての評価値テーブル［0:先手, 1:後手］の（変更があれば）保存
                 self._kifuwarabe.save_eval_all_tables(
                         is_debug=self._is_debug)
@@ -219,13 +219,13 @@ class LearnAboutOneGame():
 
     def at_position(
             self,
-            mate,
+            mate_th,
             playout_extension_depth):
         """奇数。詰める方
 
         Parameters
         ----------
-        mate : int
+        mate_th : int
             ｎ手詰め
         playout_extension_depth : int
             プレイアウトでの延長手数
@@ -234,7 +234,7 @@ class LearnAboutOneGame():
         changed_count = 0
 
         # 棋譜を巻き戻せないなら、学ぶことはできません
-        if self._board.move_number < mate + 1:
+        if self._board.move_number < mate_th + 1:
             print(f'[{datetime.datetime.now()}] [learn > 詰める方] ignored. you cannot learn. short moves. board.move_number:{self._board.move_number}')
             return ('can not rewind', changed_count)
 
@@ -243,7 +243,7 @@ class LearnAboutOneGame():
 
         # ｎ手詰めの局面まで戻す
         last_move_id = None
-        for _i in range(0, mate):
+        for _i in range(0, mate_th):
             last_move_id = self._board.pop()
 
         last_move_u = cshogi.move_to_usi(last_move_id)
@@ -270,7 +270,7 @@ class LearnAboutOneGame():
                 is_debug=self._is_debug)
 
         # 作業量はログを出したい
-        print(f'[{datetime.datetime.now()}] [learn > at position]  mate:{mate}  ランク別着手数：', end='')
+        print(f'[{datetime.datetime.now()}] [learn > at position]  mate_th:{mate_th}  ランク別着手数：', end='')
         size_list = []
         sum_size = 0
         for tier, ranked_move_u_set in enumerate(tiered_move_u_set_list):
@@ -296,8 +296,8 @@ class LearnAboutOneGame():
                 if move_u == last_move_u:
                     pass
 
-                # mate が 4 以上の局面は、学習率くじで当たった指し手だけ学習する
-                elif 4 <= mate and not self.is_learn_by_rate():
+                # mate_th が 4 以上の局面は、学習率くじで当たった指し手だけ学習する
+                elif 4 <= mate_th and not self.is_learn_by_rate():
                     continue
 
                 # 弱化・強化するフラグ
@@ -306,12 +306,12 @@ class LearnAboutOneGame():
                 # ｎ手詰め局面図かチェック
                 if self._board.sfen() != sfen_at_mate:
                     # エラー時
-                    print(f"""[{datetime.datetime.now()}] [learn > at position] {tier:2}位  {mate}手詰め局面図エラー
+                    print(f"""[{datetime.datetime.now()}] [learn > at position] {tier:2}位  {mate_th}手詰め局面図エラー
 {self._board}
     # board move_number:{self._board.move_number}
     # {BoardHelper.get_position_command(board=self._board)}
 """)
-                    raise ValueError(f"[learn > at position] {tier:2}位  {mate}手詰め局面図エラー")
+                    raise ValueError(f"[learn > at position] {tier:2}位  {mate_th}手詰め局面図エラー")
 
                 # （ｎ手詰め局面図で）とりあえず一手指す
                 self._board.push_usi(move_u)
@@ -362,7 +362,13 @@ class LearnAboutOneGame():
                 # プレイアウトの深さの上限に達した
                 elif reason == 'max_playout_depth':
                     # ノーカウント
-                    log_progress(f"[ ] プレイアウト用の手数上限で打ち切られた")
+                    # 勝った方が、勝ちを逃した
+                    if self._won_player_turn == turn_at_problem:
+                        shall_1_weaken_2_strongthen = 1
+                        log_progress(f"[▼DOWN▼] 勝った方が、プレイアウト用の手数上限で勝ちを逃した")
+                    else:
+                        shall_1_weaken_2_strongthen = 2
+                        log_progress(f"[▲UP▲] 負けた方が、プレイアウト用の手数上限で逃げ切った")
 
                 else:
                     # ノーカウント
@@ -372,7 +378,7 @@ class LearnAboutOneGame():
                 self.restore_end_position()
 
                 # ｎ手詰めの局面まで戻す
-                for _i in range(0, mate):
+                for _i in range(0, mate_th):
                     self._board.pop()
 
                 # 戻せたかチェック
