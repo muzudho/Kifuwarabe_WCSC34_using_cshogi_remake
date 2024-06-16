@@ -545,14 +545,14 @@ move_rot_u:{move_rot_obj.as_usi:5}
 
         ranked_move_u_set_list = []
 
-        # もし好手と悪手の２パターンなら ranking_resolution は ２。
+        # もし好手と悪手の２パターンなら tier_resolution は ２。
         # 配列のインデックスの小さい方がランクが上とする
-        for i in range(0, kifuwarabe.ranking_resolution):
+        for i in range(0, kifuwarabe.tier_resolution):
             ranked_move_u_set_list.append(set())
 
         # デバッグ表示
         if is_debug and DebugPlan.select_ranked_f_move_u_set_facade:
-            print(f"[choice best move]  kifuwarabe.ranking_resolution:{kifuwarabe.ranking_resolution}")
+            print(f"[choice best move]  kifuwarabe.tier_resolution:{kifuwarabe.tier_resolution}")
 
         for move_id in legal_moves:
             move_u = cshogi.move_to_usi(move_id)
@@ -575,12 +575,12 @@ move_rot_u:{move_rot_obj.as_usi:5}
                     is_debug=is_debug)
 
             #
-            # 好手悪手のランキング算出
+            # 好手悪手の階位算出
             #
-            (ranking_th, policy_rate) = EvaluationFacade.get_ranking_th(
+            (ranking_th, policy_rate) = EvaluationFacade.get_tier_th(
                     positive_of_relation=positive_of_relation,
                     total_of_relation=total_of_relation,
-                    ranking_resolution=kifuwarabe.ranking_resolution)
+                    tier_resolution=kifuwarabe.tier_resolution)
 
 
             # 1 から始まる数を、0 から始まる数に変換して配列のインデックスに使用
@@ -595,13 +595,13 @@ move_rot_u:{move_rot_obj.as_usi:5}
         # デバッグ表示
         if is_debug and DebugPlan.select_ranked_f_move_u_set_facade:
 
-            for ranking in range(0, kifuwarabe.ranking_resolution):
+            for tier_th in range(0, kifuwarabe.tier_resolution):
 
-                print(f"[{datetime.datetime.now()}] [select ranked f move u set facade] ランク付けされた指し手一覧（ranking:{ranking}）")
-                target_set = ranked_move_u_set_list[ranking]
+                print(f"[{datetime.datetime.now()}] [select ranked f move u set facade] ランク付けされた指し手一覧（{tier_th:2}位）")
+                target_set = ranked_move_u_set_list[tier_th]
 
                 for ranked_move_u in target_set:
-                    print(f"[{datetime.datetime.now()}] [select ranked f move u set facade]  ranking:{ranking}  move:{ranked_move_u:5}")
+                    print(f"[{datetime.datetime.now()}] [select ranked f move u set facade]  {tier_th}位  move:{ranked_move_u:5}")
 
 
         return ranked_move_u_set_list

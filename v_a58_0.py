@@ -85,7 +85,7 @@ class Kifuwarabe():
 
         # 好手・悪手のランキングの階層数
         # TODO 探索部の choice_best_move では使ってるが、学習部の weaken, strongthen では使ってないので、全ての箇所で共通の処理になるようにしたい
-        self._ranking_resolution = 10
+        self._tier_resolution = 10
 
 
     @property
@@ -105,9 +105,9 @@ class Kifuwarabe():
 
 
     @property
-    def ranking_resolution(self):
-        """好手・悪手のランキングの階層数"""
-        return self._ranking_resolution
+    def tier_resolution(self):
+        """好手・悪手の階位の階数"""
+        return self._tier_resolution
 
 
     @property
@@ -728,10 +728,10 @@ class Kifuwarabe():
                 kifuwarabe=self,
                 is_debug=is_debug)
 
-        for ranking, ranked_move_u_set in enumerate(ranked_move_u_set_list):
-            print(f'  ランク付けされた指し手一覧（ranking:{ranking}）：')
+        for tier_th, ranked_move_u_set in enumerate(ranked_move_u_set_list):
+            print(f'  ランク付けされた指し手一覧（{tier_th:2}位）：')
             for ranked_move_u in ranked_move_u_set:
-                print(f'    turn:{Turn.to_string(self._board.turn)}  ranking:{ranking}  F:{ranked_move_u:5}  O:*****')
+                print(f'    turn:{Turn.to_string(self._board.turn)}  {tier_th:2}位  F:{ranked_move_u:5}  O:*****')
 
 
     def relation(self, cmd_tail):

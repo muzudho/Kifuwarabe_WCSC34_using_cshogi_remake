@@ -49,20 +49,20 @@ class EvaluationFacade():
         return max_number_of_less_than_50_percent
 
 
-    def get_ranking_th(
+    def get_tier_th(
             positive_of_relation,
             total_of_relation,
-            ranking_resolution,
+            tier_resolution,
             is_debug=False):
-        """好手悪手のランキングを求めます。
-        最高が 1位、最低が ranking_resolution 位
+        """好手悪手の階位を求めます。
+        最高が 1位、最低が tier_resolution 位
 
         positive_of_relation : int
             挙手数
         total_of_relation : int
             議席数
-        ranking_resolution : int
-            ランキングの階層数
+        tier_resolution : int
+            階位の階数
         is_debug : bool
             デバッグモードか？
         """
@@ -88,9 +88,9 @@ class EvaluationFacade():
 
         # 解像度
         #
-        #   例えば ranking_resolution が 10 なら、解像度は 0.1
+        #   例えば tier_resolution が 10 なら、解像度は 0.1
         #
-        ranking_resolution_threshold = 1 / ranking_resolution
+        ranking_resolution_threshold = 1 / tier_resolution
 
         # 階位
         #

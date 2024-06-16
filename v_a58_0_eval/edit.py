@@ -154,17 +154,17 @@ class EvaluationEdit():
             return ('already_empty', '減らすものがなかった')
 
         #
-        # 好手悪手のランキング算出
+        # 好手悪手の階位算出
         #
-        (ranking_th, policy_rate) = EvaluationFacade.get_ranking_th(
+        (ranking_th, policy_rate) = EvaluationFacade.get_tier_th(
                 positive_of_relation=positive_of_relation,
                 total_of_relation=total_of_relation,
-                ranking_resolution=self._kifuwarabe.ranking_resolution)
+                tier_resolution=self._kifuwarabe.tier_resolution)
 
         #
         # 弱める量
         #
-        update_delta = int(total_of_relation // self._kifuwarabe.ranking_resolution)
+        update_delta = int(total_of_relation // self._kifuwarabe.tier_resolution)
         if update_delta < 1:
             update_delta = 1
 
@@ -579,16 +579,19 @@ class EvaluationEdit():
 
 
         #
-        # 好手悪手のランキング算出
+        # 好手悪手の階位算出
         #
-        (ranking_th, policy_rate) = EvaluationFacade.get_ranking_th(
+        (ranking_th, policy_rate) = EvaluationFacade.get_tier_th(
                 positive_of_relation=positive_of_relation,
                 total_of_relation=total_of_relation,
-                ranking_resolution=self._kifuwarabe.ranking_resolution)
+                tier_resolution=self._kifuwarabe.tier_resolution)
         #
         # 強める量
         #
-        update_delta = int(total_of_relation // self._kifuwarabe.ranking_resolution)
+        #       全然好手は見つからないから、見つけたら一気に全議席取得するようにします
+        #
+        update_delta = total_of_relation
+        #update_delta = int(total_of_relation // self._kifuwarabe.tier_resolution)
         if update_delta < 1:
             update_delta = 1
 
