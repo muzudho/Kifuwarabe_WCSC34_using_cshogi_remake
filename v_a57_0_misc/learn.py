@@ -171,7 +171,7 @@ class LearnAboutOneGame():
             (result_str,
              changed_count) = self.at_position(
                     mate=mate,
-                    max_playout_depth=mate+attack_extension)
+                    playout_extension_depth=mate+attack_extension)
 
             mate += 1
 
@@ -185,7 +185,7 @@ class LearnAboutOneGame():
             (result_str,
              changed_count) = self.at_position(
                     mate=mate,
-                    max_playout_depth=mate+escape_extension)
+                    playout_extension_depth=mate+escape_extension)
 
             mate += 1
 
@@ -220,15 +220,15 @@ class LearnAboutOneGame():
     def at_position(
             self,
             mate,
-            max_playout_depth):
+            playout_extension_depth):
         """奇数。詰める方
 
         Parameters
         ----------
         mate : int
             ｎ手詰め
-        max_playout_depth : int
-            プレイアウト最大深さ
+        playout_extension_depth : int
+            プレイアウトでの延長手数
         """
 
         changed_count = 0
@@ -316,13 +316,14 @@ class LearnAboutOneGame():
                 # （ｎ手詰め局面図で）とりあえず一手指す
                 self._board.push_usi(move_u)
 
+                # 指し継ぎ手数           = (投了局面手数　－　学習局面手数       ) + プレイアウトでの延長手数    - 指した１手分
+                move_number_difference = move_number_between_end_and_problem + playout_extension_depth - 1
+
                 # プレイアウトする
                 (result_str, reason) = self._kifuwarabe.playout(
                         is_in_learn=True,
                         # １手指した分引く
-                        max_playout_depth=max_playout_depth - 1)
-
-                move_number_difference = self._board.move_number - self._move_number_at_end
+                        max_playout_depth=move_number_difference)
 
                 # 進捗ログを出したい
                 def log_progress(comment):
