@@ -83,12 +83,12 @@ class EvaluationEdit():
 
                 # 着手が先手なら、１８０°回転させない
                 if self._kifuwarabe.board.turn==cshogi.BLACK:
-                    if move_u != assert_black_p_move_obj.as_usi:
+                    if move_u != assert_black_k_move_obj.as_usi:
                         raise ValueError(f"[{datetime.datetime.now()}] [weaken > fl] 着手が変わっているエラー  元の着手:{move_u}  作った着手:{assert_black_p_move_obj.as_usi}")
 
                 # 着手が先手なら、１８０°回転させる
                 else:
-                    if move_obj.rotate().as_usi != assert_black_p_move_obj.as_usi:
+                    if move_obj.rotate().as_usi != assert_black_k_move_obj.as_usi:
                         raise ValueError(f"[{datetime.datetime.now()}] [weaken > fl] 指し手を先手の向きに変えて復元できなかったエラー  元の着手:{move_u}  作った着手:{assert_black_p_move_obj.as_usi}")
 
             #
@@ -499,12 +499,12 @@ class EvaluationEdit():
 
                 # 着手が先手なら、１８０°回転させない
                 if self._kifuwarabe.board.turn==cshogi.BLACK:
-                    if move_u != assert_black_p_move_obj.as_usi:
+                    if move_u != assert_black_k_move_obj.as_usi:
                         raise ValueError(f"[{datetime.datetime.now()}] [strengthen > fl] 着手が変わっているエラー  元の着手:{move_u}  作った着手:{assert_black_p_move_obj.as_usi}")
 
                 # 着手が先手なら、１８０°回転させる
                 else:
-                    if move_obj.rotate().as_usi != assert_black_p_move_obj.as_usi:
+                    if move_obj.rotate().as_usi != assert_black_k_move_obj.as_usi:
                         raise ValueError(f"[{datetime.datetime.now()}] [strengthen > fl] 指し手を先手の向きに変えて復元できなかったエラー  元の着手:{move_u}  作った着手:{assert_black_p_move_obj.as_usi}")
 
             #

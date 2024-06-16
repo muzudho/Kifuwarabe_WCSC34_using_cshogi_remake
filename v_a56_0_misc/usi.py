@@ -225,16 +225,26 @@ class Usi():
         if clazz._srcloc_to_jsa is None:
             clazz._srcloc_to_jsa = {}
 
+            #print(f"[usi > srcloc to jsa] 盤上のマス開始")
+
             # 盤上のマス
             for sq in range(0,81):
                 jsa_str = Usi.sq_to_jsa(sq)
                 clazz._srcloc_to_jsa[sq] = jsa_str
+                #print(f"[usi > srcloc to jsa] sq:{sq}  jsa_str:{jsa_str}")
+
+            #print(f"[usi > srcloc to jsa] 盤上のマス終了")
+
+            #print(f"[usi > srcloc to jsa] 打開始")
 
             # 打
             drop_num = 81
             for drop_str in clazz._srcdrop_str_list:
-                clazz._code_to_srcloc[drop_num] = drop_str
+                clazz._srcloc_to_jsa[drop_num] = drop_str
+                #print(f"[usi > srcloc to jsa] drop_num:{drop_num}  drop_str:{drop_str}")
                 drop_num += 1
+
+            #print(f"[usi > srcloc to jsa] 打終了")
 
         try:
             return clazz._srcloc_to_jsa[srcloc]
