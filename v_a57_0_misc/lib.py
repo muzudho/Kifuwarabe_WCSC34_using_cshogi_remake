@@ -660,8 +660,6 @@ class EvalutionMmTable():
         bit_index = black_f_black_o_index % 8
         byte_index = black_f_black_o_index // 8
 
-        byte_value = self._table_as_array[byte_index]
-
         # bit_index == 0 のとき、右端から左へ７桁移動したところのビットを立てる（ビッグエンディアン）
         #
         #   1xxx xxxx
@@ -688,11 +686,11 @@ class EvalutionMmTable():
         # ビットはめんどくさい。ビッグエンディアン
         if bit == 1:
             # 指定の桁を 1 で上書きする
-            self._table_as_array[byte_index] = BitOpe.stand_at(byte_value, left_shift)
+            self._table_as_array[byte_index] = BitOpe.stand_at(old_byte_value, left_shift)
 
         else:
             # 指定の桁を 0 で上書きする
-            self._table_as_array[byte_index] = BitOpe.sit_at(byte_value, left_shift)
+            self._table_as_array[byte_index] = BitOpe.sit_at(old_byte_value, left_shift)
 
         if is_debug:
             # format `:08b` - 0 supply, 8 left shift, binary

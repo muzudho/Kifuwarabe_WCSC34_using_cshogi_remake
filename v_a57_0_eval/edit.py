@@ -173,6 +173,10 @@ class EvaluationEdit():
 
         is_changed = False
 
+        # assert: 変更に挑戦した回数
+        assert_challenge = 0
+        assert_failed_to_change = 0
+
         if is_king_move:
 
             # デバッグ表示
@@ -262,9 +266,13 @@ class EvaluationEdit():
                         black_l_move_obj=black_l_move_obj,
                         bit=0)
 
+                assert_challenge += 1
+
                 if is_changed_temp:
                     is_changed = True
                     rest -= 1
+                else:
+                    assert_failed_to_change += 1
 
             #
             # ＫＱ
@@ -300,9 +308,13 @@ class EvaluationEdit():
                         black_p_move_obj=black_q_move_obj,
                         bit=0)
 
+                assert_challenge += 1
+
                 if is_changed_temp:
                     is_changed = True
                     rest -= 1
+                else:
+                    assert_failed_to_change += 1
 
         else:
 
@@ -385,9 +397,13 @@ class EvaluationEdit():
                         black_k_move_obj=black_l_move_obj,
                         bit=1)
 
+                assert_challenge += 1
+
                 if is_changed_temp:
                     is_changed = True
                     rest -= 1
+                else:
+                    assert_failed_to_change += 1
 
             #
             # ＰＱ
@@ -424,16 +440,20 @@ class EvaluationEdit():
                         black_p2_move_obj=black_q_move_obj,
                         bit=0)
 
+                assert_challenge += 1
+
                 if is_changed_temp:
                     is_changed = True
                     rest -= 1
+                else:
+                    assert_failed_to_change += 1
 
         # 正常終了
         if is_changed:
             return ('changed', '')
 
         else:
-            return ('keep', f'減らせなかった  fl_target_size:{fl_target_size}  fq_target_size:{fq_target_size}  len(target_black_f_black_q_index_list):{len(target_black_f_black_q_index_list)}')
+            return ('keep', f'減らせなかった  update_delta:{update_delta}  fl_target_size:{fl_target_size}  fq_target_size:{fq_target_size}  len(target_black_f_black_q_index_list):{len(target_black_f_black_q_index_list)}  challenge:{assert_challenge}  assert_failed_to_change:{assert_failed_to_change}')
 
 
     def strengthen(
@@ -577,6 +597,10 @@ class EvaluationEdit():
 
         is_changed = False
 
+        # assert: 変更に挑戦した回数
+        assert_challenge = 0
+        assert_failed_to_change = 0
+
         if is_king_move:
 
             # デバッグ表示
@@ -667,9 +691,13 @@ class EvaluationEdit():
                         black_l_move_obj=black_l_move_obj,
                         bit=1)
 
+                assert_challenge += 1
+
                 if is_changed_temp:
                     is_changed = True
                     rest -= 1
+                else:
+                    assert_failed_to_change += 1
 
             #
             # ＫＱ
@@ -705,9 +733,13 @@ class EvaluationEdit():
                         black_p_move_obj=black_q_move_obj,
                         bit=1)
 
+                assert_challenge += 1
+
                 if is_changed_temp:
                     is_changed = True
                     rest -= 1
+                else:
+                    assert_failed_to_change += 1
 
         else:
 
@@ -813,9 +845,13 @@ class EvaluationEdit():
                         black_k_move_obj=black_l_move_obj,
                         bit=1)
 
+                assert_challenge += 1
+
                 if is_changed_temp:
                     is_changed = True
                     rest -= 1
+                else:
+                    assert_failed_to_change += 1
 
             #
             # ＰＱ
@@ -852,13 +888,17 @@ class EvaluationEdit():
                         black_p2_move_obj=black_q_move_obj,
                         bit=1)
 
+                assert_challenge += 1
+
                 if is_changed_temp:
                     is_changed = True
                     rest -= 1
+                else:
+                    assert_failed_to_change += 1
 
         # 正常終了
         if is_changed:
             return ('changed', '')
 
         else:
-            return ('keep', f'増やせなかった  fl_target_size:{fl_target_size}  fq_target_size:{fq_target_size}')
+            return ('keep', f'増やせなかった  update_delta:{update_delta}  fl_target_size:{fl_target_size}  fq_target_size:{fq_target_size}')
