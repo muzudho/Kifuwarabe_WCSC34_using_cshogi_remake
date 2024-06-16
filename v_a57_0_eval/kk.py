@@ -250,25 +250,20 @@ class EvaluationKkTable():
                 index=black_k_black_l_index)
 
 
-    def set_relation_exsits_by_kl_moves(
+    #set_relation_exsits_by_kl_moves
+    def set_relation_exsits_by_black_k_black_l_moves(
             self,
-            k_move_obj,
-            l_move_obj,
-            shall_k_white_to_black,
-            shall_l_white_to_black,
+            black_k_move_obj,
+            black_l_move_obj,
             bit):
         """自玉の着手と敵玉の応手を受け取って、関係の有無を設定します
 
         Parameters
         ----------
-        k_move_obj : Move
+        black_k_move_obj : Move
             自玉の指し手
-        l_move_obj : Move
+        black_l_move_obj : Move
             敵玉の指し手
-        shall_k_white_to_black : bool
-            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
-        shall_l_white_to_black : bool
-            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
         bit : int
             0 か 1
 
@@ -279,19 +274,20 @@ class EvaluationKkTable():
         """
 
         # assert
-        if Usi.is_drop_by_srcloc(k_move_obj.srcloc):
-            raise ValueError(f"[evaluation kk table > set relation exists by kl moves > k] 玉の指し手で打なのはおかしい。 k_move_obj.srcloc_u:{Usi.srcloc_to_code(k_move_obj.srcloc)}  k_move_obj:{k_move_obj.dump()}")
+        if Usi.is_drop_by_srcloc(black_k_move_obj.srcloc):
+            raise ValueError(f"[evaluation kk table > set relation exists by kl moves > k] 玉の指し手で打なのはおかしい。 black_k_move_obj.srcloc_u:{Usi.srcloc_to_code(black_k_move_obj.srcloc)}  black_k_move_obj:{black_k_move_obj.dump()}")
 
         # assert
-        if Usi.is_drop_by_srcloc(l_move_obj.srcloc):
-            raise ValueError(f"[evaluation kk table > set relation exists by kl moves > l] 玉の指し手で打なのはおかしい。 l_move_obj.srcloc_u:{Usi.srcloc_to_code(l_move_obj.srcloc)}  l_move_obj:{l_move_obj.dump()}")
+        if Usi.is_drop_by_srcloc(black_l_move_obj.srcloc):
+            raise ValueError(f"[evaluation kk table > set relation exists by kl moves > l] 玉の指し手で打なのはおかしい。 black_l_move_obj.srcloc_u:{Usi.srcloc_to_code(black_l_move_obj.srcloc)}  black_l_move_obj:{black_l_move_obj.dump()}")
 
         is_changed = self._mm_table_obj.set_bit_by_index(
                 index=EvaluationKkTable.get_black_k_black_l_index(
-                        k_move_obj=k_move_obj,
-                        l_move_obj=l_move_obj,
-                        shall_k_white_to_black=shall_k_white_to_black,
-                        shall_l_white_to_black=shall_l_white_to_black),
+                        k_move_obj=black_k_move_obj,
+                        l_move_obj=black_l_move_obj,
+                        # 両方先手のインデックスなので、これ以上変更しません
+                        shall_k_white_to_black=False,
+                        shall_l_white_to_black=False),
                 bit=bit)
 
         return is_changed
