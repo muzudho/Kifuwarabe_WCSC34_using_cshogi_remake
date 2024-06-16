@@ -252,6 +252,8 @@ class LearnAboutOneGame():
         # ｎ手詰めの局面図の sfen
         sfen_at_mate = self._board.sfen()
         turn_at_problem = self._board.turn
+        move_number_at_problem = self._board.move_number
+        move_number_between_end_and_problem = self._move_number_at_end - move_number_at_problem
 
         # 終局局面までの手数
         self._move_number_to_end = self._move_number_at_end - self._board.move_number
@@ -325,7 +327,7 @@ class LearnAboutOneGame():
                 # 進捗ログを出したい
                 def log_progress(comment):
                     if DebugPlan.learn_at_position_log_progress():
-                        print(f'[{datetime.datetime.now()}] [learn > at position] {tier:2}位  ({choice_num:3}/{sum_size:3})  {move_u:5}  {result_str}  [{self._board.move_number}手目（差{move_number_difference}）{Turn.to_kanji(self._board.turn)}]  {reason}  {comment}', flush=True)
+                        print(f'[{datetime.datetime.now()}] [learn > at position] {tier:2}位  ({choice_num:3}/{sum_size:3})  {move_u:5}  {result_str}  [(投了{self._move_number_at_end:3}手目) (巻戻し:{move_number_between_end_and_problem:3}) (学習局面:{move_number_at_problem:3}手目) (指継:{move_number_difference:3}手) (再投了:{self._board.move_number:3}手目 {Turn.to_kanji(self._board.turn)})]  {reason}  {comment}', flush=True)
 
                 # どちらかが投了した
                 if reason == 'resign':
