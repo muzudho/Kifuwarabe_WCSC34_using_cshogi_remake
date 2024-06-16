@@ -283,7 +283,7 @@ class LearnAboutOneGame():
             set_size = len(ranked_move_u_set)
             size_list.append(set_size)
             sum_size += set_size
-            print(f'    [{tier:2}位 {set_size}]', end='')
+            print(f'    {tier:2}位-->{set_size}', end='')
 
         print(f'  累計：{sum_size}', flush=True)
 
