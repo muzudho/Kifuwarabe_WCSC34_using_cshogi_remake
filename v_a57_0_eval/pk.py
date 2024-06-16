@@ -297,12 +297,12 @@ class EvaluationPkTable():
             変更が有ったか？
         """
         is_changed = self._mm_table_obj.set_bit_by_index(
-                index=EvaluationPkTable.get_black_p_black_k_index(
+                black_f_black_o_index=EvaluationPkTable.get_black_p_black_k_index(
                         p_move_obj=black_p_move_obj,
                         k_move_obj=black_k_move_obj,
-                    # 両方先手のインデックスなので、これ以上変更しません
-                    shall_p_white_to_black=False,
-                    shall_k_white_to_black=False),
+                        # 両方先手のインデックスなので、これ以上変更しません
+                        shall_p_white_to_black=False,
+                        shall_k_white_to_black=False),
                 bit=bit)
 
         return is_changed

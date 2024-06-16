@@ -266,12 +266,12 @@ p2_move_obj:{p2_move_obj.as_usi:5}
             変更が有ったか？
         """
         is_changed = self._mm_table_obj.set_bit_by_index(
-                index=EvaluationPpTable.get_black_p1_black_p2_index(
-                    p1_move_obj=black_p1_move_obj,
-                    p2_move_obj=black_p2_move_obj,
-                    # 両方先手のインデックスなので、これ以上変更しません
-                    shall_p1_white_to_black=False,
-                    shall_p2_white_to_black=False),
+                black_f_black_o_index=EvaluationPpTable.get_black_p1_black_p2_index(
+                        p1_move_obj=black_p1_move_obj,
+                        p2_move_obj=black_p2_move_obj,
+                        # 両方先手のインデックスなので、これ以上変更しません
+                        shall_p1_white_to_black=False,
+                        shall_p2_white_to_black=False),
                 bit=bit)
 
         return is_changed

@@ -396,6 +396,7 @@ class EvaluationEdit():
                 black_p_move_obj, black_q_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
                         black_p1_black_p2_index=target_black_f_black_q_index)
 
+                # assert
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                 if self._kifuwarabe.board.turn==cshogi.BLACK:
                     if black_p_move_obj.as_usi != move_u:
@@ -432,7 +433,7 @@ class EvaluationEdit():
             return ('changed', '')
 
         else:
-            return ('keep', '変更できなかった')
+            return ('keep', f'減らせなかった  fl_target_size:{fl_target_size}  fq_target_size:{fq_target_size}  len(target_black_f_black_q_index_list):{len(target_black_f_black_q_index_list)}')
 
 
     def strengthen(
@@ -860,4 +861,4 @@ class EvaluationEdit():
             return ('changed', '')
 
         else:
-            return ('keep', '変更できなかった')
+            return ('keep', f'増やせなかった  fl_target_size:{fl_target_size}  fq_target_size:{fq_target_size}')

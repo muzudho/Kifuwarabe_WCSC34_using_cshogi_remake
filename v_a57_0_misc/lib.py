@@ -636,15 +636,15 @@ class EvalutionMmTable():
 
     def set_bit_by_index(
             self,
-            index,
+            black_f_black_o_index,
             bit,
             is_debug=False):
         """インデックスを受け取ってビット値を設定します
 
         Parameters
         ----------
-        index : int
-            配列のインデックス
+        black_f_black_o_index : int
+            配列のインデックス。着手、応手ともに先手の視点
         bit : int
             0 か 1
         is_debug : bool
