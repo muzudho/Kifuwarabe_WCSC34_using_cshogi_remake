@@ -281,8 +281,8 @@ class LearnAboutOneGame():
                 # カウンターは事前に進める
                 choice_num += 1
 
-                # mate が 4 以上、または、 学習率くじでハズレを引いたとき、検討を間引く
-                if 4 <= mate or not self.is_learn_by_rate():
+                # mate が 4 以上のところは、学習率くじで当たったときだけ学習する
+                if 4 <= mate and not self.is_learn_by_rate():
                     continue
 
                 # 弱化・強化するフラグ
@@ -371,7 +371,8 @@ class LearnAboutOneGame():
                 if shall_1_weaken_2_strongthen == 1:
                     result_str = self._kifuwarabe.weaken(
                             cmd_tail=move_u,
-                            is_debug=self._is_debug)
+                            is_debug=True)
+                            #is_debug=self._is_debug)
 
                     # 変更はログに出したい
                     print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 好手] {ranking:2}位       weaken {move_u:5}  result:`{result_str}`')
@@ -383,7 +384,8 @@ class LearnAboutOneGame():
                 elif shall_1_weaken_2_strongthen == 2:
                     result_str = self._kifuwarabe.strengthen(
                             cmd_tail=move_u,
-                            is_debug=self._is_debug)
+                            is_debug=True)
+                            #is_debug=self._is_debug)
 
                     # 変更はログに出したい
                     print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 悪手] {ranking:2}位        strengthen {move_u:5}  result:`{result_str}`')
@@ -457,225 +459,130 @@ class LearnAboutOneGame():
 
         print(f'  累計：{sum_size}', flush=True)
 
-        # TODO 好手と悪手の真ん中を設定できるようにしたい
-        ranking_resolution_threshold = sum_size // self._kifuwarabe.ranking_resolution
-
-
         for ranking, ranked_move_u_set in enumerate(ranked_move_u_set_list):
             choice_num = 0
 
-            if ranking < ranking_resolution_threshold:
-                if self._is_debug:
-                    print(f'[{datetime.datetime.now()}] [learn > 逃げる方]  着手のランキング：{ranking}（好手）')
+            if self._is_debug:
+                print(f'[{datetime.datetime.now()}] [learn > 逃げる方]  着手のランキング：{ranking}（好手）')
 
-                for move_u in ranked_move_u_set:
+            for move_u in ranked_move_u_set:
 
-                    # カウンターは事前に進める
-                    choice_num += 1
+                # カウンターは事前に進める
+                choice_num += 1
 
-                    # 検討を間引く
-                    if not self.is_learn_by_rate():
-                        continue
+                # mate が 4 以上のところは、学習率くじで当たったときだけ学習する
+                if 4 <= mate and not self.is_learn_by_rate():
+                    continue
 
-                    # 弱化・強化するフラグ
-                    shall_1_weaken_2_strongthen = 0
+                # 弱化・強化するフラグ
+                shall_1_weaken_2_strongthen = 0
 
-                    # ｎ手詰め局面図かチェック
-                    if self._board.sfen() != sfen_at_mate:
-                        # エラー時
-                        print(f"""[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] {ranking:2}位  {mate}手詰め局面図エラー
+                # ｎ手詰め局面図かチェック
+                if self._board.sfen() != sfen_at_mate:
+                    # エラー時
+                    print(f"""[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] {ranking:2}位  {mate}手詰め局面図エラー
 {self._board}
     # board move_number:{self._board.move_number}
     # {BoardHelper.get_position_command(board=self._board)}
 """)
-                        raise ValueError(f"[learn > 逃げる方 > 好手] {ranking:2}位  {mate}手詰め局面図エラー")
+                    raise ValueError(f"[learn > 逃げる方 > 好手] {ranking:2}位  {mate}手詰め局面図エラー")
 
-                    # （ｎ手詰め局面図で）とりあえず一手指す
-                    self._board.push_usi(move_u)
+                # （ｎ手詰め局面図で）とりあえず一手指す
+                self._board.push_usi(move_u)
 
-                    # プレイアウトする
-                    (result_str, reason) = self._kifuwarabe.playout(
-                            is_in_learn=True,
-                            # １手指した分引く
-                            max_playout_depth=max_playout_depth - 1)
+                # プレイアウトする
+                (result_str, reason) = self._kifuwarabe.playout(
+                        is_in_learn=True,
+                        # １手指した分引く
+                        max_playout_depth=max_playout_depth - 1)
 
-                    move_number_difference = self._board.move_number - self._move_number_at_end
+                move_number_difference = self._board.move_number - self._move_number_at_end
 
-                    # 進捗ログを出したい
-                    def log_progress(comment):
-                        if DebugPlan.learn_at_even_log_progress():
-                            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] {ranking:2}位  ({choice_num:3}/{sum_size:3})  {move_u:5}  {result_str}  [{self._board.move_number}手（差{move_number_difference}）{Turn.to_kanji(self._board.turn)}]  {reason}  {comment}', flush=True)
+                # 進捗ログを出したい
+                def log_progress(comment):
+                    if DebugPlan.learn_at_even_log_progress():
+                        print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] {ranking:2}位  ({choice_num:3}/{sum_size:3})  {move_u:5}  {result_str}  [{self._board.move_number}手（差{move_number_difference}）{Turn.to_kanji(self._board.turn)}]  {reason}  {comment}', flush=True)
 
-                    # どちらかが投了した
-                    if reason == 'resign':
-                        # 逃げてる方の負け
-                        if lost_player_turn == self._board.turn:
-                            if self._move_number_at_end - self._board.move_number == 2:
-                                # 好手の評価を取り下げる
-                                shall_1_weaken_2_strongthen = 1
-                                log_progress(f"[▼DOWN▼] {mate}手詰めが掛けられていて、それを食らった")
+                # どちらかが投了した
+                if reason == 'resign':
+                    # 逃げてる方の負け
+                    if lost_player_turn == self._board.turn:
+                        shall_1_weaken_2_strongthen = 1
+                        log_progress(f"[▼DOWN▼] 負けた方が逃げてたが、やっぱり負け")
 
-                            else:
-                                # 好手の評価はそのまま
-                                log_progress(f"[　] {mate}手詰めが掛けられていたが、そこから粘った")
-
-                        else:
-                            # 好手を維持
-                            log_progress(f"[　] 逃げてる方が勝った")
-
-
-                    # 手数の上限に達した
-                    elif reason == 'max_move':
-                        # ノーカウント
-                        log_progress(f"[　] 手数上限で打ち切られるまで逃げ切った")
-
-                    # プレイアウトの深さの上限に達した
-                    elif reason == 'max_playout_depth':
-                        # ノーカウント
-                        log_progress(f"[　] プレイアウトが打ち切られるまで逃げ切った")
-
+                    # 逃げてたら勝った
                     else:
-                        # この好手の評価はそのまま
-                        log_progress("[　] 関心のない結果")
+                        shall_1_weaken_2_strongthen = 2
+                        log_progress(f"[▲UP▲] 負けた方が逃げてたら勝った")
 
-                    # 終局図の内部データに進める
-                    self.restore_end_position()
+                # どちらかが入玉勝ちした
+                elif reason == 'nyugyoku_win':
+                    # 逃げてる方の入玉宣言勝ち
+                    if lost_player_turn == self._board.turn:
+                        shall_1_weaken_2_strongthen = 2
+                        log_progress(f"[▲UP▲] 逃げてたら、入玉宣言勝ちした")
 
-                    # ｎ手詰めの局面まで戻す
-                    for _i in range(0, mate):
-                        self._board.pop()
-
-                    # 戻せたかチェック
-                    if self._board.sfen() != sfen_at_mate:
-                        # エラー時
-                        print(f"""[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] {ranking:2}位  局面巻き戻しエラー
-{self._board}
-    # board move_number:{self._board.move_number}
-    # {BoardHelper.get_position_command(board=self._board)}
-""")
-                        raise ValueError("局面巻き戻しエラー")
-
-                    # ｎ手詰めの局面にしてから、評価値を下げる
-                    if shall_1_weaken_2_strongthen == 1:
-                        result_str = self._kifuwarabe.weaken(
-                                cmd_tail=move_u,
-                                is_debug=True)
-                                #is_debug=self._is_debug)
-
-                        # 変更はログに出したい
-                        print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] {ranking:2}位         weaken {move_u:5}  result:`{result_str}`')
-
-                        if result_str == 'changed':
-                            changed_count += 1
-
-            else:
-
-                if self._is_debug:
-                    print(f'[{datetime.datetime.now()}] [learn > 逃げる方] {ranking:2}位   現悪手一覧：')
-
-                for move_u in ranked_move_u_set:
-
-                    # カウンターは事前に進める
-                    choice_num += 1
-
-                    # 検討を間引く
-                    if not self.is_learn_by_rate():
-                        continue
-
-                    # 弱化・強化するフラグ
-                    shall_1_weaken_2_strongthen = 0
-
-                    # ｎ手詰め局面図かチェック
-                    if self._board.sfen() != sfen_at_mate:
-                        # エラー時
-                        print(f"""[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手] {ranking:2}位  {mate}手詰め局面図エラー
-{self._board}
-    # board move_number:{self._board.move_number}
-    # {BoardHelper.get_position_command(board=self._board)}
-""")
-                        raise ValueError(f"[learn > 逃げる方 > 悪手] {ranking:2}位  {mate}手詰め局面図エラー")
-
-                    # （ｎ手詰め局面図で）とりあえず一手指す
-                    self._board.push_usi(move_u)
-
-                    # プレイアウトする
-                    (result_str, reason) = self._kifuwarabe.playout(
-                            is_in_learn=True,
-                            # １手指しているので、１つ引く
-                            max_playout_depth=max_playout_depth - 1)
-
-                    move_number_difference = self._board.move_number - self._move_number_at_end
-
-                    # 進捗ログを出したい
-                    def log_progress(comment):
-                        if DebugPlan.learn_at_even_log_progress():
-                            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手] {ranking:2}位  ({choice_num:3}/{sum_size:3})  {move_u:5}  {result_str}  [{self._board.move_number}手（差{move_number_difference}）{Turn.to_kanji(self._board.turn)}]  {reason}  {comment}', flush=True)
-
-                    # どちらかが投了した
-                    if reason == 'resign':
-                        # 逃げてる方が負け
-                        if lost_player_turn == self._board.turn:
-                            log_progress(f"[　] 逃げようとしたが、逃げ切れなかった")
-
-                        # 逃げてたら勝った
-                        else:
-                            shall_1_weaken_2_strongthen = 2
-                            log_progress(f"[▲UP▲] 逃げてたら勝った")
-
-                    # どちらかが入玉勝ちした
-                    elif reason == 'nyugyoku_win':
-                        if lost_player_turn == self._board.turn:
-                            log_progress(f"[　] 逃げようとしたが、入玉宣言負けしてしまった")
-
-                        # 逃げてたら勝った
-                        else:
-                            shall_1_weaken_2_strongthen = 2
-                            log_progress(f"[▲UP▲] 逃げてたら、入玉宣言勝ちした")
-
-                    # 手数の上限に達した
-                    elif reason == 'max_move':
-                        # ノーカウント
-                        log_progress(f"[ ] 手数上限で打ち切られるまで逃げ切った")
-
-                    # プレイアウトの深さの上限に達した
-                    elif reason == 'max_playout_depth':
-                        # ノーカウント
-                        log_progress(f"[ ] プレイアウトが打ち切られるまで逃げ切った")
-
+                    # 逃げてたら負け
                     else:
-                        # この悪手の評価はそのまま
-                        log_progress("[　] 関心のない結果")
+                        shall_1_weaken_2_strongthen = 1
+                        log_progress(f"[▼DOWN▼] 負けた方が逃げてたが、入玉宣言されて負け")
 
+                # 手数の上限に達した
+                elif reason == 'max_move':
+                    # ノーカウント
+                    log_progress(f"[　] 手数上限で打ち切られるまで逃げ切った")
 
-                    # 終局図の内部データに進める
-                    self.restore_end_position()
+                # プレイアウトの深さの上限に達した
+                elif reason == 'max_playout_depth':
+                    # ノーカウント
+                    log_progress(f"[　] プレイアウトが打ち切られるまで逃げ切った")
 
-                    # ｎ手詰めの局面まで戻す
-                    for _i in range(0, mate):
-                        self._board.pop()
+                else:
+                    # この好手の評価はそのまま
+                    log_progress("[　] 関心のない結果")
 
-                    # 戻せたかチェック
-                    if self._board.sfen() != sfen_at_mate:
-                        # エラー時
-                        print(f"""[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手] {ranking:2}位  局面巻き戻しエラー
+                # 終局図の内部データに進める
+                self.restore_end_position()
+
+                # ｎ手詰めの局面まで戻す
+                for _i in range(0, mate):
+                    self._board.pop()
+
+                # 戻せたかチェック
+                if self._board.sfen() != sfen_at_mate:
+                    # エラー時
+                    print(f"""[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] {ranking:2}位  局面巻き戻しエラー
 {self._board}
     # board move_number:{self._board.move_number}
     # {BoardHelper.get_position_command(board=self._board)}
 """)
-                        raise ValueError("局面巻き戻しエラー")
+                    raise ValueError("局面巻き戻しエラー")
 
-                    # ｎ手詰めの局面にしてから、評価値を上げる
-                    if shall_1_weaken_2_strongthen == 2:
-                        result_str = self._kifuwarabe.strengthen(
-                                cmd_tail=move_u,
-                                is_debug=True)
-                                #is_debug=self._is_debug)
+                # ｎ手詰めの局面にしてから、評価値を下げる
+                if shall_1_weaken_2_strongthen == 1:
+                    result_str = self._kifuwarabe.weaken(
+                            cmd_tail=move_u,
+                            is_debug=True)
+                            #is_debug=self._is_debug)
 
-                        # 変更はログに出したい
-                        print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手] {ranking:2}位         strengthen {move_u:5}  result:`{result_str}`')
+                    # 変更はログに出したい
+                    print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] {ranking:2}位         weaken {move_u:5}  result:`{result_str}`')
 
-                        if result_str == 'changed':
-                            changed_count += 1
+                    if result_str == 'changed':
+                        changed_count += 1
+
+                # ｎ手詰めの局面にしてから、評価値を上げる
+                elif shall_1_weaken_2_strongthen == 2:
+                    result_str = self._kifuwarabe.strengthen(
+                            cmd_tail=move_u,
+                            is_debug=True)
+                            #is_debug=self._is_debug)
+
+                    # 変更はログに出したい
+                    print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手] {ranking:2}位         strengthen {move_u:5}  result:`{result_str}`')
+
+                    if result_str == 'changed':
+                        changed_count += 1
 
 
         return ('ok', changed_count)
