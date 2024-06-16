@@ -296,12 +296,12 @@ class LearnAboutOneGame():
                     # ｎ手詰め局面図かチェック
                     if self._board.sfen() != sfen_at_mate:
                         # エラー時
-                        print(f"""[{datetime.datetime.now()}] [learn > 詰める方 > 好手] {mate}手詰め局面図エラー
+                        print(f"""[{datetime.datetime.now()}] [learn > 詰める方 > 好手] {ranking:2}位  {mate}手詰め局面図エラー
 {self._board}
     # board move_number:{self._board.move_number}
     # {BoardHelper.get_position_command(board=self._board)}
 """)
-                        raise ValueError(f"[learn > 詰める方 > 好手] {mate}手詰め局面図エラー")
+                        raise ValueError(f"[learn > 詰める方 > 好手] {ranking:2}位  {mate}手詰め局面図エラー")
 
                     # （ｎ手詰め局面図で）とりあえず一手指す
                     self._board.push_usi(move_u)
@@ -317,7 +317,7 @@ class LearnAboutOneGame():
                     # 進捗ログを出したい
                     def log_progress(comment):
                         if DebugPlan.learn_at_odd_log_progress():
-                            print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 好手] ({choice_num:3}/{sum_size:3})  {move_u:5}  {result_str}  [{self._board.move_number}手（差{move_number_difference}）{Turn.to_kanji(self._board.turn)}]  {reason}  {comment}', flush=True)
+                            print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 好手] {ranking:2}位  ({choice_num:3}/{sum_size:3})  {move_u:5}  {result_str}  [{self._board.move_number}手（差{move_number_difference}）{Turn.to_kanji(self._board.turn)}]  {reason}  {comment}', flush=True)
 
                     # どちらかが投了した
                     if reason == 'resign':
@@ -367,7 +367,7 @@ class LearnAboutOneGame():
                     # 戻せたかチェック
                     if self._board.sfen() != sfen_at_mate:
                         # エラー時
-                        print(f"""[{datetime.datetime.now()}] [learn > 詰める方 > 好手] 局面巻き戻しエラー
+                        print(f"""[{datetime.datetime.now()}] [learn > 詰める方 > 好手] {ranking:2}位  局面巻き戻しエラー
     {self._board}
         # board move_number:{self._board.move_number}
         # {BoardHelper.get_position_command(board=self._board)}
@@ -381,7 +381,7 @@ class LearnAboutOneGame():
                                 is_debug=self._is_debug)
 
                         # 変更はログに出したい
-                        print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 好手]        weaken {move_u:5}  result:`{result_str}`')
+                        print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 好手] {ranking:2}位       weaken {move_u:5}  result:`{result_str}`')
 
                         if result_str == 'changed':
                             changed_count += 1
@@ -389,7 +389,7 @@ class LearnAboutOneGame():
             else:
 
                 if self._is_debug:
-                    print(f'[{datetime.datetime.now()}] [learn > 詰める方]  着手のランキング：{ranking}（悪手）')
+                    print(f'[{datetime.datetime.now()}] [learn > 詰める方] 着手のランキング：{ranking}（悪手）')
 
                 for move_u in ranked_move_u_set:
 
@@ -405,12 +405,12 @@ class LearnAboutOneGame():
                     # ｎ手詰め局面図かチェック
                     if self._board.sfen() != sfen_at_mate:
                         # エラー時
-                        print(f"""[{datetime.datetime.now()}] [learn > 詰める方 > 悪手] {mate}手詰め局面図エラー
+                        print(f"""[{datetime.datetime.now()}] [learn > 詰める方 > 悪手] {ranking:2}位  {mate}手詰め局面図エラー
 {self._board}
     # board move_number:{self._board.move_number}
     # {BoardHelper.get_position_command(board=self._board)}
 """)
-                        raise ValueError(f"[learn > 詰める方 > 悪手] {mate}手詰め局面図エラー")
+                        raise ValueError(f"[learn > 詰める方 > 悪手] {ranking:2}位  {mate}手詰め局面図エラー")
 
                     # （ｎ手詰め局面図で）とりあえず一手指す
                     self._board.push_usi(move_u)
@@ -426,7 +426,7 @@ class LearnAboutOneGame():
                     # 進捗ログを出したい
                     def log_progress(comment):
                         if DebugPlan.learn_at_odd_log_progress():
-                            print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 悪手] ({choice_num:3}/{sum_size:3})  {move_u:5}  {result_str}  [{self._board.move_number}手（差{move_number_difference}）{Turn.to_kanji(self._board.turn)}]  {reason}  {comment}', flush=True)
+                            print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 悪手] {ranking:2}位  ({choice_num:3}/{sum_size:3})  {move_u:5}  {result_str}  [{self._board.move_number}手（差{move_number_difference}）{Turn.to_kanji(self._board.turn)}]  {reason}  {comment}', flush=True)
 
                     # どちらかが投了した
                     if reason == 'resign':
@@ -469,7 +469,7 @@ class LearnAboutOneGame():
                     # 戻せたかチェック
                     if self._board.sfen() != sfen_at_mate:
                         # エラー時
-                        print(f"""[{datetime.datetime.now()}] [learn > 詰める方 > 悪手] 局面巻き戻しエラー
+                        print(f"""[{datetime.datetime.now()}] [learn > 詰める方 > 悪手] {ranking:2}位  局面巻き戻しエラー
 {self._board}
     # board move_number:{self._board.move_number}
     # {BoardHelper.get_position_command(board=self._board)}
@@ -484,7 +484,7 @@ class LearnAboutOneGame():
                                 #is_debug=self._is_debug)
 
                         # 変更はログに出したい
-                        print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 悪手]        strengthen {move_u:5}  result:`{result_str}`')
+                        print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 悪手] {ranking:2}位        strengthen {move_u:5}  result:`{result_str}`')
 
                         if result_str == 'changed':
                             changed_count += 1
@@ -580,12 +580,12 @@ class LearnAboutOneGame():
                     # ｎ手詰め局面図かチェック
                     if self._board.sfen() != sfen_at_mate:
                         # エラー時
-                        print(f"""[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] {mate}手詰め局面図エラー
+                        print(f"""[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] {ranking:2}位  {mate}手詰め局面図エラー
 {self._board}
     # board move_number:{self._board.move_number}
     # {BoardHelper.get_position_command(board=self._board)}
 """)
-                        raise ValueError(f"[learn > 逃げる方 > 好手] {mate}手詰め局面図エラー")
+                        raise ValueError(f"[learn > 逃げる方 > 好手] {ranking:2}位  {mate}手詰め局面図エラー")
 
                     # （ｎ手詰め局面図で）とりあえず一手指す
                     self._board.push_usi(move_u)
@@ -601,7 +601,7 @@ class LearnAboutOneGame():
                     # 進捗ログを出したい
                     def log_progress(comment):
                         if DebugPlan.learn_at_even_log_progress():
-                            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] ({choice_num:3}/{sum_size:3})  {move_u:5}  {result_str}  [{self._board.move_number}手（差{move_number_difference}）{Turn.to_kanji(self._board.turn)}]  {reason}  {comment}', flush=True)
+                            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] {ranking:2}位  ({choice_num:3}/{sum_size:3})  {move_u:5}  {result_str}  [{self._board.move_number}手（差{move_number_difference}）{Turn.to_kanji(self._board.turn)}]  {reason}  {comment}', flush=True)
 
                     # どちらかが投了した
                     if reason == 'resign':
@@ -645,7 +645,7 @@ class LearnAboutOneGame():
                     # 戻せたかチェック
                     if self._board.sfen() != sfen_at_mate:
                         # エラー時
-                        print(f"""[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] 局面巻き戻しエラー
+                        print(f"""[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] {ranking:2}位  局面巻き戻しエラー
 {self._board}
     # board move_number:{self._board.move_number}
     # {BoardHelper.get_position_command(board=self._board)}
@@ -660,7 +660,7 @@ class LearnAboutOneGame():
                                 #is_debug=self._is_debug)
 
                         # 変更はログに出したい
-                        print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手]        weaken {move_u:5}  result:`{result_str}`')
+                        print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] {ranking:2}位         weaken {move_u:5}  result:`{result_str}`')
 
                         if result_str == 'changed':
                             changed_count += 1
@@ -668,7 +668,7 @@ class LearnAboutOneGame():
             else:
 
                 if self._is_debug:
-                    print(f'[{datetime.datetime.now()}] [learn > 逃げる方]  現悪手一覧：')
+                    print(f'[{datetime.datetime.now()}] [learn > 逃げる方] {ranking:2}位   現悪手一覧：')
 
                 for move_u in ranked_move_u_set:
 
@@ -684,12 +684,12 @@ class LearnAboutOneGame():
                     # ｎ手詰め局面図かチェック
                     if self._board.sfen() != sfen_at_mate:
                         # エラー時
-                        print(f"""[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手] {mate}手詰め局面図エラー
+                        print(f"""[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手] {ranking:2}位  {mate}手詰め局面図エラー
 {self._board}
     # board move_number:{self._board.move_number}
     # {BoardHelper.get_position_command(board=self._board)}
 """)
-                        raise ValueError(f"[learn > 逃げる方 > 悪手] {mate}手詰め局面図エラー")
+                        raise ValueError(f"[learn > 逃げる方 > 悪手] {ranking:2}位  {mate}手詰め局面図エラー")
 
                     # （ｎ手詰め局面図で）とりあえず一手指す
                     self._board.push_usi(move_u)
@@ -705,7 +705,7 @@ class LearnAboutOneGame():
                     # 進捗ログを出したい
                     def log_progress(comment):
                         if DebugPlan.learn_at_even_log_progress():
-                            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手] ({choice_num:3}/{sum_size:3})  {move_u:5}  {result_str}  [{self._board.move_number}手（差{move_number_difference}）{Turn.to_kanji(self._board.turn)}]  {reason}  {comment}', flush=True)
+                            print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手] {ranking:2}位  ({choice_num:3}/{sum_size:3})  {move_u:5}  {result_str}  [{self._board.move_number}手（差{move_number_difference}）{Turn.to_kanji(self._board.turn)}]  {reason}  {comment}', flush=True)
 
                     # どちらかが投了した
                     if reason == 'resign':
@@ -755,7 +755,7 @@ class LearnAboutOneGame():
                     # 戻せたかチェック
                     if self._board.sfen() != sfen_at_mate:
                         # エラー時
-                        print(f"""[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手] 局面巻き戻しエラー
+                        print(f"""[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手] {ranking:2}位  局面巻き戻しエラー
 {self._board}
     # board move_number:{self._board.move_number}
     # {BoardHelper.get_position_command(board=self._board)}
@@ -770,7 +770,7 @@ class LearnAboutOneGame():
                                 #is_debug=self._is_debug)
 
                         # 変更はログに出したい
-                        print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手]        strengthen {move_u:5}  result:`{result_str}`')
+                        print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手] {ranking:2}位         strengthen {move_u:5}  result:`{result_str}`')
 
                         if result_str == 'changed':
                             changed_count += 1
