@@ -152,7 +152,8 @@ move_rot_u:{move_rot_obj.as_usi:5}
                     p_move_obj=move_obj,
                     k_move_u_set=l_move_u_set,
                     # 先手の指し手になるよう調整します
-                    p_turn=board.turn)
+                    shall_p_white_to_black=board.turn==cshogi.WHITE,
+                    shall_k_white_to_black=board.turn==cshogi.BLACK)
 
             # assert
             for black_p_black_l_index, relation_exists in black_p_black_l_index_to_relation_exists_dic.items():
@@ -245,30 +246,27 @@ move_rot_u:{move_rot_obj.as_usi:5}
     def get_number_of_connection_for_kl_kq(
             black_k_black_l_index_to_relation_exists_dictionary,
             black_k_black_q_index_to_relation_exists_dictionary,
-            board,
             is_debug=False):
-        """ＫＬとＫＱの関係が有りのものの数
+        """ＫＬとＫＱの関係が有るものの数
 
         Parameters
         ----------
         black_k_black_l_index_to_relation_exists_dictionary : dict
             ＫＬ
-        black_k_black_q_index_to_relation_exists_dictionary
+        black_k_black_q_index_to_relation_exists_dictionary : dict
             ＫＱ
-        board : cshogi.Board
-            現局面
         is_debug : bool
             デバッグモードか？
         """
         number_of_connection = 0
 
         # ＫＬ
-        for black_k_black_l_index, relation_exists in black_k_black_l_index_to_relation_exists_dictionary.items():
+        for relation_exists in black_k_black_l_index_to_relation_exists_dictionary.values():
             if relation_exists == 1:
                 number_of_connection += 1
 
         # ＫＱ
-        for black_k_black_q_index, relation_exists in black_k_black_q_index_to_relation_exists_dictionary.items():
+        for relation_exists in black_k_black_q_index_to_relation_exists_dictionary.values():
             if relation_exists == 1:
                 number_of_connection += 1
 
@@ -295,7 +293,6 @@ move_rot_u:{move_rot_obj.as_usi:5}
     def get_number_of_connection_for_pl_pq(
             black_p_black_l_index_to_relation_exists_dictionary,
             black_p_black_q_index_to_relation_exists_dictionary,
-            board,
             is_debug):
         """ＰＬとＰＱの関係が有りのものの数
 
@@ -305,20 +302,18 @@ move_rot_u:{move_rot_obj.as_usi:5}
             ＫＬ
         black_p_black_q_index_to_relation_exists_dictionary
             ＫＱ
-        board : cshogi.Board
-            現局面
         is_debug : bool
             デバッグモードか？
         """
         number_of_connection = 0
 
         # ＰＬ
-        for black_p_black_l_index, relation_exists in black_p_black_l_index_to_relation_exists_dictionary.items():
+        for relation_exists in black_p_black_l_index_to_relation_exists_dictionary.values():
             if relation_exists == 1:
                 number_of_connection += 1
 
         # ＰＱ
-        for black_p_black_q_index, relation_exists in black_p_black_q_index_to_relation_exists_dictionary.items():
+        for relation_exists in black_p_black_q_index_to_relation_exists_dictionary.values():
             if relation_exists == 1:
                 number_of_connection += 1
 
@@ -441,7 +436,6 @@ move_rot_u:{move_rot_obj.as_usi:5}
             positive_of_relation = ChoiceBestMove.get_number_of_connection_for_kl_kq(
                     black_k_black_l_index_to_relation_exists_dictionary,
                     black_k_black_q_index_to_relation_exists_dictionary,
-                    board=kifuwarabe.board,
                     is_debug=is_debug)
 
             return (black_k_black_l_index_to_relation_exists_dictionary,
@@ -518,7 +512,6 @@ move_rot_u:{move_rot_obj.as_usi:5}
             positive_of_relation = ChoiceBestMove.get_number_of_connection_for_pl_pq(
                     black_p_black_l_index_to_relation_exists_dictionary,
                     black_p_black_q_index_to_relation_exists_dictionary,
-                    board=kifuwarabe.board,
                     is_debug=is_debug)
 
             return (black_p_black_l_index_to_relation_exists_dictionary,

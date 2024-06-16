@@ -179,6 +179,14 @@ class LearnAboutOneGame():
                 break
 
             #
+            # コマメに保存する
+            #
+            #       全ての評価値テーブル［0:先手, 1:後手］の（変更があれば）保存
+            #
+            self._kifuwarabe.save_eval_all_tables(
+                    is_debug=self._is_debug)
+
+            #
             # 偶数：　逃げる方
             # --------------
             #
@@ -193,14 +201,12 @@ class LearnAboutOneGame():
                 break
 
             #
-            # ２０手毎にコマメに保存する
+            # コマメに保存する
             #
-            #   mate_th = 1 から始まることに注意
+            #       全ての評価値テーブル［0:先手, 1:後手］の（変更があれば）保存
             #
-            if mate_th % 20 == 1:
-                # 全ての評価値テーブル［0:先手, 1:後手］の（変更があれば）保存
-                self._kifuwarabe.save_eval_all_tables(
-                        is_debug=self._is_debug)
+            self._kifuwarabe.save_eval_all_tables(
+                    is_debug=self._is_debug)
 
         #
         # おわり
@@ -393,26 +399,26 @@ class LearnAboutOneGame():
 
                 # ｎ手詰めの局面にしてから、評価値を下げる
                 if shall_1_weaken_2_strongthen == 1:
-                    result_str = self._kifuwarabe.weaken(
+                    (result_str, result_comment) = self._kifuwarabe.weaken(
                             cmd_tail=move_u,
                             is_debug=True)
                             #is_debug=self._is_debug)
 
                     # 変更はログに出したい
-                    print(f'[{datetime.datetime.now()}] [learn > at position] {tier:2}位       weaken {move_u:5}  result:`{result_str}`')
+                    print(f'[{datetime.datetime.now()}] [learn > at position] {tier:2}位       weaken {move_u:5}  result:`{result_str}`  comment:{result_comment}')
 
                     if result_str == 'changed':
                         changed_count += 1
 
                 # ｎ手詰めの局面にしてから、評価値を上げる
                 elif shall_1_weaken_2_strongthen == 2:
-                    result_str = self._kifuwarabe.strengthen(
+                    (result_str, result_comment) = self._kifuwarabe.strengthen(
                             cmd_tail=move_u,
                             is_debug=True)
                             #is_debug=self._is_debug)
 
                     # 変更はログに出したい
-                    print(f'[{datetime.datetime.now()}] [learn > at position] {tier:2}位        strengthen {move_u:5}  result:`{result_str}`')
+                    print(f'[{datetime.datetime.now()}] [learn > at position] {tier:2}位        strengthen {move_u:5}  result:`{result_str}`  result_comment:{result_comment}')
 
                     if result_str == 'changed':
                         changed_count += 1

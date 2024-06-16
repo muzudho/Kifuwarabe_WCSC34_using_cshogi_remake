@@ -244,21 +244,21 @@ class Kifuwarabe():
         # これによって、その着手のポリシー値は下がる
         #       code: weaken 5i5h
         elif head == 'weaken':
-            result_str = self.weaken(
+            (result_str, result_comment) = self.weaken(
                     cmd_tail=tail,
                     is_debug=is_debug)
 
-            print(f"[weaken] result=`{result_str}`")
+            print(f"[weaken] result=`{result_str}`  comment={result_comment}")
 
         # 指定の着手の評価値テーブルについて、関連がある箇所を（適当に選んで）、それを関連が有るようにする。
         # これによって、その着手のポリシー値は上がる
         #       code: strengthen 5i5h
         elif head == 'strengthen':
-            result_str = self.strengthen(
+            (result_str, result_comment) = self.strengthen(
                     cmd_tail=tail,
                     is_debug=is_debug)
 
-            print(f"[strengthen] result=`{result_str}`")
+            print(f"[strengthen] result=`{result_str}`  result_comment:{result_comment}")
 
         # プレイアウト
         #       code: playout
@@ -826,7 +826,7 @@ class Kifuwarabe():
         if cmd_tail.strip() == '':
             if is_debug:
                 print(f"[{datetime.datetime.now()}] [weaken] weaken command must be 1 move.  ex:`weaken 5i5h`  cmd_tail:`{cmd_tail}`")
-            return 'failed'
+            return ('failed', 'コマンドがおかしい')
 
         return EvaluationEdit(
                 kifuwarabe=self
@@ -857,7 +857,7 @@ class Kifuwarabe():
         if cmd_tail.strip() == '':
             if is_debug:
                 print(f"[{datetime.datetime.now()}] [strengthen] strengthen command must be 1 move.  ex:`strengthen 5i5h`  cmd_tail:`{cmd_tail}`")
-            return 'failed'
+            return ('failed', 'コマンドがおかしい')
 
         return EvaluationEdit(
                 kifuwarabe=self

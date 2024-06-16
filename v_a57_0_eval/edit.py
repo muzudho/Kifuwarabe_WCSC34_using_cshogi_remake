@@ -49,6 +49,8 @@ class EvaluationEdit():
         -------
         result_str : str
             'failed', 'changed', 'keep'
+        comment : str
+            過程の説明
         """
 
         # 投了局面時、入玉宣言局面時、１手詰めは省略
@@ -143,13 +145,13 @@ class EvaluationEdit():
                         raise ValueError(f"[{datetime.datetime.now()}] [weaken > fl] 指し手を先手の向きに変えて復元できなかったエラー  元の着手:{move_u}  作った着手:{assert_black_p1_move_obj.as_usi}")
 
 
-        # 減らすものがないので、弱化は不要です
+        # 減らすものがないので、弱化できなかった
         if positive_of_relation < 1:
             # デバッグ表示
             if is_debug:
-                print(f"[{datetime.datetime.now()}] [weaken]  減らすものがないので、弱化は不要です")
+                print(f"[{datetime.datetime.now()}] [weaken]  減らすものがないので、弱化できなかった")
 
-            return 'unnecessary'
+            return ('already_empty', '減らすものがなかった')
 
         #
         # 好手悪手のランキング算出
@@ -206,7 +208,7 @@ class EvaluationEdit():
             fq_size = len(target_black_f_black_q_index_list)
 
             if fl_size + fq_size < 1:
-                return "empty_moves"
+                return ("empty_moves", "変化量０だった")
 
             # 例：ＦＬの割合　０．１２５
             fl_weight = fl_size / (fl_size + fq_size)
@@ -337,7 +339,7 @@ class EvaluationEdit():
             fq_size = len(target_black_f_black_q_index_list)
 
             if fl_size + fq_size < 1:
-                return "empty_moves"
+                return ("empty_moves", "変化量０だった")
 
             # 例：ＦＬの割合　０．１２５
             fl_weight = fl_size / (fl_size + fq_size)
@@ -416,12 +418,9 @@ class EvaluationEdit():
                 if is_debug and DebugPlan.evaluation_edit_weaken:
                     print(f"[{datetime.datetime.now()}] [weaken > pq] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  pq_index:{target_black_f_black_q_index:7}  P:{black_p_move_obj.as_usi:5}  Q:{black_q_move_obj.as_usi:5}  remove relation")
 
-                is_changed_temp = self._kifuwarabe._evaluation_pq_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exists_by_pp_moves(
-                        p1_move_obj=black_p_move_obj,
-                        p2_move_obj=black_q_move_obj,
-                        # 既に先手の指し手なので、先手に合わせるために回転させる必要はありません
-                        shall_p1_white_to_black=False,
-                        shall_p2_white_to_black=False,
+                is_changed_temp = self._kifuwarabe._evaluation_pq_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exists_by_black_p_black_p_moves(
+                        black_p1_move_obj=black_p_move_obj,
+                        black_p2_move_obj=black_q_move_obj,
                         bit=0)
 
                 if is_changed_temp:
@@ -430,10 +429,10 @@ class EvaluationEdit():
 
         # 正常終了
         if is_changed:
-            return 'changed'
+            return ('changed', '')
 
         else:
-            return 'keep'
+            return ('keep', '変更できなかった')
 
 
     def strengthen(
@@ -452,7 +451,9 @@ class EvaluationEdit():
         Returns
         -------
         result_str : str
-            'failed', 'changed', 'keep'
+            'failed', 'changed', 'keep', 'allready_empty', 'allready_full'
+        comment : str
+            過程の説明
         """
 
         # 投了局面時、入玉宣言局面時、１手詰めは省略
@@ -553,7 +554,7 @@ class EvaluationEdit():
             if is_debug and DebugPlan.evaluation_edit_strengthen:
                 print(f"[{datetime.datetime.now()}] [strengthen]  既に全ての議席が挙手しているので、強化は不要です")
 
-            return 'unnecessary'
+            return ('already_full', '既に評価は最大だった')
 
 
         #
@@ -610,7 +611,7 @@ class EvaluationEdit():
             fq_size = len(target_black_f_black_q_index_list)
 
             if fl_size + fq_size < 1:
-                return "empty_moves"
+                return ("empty_moves", "変化量０だった")
 
             # 例：ＦＬの割合　０．１２５
             fl_weight = fl_size / (fl_size + fq_size)
@@ -765,7 +766,7 @@ class EvaluationEdit():
             fq_size = len(target_black_f_black_q_index_list)
 
             if fl_size + fq_size < 1:
-                return "empty_moves"
+                return ("empty_moves", "変化量０だった")
 
             # 例：ＦＬの割合　０．１２５
             fl_weight = fl_size / (fl_size + fq_size)
@@ -845,12 +846,9 @@ class EvaluationEdit():
                 if is_debug and DebugPlan.evaluation_edit_strengthen:
                     print(f"[{datetime.datetime.now()}] [strengthen > pq] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  pq_index:{target_black_f_black_q_index:7}  P:{black_p_move_obj.as_usi:5}  Q:{black_q_move_obj.as_usi:5}  remove relation")
 
-                is_changed_temp = self._kifuwarabe._evaluation_pq_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exists_by_pp_moves(
-                        p1_move_obj=black_p_move_obj,
-                        p2_move_obj=black_q_move_obj,
-                        # 既に先手の指し手なので、先手に合わせるために回転させる必要はありません
-                        shall_p1_white_to_black=False,
-                        shall_p2_white_to_black=False,
+                is_changed_temp = self._kifuwarabe._evaluation_pq_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exists_by_black_p_black_p_moves(
+                        black_p1_move_obj=black_p_move_obj,
+                        black_p2_move_obj=black_q_move_obj,
                         bit=1)
 
                 if is_changed_temp:
@@ -859,7 +857,7 @@ class EvaluationEdit():
 
         # 正常終了
         if is_changed:
-            return 'changed'
+            return ('changed', '')
 
         else:
-            return 'keep'
+            return ('keep', '変更できなかった')

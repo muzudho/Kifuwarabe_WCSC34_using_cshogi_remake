@@ -59,10 +59,6 @@ p2_move_obj:{p2_move_obj.as_usi:5}
         ---------
         pp_index : int
             兵１と兵２の関係の通しインデックス
-        shall_p1_white_to_black : bool
-            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
-        shall_p2_white_to_black : bool
-            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
 
         Returns
         -------
@@ -211,7 +207,9 @@ p2_move_obj:{p2_move_obj.as_usi:5}
         p2_move_obj : Move
             兵２の指し手
         shall_p1_white_to_black : bool
-            後手なら真。指し手を１８０°回転させます
+            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
+        shall_p2_white_to_black : bool
+            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
 
         Returns
         -------
@@ -245,29 +243,22 @@ p2_move_obj:{p2_move_obj.as_usi:5}
                 index=black_p1_black_p2_index)
 
 
-    def set_relation_exists_by_pp_moves(
+    #set_relation_exists_by_pp_moves
+    def set_relation_exists_by_black_p_black_p_moves(
             self,
-            p1_move_obj,
-            p2_move_obj,
-            shall_p1_white_to_black,
-            shall_p2_white_to_black,
+            black_p1_move_obj,
+            black_p2_move_obj,
             bit):
         """玉の着手と兵の応手を受け取って、関係の有無を設定します
 
         Parameters
         ----------
-        p1_move_obj : Move
-            兵１の着手
-        p2_move_obj : Move
-            兵２の応手
-        shall_p1_white_to_black : bool
-            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
-        shall_p2_white_to_black : bool
-            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
+        black_p1_move_obj : Move
+            兵１の着手（先手の符号）
+        black_p2_move_obj : Move
+            兵２の応手（先手の符号）
         bit : int
             0 か 1
-        is_rotate : bool
-            後手なら真。指し手を１８０°回転させます
 
         Returns
         -------
@@ -276,10 +267,11 @@ p2_move_obj:{p2_move_obj.as_usi:5}
         """
         is_changed = self._mm_table_obj.set_bit_by_index(
                 index=EvaluationPpTable.get_black_p1_black_p2_index(
-                    p1_move_obj=p1_move_obj,
-                    p2_move_obj=p2_move_obj,
-                    shall_p1_white_to_black=shall_p1_white_to_black,
-                    shall_p2_white_to_black=shall_p2_white_to_black),
+                    p1_move_obj=black_p1_move_obj,
+                    p2_move_obj=black_p2_move_obj,
+                    # 両方先手のインデックスなので、これ以上変更しません
+                    shall_p1_white_to_black=False,
+                    shall_p2_white_to_black=False),
                 bit=bit)
 
         return is_changed

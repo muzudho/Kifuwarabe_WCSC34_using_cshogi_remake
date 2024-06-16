@@ -197,7 +197,8 @@ class EvaluationKkTable():
             self,
             k_move_obj,
             l_move_obj,
-            k_turn):
+            shall_k_white_to_black,
+            shall_l_white_to_black):
         """自玉と敵玉の指し手を受け取って、関係の有無を返します
 
         Parameters
@@ -206,8 +207,10 @@ class EvaluationKkTable():
             自玉の指し手
         l_move_obj : Move
             敵玉の指し手
-        k_turn : int
-            着手側の手番
+        shall_k_white_to_black : bool
+            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
+        shall_l_white_to_black : bool
+            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
 
         Returns
         -------
@@ -227,8 +230,8 @@ class EvaluationKkTable():
                 black_k_black_l_index=EvaluationKkTable.get_black_k_black_l_index(
                         k_move_obj=k_move_obj,
                         l_move_obj=l_move_obj,
-                        shall_k_white_to_black=k_turn==cshogi.WHITE,
-                        shall_l_white_to_black=k_turn==cshogi.BLACK))
+                        shall_k_white_to_black=shall_k_white_to_black,
+                        shall_l_white_to_black=shall_l_white_to_black))
 
 
     def get_relation_exists_by_index(
