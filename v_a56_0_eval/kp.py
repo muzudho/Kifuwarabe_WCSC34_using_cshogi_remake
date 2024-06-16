@@ -244,25 +244,19 @@ class EvaluationKpTable():
                 index=black_k_black_p_index)
 
 
-    def set_relation_exists_by_kp_moves(
+    def set_relation_exists_by_black_k_black_p_moves(
             self,
-            k_move_obj,
-            p_move_obj,
-            shall_k_white_to_black,
-            shall_p_white_to_black,
+            black_k_move_obj,
+            black_p_move_obj,
             bit):
         """玉の着手と兵の応手を受け取って、関係の有無を設定します
 
         Parameters
         ----------
-        k_move_obj : Move
-            玉の着手
-        p_move_obj : Move
-            兵の応手
-        shall_k_white_to_black : bool
-            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
-        shall_p_white_to_black : bool
-            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
+        black_k_move_obj : Move
+            玉の着手（符号は先手番方向）
+        black_p_move_obj : Move
+            兵の応手（符号は先手番方向）
         bit : int
             0 か 1
 
@@ -273,10 +267,11 @@ class EvaluationKpTable():
         """
         is_changed = self._mm_table_obj.set_bit_by_index(
                 index=EvaluationKpTable.get_black_k_black_p_index(
-                    k_move_obj=k_move_obj,
-                    p_move_obj=p_move_obj,
-                    shall_k_white_to_black=shall_k_white_to_black,
-                    shall_p_white_to_black=shall_p_white_to_black),
+                    k_move_obj=black_k_move_obj,
+                    p_move_obj=black_p_move_obj,
+                    # 両方先手のインデックスなので、これ以上変更しません
+                    shall_k_white_to_black=False,
+                    shall_p_white_to_black=False),
                 bit=bit)
 
         return is_changed
