@@ -23,10 +23,7 @@ class DebugPlan():
     #####
 
     # 学習の進捗を表示するものだから、表示したい
-    _learn_at_odd_log_progress = True
-
-    # 学習の進捗を表示するものだから、表示したい
-    _learn_at_even_log_progress = True
+    _learn_at_position_log_progress = True
 
     #####
     # S #
@@ -110,8 +107,8 @@ class DebugPlan():
 
 
     @classmethod
-    def learn_at_odd_log_progress(clazz):
-        return clazz._learn_at_odd_log_progress
+    def learn_at_position_log_progress(clazz):
+        return clazz._learn_at_position_log_progress
 
 
     @classmethod
