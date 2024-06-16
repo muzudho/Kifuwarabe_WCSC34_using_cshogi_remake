@@ -860,7 +860,6 @@ class Kifuwarabe():
             return 'failed'
 
         return EvaluationEdit(
-                board=self._board,
                 kifuwarabe=self
         ).strengthen(
                 move_u=cmd_tail,
