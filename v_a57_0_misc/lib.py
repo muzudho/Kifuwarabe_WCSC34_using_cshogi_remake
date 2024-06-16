@@ -657,8 +657,8 @@ class EvalutionMmTable():
         """
 
         # ビット・インデックスを、バイトとビットに変換
-        bit_index = index % 8
-        byte_index = index // 8
+        bit_index = black_f_black_o_index % 8
+        byte_index = black_f_black_o_index // 8
 
         byte_value = self._table_as_array[byte_index]
 
@@ -679,7 +679,7 @@ class EvalutionMmTable():
         # デバッグ
         if is_debug:
             # format `:08b` - 0 supply, 8 left shift, binary
-            print(f"[evalution mm table > set_bit_by_index]  index:{index}  byte_index:{byte_index}  bit_index:{bit_index}  left_shift:{left_shift}  bit:{bit}  old byte value:0x{old_byte_value:08b}")
+            print(f"[evalution mm table > set_bit_by_index]  black_f_black_o_index:{black_f_black_o_index}  byte_index:{byte_index}  bit_index:{bit_index}  left_shift:{left_shift}  bit:{bit}  old byte value:0x{old_byte_value:08b}")
 
             # assert
             if bit < 0 or 1 < bit:
@@ -696,7 +696,7 @@ class EvalutionMmTable():
 
         if is_debug:
             # format `:08b` - 0 supply, 8 left shift, binary
-            print(f"[evalution mm table > set_bit_by_index]  index:{index}  byte_index:{byte_index}  bit_index:{bit_index}  left_shift:{left_shift}  bit:{bit}  new byte_value:0x{self._table_as_array[byte_index]:08b}")
+            print(f"[evalution mm table > set_bit_by_index]  black_f_black_o_index:{black_f_black_o_index}  byte_index:{byte_index}  bit_index:{bit_index}  left_shift:{left_shift}  bit:{bit}  new byte_value:0x{self._table_as_array[byte_index]:08b}")
 
         # 変更が有ったら、フラグを立てるよう上書き
         is_changed = self._table_as_array[byte_index] != old_byte_value
