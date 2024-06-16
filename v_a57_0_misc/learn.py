@@ -245,15 +245,11 @@ class LearnAboutOneGame():
         if self._is_debug:
             print(f"[{datetime.datetime.now()}] [learn > 詰める方] move_number_to_end:{self._move_number_to_end} = move_number_at_end:{self._move_number_at_end} - board.move_number:{self._board.move_number}")
 
-        # - アンドゥした局面は、投了局面ではないはず
-        # - 入玉宣言局面は、とりあえず考慮から外す
-        # - １手詰めはとりあえず、考慮から外す
-
         #
-        # ランク付けされた指し手一覧（好手、悪手）
-        # ----------------------------------
+        # 階位（ｔｉｅｒ）付けされた指し手一覧
+        # -------------------------------
         #
-        ranked_move_u_set_list = ChoiceBestMove.select_ranked_f_move_u_set_facade(
+        tiered_move_u_set_list = ChoiceBestMove.select_ranked_f_move_u_set_facade(
                 legal_moves=list(self._board.legal_moves),
                 kifuwarabe=self._kifuwarabe,
                 is_debug=self._is_debug)
@@ -262,19 +258,19 @@ class LearnAboutOneGame():
         print(f'[{datetime.datetime.now()}] [learn > 詰める方]  mate:{mate}  ランク別着手数：', end='')
         size_list = []
         sum_size = 0
-        for ranking, ranked_move_u_set in enumerate(ranked_move_u_set_list):
+        for tier, ranked_move_u_set in enumerate(tiered_move_u_set_list):
             set_size = len(ranked_move_u_set)
             size_list.append(set_size)
             sum_size += set_size
-            print(f'  [{ranking}]{set_size}', end='')
+            print(f'    [{tier:2}位 {set_size}]', end='')
 
         print(f'  累計：{sum_size}', flush=True)
 
-        for ranking, ranked_move_u_set in enumerate(ranked_move_u_set_list):
+        for tier, ranked_move_u_set in enumerate(tiered_move_u_set_list):
             choice_num = 0
 
             if self._is_debug:
-                print(f'[{datetime.datetime.now()}] [learn > 詰める方]  着手のランキング：{ranking}（好手）')
+                print(f'[{datetime.datetime.now()}] [learn > 詰める方]  着手{tier:2}位一覧')
 
             for move_u in ranked_move_u_set:
 
@@ -291,12 +287,12 @@ class LearnAboutOneGame():
                 # ｎ手詰め局面図かチェック
                 if self._board.sfen() != sfen_at_mate:
                     # エラー時
-                    print(f"""[{datetime.datetime.now()}] [learn > 詰める方 > 好手] {ranking:2}位  {mate}手詰め局面図エラー
+                    print(f"""[{datetime.datetime.now()}] [learn > 詰める方] {tier:2}位  {mate}手詰め局面図エラー
 {self._board}
     # board move_number:{self._board.move_number}
     # {BoardHelper.get_position_command(board=self._board)}
 """)
-                    raise ValueError(f"[learn > 詰める方 > 好手] {ranking:2}位  {mate}手詰め局面図エラー")
+                    raise ValueError(f"[learn > 詰める方] {tier:2}位  {mate}手詰め局面図エラー")
 
                 # （ｎ手詰め局面図で）とりあえず一手指す
                 self._board.push_usi(move_u)
@@ -312,7 +308,7 @@ class LearnAboutOneGame():
                 # 進捗ログを出したい
                 def log_progress(comment):
                     if DebugPlan.learn_at_odd_log_progress():
-                        print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 好手] {ranking:2}位  ({choice_num:3}/{sum_size:3})  {move_u:5}  {result_str}  [{self._board.move_number}手（差{move_number_difference}）{Turn.to_kanji(self._board.turn)}]  {reason}  {comment}', flush=True)
+                        print(f'[{datetime.datetime.now()}] [learn > 詰める方] {tier:2}位  ({choice_num:3}/{sum_size:3})  {move_u:5}  {result_str}  [{self._board.move_number}手（差{move_number_difference}）{Turn.to_kanji(self._board.turn)}]  {reason}  {comment}', flush=True)
 
                 # どちらかが投了した
                 if reason == 'resign':
@@ -347,7 +343,7 @@ class LearnAboutOneGame():
                     log_progress(f"[ ] プレイアウト用の手数上限で打ち切られた")
 
                 else:
-                    # 好手の評価はそのまま
+                    # ノーカウント
                     log_progress("[　] 関心のない結果")
 
                 # 終局図の内部データに進める
@@ -360,7 +356,7 @@ class LearnAboutOneGame():
                 # 戻せたかチェック
                 if self._board.sfen() != sfen_at_mate:
                     # エラー時
-                    print(f"""[{datetime.datetime.now()}] [learn > 詰める方 > 好手] {ranking:2}位  局面巻き戻しエラー
+                    print(f"""[{datetime.datetime.now()}] [learn > 詰める方] {tier:2}位  局面巻き戻しエラー
     {self._board}
         # board move_number:{self._board.move_number}
         # {BoardHelper.get_position_command(board=self._board)}
@@ -375,7 +371,7 @@ class LearnAboutOneGame():
                             #is_debug=self._is_debug)
 
                     # 変更はログに出したい
-                    print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 好手] {ranking:2}位       weaken {move_u:5}  result:`{result_str}`')
+                    print(f'[{datetime.datetime.now()}] [learn > 詰める方] {tier:2}位       weaken {move_u:5}  result:`{result_str}`')
 
                     if result_str == 'changed':
                         changed_count += 1
@@ -388,7 +384,7 @@ class LearnAboutOneGame():
                             #is_debug=self._is_debug)
 
                     # 変更はログに出したい
-                    print(f'[{datetime.datetime.now()}] [learn > 詰める方 > 悪手] {ranking:2}位        strengthen {move_u:5}  result:`{result_str}`')
+                    print(f'[{datetime.datetime.now()}] [learn > 詰める方] {tier:2}位        strengthen {move_u:5}  result:`{result_str}`')
 
                     if result_str == 'changed':
                         changed_count += 1
@@ -439,10 +435,10 @@ class LearnAboutOneGame():
             print(f"[{datetime.datetime.now()}] [learn > 逃げる方] move_number_to_end:{self._move_number_to_end} = move_number_at_end:{self._move_number_at_end} - board.move_number:{self._board.move_number}")
 
         #
-        # ランク付けされた指し手一覧（好手、悪手）
-        # ----------------------------------
+        # 階位（ｔｉｅｒ）付けされた指し手一覧
+        # -------------------------------
         #
-        ranked_move_u_set_list = ChoiceBestMove.select_ranked_f_move_u_set_facade(
+        tiered_move_u_set_list = ChoiceBestMove.select_ranked_f_move_u_set_facade(
                 legal_moves=list(self._board.legal_moves),
                 kifuwarabe=self._kifuwarabe,
                 is_debug=self._is_debug)
@@ -451,19 +447,19 @@ class LearnAboutOneGame():
         print(f'[{datetime.datetime.now()}] [learn > 逃げる方]  mate:{mate}  ランク別着手数：', end='')
         size_list = []
         sum_size = 0
-        for ranking, ranked_move_u_set in enumerate(ranked_move_u_set_list):
+        for tier, ranked_move_u_set in enumerate(tiered_move_u_set_list):
             set_size = len(ranked_move_u_set)
             size_list.append(set_size)
             sum_size += set_size
-            print(f'  [{ranking}]{set_size}', end='')
+            print(f'    [{tier:2}位 {set_size}]', end='')
 
         print(f'  累計：{sum_size}', flush=True)
 
-        for ranking, ranked_move_u_set in enumerate(ranked_move_u_set_list):
+        for tier, ranked_move_u_set in enumerate(tiered_move_u_set_list):
             choice_num = 0
 
             if self._is_debug:
-                print(f'[{datetime.datetime.now()}] [learn > 逃げる方]  着手のランキング：{ranking}（好手）')
+                print(f'[{datetime.datetime.now()}] [learn > 逃げる方]  着手{tier:2}位一覧')
 
             for move_u in ranked_move_u_set:
 
@@ -480,12 +476,12 @@ class LearnAboutOneGame():
                 # ｎ手詰め局面図かチェック
                 if self._board.sfen() != sfen_at_mate:
                     # エラー時
-                    print(f"""[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] {ranking:2}位  {mate}手詰め局面図エラー
+                    print(f"""[{datetime.datetime.now()}] [learn > 逃げる方] {tier:2}位  {mate}手詰め局面図エラー
 {self._board}
     # board move_number:{self._board.move_number}
     # {BoardHelper.get_position_command(board=self._board)}
 """)
-                    raise ValueError(f"[learn > 逃げる方 > 好手] {ranking:2}位  {mate}手詰め局面図エラー")
+                    raise ValueError(f"[learn > 逃げる方] {tier:2}位  {mate}手詰め局面図エラー")
 
                 # （ｎ手詰め局面図で）とりあえず一手指す
                 self._board.push_usi(move_u)
@@ -501,7 +497,7 @@ class LearnAboutOneGame():
                 # 進捗ログを出したい
                 def log_progress(comment):
                     if DebugPlan.learn_at_even_log_progress():
-                        print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] {ranking:2}位  ({choice_num:3}/{sum_size:3})  {move_u:5}  {result_str}  [{self._board.move_number}手（差{move_number_difference}）{Turn.to_kanji(self._board.turn)}]  {reason}  {comment}', flush=True)
+                        print(f'[{datetime.datetime.now()}] [learn > 逃げる方] {tier:2}位  ({choice_num:3}/{sum_size:3})  {move_u:5}  {result_str}  [{self._board.move_number}手（差{move_number_difference}）{Turn.to_kanji(self._board.turn)}]  {reason}  {comment}', flush=True)
 
                 # どちらかが投了した
                 if reason == 'resign':
@@ -538,7 +534,7 @@ class LearnAboutOneGame():
                     log_progress(f"[　] プレイアウトが打ち切られるまで逃げ切った")
 
                 else:
-                    # この好手の評価はそのまま
+                    # ノーカウント
                     log_progress("[　] 関心のない結果")
 
                 # 終局図の内部データに進める
@@ -551,7 +547,7 @@ class LearnAboutOneGame():
                 # 戻せたかチェック
                 if self._board.sfen() != sfen_at_mate:
                     # エラー時
-                    print(f"""[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] {ranking:2}位  局面巻き戻しエラー
+                    print(f"""[{datetime.datetime.now()}] [learn > 逃げる方] {tier:2}位  局面巻き戻しエラー
 {self._board}
     # board move_number:{self._board.move_number}
     # {BoardHelper.get_position_command(board=self._board)}
@@ -566,7 +562,7 @@ class LearnAboutOneGame():
                             #is_debug=self._is_debug)
 
                     # 変更はログに出したい
-                    print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 好手] {ranking:2}位         weaken {move_u:5}  result:`{result_str}`')
+                    print(f'[{datetime.datetime.now()}] [learn > 逃げる方] {tier:2}位         weaken {move_u:5}  result:`{result_str}`')
 
                     if result_str == 'changed':
                         changed_count += 1
@@ -579,7 +575,7 @@ class LearnAboutOneGame():
                             #is_debug=self._is_debug)
 
                     # 変更はログに出したい
-                    print(f'[{datetime.datetime.now()}] [learn > 逃げる方 > 悪手] {ranking:2}位         strengthen {move_u:5}  result:`{result_str}`')
+                    print(f'[{datetime.datetime.now()}] [learn > 逃げる方] {tier:2}位         strengthen {move_u:5}  result:`{result_str}`')
 
                     if result_str == 'changed':
                         changed_count += 1
