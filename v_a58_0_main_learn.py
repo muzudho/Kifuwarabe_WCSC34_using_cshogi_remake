@@ -101,7 +101,17 @@ class LearningFramework():
             game_result_record_list = game_result_document.read_record_list()
 
             # サイズ
-            max_game = len(list(game_result_record_list))
+            #max_game = len(list(game_result_record_list))
+            max_game = len(game_result_record_list)
+
+            #
+            # 学習の１回転を早くするために
+            # 全ての対局の記録を利用するのではなく、間引いて利用します。
+            #
+            if 3 < max_game:
+                max_game = 3
+                game_result_record_list = random.choices(game_result_record_list, k=max_game)
+
 
             if is_debug:
                 print(f"[{datetime.datetime.now()}] [learning framework > start it] length of game result record list:{max_game}")

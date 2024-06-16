@@ -210,7 +210,7 @@ class GameResultDocument():
 
         # ファイルの読込に失敗したら残念ですが、無視して続行します
         except Exception as ex:
-            print(f'[{datetime.datetime.now()}] [read_record_list] failed to read `{self.file_name_obj.base_name}` file. ex:{ex}')
+            print(f'[{datetime.datetime.now()}] [game result document > read record list] failed to read `{self.file_name_obj.base_name}` file. ex:{ex}')
             return []
 
 
