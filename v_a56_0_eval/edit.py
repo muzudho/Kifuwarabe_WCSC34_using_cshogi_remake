@@ -380,8 +380,8 @@ class EvaluationEdit():
                     print(f"[{datetime.datetime.now()}] [weaken > pl] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  pl_index:{target_black_f_black_l_index:7}  P:{black_p_move_obj.as_usi:5}  L:{black_l_move_obj.as_usi:5}  remove relation")
 
                 is_changed_temp = self._kifuwarabe._evaluation_pl_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exists_by_black_p_black_k_moves(
-                        black_k_move_obj=black_p_move_obj,
-                        black_l_move_obj=black_l_move_obj,
+                        black_p_move_obj=black_p_move_obj,
+                        black_k_move_obj=black_l_move_obj,
                         bit=1)
 
                 if is_changed_temp:
