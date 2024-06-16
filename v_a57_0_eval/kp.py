@@ -264,7 +264,7 @@ class EvaluationKpTable():
         is_changed : bool
             変更が有ったか？
         """
-        is_changed = self._mm_table_obj.set_bit_by_index(
+        (is_changed, result_comment) = self._mm_table_obj.set_bit_by_index(
                 black_f_black_o_index=EvaluationKpTable.get_black_k_black_p_index(
                         k_move_obj=black_k_move_obj,
                         p_move_obj=black_p_move_obj,

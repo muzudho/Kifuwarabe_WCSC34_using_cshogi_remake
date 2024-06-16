@@ -232,6 +232,8 @@ class EvaluationKkTable():
         -------
         is_changed : bool
             変更が有ったか？
+        result_comment : str
+            変更できなかった場合の説明
         """
 
         # assert
@@ -242,7 +244,7 @@ class EvaluationKkTable():
         if Usi.is_drop_by_srcloc(black_l_move_obj.srcloc):
             raise ValueError(f"[evaluation kk table > set relation exists by kl moves > l] 玉の指し手で打なのはおかしい。 black_l_move_obj.srcloc_u:{Usi.srcloc_to_code(black_l_move_obj.srcloc)}  black_l_move_obj:{black_l_move_obj.dump()}")
 
-        is_changed = self._mm_table_obj.set_bit_by_index(
+        (is_changed, result_comment) = self._mm_table_obj.set_bit_by_index(
                 black_f_black_o_index=EvaluationKkTable.get_black_k_black_l_index(
                         k_move_obj=black_k_move_obj,
                         l_move_obj=black_l_move_obj,
@@ -251,7 +253,7 @@ class EvaluationKkTable():
                         shall_l_white_to_black=False),
                 bit=bit)
 
-        return is_changed
+        return (is_changed, result_comment)
 
 
     #create_relation_exists_dictionary_by_k_move_and_l_moves

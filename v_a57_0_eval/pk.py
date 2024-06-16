@@ -296,7 +296,7 @@ class EvaluationPkTable():
         is_changed : bool
             変更が有ったか？
         """
-        is_changed = self._mm_table_obj.set_bit_by_index(
+        (is_changed, result_comment) = self._mm_table_obj.set_bit_by_index(
                 black_f_black_o_index=EvaluationPkTable.get_black_p_black_k_index(
                         p_move_obj=black_p_move_obj,
                         k_move_obj=black_k_move_obj,
@@ -305,7 +305,7 @@ class EvaluationPkTable():
                         shall_k_white_to_black=False),
                 bit=bit)
 
-        return is_changed
+        return (is_changed, result_comment)
 
 
     #select_pk_index_and_relation_exists
