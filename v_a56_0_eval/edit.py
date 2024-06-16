@@ -536,7 +536,7 @@ class EvaluationEdit():
             #
             for black_f_black_q_index, relation_exists in black_f_black_q_index_to_relation_exists_dictionary.items():
                 assert_black_p1_move_obj, assert_black_p2_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
-                        black_k_black_p_index=black_f_black_q_index)
+                        black_p1_black_p2_index=black_f_black_q_index)
 
                 # 着手が先手なら、１８０°回転させない
                 if self._kifuwarabe.board.turn==cshogi.BLACK:
