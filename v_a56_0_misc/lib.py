@@ -294,12 +294,7 @@ class Move():
 
 
     def dump(self):
-        return f"""\
-as_usi  :{self.as_usi}
-srcloc  :{self._srcloc}
-dstsq   :{self._dstsq}
-promoted:{self._promoted}
-"""
+        return f"as_usi:{self.as_usi}  srcloc_jsa:{Usi.srcloc_to_jsa(self._srcloc)}  dstmasu:{Usi.srcloc_to_jsa(self._dstsq)}  promoted:{self._promoted}"
 
 
     @property

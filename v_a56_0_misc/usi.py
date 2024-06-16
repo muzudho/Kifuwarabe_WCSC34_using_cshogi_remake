@@ -241,6 +241,10 @@ class Usi():
         
         except KeyError as ex:
             print(f"[usi > srcloc to jsa] len(clazz._srcloc_to_jsa):{len(clazz._srcloc_to_jsa)}  ex:{ex}")
+
+            for srcloc, jsa in clazz._srcloc_to_jsa.items():
+                print(f"[usi > srcloc to jsa]  srcloc:{srcloc}  jsa:{jsa}")
+
             raise
 
 
