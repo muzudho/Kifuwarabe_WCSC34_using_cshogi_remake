@@ -536,17 +536,26 @@ class Kifuwarabe():
             print(f'bestmove win', flush=True)
             return
 
-        # １手詰めを詰める
-        if not self._board.is_check():
-            """自玉に王手がかかっていない時で"""
-
-            if (matemove := self._board.mate_move_in_1ply()):
-                """１手詰めの指し手があれば、それを取得"""
-
-                best_move = cshogi.move_to_usi(matemove)
-                print('info score mate 1 pv {}'.format(best_move), flush=True)
-                print(f'bestmove {best_move}', flush=True)
-                return
+        #
+        # ランダムムーブと対戦するとき、１手詰めルーチン入ってたら
+        # そりゃその分強いよな、と思ったので、
+        #
+        # ポリシー評価値を使った次の１手の選択だけで戦いたいので
+        # 一手詰めルーチンをコメントアウトする
+        #
+        #
+        ## １手詰めを詰める
+        #if not self._board.is_check():
+        #    """自玉に王手がかかっていない時で"""
+        #
+        #    if (matemove := self._board.mate_move_in_1ply()):
+        #        """１手詰めの指し手があれば、それを取得"""
+        #
+        #        best_move = cshogi.move_to_usi(matemove)
+        #        print('info score mate 1 pv {}'.format(best_move), flush=True)
+        #        print(f'bestmove {best_move}', flush=True)
+        #        return
+        #
 
         # くじを引く（投了のケースは対応済みなので、ここで対応しなくていい）
         best_move_str = ChoiceBestMove.do_it(
