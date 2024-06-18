@@ -4,10 +4,11 @@ import random
 
 from v_a59_0_debug_plan import DebugPlan
 from v_a59_0_misc.choice_best_move import ChoiceBestMove
-from v_a59_0_misc.lib import Turn, Move, BoardHelper
+from v_a59_0_misc.lib import Turn, BoardHelper
 
 
-class LearnAboutOneGame():
+#LearnGame
+class LearnGame():
     """学習部
 
     対局データ１つを与えると、そこから学習する
@@ -66,7 +67,7 @@ class LearnAboutOneGame():
         """終局図の内部データに進める"""
 
         #if is_debug:
-        #    print(f"[{datetime.datetime.now()}] [learn] restore_end_position start...")
+        #    print(f"[{datetime.datetime.now()}] [restore end position]  start...")
         # 初期局面
         self._board.set_sfen(self._init_position_sfen)
 

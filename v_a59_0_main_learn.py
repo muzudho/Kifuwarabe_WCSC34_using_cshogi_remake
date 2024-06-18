@@ -6,7 +6,7 @@ import random
 # python v_a59_0_main_learn.py
 from     v_a59_0 import Kifuwarabe, engine_version_str
 from     v_a59_0_misc.game_result_document import GameResultDocument
-from     v_a59_0_misc.learn import LearnAboutOneGame
+from     v_a59_0_misc.learn_game import LearnGame
 from     v_a59_0_misc.learn_config_document import LearnConfigDocument
 
 
@@ -133,8 +133,8 @@ class LearningFramework():
                 # 開始ログは出したい
                 print(f"[{datetime.datetime.now()}] [learning framework > start it] ({game_index + 1:4}/{max_game}) start...", flush=True)
 
-                # 学習する
-                LearnAboutOneGame(
+                # 対局を学習する
+                LearnGame(
                         board=board,
                         kifuwarabe=kifuwarabe,
                         learn_config_document=learn_config_document,

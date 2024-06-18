@@ -9,7 +9,7 @@ from                  v_a59_0_eval.pk import EvaluationPkTable
 from                  v_a59_0_eval.pp import EvaluationPpTable
 from                  v_a59_0_misc.choice_best_move import ChoiceBestMove
 from                  v_a59_0_misc.game_result_document import GameResultDocument
-from                  v_a59_0_misc.learn import LearnAboutOneGame
+from                  v_a59_0_misc.learn_game import LearnGame
 from                  v_a59_0_misc.lib import Turn, Move, MoveHelper, BoardHelper
 engine_version_str = "v_a59_0"
 
@@ -278,11 +278,6 @@ class Kifuwarabe():
     # {position_command}
 """,
                     flush=True)
-
-        # 学習
-        elif head == 'learn':
-            self.learn(
-                    is_debug=is_debug)
 
         # 局面表示
         #       code: board
@@ -949,26 +944,6 @@ class Kifuwarabe():
             return ('lose', reason)
 
         return ('win', reason)
-
-
-    def learn(
-            self,
-            is_debug=False):
-        """学習
-
-        `playout` してから `learn ` する想定です
-
-        Parameters
-        ----------
-        is_debug : bool
-            デバッグモードか？
-        """
-
-        # 学習する
-        LearnAboutOneGame(
-                board=self._board,
-                kifuwarabe=self,
-                is_debug=is_debug).learn_it()
 
 
     def print_board(self):
