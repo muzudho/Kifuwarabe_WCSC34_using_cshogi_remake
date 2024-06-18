@@ -171,7 +171,8 @@ class LearnAboutOneGame():
             (result_str,
              changed_count) = self.at_position(
                     mate_th=mate_th,
-                    playout_extension_depth=mate_th+attack_extension)
+                    playout_extension_depth=mate_th+attack_extension,
+                    is_won_player_turn=True)
 
             mate_th += 1
 
@@ -193,7 +194,8 @@ class LearnAboutOneGame():
             (result_str,
              changed_count) = self.at_position(
                     mate_th=mate_th,
-                    playout_extension_depth=mate_th+escape_extension)
+                    playout_extension_depth=mate_th+escape_extension,
+                    is_won_player_turn=False)
 
             mate_th += 1
 
@@ -226,7 +228,8 @@ class LearnAboutOneGame():
     def at_position(
             self,
             mate_th,
-            playout_extension_depth):
+            playout_extension_depth,
+            is_won_player_turn):
         """奇数。詰める方
 
         Parameters
@@ -235,6 +238,8 @@ class LearnAboutOneGame():
             ｎ手詰め
         playout_extension_depth : int
             プレイアウトでの延長手数
+        is_won_player_turn : bool
+            勝った方のプレイヤーのターンか？
         """
 
         changed_count = 0
@@ -298,13 +303,22 @@ class LearnAboutOneGame():
                 # カウンターは事前に進める
                 choice_num += 1
 
+                # 指し継ぎ手数：未設定
+                move_number_difference = -1
+
                 # 本譜の指し手は必ず学習する
                 if move_u == last_move_u:
                     pass
 
                 # mate_th が 4 以上の局面は、学習率くじで当たった指し手だけ学習する
                 elif 4 <= mate_th and not self.is_learn_by_rate():
-                    continue
+                    # くじに外れたら
+                    # 勝った方は、１手詰めを学習する
+                    if is_won_player_turn:
+                        move_number_difference = 1
+                    # 負けた方は、学習をせず間引きをする
+                    else:
+                        continue
 
                 # 弱化・強化するフラグ
                 shall_1_weaken_2_strongthen = 0
@@ -322,8 +336,10 @@ class LearnAboutOneGame():
                 # （ｎ手詰め局面図で）とりあえず一手指す
                 self._board.push_usi(move_u)
 
-                # 指し継ぎ手数           = (投了局面手数　－　学習局面手数       ) + プレイアウトでの延長手数    - 指した１手分
-                move_number_difference = move_number_between_end_and_problem + playout_extension_depth - 1
+                # 指し継ぎ手数が未指定なら設定
+                if move_number_difference < 0:
+                    # 指し継ぎ手数           = (投了局面手数　－　学習局面手数       ) + プレイアウトでの延長手数    - 指した１手分
+                    move_number_difference = move_number_between_end_and_problem + playout_extension_depth - 1
 
                 # プレイアウトする
                 (result_str, reason) = self._kifuwarabe.playout(
