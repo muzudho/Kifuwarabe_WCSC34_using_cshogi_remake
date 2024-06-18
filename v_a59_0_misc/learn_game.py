@@ -316,7 +316,7 @@ class LearnGame():
                 # mate_th が 4 以上の局面は、学習率くじで当たった指し手だけ学習する
                 elif 4 <= mate_th and not self.is_learn_by_rate():
                     # くじに外れたら
-                    # 勝った方は、１手詰めを学習する
+                    # 勝った方は、短手数の詰めを学習する
                     if is_won_player_turn:
                         is_short_mate_mode = True
 
@@ -343,7 +343,7 @@ class LearnGame():
                 # 指し継ぎ手数
                 # 短手数の詰めチェックモード
                 if is_short_mate_mode:
-                    move_number_difference = 1
+                    move_number_difference = 3
 
                 else:
                     # 指し継ぎ手数           = (投了局面手数　－　学習局面手数       ) + プレイアウトでの延長手数    - 指した１手分
