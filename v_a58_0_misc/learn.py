@@ -398,17 +398,28 @@ class LearnAboutOneGame():
                             log_progress(f"[ ] 短手数の詰めチェック中。プレイアウト用の手数上限で勝ちを逃しても無視")
 
                         else:
-                            shall_1_weaken_2_strongthen = 1
-                            log_progress(f"[▼DOWN▼] 勝った方が、プレイアウト用の手数上限で勝ちを逃した")
+                            # この短手数の詰めの力はあるという想定
+                            if move_number_between_end_and_problem < 2:
+                                shall_1_weaken_2_strongthen = 1
+                                log_progress(f"[▼DOWN▼] 勝った方が、短い読みを、プレイアウト用の手数上限で勝ちを逃した")
+
+                            # 詰めの力がなければ、そりゃ逃す
+                            else:
+                                log_progress(f"[ ] 勝った方が、長い読みを、プレイアウト用の手数上限で勝ちを逃したが、詰めの力が弱いから無視")
 
                     else:
                         if is_short_mate_mode:
                             log_progress(f"[ ] 短手数の詰めチェック中。プレイアウト用の手数上限で勝ちを逃しても無視")
 
                         else:
-                            # 攻め手がヘボ手なら、いくらでも逃げ切れるが
-                            shall_1_weaken_2_strongthen = 2
-                            log_progress(f"[▲UP▲] 負けた方が、プレイアウト用の手数上限で逃げ切った")
+                            # この短手数の詰めの力はあるという想定
+                            if move_number_between_end_and_problem < 2:
+                                shall_1_weaken_2_strongthen = 2
+                                log_progress(f"[▲UP▲] 負けた方が、短い詰みの中、プレイアウト用の手数上限で逃げ切った")
+
+                            # 攻め手がヘボ手なら、いくらでも逃げ切れる
+                            else:
+                                log_progress(f"[ ] 負けた方が、長い詰みの中、プレイアウト用の手数上限で逃げ切ったが、攻め手がヘボいから無視")
 
                 else:
                     # ノーカウント

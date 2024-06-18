@@ -108,8 +108,9 @@ class LearningFramework():
             # 学習の１回転を早くするために
             # 全ての対局の記録を利用するのではなく、間引いて利用します。
             #
-            if 3 < max_game:
-                max_game = 3
+            number_of_game_to_sample_choices = 1
+            if number_of_game_to_sample_choices < max_game:
+                max_game = number_of_game_to_sample_choices
                 game_result_record_list = random.choices(game_result_record_list, k=max_game)
 
 
