@@ -556,7 +556,7 @@ class Kifuwarabe():
 
 
         # くじを引く（投了のケースは対応済みなので、ここで対応しなくていい）
-        best_move_str = ChoiceBestMove.do_it(
+        best_move_str = ChoiceBestMove.choice_best_move(
                 legal_moves=list(self._board.legal_moves),
                 kifuwarabe=self,
                 is_debug=is_debug)
@@ -881,6 +881,8 @@ class Kifuwarabe():
         """プレイアウト
         現局面から、投了局面になるまで、適当に指します
 
+        FIXME ランダムに指すか、ポリシー評価値に従って指すか？
+
         Parameters
         ----------
         is_in_learn : bool
@@ -921,7 +923,7 @@ class Kifuwarabe():
                 # （評価値テーブルの内容だけで対局したい用途で使う想定なので）プレイアウト中は１手詰めルーチンを使わない
 
                 # くじを引く（投了のケースは対応済みなので、ここで対応しなくていい）
-                best_move_str = ChoiceBestMove.do_it(
+                best_move_str = ChoiceBestMove.choice_best_move(
                         legal_moves=list(self._board.legal_moves),
                         kifuwarabe=self)
 

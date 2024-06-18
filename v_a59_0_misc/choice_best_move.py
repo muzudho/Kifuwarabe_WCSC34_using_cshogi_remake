@@ -608,7 +608,7 @@ move_rot_u:{move_rot_obj.as_usi:5}
 
 
     @staticmethod
-    def do_it(
+    def choice_best_move(
             legal_moves,
             kifuwarabe,
             is_debug=False):

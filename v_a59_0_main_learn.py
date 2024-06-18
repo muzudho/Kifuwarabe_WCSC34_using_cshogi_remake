@@ -138,7 +138,7 @@ class LearningFramework():
                         board=board,
                         kifuwarabe=kifuwarabe,
                         learn_config_document=learn_config_document,
-                        is_debug=is_debug).learn_it()
+                        is_debug=is_debug).learn_game()
 
                 # 終了ログは出したい
                 print(f"[{datetime.datetime.now()}] [learning framework > start it] ({game_index + 1:4}/{max_game}) finished, flush=True")

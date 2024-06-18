@@ -87,11 +87,11 @@ class LearnGame():
         #    print(f"[{datetime.datetime.now()}] [learn] restore_end_position end.")
 
 
-    def learn_it(self):
-        """それを学習する"""
+    def learn_game(self):
+        """対局を学習する"""
 
         # 開始ログは出したい
-        print(f'[{datetime.datetime.now()}] [learn > learn_it] start...')
+        print(f'[{datetime.datetime.now()}] [learn > learn game] start...')
 
         # 終局図の sfen を取得。巻き戻せたかのチェックに利用
         self._end_position_sfen = self._board.sfen()
@@ -103,11 +103,11 @@ class LearnGame():
         self._won_player_turn = Turn.flip(self._lost_player_turn)
 
         ## 終局図とその sfen はログに出したい
-        #print(f"[{datetime.datetime.now()}] [learn > learn_it] 終局図：")
+        #print(f"[{datetime.datetime.now()}] [learn > learn game] 終局図：")
         #print(self._board)
 
         #        # 現局面の position コマンドを表示
-        #        print(f"""[{datetime.datetime.now()}] [learn > learn_it]
+        #        print(f"""[{datetime.datetime.now()}] [learn > learn game]
         #    # board move_number:{self._board.move_number}
         #    # {BoardHelper.get_position_command(board=self._board)}
         #""")
@@ -115,7 +115,7 @@ class LearnGame():
         # 戻せたかチェック
         if self._board.sfen() != self._end_position_sfen:
             # 終局図の表示
-            print(f"""[{datetime.datetime.now()}] [learn > learn_it] 局面巻き戻しエラー
+            print(f"""[{datetime.datetime.now()}] [learn > learn game] 局面巻き戻しエラー
 {self._board}
     # board move_number:{self._board.move_number}
     # {BoardHelper.get_position_command(board=self._board)}
@@ -286,17 +286,21 @@ class LearnGame():
         # 作業量はログを出したい
         print(f'[{datetime.datetime.now()}] [learn > at position]  mate_th:{mate_th}  ランク別着手数：', end='')
         size_list = []
-        sum_size = 0
+
+        # このポジションでの全ての指し手の数
+        number_of_all_moves_in_this_position = 0
+        # その通し番号
+        choice_num = 0
+
         for tier, ranked_move_u_set in enumerate(tiered_move_u_set_list):
             set_size = len(ranked_move_u_set)
             size_list.append(set_size)
-            sum_size += set_size
+            number_of_all_moves_in_this_position += set_size
             print(f'    {tier:2}位-->{set_size}', end='')
 
-        print(f'  累計：{sum_size}', flush=True)
+        print(f'  累計：{number_of_all_moves_in_this_position}', flush=True)
 
         for tier, ranked_move_u_set in enumerate(tiered_move_u_set_list):
-            choice_num = 0
 
             if self._is_debug:
                 print(f'[{datetime.datetime.now()}] [learn > at position]  着手{tier:2}位一覧')
@@ -349,7 +353,11 @@ class LearnGame():
                     # 指し継ぎ手数           = (投了局面手数　－　学習局面手数       ) + プレイアウトでの延長手数    - 指した１手分
                     move_number_difference = move_number_between_end_and_problem + playout_extension_depth - 1
 
+                #
                 # プレイアウトする
+                #
+                #       FIXME ランダムか、ポリシー評価値を有効にするか？どちらがいいか？
+                #
                 (result_str, reason) = self._kifuwarabe.playout(
                         is_in_learn=True,
                         # １手指した分引く
@@ -358,7 +366,7 @@ class LearnGame():
                 # 進捗ログを出したい
                 def log_progress(comment):
                     if DebugPlan.learn_at_position_log_progress():
-                        print(f'[{datetime.datetime.now()}] [learn > at position] {tier:2}位  ({choice_num:3}/{sum_size:3})  {move_u:5}  {result_str}  [(投了{self._move_number_at_end:3}手目) (巻戻し:{move_number_between_end_and_problem:3}) (学習局面:{move_number_at_problem:3}手目) (指継:{move_number_difference:3}手) (再投了:{self._board.move_number:3}手目 {Turn.to_kanji(self._board.turn)})]  {reason}  {comment}', flush=True)
+                        print(f'[{datetime.datetime.now()}] [learn > at position] {tier:2}位  ({choice_num:3}/{number_of_all_moves_in_this_position:3})  {move_u:5}  {result_str}  [(投了{self._move_number_at_end:3}手目) (巻戻し:{move_number_between_end_and_problem:3}) (学習局面:{move_number_at_problem:3}手目) (指継:{move_number_difference:3}手) (再投了:{self._board.move_number:3}手目 {Turn.to_kanji(self._board.turn)})]  {reason}  {comment}', flush=True)
 
                 # どちらかが投了した
                 if reason == 'resign':
