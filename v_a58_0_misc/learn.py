@@ -174,8 +174,6 @@ class LearnAboutOneGame():
                     playout_extension_depth=mate_th+attack_extension,
                     is_won_player_turn=True)
 
-            mate_th += 1
-
             if self._move_number_at_end < mate_th or result_str == 'can not rewind':
                 break
 
@@ -184,8 +182,11 @@ class LearnAboutOneGame():
             #
             #       全ての評価値テーブル［0:先手, 1:後手］の（変更があれば）保存
             #
-            self._kifuwarabe.save_eval_all_tables(
-                    is_debug=self._is_debug)
+            if mate_th <=4 or mate_th % 20 == 1:
+                self._kifuwarabe.save_eval_all_tables(
+                        is_debug=self._is_debug)
+
+            mate_th += 1
 
             #
             # 偶数：　逃げる方
@@ -197,8 +198,6 @@ class LearnAboutOneGame():
                     playout_extension_depth=mate_th+escape_extension,
                     is_won_player_turn=False)
 
-            mate_th += 1
-
             if self._move_number_at_end < mate_th or result_str == 'can not rewind':
                 break
 
@@ -207,8 +206,11 @@ class LearnAboutOneGame():
             #
             #       全ての評価値テーブル［0:先手, 1:後手］の（変更があれば）保存
             #
-            self._kifuwarabe.save_eval_all_tables(
-                    is_debug=self._is_debug)
+            if mate_th <=4 or mate_th % 20 == 0:
+                self._kifuwarabe.save_eval_all_tables(
+                        is_debug=self._is_debug)
+
+            mate_th += 1
 
         #
         # おわり
@@ -303,8 +305,8 @@ class LearnAboutOneGame():
                 # カウンターは事前に進める
                 choice_num += 1
 
-                # 指し継ぎ手数：未設定
-                move_number_difference = -1
+                # 短手数の詰めチェックモード
+                is_short_mate_mode = False
 
                 # 本譜の指し手は必ず学習する
                 if move_u == last_move_u:
@@ -315,7 +317,8 @@ class LearnAboutOneGame():
                     # くじに外れたら
                     # 勝った方は、１手詰めを学習する
                     if is_won_player_turn:
-                        move_number_difference = 1
+                        is_short_mate_mode = True
+
                     # 負けた方は、学習をせず間引きをする
                     else:
                         continue
@@ -336,8 +339,12 @@ class LearnAboutOneGame():
                 # （ｎ手詰め局面図で）とりあえず一手指す
                 self._board.push_usi(move_u)
 
-                # 指し継ぎ手数が未指定なら設定
-                if move_number_difference < 0:
+                # 指し継ぎ手数
+                # 短手数の詰めチェックモード
+                if is_short_mate_mode:
+                    move_number_difference = 1
+
+                else:
                     # 指し継ぎ手数           = (投了局面手数　－　学習局面手数       ) + プレイアウトでの延長手数    - 指した１手分
                     move_number_difference = move_number_between_end_and_problem + playout_extension_depth - 1
 
@@ -386,11 +393,19 @@ class LearnAboutOneGame():
                     # ノーカウント
                     # 勝った方が、勝ちを逃した
                     if self._won_player_turn == turn_at_problem:
-                        shall_1_weaken_2_strongthen = 1
-                        log_progress(f"[▼DOWN▼] 勝った方が、プレイアウト用の手数上限で勝ちを逃した")
+
+                        if is_short_mate_mode:
+                            log_progress(f"[ ] 短手数の詰めチェック中。プレイアウト用の手数上限で勝ちを逃しても無視")
+
+                        else:
+                            shall_1_weaken_2_strongthen = 1
+                            log_progress(f"[▼DOWN▼] 勝った方が、プレイアウト用の手数上限で勝ちを逃した")
+
                     else:
-                        shall_1_weaken_2_strongthen = 2
-                        log_progress(f"[▲UP▲] 負けた方が、プレイアウト用の手数上限で逃げ切った")
+                        # 攻め手がヘボ手なら、いくらでも逃げ切れるが
+                        #shall_1_weaken_2_strongthen = 2
+                        #log_progress(f"[▲UP▲] 負けた方が、プレイアウト用の手数上限で逃げ切った")
+                        log_progress(f"[▲UP▲] 負けた方が、プレイアウト用の手数上限で逃げ切ったが無視")
 
                 else:
                     # ノーカウント
