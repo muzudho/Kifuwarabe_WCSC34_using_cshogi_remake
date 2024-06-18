@@ -53,3 +53,9 @@ class LearnConfigDocument():
     def learn_rate_denominator(self):
         """学習率の分母"""
         return self._document['learn_rate']['denominator']
+
+
+    @property
+    def short_mate_mode_relay_move_number(self):
+        """短手数の詰めチェックモードでの指し継ぎ手数"""
+        return self._document['short_mate_mode']['relay_move_number']

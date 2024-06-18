@@ -58,8 +58,8 @@ class LearnGame():
         # 次の対局の usinewgame のタイミングで、前の対局の棋譜をトレーニングデータにして機械学習を走らせるから、持ち時間を消費してしまう。
         # 平均合法手が 80 手と仮定して、 80分の1 にすれば、 1 手当たり 1 つの合法手を検討する間隔になって早く終わるだろう
         # 分子
-        numerator = self._learn_config_document.learn_rate_numerator #1
-        denominator = self._learn_config_document.learn_rate_denominator #80
+        numerator = self._learn_config_document.learn_rate_numerator # 例: 1
+        denominator = self._learn_config_document.learn_rate_denominator # 例: 80
         return random.randint(0,denominator) <= (numerator - 1)
 
 
@@ -347,11 +347,14 @@ class LearnGame():
                 # 指し継ぎ手数
                 # 短手数の詰めチェックモード
                 if is_short_mate_mode:
-                    move_number_difference = 3
+                    move_number_difference = self._learn_config_document.short_mate_mode_relay_move_number
 
                 else:
                     # 指し継ぎ手数           = (投了局面手数　－　学習局面手数       ) + プレイアウトでの延長手数    - 指した１手分
                     move_number_difference = move_number_between_end_and_problem + playout_extension_depth - 1
+
+                # プレイアウトの上限手数
+                move_number_of_end_of_playout = self._board.move_number + move_number_difference
 
                 #
                 # プレイアウトする
@@ -402,33 +405,33 @@ class LearnGame():
                     # ノーカウント
                     # 勝った方が、勝ちを逃した
                     if self._won_player_turn == turn_at_problem:
-
                         if is_short_mate_mode:
                             log_progress(f"[ ] 短手数の詰めチェック中。プレイアウト用の手数上限で勝ちを逃しても無視")
 
                         else:
-                            # この短手数の詰めの力はあるという想定
-                            if move_number_between_end_and_problem < 2:
+                            # プレイアウトの上限手数は、実際に詰めた手数以上、長く取ってあるか？
+                            if move_number_between_end_and_problem <= move_number_of_end_of_playout:
+                                # FIXME ３手詰めで、１手目は合っていて３手目を間違えたとき、減点すべきは３手目では？
                                 shall_1_weaken_2_strongthen = 1
-                                log_progress(f"[▼DOWN▼] 勝った方が、短い読みを、プレイアウト用の手数上限で勝ちを逃した")
+                                log_progress(f"[▼DOWN▼] 勝った方が、{move_number_between_end_and_problem}手詰めを逃した")
 
-                            # 詰めの力がなければ、そりゃ逃す
+                            # FIXME 詰めの力がなければ、そりゃ逃すが
                             else:
-                                log_progress(f"[ ] 勝った方が、長い読みを、プレイアウト用の手数上限で勝ちを逃したが、詰めの力が弱いから無視")
+                                log_progress(f"[ ] 勝った方が、{move_number_between_end_and_problem}手詰めを逃したが、プレイアウト用の手数上限のせいなので無視")
 
                     else:
                         if is_short_mate_mode:
                             log_progress(f"[ ] 短手数の詰めチェック中。プレイアウト用の手数上限で勝ちを逃しても無視")
 
                         else:
-                            # この短手数の詰めの力はあるという想定
-                            if move_number_between_end_and_problem < 2:
+                            # プレイアウトの上限手数は、実際に詰めた手数より長く取ってあるか？
+                            if move_number_between_end_and_problem < move_number_of_end_of_playout:
                                 shall_1_weaken_2_strongthen = 2
-                                log_progress(f"[▲UP▲] 負けた方が、短い詰みの中、プレイアウト用の手数上限で逃げ切った")
+                                log_progress(f"[▲UP▲] 負けた方が、{move_number_between_end_and_problem}手詰めを、プレイアウト用の手数上限まで逃げ切った")
 
-                            # 攻め手がヘボ手なら、いくらでも逃げ切れる
+                            # FIXME 攻め手がヘボ手なら、いくらでも逃げ切れるが
                             else:
-                                log_progress(f"[ ] 負けた方が、長い詰みの中、プレイアウト用の手数上限で逃げ切ったが、攻め手がヘボいから無視")
+                                log_progress(f"[ ] 負けた方が、{move_number_between_end_and_problem}手詰めを逃げ切ったが、プレイアウト用の手数上限のせいなので無視")
 
                 else:
                     # ノーカウント

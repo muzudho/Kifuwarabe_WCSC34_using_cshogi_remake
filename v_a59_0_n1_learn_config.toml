@@ -5,4 +5,7 @@
 #   分子（numerator）と分母（denominator）を整数で書いてください
 #
 learn_rate.numerator = 1
-learn_rate.denominator = 160
+learn_rate.denominator = 40
+
+# 短手数の詰めチェックモードでの指し継ぎ手数
+short_mate_mode.relay_move_number = 7

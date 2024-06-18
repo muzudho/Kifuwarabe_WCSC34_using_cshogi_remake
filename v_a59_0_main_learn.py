@@ -18,7 +18,7 @@ class LearningFramework():
         pass
 
 
-    def start_it(
+    def start_framework(
             self,
             board,
             kifuwarabe,
@@ -174,7 +174,7 @@ if __name__ == '__main__':
         print(kifuwarabe.board)
 
         learning_framework = LearningFramework()
-        learning_framework.start_it(
+        learning_framework.start_framework(
                 board=kifuwarabe.board,
                 kifuwarabe=kifuwarabe,
                 is_debug=False)
