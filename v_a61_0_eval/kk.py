@@ -34,14 +34,14 @@ class EvaluationKkTable():
         if Usi.is_drop_by_srcloc(l_blackright_move_obj.srcloc):
             raise ValueError(f"[evaluation kk table > get index of kk move > l] 玉の指し手で打なのはおかしい。 l_move_obj.srcloc_u:{Usi.srcloc_to_code(l_blackright_move_obj.srcloc)}  l_blackright_move_obj:{l_blackright_move_obj.dump()}")
 
-        # 0 ～ 296_479 =                                                               0 ～ 543 *                                      544 +                                                             0 ～ 543
-        kk_index       = EvaluationKMove.get_blackright_index_by_k_move(k_blackright_move_obj) * EvaluationKMove.get_serial_number_size() + EvaluationKMove.get_blackright_index_by_k_move(l_blackright_move_obj)
+        # 0 ～ 296_479                  =                                                               0 ～ 543 *                                      544 +                                                             0 ～ 543
+        k_blackright_l_blackright_index = EvaluationKMove.get_blackright_index_by_k_move(k_blackright_move_obj) * EvaluationKMove.get_serial_number_size() + EvaluationKMove.get_blackright_index_by_k_move(l_blackright_move_obj)
 
         # assert
-        if EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size() <= kk_index:
-            raise ValueError(f"kk_index:{kk_index} out of range {EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size()}")
+        if EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size() <= k_blackright_l_blackright_index:
+            raise ValueError(f"k_blackright_l_blackright_index:{k_blackright_l_blackright_index} out of range {EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size()}")
 
-        return kk_index
+        return k_blackright_l_blackright_index
 
 
     #destructure_kl_index
@@ -66,21 +66,21 @@ class EvaluationKkTable():
 
         king_serial_number_size = EvaluationKMove.get_serial_number_size()
 
-        black_l_index = k_blackright_l_blackright_index % king_serial_number_size
-        black_k_index = k_blackright_l_blackright_index // king_serial_number_size
+        l_blackright_index = k_blackright_l_blackright_index % king_serial_number_size
+        k_blackright_index = k_blackright_l_blackright_index // king_serial_number_size
 
         # assert
-        if EvaluationKMove.get_serial_number_size() <= black_l_index:
-            raise ValueError(f"black_l_index:{black_l_index} out of range {EvaluationKMove.get_serial_number_size()}")
+        if EvaluationKMove.get_serial_number_size() <= l_blackright_index:
+            raise ValueError(f"l_blackright_index:{l_blackright_index} out of range {EvaluationKMove.get_serial_number_size()}")
 
         # assert
-        if EvaluationKMove.get_serial_number_size() <= black_k_index:
-            raise ValueError(f"black_k_index:{black_k_index} out of range {EvaluationKMove.get_serial_number_size()}")
+        if EvaluationKMove.get_serial_number_size() <= k_blackright_index:
+            raise ValueError(f"k_blackright_index:{k_blackright_index} out of range {EvaluationKMove.get_serial_number_size()}")
 
         # Ｌ
         (l_srcsq,
          l_dstsq) = EvaluationKMove.destructure_srcsq_dstsq_by_k_index(
-                k_index=black_l_index)
+                k_index=l_blackright_index)
         l_blackright_move_obj = Move.from_src_dst_pro(
                 srcloc=l_srcsq,
                 dstsq=l_dstsq,
@@ -92,7 +92,7 @@ class EvaluationKkTable():
         # Ｋ
         (k_srcsq,
          k_dstsq) = EvaluationKMove.destructure_srcsq_dstsq_by_k_index(
-                k_index=black_k_index)
+                k_index=k_blackright_index)
         k_blackright_move_obj = Move.from_src_dst_pro(
                 srcloc=k_srcsq,
                 dstsq=k_dstsq,
