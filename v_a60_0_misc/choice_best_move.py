@@ -174,11 +174,8 @@ move_rot_u   :{move_rot_obj.as_usi       :5}
                         black_p_black_k_index=black_p_black_l_index)
 
                 check_black_p_black_l_index = EvaluationPkTable.get_black_p_black_k_index(
-                        p_move_obj=assert_black_p_move_obj,
-                        k_move_obj=assert_black_l_move_obj,
-                        # assert_black_p_move_obj, assert_black_l_move_obj は先手なので、１８０°回転させてはいけません
-                        shall_p_white_to_black=False,
-                        shall_k_white_to_black=False)
+                        p_black_move_obj=assert_black_p_move_obj,
+                        k_black_move_obj=assert_black_l_move_obj)
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                 if not is_white:

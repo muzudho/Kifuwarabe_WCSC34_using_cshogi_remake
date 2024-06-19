@@ -252,16 +252,23 @@ def test_pk():
         # 応手
         expected_black_k_move_u = data_set[4]
 
+        # 先手の向きに合わせる
+        input_p_black_move_obj = Move.from_move_obj(
+                strict_move_obj=Move.from_usi(input_p_strict_move_u),
+                shall_white_to_black=False)
+
+        # 先手の向きに合わせる
+        input_k_black_move_obj = Move.from_move_obj(
+                strict_move_obj=Move.from_usi(input_k_strict_move_u),
+                shall_white_to_black=True)
+
         # 関連
         #
         #   後手では、指し手を盤上で１８０°回転させてインデックスを取得します
         #
         black_p_black_k_index = EvaluationPkTable.get_black_p_black_k_index(
-                p_move_obj=Move.from_usi(input_p_strict_move_u),
-                k_move_obj=Move.from_usi(input_k_strict_move_u),
-                # 着手が黒番なら、着手は先後反転せず、応手は先後反転させます
-                shall_p_white_to_black=f_turn==cshogi.WHITE,
-                shall_k_white_to_black=f_turn==cshogi.BLACK)
+                p_black_move_obj=input_p_black_move_obj,
+                k_black_move_obj=input_k_black_move_obj)
 
         # pi_index から、指し手オブジェクトを生成します
         #
