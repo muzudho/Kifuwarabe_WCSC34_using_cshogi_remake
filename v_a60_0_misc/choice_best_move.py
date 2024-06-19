@@ -66,8 +66,8 @@ class ChoiceBestMove():
 
             # 自玉の着手と、敵玉の応手の一覧から、ＫＬテーブルのインデックスと、関係の有無を格納した辞書を作成
             black_k_black_l_index_to_relation_exists_dic = kifuwarabe.evaluation_kl_table_obj_array[Turn.to_index(board.turn)].select_black_k_black_l_index_and_relation_exists(
-                    k_move_obj=strict_move_obj,
-                    l_move_u_set=l_strict_move_u_set,
+                    k_strict_move_obj=strict_move_obj,
+                    l_strict_move_u_set=l_strict_move_u_set,
                     # 先手の指し手になるよう調整します
                     shall_k_white_to_black=board.turn==cshogi.WHITE,
                     shall_l_white_to_black=board.turn==cshogi.BLACK)

@@ -14,6 +14,7 @@ class EvaluationKkTable():
     #get_index_of_kk_table
     @staticmethod
     def get_black_k_black_l_index(
+            # TODO ここは strict ではなく、 black にしてほしい
             k_move_obj,
             l_move_obj,
             shall_k_white_to_black,
@@ -259,8 +260,9 @@ class EvaluationKkTable():
     #select_kl_index_and_relation_exists
     def select_black_k_black_l_index_and_relation_exists(
             self,
-            k_move_obj,
-            l_move_u_set,
+            # ここは strict ではなく black にしてほしい
+            k_strict_move_obj,
+            l_strict_move_u_set,
             shall_k_white_to_black,
             shall_l_white_to_black):
         """自玉の指し手と、敵玉の応手のリストを受け取ると、すべての関係の有無を辞書に入れて返します
@@ -268,9 +270,9 @@ class EvaluationKkTable():
 
         Parameters
         ----------
-        k_move_obj : Move
+        k_strict_move_obj : Move
             自玉の着手
-        l_move_u_set : List<str>
+        l_strict_move_u_set : List<str>
             敵玉の応手のリスト
         shall_k_white_to_black : bool
             評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
@@ -286,10 +288,10 @@ class EvaluationKkTable():
 
         relations = {}
 
-        for l_move_u in l_move_u_set:
+        for l_strict_move_u in l_strict_move_u_set:
             black_k_black_l_index = EvaluationKkTable.get_black_k_black_l_index(
-                    k_move_obj=k_move_obj,
-                    l_move_obj=Move.from_usi(l_move_u),
+                    k_move_obj=k_strict_move_obj,
+                    l_move_obj=Move.from_usi(l_strict_move_u),
                     shall_k_white_to_black=shall_k_white_to_black,
                     shall_l_white_to_black=shall_l_white_to_black)
 
