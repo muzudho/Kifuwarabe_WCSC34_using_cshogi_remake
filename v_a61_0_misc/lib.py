@@ -249,7 +249,7 @@ class Move():
             dstsq,
             promoted,
             is_rotate=False,
-            is_flip=False):
+            use_only_files_1_to_5p=False):
         """初期化
 
         Parameters
@@ -262,16 +262,19 @@ class Move():
             成ったか？
         is_rotate : bool
             盤を１８０°回転させたときの指し手にするか？
-        is_flip : bool
-            盤を左右反転させたときの指し手にするか？
+        use_only_files_1_to_5p : bool
+            移動元マスを盤の１筋～５筋だけ使うように指し手を揃えるか？
         """
         if is_rotate:
             srcloc = Usi.rotate_srcloc(srcloc)
             dstsq = Usi.rotate_srcloc(dstsq)
 
-        if is_flip:
-            srcloc = Usi.flip_srcloc(srcloc)
-            dstsq = Usi.flip_srcloc(dstsq)
+        if use_only_files_1_to_5p:
+            (file_th, rank_th) = Usi.srcloc_to_file_th_rank_th(srcloc)
+
+            if 5 < file_th:
+                srcloc = Usi.flip_srcloc(srcloc)
+                dstsq = Usi.flip_srcloc(dstsq)
 
         return Move(
                 srcloc=srcloc,
@@ -281,7 +284,8 @@ class Move():
 
     def from_move_obj(
             strict_move_obj,
-            shall_white_to_black):
+            shall_white_to_black,
+            use_only_files_1_to_5p=False):
         """変形
 
         Parameters
@@ -290,13 +294,16 @@ class Move():
             指し手
         shall_white_to_black : bool
             評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
+        use_only_files_1_to_5p : bool
+            移動元マスを盤の１筋～５筋だけ使うように指し手を揃えるか？
         """
-        if shall_white_to_black:
+        if shall_white_to_black or use_only_files_1_to_5p:
             return Move.from_src_dst_pro(
                     srcloc=strict_move_obj.srcloc,
                     dstsq=strict_move_obj.dstsq,
                     promoted=strict_move_obj.promoted,
-                    is_rotate=True)
+                    is_rotate=shall_white_to_black,
+                    use_only_files_1_to_5p=use_only_files_1_to_5p)
 
         return strict_move_obj
 

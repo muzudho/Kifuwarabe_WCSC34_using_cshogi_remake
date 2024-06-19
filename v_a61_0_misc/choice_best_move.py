@@ -567,9 +567,9 @@ move_rot_u   :{move_rot_obj.as_usi   :5}
             strict_move_obj = Move.from_usi(strict_move_u)
 
             # 自駒と敵玉に対する関係の辞書
-            (fl_index_to_relation_exists_dictionary,
+            (black_f_black_l_index_to_relation_exists_dictionary,
              # 自駒と敵兵に対する関係の辞書
-             fq_index_to_relation_exists_dictionary,
+             black_f_black_q_index_to_relation_exists_dictionary,
              # 玉の指し手か？
              is_king_move,
              # 関係が陽性の総数
