@@ -273,7 +273,7 @@ def test_pk():
         #
         #   後手では、指し手を盤上で１８０°回転させてインデックスを取得します
         #
-        black_p_black_k_index = EvaluationPkTable.get_p_blackright_k_blackright_index(
+        p_blackright_k_blackright_index = EvaluationPkTable.get_p_blackright_k_blackright_index(
                 p_blackright_move_obj=input_p_black_move_obj,
                 k_blackright_move_obj=input_k_black_move_obj)
 
@@ -283,7 +283,7 @@ def test_pk():
         #
         (remaked_black_p_move_obj,
          remaked_black_k_move_obj) = EvaluationPkTable.build_p_blackright_k_blackright_moves_by_pk_index(
-                p_blackright_k_blackright_index=black_p_black_k_index)
+                p_blackright_k_blackright_index=p_blackright_k_blackright_index)
 
         # Ｐ
         if expected_black_p_move_u != remaked_black_p_move_obj.as_usi:

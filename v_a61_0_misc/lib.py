@@ -270,11 +270,20 @@ class Move():
             dstsq = Usi.rotate_srcloc(dstsq)
 
         if use_only_right_side:
-            (file_th, rank_th) = Usi.srcloc_to_file_th_rank_th(srcloc)
+            # 打でないなら
+            if not Usi.is_drop_by_srcloc(srcloc):
+                (file_th, rank_th) = Usi.srcloc_to_file_th_rank_th(srcloc)
 
-            if 5 < file_th:
-                srcloc = Usi.flip_srcloc(srcloc)
-                dstsq = Usi.flip_srcloc(dstsq)
+                if 5 < file_th:
+                    srcloc = Usi.flip_srcloc(srcloc)
+                    dstsq = Usi.flip_srcloc(dstsq)
+
+            # 打なら
+            else:
+                (file_th, rank_th) = Usi.srcloc_to_file_th_rank_th(dstsq)
+
+                if 5 < file_th:
+                    dstsq = Usi.flip_srcloc(dstsq)
 
         return Move(
                 srcloc=srcloc,

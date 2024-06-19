@@ -292,7 +292,7 @@ class EvaluationKpTable():
                 p_blackright_move_obj=Move.from_usi(p_blackright_move_u))
 
             relation_bit = self.get_relation_exists_by_index(
-                    black_k_black_p_index=black_k_black_p_index)
+                    k_blackright_p_blackright_index=black_k_black_p_index)
 
             relations[black_k_black_p_index] = relation_bit
 

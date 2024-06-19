@@ -32,13 +32,13 @@ class EvaluationPkTable():
             raise ValueError(f"[evaluation pk table > get index of pk move > k] 玉の指し手で打なのはおかしい。 k_blackright_move_obj.srcloc_u:{Usi.srcloc_to_code(k_blackright_move_obj.srcloc)}  k_blackright_move_obj:{k_blackright_move_obj.dump()}")
 
         # 0 ～ 2_074_815      =                                                              0 ～ 3812 *                                      544 +                                                             0 ～ 543
-        black_p_black_k_index = EvaluationPMove.get_blackright_index_by_p_move(p_blackright_move_obj) * EvaluationKMove.get_serial_number_size() + EvaluationKMove.get_blackright_index_by_k_move(k_blackright_move_obj)
+        p_blackright_k_blackright_index = EvaluationPMove.get_blackright_index_by_p_move(p_blackright_move_obj) * EvaluationKMove.get_serial_number_size() + EvaluationKMove.get_blackright_index_by_k_move(k_blackright_move_obj)
 
         # assert
-        if EvaluationPMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size() <= black_p_black_k_index:
-            raise ValueError(f"black_p_black_k_index:{black_p_black_k_index} out of range {EvaluationPMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size()}")
+        if EvaluationPMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size() <= p_blackright_k_blackright_index:
+            raise ValueError(f"p_blackright_k_blackright_index:{p_blackright_k_blackright_index} out of range {EvaluationPMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size()}")
 
-        return black_p_black_k_index
+        return p_blackright_k_blackright_index
 
 
     @staticmethod
@@ -248,7 +248,7 @@ class EvaluationPkTable():
 
         Parameters
         ----------
-        black_p_black_k_index : int
+        p_blackright_k_blackright_index : int
             配列のインデックス
 
         Returns
@@ -315,13 +315,13 @@ class EvaluationPkTable():
         relations = {}
 
         for k_blackright_move_u in k_blackright_move_u_set:
-            black_p_black_k_index = EvaluationPkTable.get_p_blackright_k_blackright_index(
+            p_blackright_k_blackright_index = EvaluationPkTable.get_p_blackright_k_blackright_index(
                 p_blackright_move_obj=p_blackright_move_obj,
                 k_blackright_move_obj=Move.from_usi(k_blackright_move_u))
 
             relation_bit = self.get_relation_exists_by_index(
-                    p_blackright_k_blackright_index=black_p_black_k_index)
+                    p_blackright_k_blackright_index=p_blackright_k_blackright_index)
 
-            relations[black_p_black_k_index] = relation_bit
+            relations[p_blackright_k_blackright_index] = relation_bit
 
         return relations

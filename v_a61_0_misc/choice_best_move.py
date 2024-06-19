@@ -153,38 +153,16 @@ class ChoiceBestMove():
                 assert_p_blackright_move_obj, assert_l_blackright_move_obj = EvaluationPkTable.build_p_blackright_k_blackright_moves_by_pk_index(
                         p_blackright_k_blackright_index=p_blackright_l_blackright_index)
 
-                check_black_p_black_l_index = EvaluationPkTable.get_p_blackright_k_blackright_index(
+                check_p_blackright_l_blackright_index = EvaluationPkTable.get_p_blackright_k_blackright_index(
                         p_blackright_move_obj=assert_p_blackright_move_obj,
                         k_blackright_move_obj=assert_l_blackright_move_obj)
 
-                # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
-                if not is_white:
-                    if p_blackright_l_blackright_index != check_black_p_black_l_index:
-                        raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pl] インデックスから指し手を復元し、さらにインデックスに圧縮すると、元のインデックスに復元しなかったエラー
-                   p_blackright_l_blackright_index:{        p_blackright_l_blackright_index:10}
-check_black_p_black_l_index:{check_black_p_black_l_index  :10}
+                if p_blackright_l_blackright_index != check_p_blackright_l_blackright_index:
+                    raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pl] インデックスから指し手を復元し、さらにインデックスに圧縮すると、元のインデックスに復元しなかったエラー
+      p_blackright_l_blackright_index:{        p_blackright_l_blackright_index:10}
+check_p_blackright_l_blackright_index:{check_p_blackright_l_blackright_index  :10}
                    p_move_u:{assert_p_blackright_move_obj.as_usi:5}
                    l_move_u:{assert_l_blackright_move_obj.as_usi:5}
-""")
-                    else:
-#                        print(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pl] インデックスから指し手を復元し、さらにインデックスに圧縮すると、元のインデックスに復元できた。Ok
-#                   p_blackright_l_blackright_index:{        p_blackright_l_blackright_index:10}
-#check_black_p_black_l_index:{check_black_p_black_l_index  :10}
-#                   p_move_u:{assert_p_blackright_move_obj.as_usi:5}
-#                   l_move_u:{assert_l_blackright_move_obj.as_usi:5}
-#""")
-                        pass
-
-                # 着手が後手なら、１８０°回転させるので、インデックスは変わる
-                else:
-
-                    if assert_p_blackright_move_obj.as_usi != move_rot_obj.as_usi:
-                        print(board)
-                        raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pl] 指し手を先手の向きに変えて復元できなかったエラー
-is_white     :{is_white}
-strict_move_u:{f_strict_move_obj.as_usi:5} black_p_move_u:{assert_p_blackright_move_obj.as_usi:5}
-move_rot_u   :{move_rot_obj.as_usi   :5}
-              {''                    :5} black_l_move_u:{assert_l_blackright_move_obj.as_usi:5}
 """)
 
             #
@@ -201,27 +179,14 @@ move_rot_u   :{move_rot_obj.as_usi   :5}
                 assert_p_blackright_move_obj, assert_q_blackright_move_obj = EvaluationPpTable.build_p1_blackright_p2_blackright_moves_by_p1p2_index(
                         p1_blackright_p2_blackright_index=blackright_p_black_q_index)
 
-                # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
-                if not is_white:
-                    if assert_p_blackright_move_obj.as_usi != f_blackright_move_obj.as_usi:
-                        print(board)
-                        raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pq] 着手が変わっているエラー
+                if assert_p_blackright_move_obj.as_usi != f_blackright_move_obj.as_usi:
+                    print(board)
+                    raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pq] 着手が変わっているエラー
 is_white  :{is_white}
                                            手番（Ｐ）:{Turn.to_string(board.turn)}
                                       元の指し手（Ｐ）:{f_strict_move_obj.as_usi:5}
                      元の指し手　先手視点、右辺使用（Ｐ）:{f_blackright_move_obj.as_usi:5}
 １回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_p_blackright_move_obj.as_usi:5}
-""")
-
-                # 着手が後手なら、１８０°回転させるので、インデックスは変わる
-                else:
-                    if assert_p_blackright_move_obj.as_usi != move_rot_obj.as_usi:
-                        print(board)
-                        raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pq] 指し手を先手の向きに変えて復元できなかったエラー
-is_white     :{is_white}
-strict_move_u:{f_strict_move_obj.as_usi:5} black_p_move_u:{assert_p_blackright_move_obj.as_usi:5}
-move_rot_u   :{move_rot_obj.as_usi   :5}
-              {''                    :5} black_l_move_u:{assert_q_blackright_move_obj.as_usi:5}
 """)
 
             return (None,
