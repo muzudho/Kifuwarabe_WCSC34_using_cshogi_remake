@@ -131,18 +131,18 @@ class EvaluationEdit():
             # ＰＱ
             #
             for black_f_black_q_index, relation_exists in black_f_black_q_index_to_relation_exists_dictionary.items():
-                assert_black_p1_move_obj, assert_black_p2_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
+                assert_p1_black_move_obj, assert_p2_black_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
                         black_p1_black_p2_index=black_f_black_q_index)
 
                 # 着手が先手なら、１８０°回転させない
                 if self._kifuwarabe.board.turn==cshogi.BLACK:
-                    if move_u != assert_black_p1_move_obj.as_usi:
-                        raise ValueError(f"[{datetime.datetime.now()}] [weaken > fl] 着手が変わっているエラー  元の着手:{move_u}  作った着手:{assert_black_p1_move_obj.as_usi}")
+                    if move_u != assert_p1_black_move_obj.as_usi:
+                        raise ValueError(f"[{datetime.datetime.now()}] [weaken > fl] 着手が変わっているエラー  元の着手:{move_u}  作った着手:{assert_p1_black_move_obj.as_usi}")
 
                 # 着手が先手なら、１８０°回転させる
                 else:
-                    if move_obj.rotate().as_usi != assert_black_p1_move_obj.as_usi:
-                        raise ValueError(f"[{datetime.datetime.now()}] [weaken > fl] 指し手を先手の向きに変えて復元できなかったエラー  元の着手:{move_u}  作った着手:{assert_black_p1_move_obj.as_usi}")
+                    if move_obj.rotate().as_usi != assert_p1_black_move_obj.as_usi:
+                        raise ValueError(f"[{datetime.datetime.now()}] [weaken > fl] 指し手を先手の向きに変えて復元できなかったエラー  元の着手:{move_u}  作った着手:{assert_p1_black_move_obj.as_usi}")
 
 
         # 減らすものがないので、弱化できなかった
@@ -436,8 +436,8 @@ class EvaluationEdit():
                     print(f"[{datetime.datetime.now()}] [weaken > pq] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  pq_index:{target_black_f_black_q_index:7}  P:{black_p_move_obj.as_usi:5}  Q:{black_q_move_obj.as_usi:5}  remove relation")
 
                 is_changed_temp = self._kifuwarabe._evaluation_pq_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exists_by_black_p_black_p_moves(
-                        black_p1_move_obj=black_p_move_obj,
-                        black_p2_move_obj=black_q_move_obj,
+                        p1_black_move_obj=black_p_move_obj,
+                        p2_black_move_obj=black_q_move_obj,
                         bit=0)
 
                 assert_challenge += 1
@@ -555,18 +555,18 @@ class EvaluationEdit():
             # ＰＱ
             #
             for black_f_black_q_index, relation_exists in black_f_black_q_index_to_relation_exists_dictionary.items():
-                assert_black_p1_move_obj, assert_black_p2_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
+                assert_p1_black_move_obj, assert_p2_black_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
                         black_p1_black_p2_index=black_f_black_q_index)
 
                 # 着手が先手なら、１８０°回転させない
                 if self._kifuwarabe.board.turn==cshogi.BLACK:
-                    if move_u != assert_black_p1_move_obj.as_usi:
-                        raise ValueError(f"[{datetime.datetime.now()}] [strengthen > fl] 着手が変わっているエラー  元の着手:{move_u}  作った着手:{assert_black_p1_move_obj.as_usi}")
+                    if move_u != assert_p1_black_move_obj.as_usi:
+                        raise ValueError(f"[{datetime.datetime.now()}] [strengthen > fl] 着手が変わっているエラー  元の着手:{move_u}  作った着手:{assert_p1_black_move_obj.as_usi}")
 
                 # 着手が先手なら、１８０°回転させる
                 else:
-                    if move_obj.rotate().as_usi != assert_black_p1_move_obj.as_usi:
-                        raise ValueError(f"[{datetime.datetime.now()}] [strengthen > fl] 指し手を先手の向きに変えて復元できなかったエラー  元の着手:{move_u}  作った着手:{assert_black_p1_move_obj.as_usi}")
+                    if move_obj.rotate().as_usi != assert_p1_black_move_obj.as_usi:
+                        raise ValueError(f"[{datetime.datetime.now()}] [strengthen > fl] 指し手を先手の向きに変えて復元できなかったエラー  元の着手:{move_u}  作った着手:{assert_p1_black_move_obj.as_usi}")
 
 
         # 既に全ての議席が挙手しているので、強化は不要です
@@ -887,8 +887,8 @@ class EvaluationEdit():
                     print(f"[{datetime.datetime.now()}] [strengthen > pq] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  pq_index:{target_black_f_black_q_index:7}  P:{black_p_move_obj.as_usi:5}  Q:{black_q_move_obj.as_usi:5}  remove relation")
 
                 is_changed_temp = self._kifuwarabe._evaluation_pq_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exists_by_black_p_black_p_moves(
-                        black_p1_move_obj=black_p_move_obj,
-                        black_p2_move_obj=black_q_move_obj,
+                        p1_black_move_obj=black_p_move_obj,
+                        p2_black_move_obj=black_q_move_obj,
                         bit=1)
 
                 assert_challenge += 1
