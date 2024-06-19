@@ -92,10 +92,10 @@ class ChoiceBestMove():
                     if assert_black_k_move_obj.as_usi != move_rot_obj.as_usi:
                         print(board)
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > kl] 指し手を先手の向きに変えて復元できなかったエラー
-is_white  :{is_white}
-move_u    :{move_obj.as_usi    :5} black_p_move_u:{assert_black_k_move_obj.as_usi:5}
-move_rot_u:{move_rot_obj.as_usi:5}
-           {''                 :5} black_l_move_u:{assert_black_l_move_obj.as_usi:5}
+is_white     :{is_white}
+strict_move_u:{move_obj.as_usi    :5} black_p_move_u:{assert_black_k_move_obj.as_usi:5}
+move_rot_u   :{move_rot_obj.as_usi:5}
+              {''                 :5} black_l_move_u:{assert_black_l_move_obj.as_usi:5}
 """)
 
             #
@@ -130,10 +130,10 @@ move_rot_u:{move_rot_obj.as_usi:5}
                     if assert_black_k_move_obj.as_usi != move_rot_obj.as_usi:
                         print(board)
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > kq] 指し手を先手の向きに変えて復元できなかったエラー
-is_white  :{is_white}
-move_u    :{move_obj.as_usi    :5} black_p_move_u:{assert_black_k_move_obj.as_usi:5}
-move_rot_u:{move_rot_obj.as_usi:5}
-           {''                 :5} black_l_move_u:{assert_black_q_move_obj.as_usi:5}
+is_white     :{is_white}
+strict_move_u:{move_obj.as_usi    :5} black_p_move_u:{assert_black_k_move_obj.as_usi:5}
+move_rot_u   :{move_rot_obj.as_usi:5}
+              {''                 :5} black_l_move_u:{assert_black_q_move_obj.as_usi:5}
 """)
 
             return (black_k_black_l_index_to_relation_exists_dic,
@@ -191,10 +191,10 @@ check_black_p_black_l_index:{check_black_p_black_l_index  :10}
                     if assert_black_p_move_obj.as_usi != move_rot_obj.as_usi:
                         print(board)
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pl] 指し手を先手の向きに変えて復元できなかったエラー
-is_white  :{is_white}
-move_u    :{move_obj.as_usi    :5} black_p_move_u:{assert_black_p_move_obj.as_usi:5}
-move_rot_u:{move_rot_obj.as_usi:5}
-           {''                 :5} black_l_move_u:{assert_black_l_move_obj.as_usi:5}
+is_white     :{is_white}
+strict_move_u:{move_obj.as_usi    :5} black_p_move_u:{assert_black_p_move_obj.as_usi:5}
+move_rot_u   :{move_rot_obj.as_usi:5}
+              {''                 :5} black_l_move_u:{assert_black_l_move_obj.as_usi:5}
 """)
 
             #
@@ -230,10 +230,10 @@ is_white  :{is_white}
                     if assert_black_p_move_obj.as_usi != move_rot_obj.as_usi:
                         print(board)
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pq] 指し手を先手の向きに変えて復元できなかったエラー
-is_white  :{is_white}
-move_u    :{move_obj.as_usi    :5} black_p_move_u:{assert_black_p_move_obj.as_usi:5}
-move_rot_u:{move_rot_obj.as_usi:5}
-           {''                 :5} black_l_move_u:{assert_black_q_move_obj.as_usi:5}
+is_white     :{is_white}
+strict_move_u:{move_obj.as_usi    :5} black_p_move_u:{assert_black_p_move_obj.as_usi:5}
+move_rot_u   :{move_rot_obj.as_usi:5}
+              {''                 :5} black_l_move_u:{assert_black_q_move_obj.as_usi:5}
 """)
 
             return (None,
@@ -522,7 +522,7 @@ move_rot_u:{move_rot_obj.as_usi:5}
 
 
     @staticmethod
-    def select_ranked_f_move_u_set_facade(
+    def select_ranked_strict_f_move_u_set_facade(
             legal_moves,
             kifuwarabe,
             is_debug=False):
@@ -539,26 +539,25 @@ move_rot_u:{move_rot_obj.as_usi:5}
 
         Returns
         -------
-         (good_move_u_set,
-          bad_move_u_set)
+        ranked_strict_move_u_set_list : list[set()]
         """
 
-        ranked_move_u_set_list = []
+        ranked_strict_move_u_set_list = []
 
         # もし好手と悪手の２パターンなら tier_resolution は ２。
         # 配列のインデックスの小さい方がランクが上とする
         for i in range(0, kifuwarabe.tier_resolution):
-            ranked_move_u_set_list.append(set())
+            ranked_strict_move_u_set_list.append(set())
 
         # デバッグ表示
-        if is_debug and DebugPlan.select_ranked_f_move_u_set_facade:
+        if is_debug and DebugPlan.select_ranked_strict_f_move_u_set_facade:
             print(f"[choice best move]  kifuwarabe.tier_resolution:{kifuwarabe.tier_resolution}")
 
-        for move_id in legal_moves:
-            move_u = cshogi.move_to_usi(move_id)
+        for strict_move_id in legal_moves:
+            strict_move_u = cshogi.move_to_usi(strict_move_id)
 
             # 着手オブジェクト
-            move_obj = Move.from_usi(move_u)
+            strict_move_obj = Move.from_usi(strict_move_u)
 
             # 自駒と敵玉に対する関係の辞書
             (fl_index_to_relation_exists_dictionary,
@@ -570,7 +569,7 @@ move_rot_u:{move_rot_obj.as_usi:5}
              positive_of_relation,
              # 関係の総数
              total_of_relation) = ChoiceBestMove.get_summary(
-                    move_obj=move_obj,
+                    move_obj=strict_move_obj,
                     kifuwarabe=kifuwarabe,
                     is_debug=is_debug)
 
@@ -584,27 +583,27 @@ move_rot_u:{move_rot_obj.as_usi:5}
 
 
             # 1 から始まる数を、0 から始まる数に変換して配列のインデックスに使用
-            target_set = ranked_move_u_set_list[ranking_th - 1]
-            target_set.add(move_u)
+            target_strict_move_u_set = ranked_strict_move_u_set_list[ranking_th - 1]
+            target_strict_move_u_set.add(strict_move_u)
 
             # デバッグ表示
-            if is_debug and DebugPlan.select_ranked_f_move_u_set_facade:
-                print(f"[choice best move]  move_u:{move_u}  policy_rate:{policy_rate}  ranking_th:{ranking_th}  positive_of_relation:{positive_of_relation}  total_of_relation:{total_of_relation}")
+            if is_debug and DebugPlan.select_ranked_strict_f_move_u_set_facade:
+                print(f"[choice best move]  strict_move_u:{strict_move_u}  policy_rate:{policy_rate}  ranking_th:{ranking_th}  positive_of_relation:{positive_of_relation}  total_of_relation:{total_of_relation}")
 
 
         # デバッグ表示
-        if is_debug and DebugPlan.select_ranked_f_move_u_set_facade:
+        if is_debug and DebugPlan.select_ranked_strict_f_move_u_set_facade:
 
             for tier_th in range(0, kifuwarabe.tier_resolution):
 
                 print(f"[{datetime.datetime.now()}] [select ranked f move u set facade] ランク付けされた指し手一覧（{tier_th:2}位）")
-                target_set = ranked_move_u_set_list[tier_th]
+                target_strict_move_u_set = ranked_strict_move_u_set_list[tier_th]
 
-                for ranked_move_u in target_set:
-                    print(f"[{datetime.datetime.now()}] [select ranked f move u set facade]  {tier_th}位  move:{ranked_move_u:5}")
+                for ranked_strict_move_u in target_strict_move_u_set:
+                    print(f"[{datetime.datetime.now()}] [select ranked f move u set facade]  {tier_th}位  strict_move:{ranked_strict_move_u:5}")
 
 
-        return ranked_move_u_set_list
+        return ranked_strict_move_u_set_list
 
 
     @staticmethod
@@ -625,19 +624,19 @@ move_rot_u:{move_rot_obj.as_usi:5}
         """
 
         # ランク付けされた指し手一覧
-        ranked_move_u_set_list = ChoiceBestMove.select_ranked_f_move_u_set_facade(
+        ranked_strict_move_u_set_list = ChoiceBestMove.select_ranked_strict_f_move_u_set_facade(
                 legal_moves=legal_moves,
                 kifuwarabe=kifuwarabe,
                 is_debug=is_debug)
 
-        for ranked_move_set in ranked_move_u_set_list:
+        for ranked_strict_move_set in ranked_strict_move_u_set_list:
 
             # このランキングに候補手が無ければ、下のランキングへ
-            if len(ranked_move_set) < 1:
+            if len(ranked_strict_move_set) < 1:
                 continue
 
             # 候補手の中からランダムに選ぶ。USIの指し手の記法で返却
-            return random.choice(list(ranked_move_set))
+            return random.choice(list(ranked_strict_move_set))
 
         # ここにくることはないはず
         return "resign"

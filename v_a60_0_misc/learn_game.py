@@ -278,7 +278,7 @@ class LearnGame():
         # 階位（ｔｉｅｒ）付けされた指し手一覧
         # -------------------------------
         #
-        tiered_move_u_set_list = ChoiceBestMove.select_ranked_f_move_u_set_facade(
+        tiered_strict_move_u_set_list = ChoiceBestMove.select_ranked_strict_f_move_u_set_facade(
                 legal_moves=list(self._board.legal_moves),
                 kifuwarabe=self._kifuwarabe,
                 is_debug=self._is_debug)
@@ -292,20 +292,20 @@ class LearnGame():
         # その通し番号
         choice_num = 0
 
-        for tier, ranked_move_u_set in enumerate(tiered_move_u_set_list):
-            set_size = len(ranked_move_u_set)
+        for tier, ranked_strict_move_u_set in enumerate(tiered_strict_move_u_set_list):
+            set_size = len(ranked_strict_move_u_set)
             size_list.append(set_size)
             number_of_all_moves_in_this_position += set_size
             print(f'    {tier:2}位-->{set_size}', end='')
 
         print(f'  累計：{number_of_all_moves_in_this_position}', flush=True)
 
-        for tier, ranked_move_u_set in enumerate(tiered_move_u_set_list):
+        for tier, ranked_strict_move_u_set in enumerate(tiered_strict_move_u_set_list):
 
             if self._is_debug:
                 print(f'[{datetime.datetime.now()}] [learn > at position]  着手{tier:2}位一覧')
 
-            for move_u in ranked_move_u_set:
+            for strict_move_u in ranked_strict_move_u_set:
 
                 # カウンターは事前に進める
                 choice_num += 1
@@ -314,7 +314,7 @@ class LearnGame():
                 is_short_mate_mode = False
 
                 # 本譜の指し手は必ず学習する
-                if move_u == last_move_u:
+                if strict_move_u == last_move_u:
                     pass
 
                 # mate_th が 4 以上の局面は、学習率くじで当たった指し手だけ学習する
@@ -342,7 +342,7 @@ class LearnGame():
                     raise ValueError(f"[learn > at position] {tier:2}位  {mate_th}手詰め局面図エラー")
 
                 # （ｎ手詰め局面図で）とりあえず一手指す
-                self._board.push_usi(move_u)
+                self._board.push_usi(strict_move_u)
 
                 # 指し継ぎ手数
                 # 短手数の詰めチェックモード
@@ -369,7 +369,7 @@ class LearnGame():
                 # 進捗ログを出したい
                 def log_progress(comment):
                     if DebugPlan.learn_at_position_log_progress():
-                        print(f'[{datetime.datetime.now()}] [learn > at position] {tier:2}位  ({choice_num:3}/{number_of_all_moves_in_this_position:3})  {move_u:5}  {result_str}  [(投了{self._move_number_at_end:3}手目) (巻戻し:{move_number_between_end_and_problem:3}) (学習局面:{move_number_at_problem:3}手目) (指継:{move_number_difference:3}手) (再投了:{self._board.move_number:3}手目 {Turn.to_kanji(self._board.turn)})]  {reason}  {comment}', flush=True)
+                        print(f'[{datetime.datetime.now()}] [learn > at position] {tier:2}位  ({choice_num:3}/{number_of_all_moves_in_this_position:3})  {strict_move_u:5}  {result_str}  [(投了{self._move_number_at_end:3}手目) (巻戻し:{move_number_between_end_and_problem:3}) (学習局面:{move_number_at_problem:3}手目) (指継:{move_number_difference:3}手) (再投了:{self._board.move_number:3}手目 {Turn.to_kanji(self._board.turn)})]  {reason}  {comment}', flush=True)
 
                 # どちらかが投了した
                 if reason == 'resign':
@@ -457,12 +457,12 @@ class LearnGame():
                 # ｎ手詰めの局面にしてから、評価値を下げる
                 if shall_1_weaken_2_strongthen == 1:
                     (result_str, result_comment) = self._kifuwarabe.weaken(
-                            cmd_tail=move_u,
+                            cmd_tail=strict_move_u,
                             is_debug=True)
                             #is_debug=self._is_debug)
 
                     # 変更はログに出したい
-                    print(f'[{datetime.datetime.now()}] [learn > at position] {tier:2}位       weaken {move_u:5}  result:`{result_str}`  comment:{result_comment}')
+                    print(f'[{datetime.datetime.now()}] [learn > at position] {tier:2}位       weaken {strict_move_u:5}  result:`{result_str}`  comment:{result_comment}')
 
                     if result_str == 'changed':
                         changed_count += 1
@@ -470,12 +470,12 @@ class LearnGame():
                 # ｎ手詰めの局面にしてから、評価値を上げる
                 elif shall_1_weaken_2_strongthen == 2:
                     (result_str, result_comment) = self._kifuwarabe.strengthen(
-                            cmd_tail=move_u,
+                            cmd_tail=strict_move_u,
                             is_debug=True)
                             #is_debug=self._is_debug)
 
                     # 変更はログに出したい
-                    print(f'[{datetime.datetime.now()}] [learn > at position] {tier:2}位        strengthen {move_u:5}  result:`{result_str}`  result_comment:{result_comment}')
+                    print(f'[{datetime.datetime.now()}] [learn > at position] {tier:2}位        strengthen {strict_move_u:5}  result:`{result_str}`  result_comment:{result_comment}')
 
                     if result_str == 'changed':
                         changed_count += 1

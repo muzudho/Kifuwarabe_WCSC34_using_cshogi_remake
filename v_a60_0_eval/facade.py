@@ -102,7 +102,7 @@ class EvaluationFacade():
         ranking_th = int(policy_rate_rev // ranking_resolution_threshold)
 
         # デバッグ表示
-        if is_debug and DebugPlan.select_ranked_f_move_u_set_facade:
+        if is_debug and DebugPlan.select_ranked_strict_f_move_u_set_facade:
             #move_u:{move_u}
             print(f"[choice best move]  ranking_th:{ranking_th}  positive_of_relation:{positive_of_relation}  total_of_relation:{total_of_relation}  policy_rate:{policy_rate}  policy_rate_rev:{policy_rate_rev}  ranking_resolution_threshold:{ranking_resolution_threshold}")
 

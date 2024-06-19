@@ -730,15 +730,15 @@ class Kifuwarabe():
         # ランク付けされた指し手一覧（好手、悪手）
         # ----------------------------------
         #
-        ranked_move_u_set_list = ChoiceBestMove.select_ranked_f_move_u_set_facade(
+        ranked_strict_move_u_set_list = ChoiceBestMove.select_ranked_strict_f_move_u_set_facade(
                 legal_moves=list(self._board.legal_moves),
                 kifuwarabe=self,
                 is_debug=is_debug)
 
-        for tier_th, ranked_move_u_set in enumerate(ranked_move_u_set_list):
+        for tier_th, ranked_strict_move_u_set in enumerate(ranked_strict_move_u_set_list):
             print(f'  ランク付けされた指し手一覧（{tier_th:2}位）：')
-            for ranked_move_u in ranked_move_u_set:
-                print(f'    turn:{Turn.to_string(self._board.turn)}  {tier_th:2}位  F:{ranked_move_u:5}  O:*****')
+            for ranked_move_u in ranked_strict_move_u_set:
+                print(f'    turn:{Turn.to_string(self._board.turn)}  {tier_th:2}位  strict F:{ranked_move_u:5}  O:*****')
 
 
     def relation(self, cmd_tail):
