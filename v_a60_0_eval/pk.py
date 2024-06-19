@@ -312,23 +312,17 @@ class EvaluationPkTable():
     #select_pk_index_and_relation_exists
     def select_black_p_black_k_index_and_relation_exists(
             self,
-            p_move_obj,
-            k_move_u_set,
-            shall_p_white_to_black,
-            shall_k_white_to_black):
+            p_black_move_obj,
+            k_black_move_u_set):
         """兵の指し手と、玉の応手のリストを受け取ると、すべての関係の有無を辞書に入れて返します
         ＰＫ評価値テーブル用
 
         Parameters
         ----------
-        p_move_obj : Move
+        p_black_move_obj : Move
             兵の着手
-        k_move_u_set : List<str>
+        k_black_move_u_set : List<str>
             玉の応手のリスト
-        shall_p_white_to_black : bool
-            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
-        shall_k_white_to_black : bool
-            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
 
         Returns
         -------
@@ -339,12 +333,12 @@ class EvaluationPkTable():
 
         relations = {}
 
-        for k_move_u in k_move_u_set:
+        for k_black_move_u in k_black_move_u_set:
             black_p_black_k_index = EvaluationPkTable.get_black_p_black_k_index(
-                p_move_obj=p_move_obj,
-                k_move_obj=Move.from_usi(k_move_u),
-                shall_p_white_to_black=shall_p_white_to_black,
-                shall_k_white_to_black=shall_k_white_to_black)
+                p_move_obj=p_black_move_obj,
+                k_move_obj=Move.from_usi(k_black_move_u),
+                shall_p_white_to_black=False,
+                shall_k_white_to_black=False)
 
             relation_bit = self.get_relation_exists_by_index(
                     black_p_black_k_index=black_p_black_k_index)

@@ -165,11 +165,8 @@ move_rot_u   :{move_rot_obj.as_usi       :5}
 
             # 自兵の着手と、敵玉の応手の一覧から、ＰＬテーブルのインデックスと、関係の有無を格納した辞書を作成
             black_p_black_l_index_to_relation_exists_dic = kifuwarabe.evaluation_pl_table_obj_array[Turn.to_index(board.turn)].select_black_p_black_k_index_and_relation_exists(
-                    p_move_obj=strict_move_obj,
-                    k_move_u_set=l_strict_move_u_set,
-                    # 先手の指し手になるよう調整します
-                    shall_p_white_to_black=board.turn==cshogi.WHITE,
-                    shall_k_white_to_black=board.turn==cshogi.BLACK)
+                    p_black_move_obj=black_move_obj,
+                    k_black_move_u_set=l_black_move_u_set)
 
             # assert
             for black_p_black_l_index, relation_exists in black_p_black_l_index_to_relation_exists_dic.items():
@@ -219,11 +216,8 @@ move_rot_u   :{move_rot_obj.as_usi   :5}
 
             # 自兵の着手と、敵兵の応手の一覧から、ＰＱテーブルのインデックスと、関係の有無を格納した辞書を作成
             black_p_black_q_index_to_relation_exists_dic = kifuwarabe.evaluation_pq_table_obj_array[Turn.to_index(board.turn)].select_black_p_black_p_index_and_relation_exists(
-                    p1_move_obj=strict_move_obj,
-                    p2_move_u_set=q_strict_move_u_set,
-                    # 先手の指し手になるよう調整します
-                    shall_p1_white_to_black=board.turn==cshogi.WHITE,
-                    shall_p2_white_to_black=board.turn==cshogi.BLACK)
+                    p1_black_move_obj=black_move_obj,
+                    p2_black_move_u_set=q_black_move_u_set)
 
             # assert
             for black_p_black_q_index, relation_exists in black_p_black_q_index_to_relation_exists_dic.items():

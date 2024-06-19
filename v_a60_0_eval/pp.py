@@ -279,23 +279,17 @@ p2_move_obj:{p2_move_obj.as_usi:5}
     #select_pp_index_and_relation_exists
     def select_black_p_black_p_index_and_relation_exists(
             self,
-            p1_move_obj,
-            p2_move_u_set,
-            shall_p1_white_to_black,
-            shall_p2_white_to_black):
+            p1_black_move_obj,
+            p2_black_move_u_set):
         """兵１の指し手と、兵２の応手のリストを受け取ると、すべての関係の有無を辞書に入れて返します
         ＰＰ評価値テーブル用
 
         Parameters
         ----------
-        p1_move_obj : Move
+        p1_black_move_obj : Move
             兵１の着手
-        p2_move_u_set : List<str>
+        p2_black_move_u_set : List<str>
             兵２の応手のリスト
-        shall_p1_white_to_black : bool
-            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
-        shall_p2_white_to_black : bool
-            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
 
         Returns
         -------
@@ -306,12 +300,12 @@ p2_move_obj:{p2_move_obj.as_usi:5}
 
         relations = {}
 
-        for p2_move_u in p2_move_u_set:
+        for p2_black_move_u in p2_black_move_u_set:
             black_p1_black_p2_index = EvaluationPpTable.get_black_p1_black_p2_index(
-                p1_move_obj=p1_move_obj,
-                p2_move_obj=Move.from_usi(p2_move_u),
-                shall_p1_white_to_black=shall_p1_white_to_black,
-                shall_p2_white_to_black=shall_p2_white_to_black)
+                p1_move_obj=p1_black_move_obj,
+                p2_move_obj=Move.from_usi(p2_black_move_u),
+                shall_p1_white_to_black=False,
+                shall_p2_white_to_black=False)
 
             relation_bit = self.get_relation_exists_by_index(
                     black_p1_black_p2_index=black_p1_black_p2_index)
