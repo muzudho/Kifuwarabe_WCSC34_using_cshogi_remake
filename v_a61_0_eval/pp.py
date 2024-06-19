@@ -56,9 +56,9 @@ p2_blackright_move_obj:{p2_blackright_move_obj.as_usi:5}
 
         Returns
         -------
-        - p1_black_move_obj : Move
+        - p1_blackright_move_obj : Move
             兵１の着手
-        - p2_black_move_obj : Move
+        - p2_blackright_move_obj : Move
             兵２の応手
         """
 
@@ -83,7 +83,7 @@ p2_blackright_move_obj:{p2_blackright_move_obj.as_usi:5}
          p2_dstsq,
          p2_promote) = EvaluationPMove.destructure_srcloc_dstsq_promoted_by_p_index(
                 p_index=p2_index)
-        p2_black_move_obj = Move.from_src_dst_pro(
+        p2_blackright_move_obj = Move.from_src_dst_pro(
                 srcloc=p2_srcloc,
                 dstsq=p2_dstsq,
                 promoted=p2_promote,
@@ -95,14 +95,14 @@ p2_blackright_move_obj:{p2_blackright_move_obj.as_usi:5}
          p1_dstsq,
          p1_promote) = EvaluationPMove.destructure_srcloc_dstsq_promoted_by_p_index(
                 p_index=p1_index)
-        p1_black_move_obj = Move.from_src_dst_pro(
+        p1_blackright_move_obj = Move.from_src_dst_pro(
                 srcloc=p1_srcloc,
                 dstsq=p1_dstsq,
                 promoted=p1_promote,
                 # 先手のインデックスが渡されるので、先手に揃えるために指し手を回転させる必要はありません
                 is_rotate=False)
 
-        return (p1_black_move_obj, p2_black_move_obj)
+        return (p1_blackright_move_obj, p2_blackright_move_obj)
 
 
     def __init__(

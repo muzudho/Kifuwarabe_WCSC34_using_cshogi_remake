@@ -83,7 +83,8 @@ class EvaluationEdit():
 
                 f_blackright_move_obj = Move.from_move_obj(
                         f_strict_move_obj=move_obj,
-                        shall_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
+                        shall_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
+                        use_only_right_side=True)
 
                 if f_blackright_move_obj.as_usi != assert_k_blackright_move_obj.as_usi:
                     raise ValueError(f"[{datetime.datetime.now()}] [weaken > fl] 着手が変わっているエラー  元の着手:{move_u}  作った着手:{assert_k_blackright_move_obj.as_usi}")
@@ -97,7 +98,8 @@ class EvaluationEdit():
 
                 f_blackright_move_obj = Move.from_move_obj(
                         f_strict_move_obj=move_obj,
-                        shall_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
+                        shall_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
+                        use_only_right_side=True)
 
                 if f_blackright_move_obj.as_usi != assert_k_blackright_move_obj.as_usi:
                     raise ValueError(f"[{datetime.datetime.now()}] [weaken > fl] 着手が変わっているエラー  元の着手:{move_u}  作った着手:{assert_k_blackright_move_obj.as_usi}")
@@ -113,7 +115,8 @@ class EvaluationEdit():
 
                 f_blackright_move_obj = Move.from_move_obj(
                         f_strict_move_obj=move_obj,
-                        shall_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
+                        shall_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
+                        use_only_right_side=True)
 
                 if f_blackright_move_obj.as_usi != assert_p_blackright_move_obj.as_usi:
                     raise ValueError(f"[{datetime.datetime.now()}] [weaken > fl] 着手が変わっているエラー  元の着手:{move_u}  作った着手:{assert_p_blackright_move_obj.as_usi}")
@@ -122,15 +125,16 @@ class EvaluationEdit():
             # ＰＱ
             #
             for black_f_black_q_index, relation_exists in black_f_black_q_index_to_relation_exists_dictionary.items():
-                assert_p1_black_move_obj, assert_p2_black_move_obj = EvaluationPpTable.build_p1_blackright_p2_blackright_moves_by_p1p2_index(
+                assert_p1_blackright_move_obj, assert_p2_blackright_move_obj = EvaluationPpTable.build_p1_blackright_p2_blackright_moves_by_p1p2_index(
                         p1_blackright_p2_blackright_index=black_f_black_q_index)
 
                 f_blackright_move_obj = Move.from_move_obj(
                         f_strict_move_obj=move_obj,
-                        shall_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
+                        shall_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
+                        use_only_right_side=True)
 
-                if f_blackright_move_obj.as_usi != assert_p1_black_move_obj.as_usi:
-                    raise ValueError(f"[{datetime.datetime.now()}] [weaken > fl] 着手が変わっているエラー  元の着手:{move_u}  作った着手:{assert_p1_black_move_obj.as_usi}")
+                if f_blackright_move_obj.as_usi != assert_p1_blackright_move_obj.as_usi:
+                    raise ValueError(f"[{datetime.datetime.now()}] [weaken > fl] 着手が変わっているエラー  元の着手:{move_u}  作った着手:{assert_p1_blackright_move_obj.as_usi}")
 
 
         # 減らすものがないので、弱化できなかった
@@ -229,7 +233,8 @@ class EvaluationEdit():
 
                 f_blackright_move_obj = Move.from_move_obj(
                         f_strict_move_obj=move_obj,
-                        shall_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
+                        shall_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
+                        use_only_right_side=True)
 
                 if f_blackright_move_obj.as_usi != k_blackright_move_obj.as_usi:
                     raise ValueError(f"""[{datetime.datetime.now()}] [weaken > kl] 着手が変わっているエラー
@@ -264,7 +269,8 @@ class EvaluationEdit():
 
                 f_blackright_move_obj = Move.from_move_obj(
                         f_strict_move_obj=move_obj,
-                        shall_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
+                        shall_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
+                        use_only_right_side=True)
 
                 if f_blackright_move_obj.as_usi != k_blackright_move_obj.as_usi:
                     raise ValueError(f"""[{datetime.datetime.now()}] [weaken > kq] 着手が変わっているエラー
@@ -346,7 +352,8 @@ class EvaluationEdit():
 
                 f_blackright_move_obj = Move.from_move_obj(
                         f_strict_move_obj=move_obj,
-                        shall_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
+                        shall_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
+                        use_only_right_side=True)
 
                 if f_blackright_move_obj.as_usi != p_blackright_move_obj.as_usi:
                     raise ValueError(f"""[{datetime.datetime.now()}] [weaken > pl] 着手が変わっているエラー
@@ -382,7 +389,8 @@ class EvaluationEdit():
                 # assert
                 f_blackright_move_obj = Move.from_move_obj(
                         f_strict_move_obj=move_obj,
-                        shall_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
+                        shall_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
+                        use_only_right_side=True)
 
                 if f_blackright_move_obj.as_usi != p_blackright_move_obj.as_usi:
                     raise ValueError(f"""[{datetime.datetime.now()}] [weaken > pq] 着手が変わっているエラー
@@ -396,8 +404,8 @@ class EvaluationEdit():
                     print(f"[{datetime.datetime.now()}] [weaken > pq] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  pq_index:{target_black_f_black_q_index:7}  P:{p_blackright_move_obj.as_usi:5}  Q:{black_q_move_obj.as_usi:5}  remove relation")
 
                 is_changed_temp = self._kifuwarabe._evaluation_pq_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exists_by_black_p_black_p_moves(
-                        p1_black_move_obj=p_blackright_move_obj,
-                        p2_black_move_obj=black_q_move_obj,
+                        p1_blackright_move_obj=p_blackright_move_obj,
+                        p2_blackright_move_obj=black_q_move_obj,
                         bit=0)
 
                 assert_challenge += 1
@@ -467,7 +475,8 @@ class EvaluationEdit():
 
                 f_blackright_move_obj = Move.from_move_obj(
                         f_strict_move_obj=move_obj,
-                        shall_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
+                        shall_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
+                        use_only_right_side=True)
 
                 if f_blackright_move_obj.as_usi != assert_k_blackright_move_obj.as_usi:
                     raise ValueError(f"[{datetime.datetime.now()}] [strengthen > fl] 着手が変わっているエラー  元の着手:{move_u}  作った着手:{assert_k_blackright_move_obj.as_usi}")
@@ -481,7 +490,8 @@ class EvaluationEdit():
 
                 f_blackright_move_obj = Move.from_move_obj(
                         f_strict_move_obj=move_obj,
-                        shall_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
+                        shall_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
+                        use_only_right_side=True)
 
                 if f_blackright_move_obj.as_usi != assert_k_blackright_move_obj.as_usi:
                     raise ValueError(f"[{datetime.datetime.now()}] [strengthen > fl] 着手が変わっているエラー  元の着手:{move_u}  作った着手:{assert_k_blackright_move_obj.as_usi}")
@@ -497,7 +507,8 @@ class EvaluationEdit():
 
                 f_blackright_move_obj = Move.from_move_obj(
                         f_strict_move_obj=move_obj,
-                        shall_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
+                        shall_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
+                        use_only_right_side=True)
 
                 if f_blackright_move_obj.as_usi != assert_p_blackright_move_obj.as_usi:
                     raise ValueError(f"[{datetime.datetime.now()}] [strengthen > fl] 着手が変わっているエラー  元の着手:{move_u}  作った着手:{assert_p_blackright_move_obj.as_usi}")
@@ -506,15 +517,16 @@ class EvaluationEdit():
             # ＰＱ
             #
             for black_f_black_q_index, relation_exists in black_f_black_q_index_to_relation_exists_dictionary.items():
-                assert_p1_black_move_obj, assert_p2_black_move_obj = EvaluationPpTable.build_p1_blackright_p2_blackright_moves_by_p1p2_index(
+                assert_p1_blackright_move_obj, assert_p2_blackright_move_obj = EvaluationPpTable.build_p1_blackright_p2_blackright_moves_by_p1p2_index(
                         p1_blackright_p2_blackright_index=black_f_black_q_index)
 
                 f_blackright_move_obj = Move.from_move_obj(
                         f_strict_move_obj=move_obj,
-                        shall_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
+                        shall_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
+                        use_only_right_side=True)
 
-                if f_blackright_move_obj.as_usi != assert_p1_black_move_obj.as_usi:
-                    raise ValueError(f"[{datetime.datetime.now()}] [strengthen > fl] 着手が変わっているエラー  元の着手:{move_u}  作った着手:{assert_p1_black_move_obj.as_usi}")
+                if f_blackright_move_obj.as_usi != assert_p1_blackright_move_obj.as_usi:
+                    raise ValueError(f"[{datetime.datetime.now()}] [strengthen > fl] 着手が変わっているエラー  元の着手:{move_u}  作った着手:{assert_p1_blackright_move_obj.as_usi}")
 
 
         # 既に全ての議席が挙手しているので、強化は不要です
@@ -616,7 +628,8 @@ class EvaluationEdit():
 
                 f_blackright_move_obj = Move.from_move_obj(
                         f_strict_move_obj=move_obj,
-                        shall_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
+                        shall_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
+                        use_only_right_side=True)
 
                 if f_blackright_move_obj.as_usi != k_blackright_move_obj.as_usi:
                     raise ValueError(f"""[{datetime.datetime.now()}] [strengthen > kl] 着手が変わっているエラー
@@ -651,7 +664,8 @@ class EvaluationEdit():
 
                 f_blackright_move_obj = Move.from_move_obj(
                         f_strict_move_obj=move_obj,
-                        shall_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
+                        shall_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
+                        use_only_right_side=True)
 
                 if f_blackright_move_obj.as_usi != k_blackright_move_obj.as_usi:
                     raise ValueError(f"""[{datetime.datetime.now()}] [strengthen > kq] 着手が変わっているエラー
@@ -701,7 +715,8 @@ class EvaluationEdit():
 
                     f_blackright_move_obj = Move.from_move_obj(
                             f_strict_move_obj=move_obj,
-                            shall_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
+                            shall_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
+                        use_only_right_side=True)
 
                     if f_blackright_move_obj.as_usi != assert_p_blackright_move_obj.as_usi:
                         raise ValueError(f"""[{datetime.datetime.now()}] [strengthen > pl and pq] 着手が変わっているエラー
@@ -749,7 +764,8 @@ class EvaluationEdit():
 
                 f_blackright_move_obj = Move.from_move_obj(
                         f_strict_move_obj=move_obj,
-                        shall_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
+                        shall_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
+                        use_only_right_side=True)
 
                 if f_blackright_move_obj.as_usi != p_blackright_move_obj.as_usi:
                     raise ValueError(f"""[{datetime.datetime.now()}] [strengthen > pl] 着手が変わっているエラー
@@ -784,7 +800,8 @@ class EvaluationEdit():
 
                 f_blackright_move_obj = Move.from_move_obj(
                         f_strict_move_obj=move_obj,
-                        shall_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE)
+                        shall_white_to_black=self._kifuwarabe.board.turn==cshogi.WHITE,
+                        use_only_right_side=True)
 
                 if f_blackright_move_obj.as_usi != p_blackright_move_obj.as_usi:
                     # p_move_obj.as_usi:9d8e  move_u:4a4b
@@ -799,8 +816,8 @@ class EvaluationEdit():
                     print(f"[{datetime.datetime.now()}] [strengthen > pq] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  pq_index:{target_black_f_black_q_index:7}  P:{p_blackright_move_obj.as_usi:5}  Q:{black_q_move_obj.as_usi:5}  remove relation")
 
                 is_changed_temp = self._kifuwarabe._evaluation_pq_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exists_by_black_p_black_p_moves(
-                        p1_black_move_obj=p_blackright_move_obj,
-                        p2_black_move_obj=black_q_move_obj,
+                        p1_blackright_move_obj=p_blackright_move_obj,
+                        p2_blackright_move_obj=black_q_move_obj,
                         bit=1)
 
                 assert_challenge += 1
