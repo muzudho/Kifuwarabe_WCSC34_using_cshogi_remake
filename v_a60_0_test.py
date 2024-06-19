@@ -119,15 +119,19 @@ def test_p():
         expected_p_move_u = '3h3i+'
         expected_p_move_obj = Move.from_usi(expected_p_move_u)
 
-        shall_p_white_to_black = True
+        # 先手の向きに合わせる
+        p_black_move_obj = Move.from_move_obj(
+                strict_move_obj=Move.from_usi(expected_p_move_u),
+                shall_white_to_black=True)
 
         p_index = EvaluationPMove.get_black_index_by_p_move(
-                p_move_obj=expected_p_move_obj,
-                shall_p_white_to_black=shall_p_white_to_black,
+                p_black_move_obj=p_black_move_obj,
                 ignore_error=True)
 
         if p_index == -1:
             return
+
+        shall_p_white_to_black = True
 
         # Ｐ
         (p_srcloc,

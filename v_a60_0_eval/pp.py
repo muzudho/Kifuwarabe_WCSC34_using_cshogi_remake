@@ -25,8 +25,8 @@ class EvaluationPpTable():
         """
 
         try:
-            # 0 ～ 14_542_781 =                                                           0 ～ 3812 *                                     3813 +                                                          0 ～ 3812
-            pp_index         = EvaluationPMove.get_black_index_by_p_move(p1_black_move_obj, False) * EvaluationPMove.get_serial_number_size() + EvaluationPMove.get_black_index_by_p_move(p2_black_move_obj, False)
+            # 0 ～ 14_542_781 =                                                    0 ～ 3812 *                                     3813 +                                                   0 ～ 3812
+            pp_index         = EvaluationPMove.get_black_index_by_p_move(p1_black_move_obj) * EvaluationPMove.get_serial_number_size() + EvaluationPMove.get_black_index_by_p_move(p2_black_move_obj)
 
         except KeyError:
             print(f"""[evaluation pp table > get index of pp table] エラー
