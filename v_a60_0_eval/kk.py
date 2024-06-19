@@ -285,11 +285,13 @@ class EvaluationKkTable():
         k_black_move_obj = Move.from_move_obj(
                 strict_move_obj=k_strict_move_obj,
                 shall_white_to_black=shall_k_white_to_black)
-        l_black_move_obj = Move.from_move_obj(
-                strict_move_obj=Move.from_usi(l_strict_move_u),
-                shall_white_to_black=shall_l_white_to_black)
 
         for l_strict_move_u in l_strict_move_u_set:
+
+            l_black_move_obj = Move.from_move_obj(
+                    strict_move_obj=Move.from_usi(l_strict_move_u),
+                    shall_white_to_black=shall_l_white_to_black)
+
             black_k_black_l_index = EvaluationKkTable.get_black_k_black_l_index(
                     k_black_move_obj=k_black_move_obj,
                     l_black_move_obj=l_black_move_obj)

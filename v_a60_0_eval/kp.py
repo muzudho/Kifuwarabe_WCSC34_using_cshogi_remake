@@ -15,31 +15,24 @@ class EvaluationKpTable():
     #get_index_of_kp_table
     @staticmethod
     def get_black_k_black_p_index(
-            # TODO ここは strict ではなく、 black にしてほしい
-            k_move_obj,
-            p_move_obj,
-            shall_k_white_to_black,
-            shall_p_white_to_black):
+            k_black_move_obj,
+            p_black_move_obj):
         """ＫＰ評価値テーブルのインデックスを算出
 
         Parameters
         ----------
-        k_move_obj : Move
+        k_black_move_obj : Move
             玉の着手
-        p_move_obj : Move
+        p_black_move_obj : Move
             兵の応手
-        shall_k_white_to_black : bool
-            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
-        shall_p_white_to_black : bool
-            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
         """
 
         # assert
-        if Usi.is_drop_by_srcloc(k_move_obj.srcloc):
-            raise ValueError(f"[evaluation kp table > get index of kp move > k] 玉の指し手で打なのはおかしい。 k_move_obj.srcloc_u:{Usi.srcloc_to_code(k_move_obj.srcloc)}  k_move_obj:{k_move_obj.dump()}")
+        if Usi.is_drop_by_srcloc(k_black_move_obj.srcloc):
+            raise ValueError(f"[evaluation kp table > get index of kp move > k] 玉の指し手で打なのはおかしい。 k_black_move_obj.srcloc_u:{Usi.srcloc_to_code(k_black_move_obj.srcloc)}  k_black_move_obj:{k_black_move_obj.dump()}")
 
-        # 0 ～ 2_078_084      =                                                                       0 ～ 543 *                                     3813 +                                                                    0 ～ 3812
-        black_k_black_p_index = EvaluationKMove.get_black_index_by_k_move(k_move_obj, shall_k_white_to_black) * EvaluationPMove.get_serial_number_size() + EvaluationPMove.get_black_index_by_p_move(p_move_obj, shall_p_white_to_black)
+        # 0 ～ 2_078_084      =                                                            0 ～ 543 *                                     3813 +                                                         0 ～ 3812
+        black_k_black_p_index = EvaluationKMove.get_black_index_by_k_move(k_black_move_obj, False) * EvaluationPMove.get_serial_number_size() + EvaluationPMove.get_black_index_by_p_move(p_black_move_obj, False)
 
         # assert
         if EvaluationKMove.get_serial_number_size() * EvaluationPMove.get_serial_number_size() <= black_k_black_p_index:
@@ -193,19 +186,16 @@ class EvaluationKpTable():
     # 使ってない？
     def get_relation_exists_by_kp_moves(
             self,
-            k_move_obj,
-            p_move_obj,
-            is_rotate):
+            k_black_move_obj,
+            p_black_move_obj):
         """玉と兵の指し手を受け取って、関係の有無を返します
 
         Parameters
         ----------
-        k_move_obj : Move
+        k_black_move_obj : Move
             玉の指し手
-        p_move_obj : Move
+        p_black_move_obj : Move
             兵の指し手
-        is_rotate : bool
-            後手なら真。指し手を１８０°回転させます
 
         Returns
         -------
@@ -214,15 +204,13 @@ class EvaluationKpTable():
         """
 
         # assert
-        if Usi.is_drop_by_srcloc(k_move_obj.srcloc):
-            raise ValueError(f"[evaluation kp table > get relation exists by kp moves > k] 玉の指し手で打なのはおかしい。 k_move_obj.srcloc_u:{Usi.srcloc_to_code(k_move_obj.srcloc)}  k_move_obj:{k_move_obj.dump()}")
+        if Usi.is_drop_by_srcloc(k_black_move_obj.srcloc):
+            raise ValueError(f"[evaluation kp table > get relation exists by kp moves > k] 玉の指し手で打なのはおかしい。 k_black_move_obj.srcloc_u:{Usi.srcloc_to_code(k_black_move_obj.srcloc)}  k_black_move_obj:{k_black_move_obj.dump()}")
 
         return self.get_relation_exists_by_index(
                 black_k_black_p_index=EvaluationKpTable.get_black_k_black_p_index(
-                    k_move_obj=k_move_obj,
-                    p_move_obj=p_move_obj,
-                    shall_k_white_to_black=is_rotate,
-                    shall_p_white_to_black=not is_rotate))
+                        k_black_move_obj=k_black_move_obj,
+                        p_black_move_obj=p_black_move_obj))
 
 
     def get_relation_exists_by_index(
@@ -267,11 +255,8 @@ class EvaluationKpTable():
         """
         (is_changed, result_comment) = self._mm_table_obj.set_bit_by_index(
                 black_f_black_o_index=EvaluationKpTable.get_black_k_black_p_index(
-                        k_move_obj=black_k_move_obj,
-                        p_move_obj=black_p_move_obj,
-                        # 両方先手のインデックスなので、これ以上変更しません
-                        shall_k_white_to_black=False,
-                        shall_p_white_to_black=False),
+                        k_black_move_obj=black_k_move_obj,
+                        p_black_move_obj=black_p_move_obj),
                 bit=bit)
 
         return is_changed
@@ -280,23 +265,17 @@ class EvaluationKpTable():
     #select_kp_index_and_relation_exists
     def select_black_k_black_p_index_and_relation_exists(
             self,
-            k_move_obj,
-            p_move_u_set,
-            shall_k_white_to_black,
-            shall_p_white_to_black):
+            k_black_move_obj,
+            p_black_move_u_set):
         """玉の指し手と、兵の応手のリストを受け取ると、すべての関係の有無を辞書に入れて返します
         ＫＰ評価値テーブル用
 
         Parameters
         ----------
-        k_move_obj : Move
+        k_black_move_obj : Move
             玉の着手
-        p_move_u_set : List<str>
+        p_black_move_u_set : List<str>
             兵の応手のリスト
-        shall_k_white_to_black : int
-            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
-        shall_p_white_to_black : int
-            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
 
         Returns
         -------
@@ -307,12 +286,10 @@ class EvaluationKpTable():
 
         relations = {}
 
-        for p_move_u in p_move_u_set:
+        for p_black_move_u in p_black_move_u_set:
             black_k_black_p_index = EvaluationKpTable.get_black_k_black_p_index(
-                k_move_obj=k_move_obj,
-                p_move_obj=Move.from_usi(p_move_u),
-                shall_k_white_to_black=shall_k_white_to_black,
-                shall_p_white_to_black=shall_p_white_to_black)
+                k_black_move_obj=k_black_move_obj,
+                p_black_move_obj=Move.from_usi(p_black_move_u))
 
             relation_bit = self.get_relation_exists_by_index(
                     black_k_black_p_index=black_k_black_p_index)

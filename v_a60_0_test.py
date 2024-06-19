@@ -241,10 +241,10 @@ def test_pk():
         f_turn = data_set[0]
 
         # 着手
-        input_p_move_u = data_set[1]
+        input_p_strict_move_u = data_set[1]
 
         # 応手
-        input_k_move_u = data_set[2]
+        input_k_strict_move_u = data_set[2]
 
         # 着手
         expected_black_p_move_u = data_set[3]
@@ -257,8 +257,8 @@ def test_pk():
         #   後手では、指し手を盤上で１８０°回転させてインデックスを取得します
         #
         black_p_black_k_index = EvaluationPkTable.get_black_p_black_k_index(
-                p_move_obj=Move.from_usi(input_p_move_u),
-                k_move_obj=Move.from_usi(input_k_move_u),
+                p_move_obj=Move.from_usi(input_p_strict_move_u),
+                k_move_obj=Move.from_usi(input_k_strict_move_u),
                 # 着手が黒番なら、着手は先後反転せず、応手は先後反転させます
                 shall_p_white_to_black=f_turn==cshogi.WHITE,
                 shall_k_white_to_black=f_turn==cshogi.BLACK)

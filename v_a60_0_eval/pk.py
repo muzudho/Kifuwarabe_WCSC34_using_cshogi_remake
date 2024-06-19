@@ -221,17 +221,18 @@ class EvaluationPkTable():
     # 使ってない？
     def get_relation_exists_by_pk_moves(
             self,
-            p_move_obj,
-            k_move_obj,
+            # TODO ここは strict ではなく、 black にしてほしい
+            p_black_move_obj,
+            k_black_move_obj,
             shall_p_white_to_black,
             shall_k_white_to_black):
         """玉と兵の指し手を受け取って、関係の有無を返します
 
         Parameters
         ----------
-        p_move_obj : Move
+        p_black_move_obj : Move
             兵の指し手
-        k_move_obj : Move
+        k_black_move_obj : Move
             玉の指し手
         shall_p_white_to_black : bool
             評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
@@ -245,15 +246,15 @@ class EvaluationPkTable():
         """
 
         # assert
-        if Usi.is_drop_by_srcloc(k_move_obj.srcloc):
-            raise ValueError(f"[evaluation pk table > get relation exists by pk moves > k] 玉の指し手で打なのはおかしい。 k_move_obj.srcloc_u:{Usi.srcloc_to_code(k_move_obj.srcloc)}  k_move_obj:{k_move_obj.dump()}")
+        if Usi.is_drop_by_srcloc(k_black_move_obj.srcloc):
+            raise ValueError(f"[evaluation pk table > get relation exists by pk moves > k] 玉の指し手で打なのはおかしい。 k_black_move_obj.srcloc_u:{Usi.srcloc_to_code(k_black_move_obj.srcloc)}  k_black_move_obj:{k_black_move_obj.dump()}")
 
         return self.get_relation_exists_by_index(
                 black_k_black_p_index=EvaluationPkTable.get_black_p_black_k_index(
-                    p_move_obj=p_move_obj,
-                    k_move_obj=k_move_obj,
-                    shall_p_white_to_black=shall_p_white_to_black,
-                    shall_k_white_to_black=shall_k_white_to_black))
+                        p_move_obj=p_black_move_obj,
+                        k_move_obj=k_black_move_obj,
+                        shall_p_white_to_black=False,
+                        shall_k_white_to_black=False))
 
 
     def get_relation_exists_by_index(

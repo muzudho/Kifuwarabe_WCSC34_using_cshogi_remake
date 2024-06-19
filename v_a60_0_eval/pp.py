@@ -195,17 +195,15 @@ p2_move_obj:{p2_move_obj.as_usi:5}
     # 使ってない？
     def get_relation_exists_by_pp_moves(
             self,
-            p1_move_obj,
-            p2_move_obj,
-            shall_p1_white_to_black,
-            shall_p2_white_to_black):
+            p1_black_move_obj,
+            p2_black_move_obj):
         """兵と兵の指し手を受け取って、関係の有無を返します
 
         Parameters
         ----------
-        p1_move_obj : Move
+        p1_black_move_obj : Move
             兵１の指し手
-        p2_move_obj : Move
+        p2_black_move_obj : Move
             兵２の指し手
         shall_p1_white_to_black : bool
             評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
@@ -219,10 +217,10 @@ p2_move_obj:{p2_move_obj.as_usi:5}
         """
         return self.get_relation_exists_by_index(
                 black_k_black_p_index=EvaluationPpTable.get_black_p1_black_p2_index(
-                    p1_move_obj=p1_move_obj,
-                    p2_move_obj=p2_move_obj,
-                    shall_p1_white_to_black=shall_p1_white_to_black,
-                    shall_p2_white_to_black=shall_p2_white_to_black))
+                        p1_move_obj=p1_black_move_obj,
+                        p2_move_obj=p2_black_move_obj,
+                        shall_p1_white_to_black=False,
+                        shall_p2_white_to_black=False))
 
 
     def get_relation_exists_by_index(
