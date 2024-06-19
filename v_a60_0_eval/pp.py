@@ -12,33 +12,26 @@ class EvaluationPpTable():
     #get_index_of_pp_table
     @staticmethod
     def get_black_p1_black_p2_index(
-            # TODO ここは strict ではなく、 black にしてほしい
-            p1_move_obj,
-            p2_move_obj,
-            shall_p1_white_to_black,
-            shall_p2_white_to_black):
+            p1_black_move_obj,
+            p2_black_move_obj):
         """ＰＫ評価値テーブルのインデックスを算出
 
         Parameters
         ----------
-        p1_move_obj : Move
+        p1_black_move_obj : Move
             兵１の着手
-        p2_move_obj : Move
+        p2_black_move_obj : Move
             兵２の応手
-        shall_p1_white_to_black : bool
-            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
-        shall_p2_white_to_black : bool
-            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
         """
 
         try:
-            # 0 ～ 14_542_781 =                                                                       0 ～ 3812 *                                     3813 +                                                                      0 ～ 3812
-            pp_index         = EvaluationPMove.get_black_index_by_p_move(p1_move_obj, shall_p1_white_to_black) * EvaluationPMove.get_serial_number_size() + EvaluationPMove.get_black_index_by_p_move(p2_move_obj, shall_p2_white_to_black)
+            # 0 ～ 14_542_781 =                                                           0 ～ 3812 *                                     3813 +                                                          0 ～ 3812
+            pp_index         = EvaluationPMove.get_black_index_by_p_move(p1_black_move_obj, False) * EvaluationPMove.get_serial_number_size() + EvaluationPMove.get_black_index_by_p_move(p2_black_move_obj, False)
 
         except KeyError:
             print(f"""[evaluation pp table > get index of pp table] エラー
-p1_move_obj:{p1_move_obj.as_usi:5}  shall_p1_white_to_black:{shall_p1_white_to_black}
-p2_move_obj:{p2_move_obj.as_usi:5}
+p1_black_move_obj:{p1_black_move_obj.as_usi:5}
+p2_black_move_obj:{p2_black_move_obj.as_usi:5}
 """)
             raise
 
@@ -63,9 +56,9 @@ p2_move_obj:{p2_move_obj.as_usi:5}
 
         Returns
         -------
-        - black_p1_move_obj : Move
+        - p1_black_move_obj : Move
             兵１の着手
-        - black_p2_move_obj : Move
+        - p2_black_move_obj : Move
             兵２の応手
         """
 
@@ -90,7 +83,7 @@ p2_move_obj:{p2_move_obj.as_usi:5}
          p2_dstsq,
          p2_promote) = EvaluationPMove.destructure_srcloc_dstsq_promoted_by_p_index(
                 p_index=p2_index)
-        black_p2_move_obj = Move.from_src_dst_pro(
+        p2_black_move_obj = Move.from_src_dst_pro(
                 srcloc=p2_srcloc,
                 dstsq=p2_dstsq,
                 promoted=p2_promote,
@@ -102,14 +95,14 @@ p2_move_obj:{p2_move_obj.as_usi:5}
          p1_dstsq,
          p1_promote) = EvaluationPMove.destructure_srcloc_dstsq_promoted_by_p_index(
                 p_index=p1_index)
-        black_p1_move_obj = Move.from_src_dst_pro(
+        p1_black_move_obj = Move.from_src_dst_pro(
                 srcloc=p1_srcloc,
                 dstsq=p1_dstsq,
                 promoted=p1_promote,
                 # 先手のインデックスが渡されるので、先手に揃えるために指し手を回転させる必要はありません
                 is_rotate=False)
 
-        return (black_p1_move_obj, black_p2_move_obj)
+        return (p1_black_move_obj, p2_black_move_obj)
 
 
     def __init__(
@@ -205,10 +198,6 @@ p2_move_obj:{p2_move_obj.as_usi:5}
             兵１の指し手
         p2_black_move_obj : Move
             兵２の指し手
-        shall_p1_white_to_black : bool
-            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
-        shall_p2_white_to_black : bool
-            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
 
         Returns
         -------
@@ -217,10 +206,8 @@ p2_move_obj:{p2_move_obj.as_usi:5}
         """
         return self.get_relation_exists_by_index(
                 black_k_black_p_index=EvaluationPpTable.get_black_p1_black_p2_index(
-                        p1_move_obj=p1_black_move_obj,
-                        p2_move_obj=p2_black_move_obj,
-                        shall_p1_white_to_black=False,
-                        shall_p2_white_to_black=False))
+                        p1_black_move_obj=p1_black_move_obj,
+                        p2_black_move_obj=p2_black_move_obj))
 
 
     def get_relation_exists_by_index(
@@ -245,16 +232,16 @@ p2_move_obj:{p2_move_obj.as_usi:5}
     #set_relation_exists_by_pp_moves
     def set_relation_exists_by_black_p_black_p_moves(
             self,
-            black_p1_move_obj,
-            black_p2_move_obj,
+            p1_black_move_obj,
+            p2_black_move_obj,
             bit):
         """玉の着手と兵の応手を受け取って、関係の有無を設定します
 
         Parameters
         ----------
-        black_p1_move_obj : Move
+        p1_black_move_obj : Move
             兵１の着手（先手の符号）
-        black_p2_move_obj : Move
+        p2_black_move_obj : Move
             兵２の応手（先手の符号）
         bit : int
             0 か 1
@@ -266,11 +253,8 @@ p2_move_obj:{p2_move_obj.as_usi:5}
         """
         (is_changed, result_comment) = self._mm_table_obj.set_bit_by_index(
                 black_f_black_o_index=EvaluationPpTable.get_black_p1_black_p2_index(
-                        p1_move_obj=black_p1_move_obj,
-                        p2_move_obj=black_p2_move_obj,
-                        # 両方先手のインデックスなので、これ以上変更しません
-                        shall_p1_white_to_black=False,
-                        shall_p2_white_to_black=False),
+                        p1_black_move_obj=p1_black_move_obj,
+                        p2_black_move_obj=p2_black_move_obj),
                 bit=bit)
 
         return (is_changed, result_comment)
@@ -302,10 +286,8 @@ p2_move_obj:{p2_move_obj.as_usi:5}
 
         for p2_black_move_u in p2_black_move_u_set:
             black_p1_black_p2_index = EvaluationPpTable.get_black_p1_black_p2_index(
-                p1_move_obj=p1_black_move_obj,
-                p2_move_obj=Move.from_usi(p2_black_move_u),
-                shall_p1_white_to_black=False,
-                shall_p2_white_to_black=False)
+                p1_black_move_obj=p1_black_move_obj,
+                p2_black_move_obj=Move.from_usi(p2_black_move_u))
 
             relation_bit = self.get_relation_exists_by_index(
                     black_p1_black_p2_index=black_p1_black_p2_index)
