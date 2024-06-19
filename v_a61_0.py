@@ -796,16 +796,16 @@ class Kifuwarabe():
             # ＰＬ
             for p_blackright_l_blackright_index, relation_exists in p_blackright_l_blackright_index_to_relation_exists_dictionary.items():
 
-                display_black_p_move_obj, display_black_l_move_obj = EvaluationPkTable.build_black_p_black_k_moves_by_black_p_black_k_index(
-                        black_p_black_k_index=p_blackright_l_blackright_index)
+                display_black_p_move_obj, display_black_l_move_obj = EvaluationPkTable.build_p_blackright_k_blackright_moves_by_pk_index(
+                        p_blackright_k_blackright_index=p_blackright_l_blackright_index)
 
                 print(f"  turn:{Turn.to_string(self._board.turn)}  p_blackright_l_blackright_index:{p_blackright_l_blackright_index:7}  P:{display_black_p_move_obj.as_usi:5}  L:{display_black_l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
             # ＰＱ
             for p_blackright_q_blackright_index, relation_exists in p_blackright_q_blackright_index_to_relation_exists_dictionary.items():
 
-                display_black_p_move_obj, display_black_q_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
-                        black_p1_black_p2_index=p_blackright_q_blackright_index)
+                display_black_p_move_obj, display_black_q_move_obj = EvaluationPpTable.build_p1_blackright_p2_blackright_moves_by_p1p2_index(
+                        p1_blackright_p2_blackright_index=p_blackright_q_blackright_index)
 
                 print(f"  turn:{Turn.to_string(self._board.turn)}  p_blackright_q_blackright_index:{p_blackright_q_blackright_index:7}  P:{display_black_p_move_obj.as_usi:5}  Q:{display_black_q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 

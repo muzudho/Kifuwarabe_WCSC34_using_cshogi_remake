@@ -208,14 +208,14 @@ class EvaluationKpTable():
             raise ValueError(f"[evaluation kp table > get relation exists by kp moves > k] 玉の指し手で打なのはおかしい。 k_black_move_obj.srcloc_u:{Usi.srcloc_to_code(k_black_move_obj.srcloc)}  k_black_move_obj:{k_black_move_obj.dump()}")
 
         return self.get_relation_exists_by_index(
-                black_k_black_p_index=EvaluationKpTable.get_blackright_k_blackright_p_index(
+                k_blackright_p_blackright_index=EvaluationKpTable.get_blackright_k_blackright_p_index(
                         k_blackright_move_obj=k_black_move_obj,
                         p_blackright_move_obj=p_black_move_obj))
 
 
     def get_relation_exists_by_index(
             self,
-            black_k_black_p_index):
+            k_blackright_p_blackright_index):
         """配列のインデックスを受け取って、関係の有無を返します
 
         Parameters
@@ -229,7 +229,7 @@ class EvaluationKpTable():
             0 or 1
         """
         return self._mm_table_obj.get_bit_by_index(
-                index=black_k_black_p_index)
+                index=k_blackright_p_blackright_index)
 
 
     def set_relation_exists_by_black_k_black_p_moves(

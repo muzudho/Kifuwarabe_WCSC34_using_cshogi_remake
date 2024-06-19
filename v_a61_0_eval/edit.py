@@ -78,35 +78,35 @@ class EvaluationEdit():
             # ＫＬ
             #
             for black_f_black_l_index, relation_exists in black_f_black_l_index_to_relation_exists_dictionary.items():
-                assert_blackright_k_move_obj, assert_blackright_l_move_obj = EvaluationKkTable.build_blackright_k_blackright_l_moves_by_kl_index(
+                assert_k_blackright_move_obj, assert_l_blackright_move_obj = EvaluationKkTable.build_blackright_k_blackright_l_moves_by_kl_index(
                         blackright_k_blackright_l_index=black_f_black_l_index)
 
                 # 着手が先手なら、１８０°回転させない
                 if self._kifuwarabe.board.turn==cshogi.BLACK:
-                    if move_u != assert_blackright_k_move_obj.as_usi:
-                        raise ValueError(f"[{datetime.datetime.now()}] [weaken > fl] 着手が変わっているエラー  元の着手:{move_u}  作った着手:{assert_blackright_k_move_obj.as_usi}")
+                    if move_u != assert_k_blackright_move_obj.as_usi:
+                        raise ValueError(f"[{datetime.datetime.now()}] [weaken > fl] 着手が変わっているエラー  元の着手:{move_u}  作った着手:{assert_k_blackright_move_obj.as_usi}")
 
                 # 着手が先手なら、１８０°回転させる
                 else:
-                    if move_obj.rotate().as_usi != assert_blackright_k_move_obj.as_usi:
-                        raise ValueError(f"[{datetime.datetime.now()}] [weaken > fl] 指し手を先手の向きに変えて復元できなかったエラー  元の着手:{move_u}  作った着手:{assert_blackright_k_move_obj.as_usi}")
+                    if move_obj.rotate().as_usi != assert_k_blackright_move_obj.as_usi:
+                        raise ValueError(f"[{datetime.datetime.now()}] [weaken > fl] 指し手を先手の向きに変えて復元できなかったエラー  元の着手:{move_u}  作った着手:{assert_k_blackright_move_obj.as_usi}")
 
             #
             # ＫＱ
             #
             for black_f_black_q_index, relation_exists in black_f_black_q_index_to_relation_exists_dictionary.items():
-                assert_blackright_k_move_obj, assert_p_blackright_move_obj = EvaluationKpTable.build_k_blackright_p_blackright_moves_by_kp_index(
+                assert_k_blackright_move_obj, assert_p_blackright_move_obj = EvaluationKpTable.build_k_blackright_p_blackright_moves_by_kp_index(
                         k_blackright_p_blackright_index=black_f_black_q_index)
 
                 # 着手が先手なら、１８０°回転させない
                 if self._kifuwarabe.board.turn==cshogi.BLACK:
-                    if move_u != assert_blackright_k_move_obj.as_usi:
-                        raise ValueError(f"[{datetime.datetime.now()}] [weaken > fl] 着手が変わっているエラー  元の着手:{move_u}  作った着手:{assert_blackright_k_move_obj.as_usi}")
+                    if move_u != assert_k_blackright_move_obj.as_usi:
+                        raise ValueError(f"[{datetime.datetime.now()}] [weaken > fl] 着手が変わっているエラー  元の着手:{move_u}  作った着手:{assert_k_blackright_move_obj.as_usi}")
 
                 # 着手が先手なら、１８０°回転させる
                 else:
-                    if move_obj.rotate().as_usi != assert_blackright_k_move_obj.as_usi:
-                        raise ValueError(f"[{datetime.datetime.now()}] [weaken > fl] 指し手を先手の向きに変えて復元できなかったエラー  元の着手:{move_u}  作った着手:{assert_blackright_k_move_obj.as_usi}")
+                    if move_obj.rotate().as_usi != assert_k_blackright_move_obj.as_usi:
+                        raise ValueError(f"[{datetime.datetime.now()}] [weaken > fl] 指し手を先手の向きに変えて復元できなかったエラー  元の着手:{move_u}  作った着手:{assert_k_blackright_move_obj.as_usi}")
 
         else:
 
@@ -114,8 +114,8 @@ class EvaluationEdit():
             # ＰＬ
             #
             for black_f_black_l_index, relation_exists in black_f_black_l_index_to_relation_exists_dictionary.items():
-                assert_p_blackright_move_obj, assert_blackright_l_move_obj = EvaluationPkTable.build_black_p_black_k_moves_by_black_p_black_k_index(
-                        black_p_black_k_index=black_f_black_l_index)
+                assert_p_blackright_move_obj, assert_l_blackright_move_obj = EvaluationPkTable.build_p_blackright_k_blackright_moves_by_pk_index(
+                        p_blackright_k_blackright_index=black_f_black_l_index)
 
                 # 着手が先手なら、１８０°回転させない
                 if self._kifuwarabe.board.turn==cshogi.BLACK:
@@ -131,8 +131,8 @@ class EvaluationEdit():
             # ＰＱ
             #
             for black_f_black_q_index, relation_exists in black_f_black_q_index_to_relation_exists_dictionary.items():
-                assert_p1_black_move_obj, assert_p2_black_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
-                        black_p1_black_p2_index=black_f_black_q_index)
+                assert_p1_black_move_obj, assert_p2_black_move_obj = EvaluationPpTable.build_p1_blackright_p2_blackright_moves_by_p1p2_index(
+                        p1_blackright_p2_blackright_index=black_f_black_q_index)
 
                 # 着手が先手なら、１８０°回転させない
                 if self._kifuwarabe.board.turn==cshogi.BLACK:
@@ -367,8 +367,8 @@ class EvaluationEdit():
             # ＰＬ
             #
             for target_black_f_black_l_index in target_black_f_black_l_index_list:
-                black_p_move_obj, black_l_move_obj = EvaluationPkTable.build_black_p_black_k_moves_by_black_p_black_k_index(
-                        black_p_black_k_index=target_black_f_black_l_index)
+                black_p_move_obj, black_l_move_obj = EvaluationPkTable.build_p_blackright_k_blackright_moves_by_pk_index(
+                        p_blackright_k_blackright_index=target_black_f_black_l_index)
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                 if self._kifuwarabe.board.turn==cshogi.BLACK:
@@ -409,8 +409,8 @@ class EvaluationEdit():
             # ＰＱ
             #
             for target_black_f_black_q_index in target_black_f_black_q_index_list:
-                black_p_move_obj, black_q_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
-                        black_p1_black_p2_index=target_black_f_black_q_index)
+                black_p_move_obj, black_q_move_obj = EvaluationPpTable.build_p1_blackright_p2_blackright_moves_by_p1p2_index(
+                        p1_blackright_p2_blackright_index=target_black_f_black_q_index)
 
                 # assert
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
@@ -502,35 +502,35 @@ class EvaluationEdit():
             # ＫＬ
             #
             for black_f_black_l_index, relation_exists in black_f_black_l_index_to_relation_exists_dictionary.items():
-                assert_blackright_k_move_obj, assert_blackright_l_move_obj = EvaluationKkTable.build_blackright_k_blackright_l_moves_by_kl_index(
+                assert_k_blackright_move_obj, assert_l_blackright_move_obj = EvaluationKkTable.build_blackright_k_blackright_l_moves_by_kl_index(
                         blackright_k_blackright_l_index=black_f_black_l_index)
 
                 # 着手が先手なら、１８０°回転させない
                 if self._kifuwarabe.board.turn==cshogi.BLACK:
-                    if move_u != assert_blackright_k_move_obj.as_usi:
-                        raise ValueError(f"[{datetime.datetime.now()}] [strengthen > fl] 着手が変わっているエラー  元の着手:{move_u}  作った着手:{assert_blackright_k_move_obj.as_usi}")
+                    if move_u != assert_k_blackright_move_obj.as_usi:
+                        raise ValueError(f"[{datetime.datetime.now()}] [strengthen > fl] 着手が変わっているエラー  元の着手:{move_u}  作った着手:{assert_k_blackright_move_obj.as_usi}")
 
                 # 着手が先手なら、１８０°回転させる
                 else:
-                    if move_obj.rotate().as_usi != assert_blackright_k_move_obj.as_usi:
-                        raise ValueError(f"[{datetime.datetime.now()}] [strengthen > fl] 指し手を先手の向きに変えて復元できなかったエラー  元の着手:{move_u}  作った着手:{assert_blackright_k_move_obj.as_usi}")
+                    if move_obj.rotate().as_usi != assert_k_blackright_move_obj.as_usi:
+                        raise ValueError(f"[{datetime.datetime.now()}] [strengthen > fl] 指し手を先手の向きに変えて復元できなかったエラー  元の着手:{move_u}  作った着手:{assert_k_blackright_move_obj.as_usi}")
 
             #
             # ＫＱ
             #
             for black_f_black_q_index, relation_exists in black_f_black_q_index_to_relation_exists_dictionary.items():
-                assert_blackright_k_move_obj, assert_p_blackright_move_obj = EvaluationKpTable.build_k_blackright_p_blackright_moves_by_kp_index(
+                assert_k_blackright_move_obj, assert_p_blackright_move_obj = EvaluationKpTable.build_k_blackright_p_blackright_moves_by_kp_index(
                         k_blackright_p_blackright_index=black_f_black_q_index)
 
                 # 着手が先手なら、１８０°回転させない
                 if self._kifuwarabe.board.turn==cshogi.BLACK:
-                    if move_u != assert_blackright_k_move_obj.as_usi:
-                        raise ValueError(f"[{datetime.datetime.now()}] [strengthen > fl] 着手が変わっているエラー  元の着手:{move_u}  作った着手:{assert_blackright_k_move_obj.as_usi}")
+                    if move_u != assert_k_blackright_move_obj.as_usi:
+                        raise ValueError(f"[{datetime.datetime.now()}] [strengthen > fl] 着手が変わっているエラー  元の着手:{move_u}  作った着手:{assert_k_blackright_move_obj.as_usi}")
 
                 # 着手が先手なら、１８０°回転させる
                 else:
-                    if move_obj.rotate().as_usi != assert_blackright_k_move_obj.as_usi:
-                        raise ValueError(f"[{datetime.datetime.now()}] [strengthen > fl] 指し手を先手の向きに変えて復元できなかったエラー  元の着手:{move_u}  作った着手:{assert_blackright_k_move_obj.as_usi}")
+                    if move_obj.rotate().as_usi != assert_k_blackright_move_obj.as_usi:
+                        raise ValueError(f"[{datetime.datetime.now()}] [strengthen > fl] 指し手を先手の向きに変えて復元できなかったエラー  元の着手:{move_u}  作った着手:{assert_k_blackright_move_obj.as_usi}")
 
         else:
 
@@ -538,8 +538,8 @@ class EvaluationEdit():
             # ＰＬ
             #
             for black_f_black_l_index, relation_exists in black_f_black_l_index_to_relation_exists_dictionary.items():
-                assert_p_blackright_move_obj, assert_blackright_l_move_obj = EvaluationPkTable.build_black_p_black_k_moves_by_black_p_black_k_index(
-                        black_p_black_k_index=black_f_black_l_index)
+                assert_p_blackright_move_obj, assert_l_blackright_move_obj = EvaluationPkTable.build_p_blackright_k_blackright_moves_by_pk_index(
+                        p_blackright_k_blackright_index=black_f_black_l_index)
 
                 # 着手が先手なら、１８０°回転させない
                 if self._kifuwarabe.board.turn==cshogi.BLACK:
@@ -555,8 +555,8 @@ class EvaluationEdit():
             # ＰＱ
             #
             for black_f_black_q_index, relation_exists in black_f_black_q_index_to_relation_exists_dictionary.items():
-                assert_p1_black_move_obj, assert_p2_black_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
-                        black_p1_black_p2_index=black_f_black_q_index)
+                assert_p1_black_move_obj, assert_p2_black_move_obj = EvaluationPpTable.build_p1_blackright_p2_blackright_moves_by_p1p2_index(
+                        p1_blackright_p2_blackright_index=black_f_black_q_index)
 
                 # 着手が先手なら、１８０°回転させない
                 if self._kifuwarabe.board.turn==cshogi.BLACK:
@@ -763,8 +763,8 @@ class EvaluationEdit():
                 if relation_exists == 0:
 
                     # assert
-                    assert_p_blackright_move_obj, assert_blackright_l_move_obj = EvaluationPkTable.build_black_p_black_k_moves_by_black_p_black_k_index(
-                            black_p_black_k_index=black_f_black_l_index)
+                    assert_p_blackright_move_obj, assert_l_blackright_move_obj = EvaluationPkTable.build_p_blackright_k_blackright_moves_by_pk_index(
+                            p_blackright_k_blackright_index=black_f_black_l_index)
 
                     # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                     if self._kifuwarabe.board.turn==cshogi.BLACK:
@@ -818,8 +818,8 @@ class EvaluationEdit():
             # ＰＬ
             #
             for target_black_f_black_l_index in target_black_f_black_l_index_list:
-                black_p_move_obj, black_l_move_obj = EvaluationPkTable.build_black_p_black_k_moves_by_black_p_black_k_index(
-                        black_p_black_k_index=target_black_f_black_l_index)
+                black_p_move_obj, black_l_move_obj = EvaluationPkTable.build_p_blackright_k_blackright_moves_by_pk_index(
+                        p_blackright_k_blackright_index=target_black_f_black_l_index)
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                 if self._kifuwarabe.board.turn==cshogi.BLACK:
@@ -860,8 +860,8 @@ class EvaluationEdit():
             # ＰＱ
             #
             for target_black_f_black_q_index in target_black_f_black_q_index_list:
-                black_p_move_obj, black_q_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
-                        black_p1_black_p2_index=target_black_f_black_q_index)
+                black_p_move_obj, black_q_move_obj = EvaluationPpTable.build_p1_blackright_p2_blackright_moves_by_p1p2_index(
+                        p1_blackright_p2_blackright_index=target_black_f_black_q_index)
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                 if self._kifuwarabe.board.turn==cshogi.BLACK:

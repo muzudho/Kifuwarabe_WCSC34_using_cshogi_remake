@@ -282,8 +282,8 @@ def test_pk():
         #   １８０°回転はさせません
         #
         (remaked_black_p_move_obj,
-         remaked_black_k_move_obj) = EvaluationPkTable.build_black_p_black_k_moves_by_black_p_black_k_index(
-                black_p_black_k_index=black_p_black_k_index)
+         remaked_black_k_move_obj) = EvaluationPkTable.build_p_blackright_k_blackright_moves_by_pk_index(
+                p_blackright_k_blackright_index=black_p_black_k_index)
 
         # Ｐ
         if expected_black_p_move_u != remaked_black_p_move_obj.as_usi:

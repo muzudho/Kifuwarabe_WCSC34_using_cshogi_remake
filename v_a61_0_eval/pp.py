@@ -45,8 +45,8 @@ p2_blackright_move_obj:{p2_blackright_move_obj.as_usi:5}
     #destructure_pp_index
     #build_p_p_moves_by_pp_index
     @staticmethod
-    def build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
-            black_p1_black_p2_index):
+    def build_p1_blackright_p2_blackright_moves_by_p1p2_index(
+            p1_blackright_p2_blackright_index):
         """ＰＰインデックス分解
 
         Parameter
@@ -62,7 +62,7 @@ p2_blackright_move_obj:{p2_blackright_move_obj.as_usi:5}
             兵２の応手
         """
 
-        rest = black_p1_black_p2_index
+        rest = p1_blackright_p2_blackright_index
 
         p2_index = rest % EvaluationPMove.get_serial_number_size()
         rest //= EvaluationPMove.get_serial_number_size()
@@ -205,14 +205,14 @@ p2_blackright_move_obj:{p2_blackright_move_obj.as_usi:5}
             0 or 1
         """
         return self.get_relation_exists_by_index(
-                black_k_black_p_index=EvaluationPpTable.get_blackright_p1_blackright_p2_index(
+                p1_blackright_p2_blackright_index=EvaluationPpTable.get_blackright_p1_blackright_p2_index(
                         p1_blackright_move_obj=p1_blackright_move_obj,
                         p2_blackright_move_obj=p2_blackright_move_obj))
 
 
     def get_relation_exists_by_index(
             self,
-            black_p1_black_p2_index):
+            p1_blackright_p2_blackright_index):
         """配列のインデックスを受け取って、関係の有無を返します
 
         Parameters
@@ -226,7 +226,7 @@ p2_blackright_move_obj:{p2_blackright_move_obj.as_usi:5}
             0 or 1
         """
         return self._mm_table_obj.get_bit_by_index(
-                index=black_p1_black_p2_index)
+                index=p1_blackright_p2_blackright_index)
 
 
     #set_relation_exists_by_pp_moves
@@ -285,13 +285,13 @@ p2_blackright_move_obj:{p2_blackright_move_obj.as_usi:5}
         relations = {}
 
         for p2_blackright_move_u in p2_blackright_move_u_set:
-            blackright_p1_blackright_p2_index = EvaluationPpTable.get_blackright_p1_blackright_p2_index(
+            p1_blackright_p2_blackright_index = EvaluationPpTable.get_blackright_p1_blackright_p2_index(
                 p1_blackright_move_obj=p1_blackright_move_obj,
                 p2_blackright_move_obj=Move.from_usi(p2_blackright_move_u))
 
             relation_bit = self.get_relation_exists_by_index(
-                    blackright_p1_blackright_p2_index=blackright_p1_blackright_p2_index)
+                    p1_blackright_p2_blackright_index=p1_blackright_p2_blackright_index)
 
-            relations[blackright_p1_blackright_p2_index] = relation_bit
+            relations[p1_blackright_p2_blackright_index] = relation_bit
 
         return relations

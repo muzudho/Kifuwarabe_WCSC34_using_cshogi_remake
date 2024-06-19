@@ -80,14 +80,14 @@ class EvaluationPkTable():
     # build_p_k_moves_by_pk_index
     # build_black_p_k_moves_by_pk_index
     @staticmethod
-    def build_black_p_black_k_moves_by_black_p_black_k_index(
-            black_p_black_k_index):
+    def build_p_blackright_k_blackright_moves_by_pk_index(
+            p_blackright_k_blackright_index):
         """ＰＫインデックス分解
 
         Parameter
         ---------
-        black_p_black_k_index : int
-            兵と玉の関係の通しインデックス
+        p_blackright_k_blackright_index : int
+            兵と玉の関係の通しインデックス（先手視点、右辺使用）
 
         Returns
         -------
@@ -98,7 +98,7 @@ class EvaluationPkTable():
         """
         (p_index,
          k_index) = EvaluationPkTable.destructure_p_k_index_by_pk_index(
-                pk_index=black_p_black_k_index)
+                pk_index=p_blackright_k_blackright_index)
 
         # Ｋ
         (k_srcsq,
@@ -236,14 +236,14 @@ class EvaluationPkTable():
             raise ValueError(f"[evaluation pk table > get relation exists by pk moves > k] 玉の指し手で打なのはおかしい。 k_black_move_obj.srcloc_u:{Usi.srcloc_to_code(k_black_move_obj.srcloc)}  k_black_move_obj:{k_black_move_obj.dump()}")
 
         return self.get_relation_exists_by_index(
-                black_k_black_p_index=EvaluationPkTable.get_black_p_black_k_index(
+                p_blackright_k_blackright_index=EvaluationPkTable.get_black_p_black_k_index(
                         p_black_move_obj=p_black_move_obj,
                         k_black_move_obj=k_black_move_obj))
 
 
     def get_relation_exists_by_index(
             self,
-            black_p_black_k_index):
+            p_blackright_k_blackright_index):
         """配列のインデックスを受け取って、関係の有無を返します
 
         Parameters
@@ -257,7 +257,7 @@ class EvaluationPkTable():
             0 or 1
         """
         return self._mm_table_obj.get_bit_by_index(
-                index=black_p_black_k_index)
+                index=p_blackright_k_blackright_index)
 
 
     def set_relation_exists_by_black_p_black_k_moves(
@@ -320,7 +320,7 @@ class EvaluationPkTable():
                 k_black_move_obj=Move.from_usi(k_black_move_u))
 
             relation_bit = self.get_relation_exists_by_index(
-                    black_p_black_k_index=black_p_black_k_index)
+                    p_blackright_k_blackright_index=black_p_black_k_index)
 
             relations[black_p_black_k_index] = relation_bit
 
