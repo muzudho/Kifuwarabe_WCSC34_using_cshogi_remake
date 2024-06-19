@@ -92,11 +92,11 @@ def test_kk():
     k_turn = cshogi.BLACK
 
     k_blackright_move_obj = Move.from_move_obj(
-            strict_move_obj=k_strict_move_obj_expected,
+            f_strict_move_obj=k_strict_move_obj_expected,
             shall_white_to_black=False,
             use_only_right_side=True)
     l_blackright_move_obj = Move.from_move_obj(
-            strict_move_obj=l_strict_move_obj_expected,
+            f_strict_move_obj=l_strict_move_obj_expected,
             shall_white_to_black=True,
             use_only_right_side=True)
 
@@ -123,7 +123,7 @@ def test_p():
 
         # （先手視点、右辺使用）に合わせる
         p_blackright_move_obj = Move.from_move_obj(
-                strict_move_obj=Move.from_usi(expected_p_move_u),
+                f_strict_move_obj=Move.from_usi(expected_p_move_u),
                 shall_white_to_black=True,
                 use_only_right_side=True)
 
@@ -261,12 +261,12 @@ def test_pk():
 
         # 先手の向きに合わせる
         input_p_black_move_obj = Move.from_move_obj(
-                strict_move_obj=Move.from_usi(input_p_strict_move_u),
+                f_strict_move_obj=Move.from_usi(input_p_strict_move_u),
                 shall_white_to_black=False)
 
         # 先手の向きに合わせる
         input_k_black_move_obj = Move.from_move_obj(
-                strict_move_obj=Move.from_usi(input_k_strict_move_u),
+                f_strict_move_obj=Move.from_usi(input_k_strict_move_u),
                 shall_white_to_black=True)
 
         # 関連
