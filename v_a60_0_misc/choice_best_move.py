@@ -59,6 +59,20 @@ class ChoiceBestMove():
                 strict_move_obj=strict_move_obj)
 
         # 先手視点に変更
+        black_move_obj = Move.from_move_obj(
+                strict_move_obj=strict_move_obj,
+                # 先手の指し手になるよう調整します
+                shall_white_to_black=board.turn==cshogi.WHITE)
+
+        # 先手視点に変更
+        l_black_move_u_set = set()
+        for l_strict_move_u in l_strict_move_u_set:
+            l_black_move_u_set.add(Move.from_move_obj(
+                    strict_move_obj=Move.from_usi(l_strict_move_u),
+                    # 先手の指し手になるよう調整します
+                    shall_white_to_black=board.turn==cshogi.WHITE).as_usi)
+
+        # 先手視点に変更
         q_black_move_u_set = set()
         for q_strict_move_u in q_strict_move_u_set:
             q_black_move_u_set.add(Move.from_move_obj(
@@ -74,11 +88,8 @@ class ChoiceBestMove():
 
             # 自玉の着手と、敵玉の応手の一覧から、ＫＬテーブルのインデックスと、関係の有無を格納した辞書を作成
             black_k_black_l_index_to_relation_exists_dic = kifuwarabe.evaluation_kl_table_obj_array[Turn.to_index(board.turn)].select_black_k_black_l_index_and_relation_exists(
-                    k_strict_move_obj=strict_move_obj,
-                    l_strict_move_u_set=l_strict_move_u_set,
-                    # 先手の指し手になるよう調整します
-                    shall_k_white_to_black=board.turn==cshogi.WHITE,
-                    shall_l_white_to_black=board.turn==cshogi.BLACK)
+                    k_black_move_obj=black_move_obj,
+                    l_black_move_u_set=l_black_move_u_set)
 
             # assert
             for black_k_black_l_index, relation_exists in black_k_black_l_index_to_relation_exists_dic.items():
@@ -109,11 +120,6 @@ move_rot_u   :{move_rot_obj.as_usi:5}
             #
             # ＫＱ
             #
-
-            black_move_obj = Move.from_move_obj(
-                    strict_move_obj=strict_move_obj,
-                    # 先手の指し手になるよう調整します
-                    shall_white_to_black=board.turn==cshogi.WHITE)
 
             # 自玉の着手と、敵兵の応手の一覧から、ＫＱテーブルのインデックスと、関係の有無を格納した辞書を作成
             black_k_black_q_index_to_relation_exists_dic = kifuwarabe.evaluation_kq_table_obj_array[Turn.to_index(board.turn)].select_black_k_black_p_index_and_relation_exists(
