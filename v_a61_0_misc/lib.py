@@ -283,14 +283,14 @@ class Move():
 
 
     def from_move_obj(
-            strict_move_obj,
+            f_strict_move_obj,
             shall_white_to_black,
             use_only_right_side=False):
         """変形
 
         Parameters
         ----------
-        strict_move_obj : Move
+        f_strict_move_obj : Move
             指し手
         shall_white_to_black : bool
             評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
@@ -299,13 +299,13 @@ class Move():
         """
         if shall_white_to_black or use_only_right_side:
             return Move.from_src_dst_pro(
-                    srcloc=strict_move_obj.srcloc,
-                    dstsq=strict_move_obj.dstsq,
-                    promoted=strict_move_obj.promoted,
+                    srcloc=f_strict_move_obj.srcloc,
+                    dstsq=f_strict_move_obj.dstsq,
+                    promoted=f_strict_move_obj.promoted,
                     is_rotate=shall_white_to_black,
                     use_only_right_side=use_only_right_side)
 
-        return strict_move_obj
+        return f_strict_move_obj
 
 
     def __init__(
@@ -412,14 +412,14 @@ class BoardHelper():
     @staticmethod
     def create_counter_move_u_set(
             board,
-            strict_move_obj):
+            f_strict_move_obj):
         """応手の一覧を作成
 
         Parameters
         ----------
         board : Board
             局面
-        strict_move_obj : Move
+        f_strict_move_obj : Move
             着手
 
         Returns
@@ -441,7 +441,7 @@ class BoardHelper():
         q_strict_move_u_set = set()
 
         # １手指す
-        board.push_usi(strict_move_obj.as_usi)
+        board.push_usi(f_strict_move_obj.as_usi)
 
         # 敵玉（L; Lord）の位置を調べる
         l_sq = BoardHelper.get_king_square(board)

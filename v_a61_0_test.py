@@ -273,9 +273,9 @@ def test_pk():
         #
         #   後手では、指し手を盤上で１８０°回転させてインデックスを取得します
         #
-        black_p_black_k_index = EvaluationPkTable.get_black_p_black_k_index(
-                p_black_move_obj=input_p_black_move_obj,
-                k_black_move_obj=input_k_black_move_obj)
+        black_p_black_k_index = EvaluationPkTable.get_p_blackright_k_blackright_index(
+                p_blackright_move_obj=input_p_black_move_obj,
+                k_blackright_move_obj=input_k_black_move_obj)
 
         # pi_index から、指し手オブジェクトを生成します
         #

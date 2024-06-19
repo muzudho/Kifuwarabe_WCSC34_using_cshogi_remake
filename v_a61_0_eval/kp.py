@@ -263,7 +263,7 @@ class EvaluationKpTable():
 
 
     #select_kp_index_and_relation_exists
-    def select_blackright_k_blackright_p_index_and_relation_exists(
+    def select_k_blackright_p_blackright_index_and_relation_exists(
             self,
             k_blackright_move_obj,
             p_blackright_move_u_set):

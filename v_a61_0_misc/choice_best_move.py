@@ -19,7 +19,7 @@ class ChoiceBestMove():
     #select_fo_index_to_relation_exists
     @staticmethod
     def select_f_blackright_o_blackright_index_to_relation_exists(
-            strict_move_obj,
+            f_strict_move_obj,
             is_king_move,
             board,
             kifuwarabe):
@@ -27,7 +27,7 @@ class ChoiceBestMove():
 
         Parameters
         ----------
-        strict_move_obj : Move
+        f_strict_move_obj : Move
             着手
         is_king_move : bool
             自玉の指し手か？
@@ -38,29 +38,29 @@ class ChoiceBestMove():
 
         Returns
         -------
-        blackright_k_blackright_l_index_to_relation_exists_dic
+        k_blackright_l_blackright_index_to_relation_exists_dic
             自玉の着手と、敵玉の応手の関係の有無を格納した辞書
-        blackright_k_blackright_q_index_to_relation_exists_dic
+        k_blackright_q_blackright_index_to_relation_exists_dic
             自玉の着手と、敵兵の応手の関係の有無を格納した辞書
-        blackright_p_blackright_l_index_to_relation_exists_dic
+        p_blackright_l_blackright_index_to_relation_exists_dic
             自兵の着手と、敵玉の応手の関係の有無を格納した辞書
-        blackright_p_blackright_q_index_to_relation_exists_dic
+        p_blackright_q_blackright_index_to_relation_exists_dic
             自兵の着手と、敵兵の応手の関係の有無を格納した辞書
         """
 
         # assert
         # 着手は後手か？
         is_white = board.turn == cshogi.WHITE
-        move_rot_obj = strict_move_obj.rotate()
+        move_rot_obj = f_strict_move_obj.rotate()
 
         # 応手の一覧を作成
         l_strict_move_u_set, q_strict_move_u_set = BoardHelper.create_counter_move_u_set(
                 board=board,
-                strict_move_obj=strict_move_obj)
+                f_strict_move_obj=f_strict_move_obj)
 
         # （先手視点，右辺使用）に変更
-        blackright_move_obj = Move.from_move_obj(
-                strict_move_obj=strict_move_obj,
+        f_blackright_move_obj = Move.from_move_obj(
+                f_strict_move_obj=f_strict_move_obj,
                 # 先手の指し手になるよう調整します
                 shall_white_to_black=board.turn==cshogi.WHITE,
                 # 指し手の元位置が、右辺を使うように左右反転します
@@ -70,7 +70,7 @@ class ChoiceBestMove():
         l_blackright_move_u_set = set()
         for l_strict_move_u in l_strict_move_u_set:
             l_blackright_move_u_set.add(Move.from_move_obj(
-                    strict_move_obj=Move.from_usi(l_strict_move_u),
+                    f_strict_move_obj=Move.from_usi(l_strict_move_u),
                     # 先手の指し手になるよう調整します
                     shall_white_to_black=board.turn==cshogi.WHITE,
                     use_only_right_side=True).as_usi)
@@ -79,7 +79,7 @@ class ChoiceBestMove():
         q_blackright_move_u_set = set()
         for q_strict_move_u in q_strict_move_u_set:
             q_blackright_move_u_set.add(Move.from_move_obj(
-                    strict_move_obj=Move.from_usi(q_strict_move_u),
+                    f_strict_move_obj=Move.from_usi(q_strict_move_u),
                     # 先手の指し手になるよう調整します
                     shall_white_to_black=board.turn==cshogi.BLACK,
                     use_only_right_side=True).as_usi)
@@ -91,34 +91,22 @@ class ChoiceBestMove():
             #
 
             # 自玉の着手と、敵玉の応手の一覧から、ＫＬテーブルのインデックスと、関係の有無を格納した辞書を作成
-            blackright_k_blackright_l_index_to_relation_exists_dic = kifuwarabe.evaluation_kl_table_obj_array[Turn.to_index(board.turn)].select_blackright_k_blackright_l_index_and_relation_exists(
-                    k_blackright_move_obj=blackright_move_obj,
+            k_blackright_l_blackright_index_to_relation_exists_dic = kifuwarabe.evaluation_kl_table_obj_array[Turn.to_index(board.turn)].select_blackright_k_blackright_l_index_and_relation_exists(
+                    k_blackright_move_obj=f_blackright_move_obj,
                     l_blackright_move_u_set=l_blackright_move_u_set)
 
             # assert
-            for blackright_k_black_l_index, relation_exists in blackright_k_blackright_l_index_to_relation_exists_dic.items():
+            for blackright_k_black_l_index, relation_exists in k_blackright_l_blackright_index_to_relation_exists_dic.items():
                 assert_k_blackright_move_obj, assert_l_blackright_move_obj = EvaluationKkTable.build_blackright_k_blackright_l_moves_by_kl_index(
                         blackright_k_blackright_l_index=blackright_k_black_l_index)
 
-                # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
-                if not is_white:
-                    if assert_k_blackright_move_obj.as_usi != strict_move_obj.as_usi:
-                        print(board)
-                        raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > kl] 着手が変わっているエラー
+                if assert_k_blackright_move_obj.as_usi != f_blackright_move_obj.as_usi:
+                    print(board)
+                    raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > kl] 着手が変わっているエラー
                                            手番（Ｋ）:{Turn.to_string(board.turn)}
-                                      元の指し手（Ｋ）:{strict_move_obj.as_usi:5}
+                                      元の指し手（Ｋ）:{f_strict_move_obj.as_usi:5}
+                     元の指し手　先手視点、右辺使用（Ｋ）:{f_blackright_move_obj.as_usi:5}
 １回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{assert_k_blackright_move_obj.as_usi:5}
-""")
-
-                # 着手が後手なら、１８０°回転させるので、インデックスは変わる
-                else:
-                    if assert_k_blackright_move_obj.as_usi != move_rot_obj.as_usi:
-                        print(board)
-                        raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > kl] 指し手を先手の向きに変えて復元できなかったエラー
-is_white     :{is_white}
-strict_move_u:{strict_move_obj.as_usi    :5} black_p_move_u:{assert_k_blackright_move_obj.as_usi:5}
-move_rot_u   :{move_rot_obj.as_usi:5}
-              {''                 :5} black_l_move_u:{assert_l_blackright_move_obj.as_usi:5}
 """)
 
             #
@@ -126,38 +114,26 @@ move_rot_u   :{move_rot_obj.as_usi:5}
             #
 
             # 自玉の着手と、敵兵の応手の一覧から、ＫＱテーブルのインデックスと、関係の有無を格納した辞書を作成
-            blackright_k_blackright_q_index_to_relation_exists_dic = kifuwarabe.evaluation_kq_table_obj_array[Turn.to_index(board.turn)].select_blackright_k_blackright_p_index_and_relation_exists(
-                    k_black_move_obj=blackright_move_obj,
-                    p_black_move_u_set=q_blackright_move_u_set)
+            k_blackright_q_blackright_index_to_relation_exists_dic = kifuwarabe.evaluation_kq_table_obj_array[Turn.to_index(board.turn)].select_k_blackright_p_blackright_index_and_relation_exists(
+                    k_blackright_move_obj=f_blackright_move_obj,
+                    p_blackright_move_u_set=q_blackright_move_u_set)
 
             # assert
-            for k_blackright_q_blackright_index, relation_exists in blackright_k_blackright_q_index_to_relation_exists_dic.items():
+            for k_blackright_q_blackright_index, relation_exists in k_blackright_q_blackright_index_to_relation_exists_dic.items():
                 assert_k_blackright_move_obj, assert_q_blackright_move_obj = EvaluationKpTable.build_k_blackright_p_blackright_moves_by_kp_index(
                         k_blackright_p_blackright_index=k_blackright_q_blackright_index)
 
-                # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
-                if not is_white:
-                    if assert_k_blackright_move_obj.as_usi != strict_move_obj.as_usi:
-                        print(board)
-                        raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > kq] 着手が変わっているエラー
+                if assert_k_blackright_move_obj.as_usi != f_blackright_move_obj.as_usi:
+                    print(board)
+                    raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > kq] 着手が変わっているエラー
                                            手番（Ｋ）:{Turn.to_string(board.turn)}
-                                      元の指し手（Ｋ）:{strict_move_obj.as_usi:5}
+                                      元の指し手（Ｋ）:{f_strict_move_obj.as_usi:5}
+                     元の指し手　先手視点、右辺使用（Ｋ）:{f_blackright_move_obj.as_usi:5}
 １回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{assert_k_blackright_move_obj.as_usi:5}
 """)
 
-                # 着手が後手なら、１８０°回転させるので、インデックスは変わる
-                else:
-                    if assert_k_blackright_move_obj.as_usi != move_rot_obj.as_usi:
-                        print(board)
-                        raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > kq] 指し手を先手の向きに変えて復元できなかったエラー
-is_white     :{is_white}
-strict_move_u:{strict_move_obj.as_usi    :5} black_p_move_u:{assert_k_blackright_move_obj.as_usi:5}
-move_rot_u   :{move_rot_obj.as_usi       :5}
-              {''                        :5} black_l_move_u:{assert_q_blackright_move_obj.as_usi:5}
-""")
-
-            return (blackright_k_blackright_l_index_to_relation_exists_dic,
-                    blackright_k_blackright_q_index_to_relation_exists_dic,
+            return (k_blackright_l_blackright_index_to_relation_exists_dic,
+                    k_blackright_q_blackright_index_to_relation_exists_dic,
                     None,
                     None)
 
@@ -168,18 +144,18 @@ move_rot_u   :{move_rot_obj.as_usi       :5}
             #
 
             # 自兵の着手と、敵玉の応手の一覧から、ＰＬテーブルのインデックスと、関係の有無を格納した辞書を作成
-            p_blackright_l_blackright_index_to_relation_exists_dic = kifuwarabe.evaluation_pl_table_obj_array[Turn.to_index(board.turn)].select_black_p_black_k_index_and_relation_exists(
-                    p_black_move_obj=blackright_move_obj,
-                    k_black_move_u_set=l_blackright_move_u_set)
+            p_blackright_l_blackright_index_to_relation_exists_dic = kifuwarabe.evaluation_pl_table_obj_array[Turn.to_index(board.turn)].select_p_blackright_k_blackright_index_and_relation_exists(
+                    p_blackright_move_obj=f_blackright_move_obj,
+                    k_blackright_move_u_set=l_blackright_move_u_set)
 
             # assert
             for p_blackright_l_blackright_index, relation_exists in p_blackright_l_blackright_index_to_relation_exists_dic.items():
                 assert_p_blackright_move_obj, assert_l_blackright_move_obj = EvaluationPkTable.build_p_blackright_k_blackright_moves_by_pk_index(
                         p_blackright_k_blackright_index=p_blackright_l_blackright_index)
 
-                check_black_p_black_l_index = EvaluationPkTable.get_black_p_black_k_index(
-                        p_black_move_obj=assert_p_blackright_move_obj,
-                        k_black_move_obj=assert_l_blackright_move_obj)
+                check_black_p_black_l_index = EvaluationPkTable.get_p_blackright_k_blackright_index(
+                        p_blackright_move_obj=assert_p_blackright_move_obj,
+                        k_blackright_move_obj=assert_l_blackright_move_obj)
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                 if not is_white:
@@ -206,7 +182,7 @@ check_black_p_black_l_index:{check_black_p_black_l_index  :10}
                         print(board)
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pl] 指し手を先手の向きに変えて復元できなかったエラー
 is_white     :{is_white}
-strict_move_u:{strict_move_obj.as_usi:5} black_p_move_u:{assert_p_blackright_move_obj.as_usi:5}
+strict_move_u:{f_strict_move_obj.as_usi:5} black_p_move_u:{assert_p_blackright_move_obj.as_usi:5}
 move_rot_u   :{move_rot_obj.as_usi   :5}
               {''                    :5} black_l_move_u:{assert_l_blackright_move_obj.as_usi:5}
 """)
@@ -217,7 +193,7 @@ move_rot_u   :{move_rot_obj.as_usi   :5}
 
             # 自兵の着手と、敵兵の応手の一覧から、ＰＱテーブルのインデックスと、関係の有無を格納した辞書を作成
             p_blackright_q_blackright_index_to_relation_exists_dic = kifuwarabe.evaluation_pq_table_obj_array[Turn.to_index(board.turn)].select_blackright_p_blackright_p_index_and_relation_exists(
-                    p1_blackright_move_obj=blackright_move_obj,
+                    p1_blackright_move_obj=f_blackright_move_obj,
                     p2_blackright_move_u_set=q_blackright_move_u_set)
 
             # assert
@@ -227,12 +203,13 @@ move_rot_u   :{move_rot_obj.as_usi   :5}
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                 if not is_white:
-                    if assert_p_blackright_move_obj.as_usi != strict_move_obj.as_usi:
+                    if assert_p_blackright_move_obj.as_usi != f_blackright_move_obj.as_usi:
                         print(board)
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pq] 着手が変わっているエラー
 is_white  :{is_white}
                                            手番（Ｐ）:{Turn.to_string(board.turn)}
-                                      元の指し手（Ｐ）:{strict_move_obj.as_usi:5}
+                                      元の指し手（Ｐ）:{f_strict_move_obj.as_usi:5}
+                     元の指し手　先手視点、右辺使用（Ｐ）:{f_blackright_move_obj.as_usi:5}
 １回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_p_blackright_move_obj.as_usi:5}
 """)
 
@@ -242,7 +219,7 @@ is_white  :{is_white}
                         print(board)
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pq] 指し手を先手の向きに変えて復元できなかったエラー
 is_white     :{is_white}
-strict_move_u:{strict_move_obj.as_usi:5} black_p_move_u:{assert_p_blackright_move_obj.as_usi:5}
+strict_move_u:{f_strict_move_obj.as_usi:5} black_p_move_u:{assert_p_blackright_move_obj.as_usi:5}
 move_rot_u   :{move_rot_obj.as_usi   :5}
               {''                    :5} black_l_move_u:{assert_q_blackright_move_obj.as_usi:5}
 """)
@@ -349,14 +326,14 @@ move_rot_u   :{move_rot_obj.as_usi   :5}
 
     @staticmethod
     def get_summary(
-            strict_move_obj,
+            f_strict_move_obj,
             kifuwarabe,
             is_debug=False):
         """集計を取得
 
         Parameters
         ----------
-        strict_move_obj : Move
+        f_strict_move_obj : Move
             着手オブジェクト
         kifuwarabe : Kifuwarabe
             きふわらべ
@@ -377,7 +354,7 @@ move_rot_u   :{move_rot_obj.as_usi   :5}
         k_sq = BoardHelper.get_king_square(kifuwarabe.board)
 
         # 自玉の指し手か？
-        is_king_move = MoveHelper.is_king(k_sq, strict_move_obj)
+        is_king_move = MoveHelper.is_king(k_sq, f_strict_move_obj)
 
         if is_king_move:
 
@@ -387,7 +364,7 @@ move_rot_u   :{move_rot_obj.as_usi   :5}
              k_blackright_q_blackright_index_to_relation_exists_dictionary,
              _,
              _) = ChoiceBestMove.select_f_blackright_o_blackright_index_to_relation_exists(
-                    strict_move_obj=strict_move_obj,
+                    f_strict_move_obj=f_strict_move_obj,
                     is_king_move=is_king_move,
                     board=kifuwarabe.board,
                     kifuwarabe=kifuwarabe)
@@ -397,46 +374,37 @@ move_rot_u   :{move_rot_obj.as_usi   :5}
                 assert_k_blackright_move_obj, assert_l_blackright_move_obj = EvaluationKkTable.build_blackright_k_blackright_l_moves_by_kl_index(
                         blackright_k_blackright_l_index=k_blackright_l_blackright_index)
 
-                # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
-                if kifuwarabe.board.turn==cshogi.BLACK:
-                    if assert_k_blackright_move_obj.as_usi != strict_move_obj.as_usi:
-                        raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > kl] 着手が変わっているエラー
+                f_blackright_move_obj = Move.from_move_obj(
+                        f_strict_move_obj=f_strict_move_obj,
+                        # 着手が後手なら反転
+                        shall_white_to_black=kifuwarabe.board.turn==cshogi.WHITE,
+                        use_only_right_side=True)
+
+                if assert_k_blackright_move_obj.as_usi != f_blackright_move_obj.as_usi:
+                    raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > kl] 着手が変わっているエラー
                                            手番（Ｋ）:{Turn.to_string(kifuwarabe.board.turn)}
-                                      元の指し手（Ｋ）:{strict_move_obj.as_usi:5}
+                                      元の指し手（Ｋ）:{f_strict_move_obj.as_usi:5}
+                     元の指し手　先手視点、右辺使用（Ｋ）:{f_blackright_move_obj.as_usi:5}
 １回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{assert_k_blackright_move_obj.as_usi:5}
 """)
-
-                # 着手が後手なら、１８０°回転させるので、インデックスは変わる
-                else:
-                    if assert_k_blackright_move_obj.rotate().as_usi != strict_move_obj.as_usi:
-                        raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > kl] 指し手を先手の向きに変えて復元できなかったエラー
-                                      元の指し手（Ｋ）:{strict_move_obj.as_usi:5}
-                                           手番（Ｋ）:{Turn.to_string(kifuwarabe.board.turn)}
-１回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{assert_k_blackright_move_obj.rotate().as_usi:5}
-""")
-
 
             # assert
             for k_blackright_q_blackright_index, relation_exists in k_blackright_q_blackright_index_to_relation_exists_dictionary.items():
                 assert_k_blackright_move_obj, assert_q_blackright_move_obj = EvaluationKpTable.build_k_blackright_p_blackright_moves_by_kp_index(
                         k_blackright_p_blackright_index=k_blackright_q_blackright_index)
 
-                # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
-                if kifuwarabe.board.turn==cshogi.BLACK:
-                    if assert_k_blackright_move_obj.as_usi != strict_move_obj.as_usi:
-                        raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > kq] 着手が変わっているエラー
-                                           手番（Ｋ）:{Turn.to_string(kifuwarabe.board.turn)}
-                                      元の指し手（Ｋ）:{strict_move_obj.as_usi:5}
-１回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{assert_k_blackright_move_obj.as_usi:5}
-""")
+                f_blackright_move_obj = Move.from_move_obj(
+                        f_strict_move_obj=f_strict_move_obj,
+                        # 着手が後手なら反転
+                        shall_white_to_black=kifuwarabe.board.turn==cshogi.WHITE,
+                        use_only_right_side=True)
 
-                # 着手が後手なら、１８０°回転させるので、インデックスは変わる
-                else:
-                    if assert_k_blackright_move_obj.rotate().as_usi != strict_move_obj.as_usi:
-                        raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > kq] 指し手を先手の向きに変えて復元できなかったエラー
+                if assert_k_blackright_move_obj.as_usi != f_blackright_move_obj.as_usi:
+                    raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > kq] 着手が変わっているエラー
                                            手番（Ｋ）:{Turn.to_string(kifuwarabe.board.turn)}
-                                      元の指し手（Ｋ）:{strict_move_obj.as_usi:5}
-１回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{assert_k_blackright_move_obj.rotate().as_usi:5}
+                                      元の指し手（Ｋ）:{f_strict_move_obj.as_usi:5}
+                     元の指し手　先手視点、右辺使用（Ｋ）:{f_blackright_move_obj.as_usi:5}
+１回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{assert_k_blackright_move_obj.as_usi:5}
 """)
 
             # ＫＬとＫＱの関係数
@@ -463,7 +431,7 @@ move_rot_u   :{move_rot_obj.as_usi   :5}
              _,
              p_blackright_l_blackright_index_to_relation_exists_dictionary,
              p_blackright_q_blackright_index_to_relation_exists_dictionary) = ChoiceBestMove.select_f_blackright_o_blackright_index_to_relation_exists(
-                    strict_move_obj=strict_move_obj,
+                    f_strict_move_obj=f_strict_move_obj,
                     is_king_move=is_king_move,
                     board=kifuwarabe.board,
                     kifuwarabe=kifuwarabe)
@@ -473,22 +441,17 @@ move_rot_u   :{move_rot_obj.as_usi   :5}
                 assert_p_blackright_move_obj, assert_l_blackright_move_obj = EvaluationPkTable.build_p_blackright_k_blackright_moves_by_pk_index(
                         p_blackright_k_blackright_index=p_blackright_l_blackright_index)
 
-                # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
-                if kifuwarabe.board.turn==cshogi.BLACK:
-                    if assert_p_blackright_move_obj.as_usi != strict_move_obj.as_usi:
-                        raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > pl] 着手が変わっているエラー
+                f_blackright_move_obj = Move.from_move_obj(
+                        f_strict_move_obj=f_strict_move_obj,
+                        # 着手が後手なら反転
+                        shall_white_to_black=kifuwarabe.board.turn==cshogi.WHITE,
+                        use_only_right_side=True)
+                if assert_p_blackright_move_obj.as_usi != f_blackright_move_obj.as_usi:
+                    raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > pl] 着手が変わっているエラー
                                            手番（Ｐ）:{Turn.to_string(kifuwarabe.board.turn)}
-                                      元の指し手（Ｐ）:{strict_move_obj.as_usi:5}
+                                      元の指し手（Ｐ）:{f_strict_move_obj.as_usi:5}
+                     元の指し手　先手視点、右辺使用（Ｐ）:{f_blackright_move_obj.as_usi:5}
 １回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_p_blackright_move_obj.as_usi:5}
-""")
-
-                # 着手が後手なら、１８０°回転させるので、インデックスは変わる
-                else:
-                    if assert_p_blackright_move_obj.rotate().as_usi != strict_move_obj.as_usi:
-                        raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > pl] 指し手を先手の向きに変えて復元できなかったエラー
-                                      元の指し手（Ｐ）:{strict_move_obj.as_usi:5}
-                                           手番（Ｐ）:{Turn.to_string(kifuwarabe.board.turn)}
-１回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_p_blackright_move_obj.rotate().as_usi:5}
 """)
 
             # assert
@@ -496,24 +459,19 @@ move_rot_u   :{move_rot_obj.as_usi   :5}
                 assert_p_blackright_move_obj, assert_q_blackright_move_obj = EvaluationPpTable.build_p1_blackright_p2_blackright_moves_by_p1p2_index(
                         p1_blackright_p2_blackright_index=p_blackright_q_blackright_index)
 
-                # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
-                if kifuwarabe.board.turn==cshogi.BLACK:
-                    if assert_p_blackright_move_obj.as_usi != strict_move_obj.as_usi:
-                        raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > pq] 着手が変わっているエラー
+                f_blackright_move_obj = Move.from_move_obj(
+                        f_strict_move_obj=f_strict_move_obj,
+                        # 着手が後手なら反転
+                        shall_white_to_black=kifuwarabe.board.turn==cshogi.WHITE,
+                        use_only_right_side=True)
+
+                if assert_p_blackright_move_obj.as_usi != f_blackright_move_obj.as_usi:
+                    raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > pq] 着手が変わっているエラー
                                            手番（Ｐ）:{Turn.to_string(kifuwarabe.board.turn)}
-                                      元の指し手（Ｐ）:{strict_move_obj.as_usi:5}
+                                      元の指し手（Ｐ）:{f_strict_move_obj.as_usi:5}
+                     元の指し手　先手視点、右辺使用（Ｐ）:{f_blackright_move_obj.as_usi:5}
 １回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_p_blackright_move_obj.as_usi:5}
 """)
-
-                # 着手が後手なら、１８０°回転させるので、インデックスは変わる
-                else:
-                    if assert_p_blackright_move_obj.rotate().as_usi != strict_move_obj.as_usi:
-                        raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > pq] 指し手を先手の向きに変えて復元できなかったエラー
-                                      元の指し手（Ｐ）:{strict_move_obj.as_usi:5}
-                                           手番（Ｐ）:{Turn.to_string(kifuwarabe.board.turn)}
-１回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_p_blackright_move_obj.rotate().as_usi:5}
-""")
-
 
             # ＰＬとＰＱの関係数
             total_of_relation = len(p_blackright_l_blackright_index_to_relation_exists_dictionary) + len(p_blackright_q_blackright_index_to_relation_exists_dictionary)
@@ -568,7 +526,7 @@ move_rot_u   :{move_rot_obj.as_usi   :5}
             strict_move_u = cshogi.move_to_usi(strict_move_id)
 
             # 着手オブジェクト
-            strict_move_obj = Move.from_usi(strict_move_u)
+            f_strict_move_obj = Move.from_usi(strict_move_u)
 
             # 自駒と敵玉に対する関係の辞書
             (black_f_black_l_index_to_relation_exists_dictionary,
@@ -580,7 +538,7 @@ move_rot_u   :{move_rot_obj.as_usi   :5}
              positive_of_relation,
              # 関係の総数
              total_of_relation) = ChoiceBestMove.get_summary(
-                    strict_move_obj=strict_move_obj,
+                    f_strict_move_obj=f_strict_move_obj,
                     kifuwarabe=kifuwarabe,
                     is_debug=is_debug)
 

@@ -14,25 +14,25 @@ class EvaluationPkTable():
 
     #get_index_of_pk_table
     @staticmethod
-    def get_black_p_black_k_index(
-            p_black_move_obj,
-            k_black_move_obj):
+    def get_p_blackright_k_blackright_index(
+            p_blackright_move_obj,
+            k_blackright_move_obj):
         """ＰＫ評価値テーブルのインデックスを算出
 
         Parameters
         ----------
-        p_black_move_obj : Move
-            兵の着手
-        k_black_move_obj : Move
-            玉の応手
+        p_blackright_move_obj : Move
+            兵の着手（先手視点、右辺使用）
+        k_blackright_move_obj : Move
+            玉の応手（先手視点、右辺使用）
         """
 
         # assert
-        if Usi.is_drop_by_srcloc(k_black_move_obj.srcloc):
-            raise ValueError(f"[evaluation pk table > get index of pk move > k] 玉の指し手で打なのはおかしい。 k_black_move_obj.srcloc_u:{Usi.srcloc_to_code(k_black_move_obj.srcloc)}  k_black_move_obj:{k_black_move_obj.dump()}")
+        if Usi.is_drop_by_srcloc(k_blackright_move_obj.srcloc):
+            raise ValueError(f"[evaluation pk table > get index of pk move > k] 玉の指し手で打なのはおかしい。 k_blackright_move_obj.srcloc_u:{Usi.srcloc_to_code(k_blackright_move_obj.srcloc)}  k_blackright_move_obj:{k_blackright_move_obj.dump()}")
 
-        # 0 ～ 2_074_815      =                                                         0 ～ 3812 *                                      544 +                                                        0 ～ 543
-        black_p_black_k_index = EvaluationPMove.get_blackright_index_by_p_move(p_black_move_obj) * EvaluationKMove.get_serial_number_size() + EvaluationKMove.get_blackright_index_by_k_move(k_black_move_obj)
+        # 0 ～ 2_074_815      =                                                              0 ～ 3812 *                                      544 +                                                             0 ～ 543
+        black_p_black_k_index = EvaluationPMove.get_blackright_index_by_p_move(p_blackright_move_obj) * EvaluationKMove.get_serial_number_size() + EvaluationKMove.get_blackright_index_by_k_move(k_blackright_move_obj)
 
         # assert
         if EvaluationPMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size() <= black_p_black_k_index:
@@ -236,9 +236,9 @@ class EvaluationPkTable():
             raise ValueError(f"[evaluation pk table > get relation exists by pk moves > k] 玉の指し手で打なのはおかしい。 k_black_move_obj.srcloc_u:{Usi.srcloc_to_code(k_black_move_obj.srcloc)}  k_black_move_obj:{k_black_move_obj.dump()}")
 
         return self.get_relation_exists_by_index(
-                p_blackright_k_blackright_index=EvaluationPkTable.get_black_p_black_k_index(
-                        p_black_move_obj=p_black_move_obj,
-                        k_black_move_obj=k_black_move_obj))
+                p_blackright_k_blackright_index=EvaluationPkTable.get_p_blackright_k_blackright_index(
+                        p_blackright_move_obj=p_black_move_obj,
+                        k_blackright_move_obj=k_black_move_obj))
 
 
     def get_relation_exists_by_index(
@@ -282,28 +282,28 @@ class EvaluationPkTable():
             変更が有ったか？
         """
         (is_changed, result_comment) = self._mm_table_obj.set_bit_by_index(
-                black_f_black_o_index=EvaluationPkTable.get_black_p_black_k_index(
-                        p_black_move_obj=black_p_move_obj,
-                        k_black_move_obj=black_k_move_obj),
+                black_f_black_o_index=EvaluationPkTable.get_p_blackright_k_blackright_index(
+                        p_blackright_move_obj=black_p_move_obj,
+                        k_blackright_move_obj=black_k_move_obj),
                 bit=bit)
 
         return (is_changed, result_comment)
 
 
     #select_pk_index_and_relation_exists
-    def select_black_p_black_k_index_and_relation_exists(
+    def select_p_blackright_k_blackright_index_and_relation_exists(
             self,
-            p_black_move_obj,
-            k_black_move_u_set):
+            p_blackright_move_obj,
+            k_blackright_move_u_set):
         """兵の指し手と、玉の応手のリストを受け取ると、すべての関係の有無を辞書に入れて返します
         ＰＫ評価値テーブル用
 
         Parameters
         ----------
-        p_black_move_obj : Move
-            兵の着手
-        k_black_move_u_set : List<str>
-            玉の応手のリスト
+        p_blackright_move_obj : Move
+            兵の着手（先手視点、右辺使用）
+        k_blackright_move_u_set : List<str>
+            玉の応手のリスト（先手視点、右辺使用）
 
         Returns
         -------
@@ -314,10 +314,10 @@ class EvaluationPkTable():
 
         relations = {}
 
-        for k_black_move_u in k_black_move_u_set:
-            black_p_black_k_index = EvaluationPkTable.get_black_p_black_k_index(
-                p_black_move_obj=p_black_move_obj,
-                k_black_move_obj=Move.from_usi(k_black_move_u))
+        for k_blackright_move_u in k_blackright_move_u_set:
+            black_p_black_k_index = EvaluationPkTable.get_p_blackright_k_blackright_index(
+                p_blackright_move_obj=p_blackright_move_obj,
+                k_blackright_move_obj=Move.from_usi(k_blackright_move_u))
 
             relation_bit = self.get_relation_exists_by_index(
                     p_blackright_k_blackright_index=black_p_black_k_index)
