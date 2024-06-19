@@ -376,20 +376,20 @@ class BoardHelper():
     @staticmethod
     def create_counter_move_u_set(
             board,
-            move_obj):
+            strict_move_obj):
         """応手の一覧を作成
 
         Parameters
         ----------
         board : Board
             局面
-        move_obj : Move
+        strict_move_obj : Move
             着手
 
         Returns
         -------
-        - l_move_u_set
-        - q_move_u_set
+        - l_strict_move_u_set
+        - q_strict_move_u_set
         """
 
         #
@@ -400,31 +400,31 @@ class BoardHelper():
         #
 
         # 敵玉（Lord）の指し手の集合
-        l_move_u_set = set()
+        l_strict_move_u_set = set()
         # 敵玉を除く敵軍の指し手の集合（Quaffer；ゴクゴク飲む人。Pの次の文字Qを頭文字にした単語）
-        q_move_u_set = set()
+        q_strict_move_u_set = set()
 
         # １手指す
-        board.push_usi(move_obj.as_usi)
+        board.push_usi(strict_move_obj.as_usi)
 
         # 敵玉（L; Lord）の位置を調べる
         l_sq = BoardHelper.get_king_square(board)
 
-        for counter_move_id in board.legal_moves:
-            counter_move_u = cshogi.move_to_usi(counter_move_id)
-            counter_move_obj = Move.from_usi(counter_move_u)
+        for strict_counter_move_id in board.legal_moves:
+            strict_counter_move_u = cshogi.move_to_usi(strict_counter_move_id)
+            strict_counter_move_obj = Move.from_usi(strict_counter_move_u)
 
             # 敵玉の指し手か？
-            if MoveHelper.is_king(l_sq, counter_move_obj):
-                l_move_u_set.add(counter_move_u)
+            if MoveHelper.is_king(l_sq, strict_counter_move_obj):
+                l_strict_move_u_set.add(strict_counter_move_u)
             # 敵玉を除く敵軍の指し手
             else:
-                q_move_u_set.add(counter_move_u)
+                q_strict_move_u_set.add(strict_counter_move_u)
 
         # １手戻す
         board.pop()
 
-        return (l_move_u_set, q_move_u_set)
+        return (l_strict_move_u_set, q_strict_move_u_set)
 
 
     @staticmethod

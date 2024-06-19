@@ -768,7 +768,7 @@ class Kifuwarabe():
          black_k_black_q_index_to_relation_exists_dictionary,
          black_p_black_l_index_to_relation_exists_dictionary,
          black_p_black_q_index_to_relation_exists_dictionary) = ChoiceBestMove.select_black_f_black_o_index_to_relation_exists(
-                move_obj=Move.from_usi(move_u),
+                strict_move_obj=Move.from_usi(move_u),
                 is_king_move=is_king_move,
                 board=self._board,
                 kifuwarabe=self._kifuwarabe)

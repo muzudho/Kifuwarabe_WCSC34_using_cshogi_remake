@@ -67,7 +67,7 @@ class EvaluationEdit():
          positive_of_relation,
          # 関係の総数
          total_of_relation) = ChoiceBestMove.get_summary(
-                move_obj=move_obj,
+                strict_move_obj=move_obj,
                 kifuwarabe=self._kifuwarabe,
                 is_debug=is_debug)
 
@@ -491,7 +491,7 @@ class EvaluationEdit():
          positive_of_relation,
          # 関係の総数
          total_of_relation) = ChoiceBestMove.get_summary(
-                move_obj=move_obj,
+                strict_move_obj=move_obj,
                 kifuwarabe=self._kifuwarabe,
                 is_debug=is_debug)
 
