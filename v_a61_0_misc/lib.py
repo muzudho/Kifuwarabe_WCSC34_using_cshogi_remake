@@ -681,14 +681,14 @@ class EvalutionMmTable():
 
     def set_bit_by_index(
             self,
-            black_f_black_o_index,
+            f_blackright_o_blackright_index,
             bit,
             is_debug=False):
         """インデックスを受け取ってビット値を設定します
 
         Parameters
         ----------
-        black_f_black_o_index : int
+        f_blackright_o_blackright_index : int
             配列のインデックス。着手、応手ともに先手の視点
         bit : int
             0 か 1
@@ -704,8 +704,8 @@ class EvalutionMmTable():
         """
 
         # ビット・インデックスを、バイトとビットに変換
-        bit_index = black_f_black_o_index % 8
-        byte_index = black_f_black_o_index // 8
+        bit_index = f_blackright_o_blackright_index % 8
+        byte_index = f_blackright_o_blackright_index // 8
 
         # bit_index == 0 のとき、右端から左へ７桁移動したところのビットを立てる（ビッグエンディアン）
         #
@@ -724,7 +724,7 @@ class EvalutionMmTable():
         # デバッグ
         if is_debug:
             # format `:08b` - 0 supply, 8 left shift, binary
-            print(f"[evalution mm table > set bit by index]  black_f_black_o_index:{black_f_black_o_index}  byte_index:{byte_index}  bit_index:{bit_index}  left_shift:{left_shift}  bit:{bit}  old byte value:0x{old_byte_value:08b}")
+            print(f"[evalution mm table > set bit by index]  f_blackright_o_blackright_index:{f_blackright_o_blackright_index}  byte_index:{byte_index}  bit_index:{bit_index}  left_shift:{left_shift}  bit:{bit}  old byte value:0x{old_byte_value:08b}")
 
             # assert
             if bit < 0 or 1 < bit:
@@ -741,7 +741,7 @@ class EvalutionMmTable():
 
         if is_debug:
             # format `:08b` - 0 supply, 8 left shift, binary
-            print(f"[evalution mm table > set bit by index]  black_f_black_o_index:{black_f_black_o_index}  byte_index:{byte_index}  bit_index:{bit_index}  left_shift:{left_shift}  bit:{bit}  new byte_value:0x{self._table_as_array[byte_index]:08b}")
+            print(f"[evalution mm table > set bit by index]  f_blackright_o_blackright_index:{f_blackright_o_blackright_index}  byte_index:{byte_index}  bit_index:{bit_index}  left_shift:{left_shift}  bit:{bit}  new byte_value:0x{self._table_as_array[byte_index]:08b}")
 
         # 変更が有ったら、フラグを立てるよう上書き
         is_changed = self._table_as_array[byte_index] != old_byte_value

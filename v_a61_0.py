@@ -779,18 +779,18 @@ class Kifuwarabe():
             # ＫＬ
             for k_blackright_l_blackright_index, relation_exists in k_blackright_l_blackright_index_to_relation_exists_dictionary.items():
 
-                blackright_k_move_obj, blackright_l_move_obj = EvaluationKkTable.build_k_blackright_l_blackright_moves_by_kl_index(
+                k_blackright_move_obj, l_blackright_move_obj = EvaluationKkTable.build_k_blackright_l_blackright_moves_by_kl_index(
                         k_blackright_l_blackright_index=k_blackright_l_blackright_index)
 
-                print(f"  turn:{Turn.to_string(self._board.turn)}  k_blackright_l_blackright_index:{k_blackright_l_blackright_index:7}  K:{blackright_k_move_obj.as_usi:5}  L:{blackright_l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                print(f"  turn:{Turn.to_string(self._board.turn)}  k_blackright_l_blackright_index:{k_blackright_l_blackright_index:7}  K:{k_blackright_move_obj.as_usi:5}  L:{l_blackright_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
             # ＫＱ
             for k_blackright_q_blackright_index, relation_exists in k_blackright_q_blackright_index_to_relation_exists_dictionary.items():
 
-                blackright_k_move_obj, black_q_move_obj = EvaluationKpTable.build_k_blackright_p_blackright_moves_by_kp_index(
+                k_blackright_move_obj, black_q_move_obj = EvaluationKpTable.build_k_blackright_p_blackright_moves_by_kp_index(
                         k_blackright_p_blackright_index=k_blackright_q_blackright_index)
 
-                print(f"  turn:{Turn.to_string(self._board.turn)}  k_blackright_q_blackright_index:{k_blackright_q_blackright_index:7}  K:{blackright_k_move_obj.as_usi:5}  Q:{black_q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                print(f"  turn:{Turn.to_string(self._board.turn)}  k_blackright_q_blackright_index:{k_blackright_q_blackright_index:7}  K:{k_blackright_move_obj.as_usi:5}  Q:{black_q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
         else:
             # ＰＬ

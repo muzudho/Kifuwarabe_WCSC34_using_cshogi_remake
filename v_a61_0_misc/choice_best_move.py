@@ -227,16 +227,16 @@ is_white  :{is_white}
             # ＫＬ
             for k_blackright_l_blackright_index, relation_exists in k_blackright_l_blackright_index_to_relation_exists_dictionary.items():
                 if DebugPlan.get_number_of_connection_for_kl_kq:
-                    black_k_move_obj, black_l_move_obj = EvaluationKkTable.build_k_blackright_l_blackright_moves_by_kl_index(
+                    k_blackright_move_obj, black_l_move_obj = EvaluationKkTable.build_k_blackright_l_blackright_moves_by_kl_index(
                             k_blackright_l_blackright_index=k_blackright_l_blackright_index)
-                    print(f"[{datetime.datetime.now()}] [get number of connection for kl kq > kl]  k_blackright_l_blackright_index:{k_blackright_l_blackright_index:7}  K:{black_k_move_obj.as_usi:5}  L:{black_l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                    print(f"[{datetime.datetime.now()}] [get number of connection for kl kq > kl]  k_blackright_l_blackright_index:{k_blackright_l_blackright_index:7}  K:{k_blackright_move_obj.as_usi:5}  L:{black_l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
             # ＫＱ
             for k_blackright_q_blackright_index, relation_exists in k_blackright_q_blackright_index_to_relation_exists_dictionary.items():
                 if DebugPlan.get_number_of_connection_for_kl_kq:
-                    black_k_move_obj, black_q_move_obj = EvaluationKpTable.build_k_blackright_p_blackright_moves_by_kp_index(
+                    k_blackright_move_obj, black_q_move_obj = EvaluationKpTable.build_k_blackright_p_blackright_moves_by_kp_index(
                             k_blackright_p_blackright_index=k_blackright_q_blackright_index)
-                    print(f"[{datetime.datetime.now()}] [get number of connection for kl kq > kq]  k_blackright_q_blackright_index:{k_blackright_q_blackright_index:7}  K:{black_k_move_obj.as_usi:5}  Q:{black_q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                    print(f"[{datetime.datetime.now()}] [get number of connection for kl kq > kq]  k_blackright_q_blackright_index:{k_blackright_q_blackright_index:7}  K:{k_blackright_move_obj.as_usi:5}  Q:{black_q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
         return number_of_connection
 
@@ -274,16 +274,16 @@ is_white  :{is_white}
             # ＰＬ
             for p_blackright_l_blackright_index, relation_exists in p_blackright_l_blackright_index_to_relation_exists_dictionary.items():
                 if is_debug and DebugPlan.get_number_of_connection_for_pl_pq:
-                    black_p_move_obj, black_l_move_obj = EvaluationPkTable.build_p_blackright_k_blackright_moves_by_pk_index(
+                    p_blackright_move_obj, black_l_move_obj = EvaluationPkTable.build_p_blackright_k_blackright_moves_by_pk_index(
                             p_blackright_k_blackright_index=p_blackright_l_blackright_index)
-                    print(f"[{datetime.datetime.now()}] [get number of connection for pl pq > pl]  p_blackright_l_blackright_index:{p_blackright_l_blackright_index:7}  P:{black_p_move_obj.as_usi:5}  L:{black_l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                    print(f"[{datetime.datetime.now()}] [get number of connection for pl pq > pl]  p_blackright_l_blackright_index:{p_blackright_l_blackright_index:7}  P:{p_blackright_move_obj.as_usi:5}  L:{black_l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
             # ＰＱ
             for p_blackright_q_blackright_index, relation_exists in p_blackright_q_blackright_index_to_relation_exists_dictionary.items():
                 if is_debug and DebugPlan.get_number_of_connection_for_pl_pq:
-                    black_p_move_obj, black_q_move_obj = EvaluationPpTable.build_p1_blackright_p2_blackright_moves_by_p1p2_index(
+                    p_blackright_move_obj, black_q_move_obj = EvaluationPpTable.build_p1_blackright_p2_blackright_moves_by_p1p2_index(
                             p1_blackright_p2_blackright_index=p_blackright_q_blackright_index)
-                    print(f"[{datetime.datetime.now()}] [get number of connection for pl pq > pq]  p_blackright_q_blackright_index:{p_blackright_q_blackright_index:7}  P:{black_p_move_obj.as_usi:5}  Q:{black_q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                    print(f"[{datetime.datetime.now()}] [get number of connection for pl pq > pq]  p_blackright_q_blackright_index:{p_blackright_q_blackright_index:7}  P:{p_blackright_move_obj.as_usi:5}  Q:{black_q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
         return number_of_connection
 

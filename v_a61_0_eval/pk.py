@@ -42,14 +42,14 @@ class EvaluationPkTable():
 
 
     @staticmethod
-    def destructure_p_k_index_by_pk_index(
-            pk_index):
+    def destructure_p_blackright_k_blackright_index_by_pk_index(
+            p_blackright_k_blackright_index):
         """ＰＫインデックスを渡すと、ＰインデックスとＫインデックスに分解して返します
 
         Parameter
         ---------
-        pk_index : int
-            兵と玉の関係の通しインデックス
+        p_blackright_k_blackright_index : int
+            兵と玉の関係の通しインデックス（先手視点、右辺使用）
 
         Returns
         -------
@@ -58,7 +58,7 @@ class EvaluationPkTable():
         - k_index : int
             玉の応手のインデックス
         """
-        rest = pk_index
+        rest = p_blackright_k_blackright_index
 
         k_index = rest % EvaluationKMove.get_serial_number_size()
         rest //= EvaluationKMove.get_serial_number_size()
@@ -97,8 +97,8 @@ class EvaluationPkTable():
             玉の応手
         """
         (p_index,
-         k_index) = EvaluationPkTable.destructure_p_k_index_by_pk_index(
-                pk_index=p_blackright_k_blackright_index)
+         k_index) = EvaluationPkTable.destructure_p_blackright_k_blackright_index_by_pk_index(
+                p_blackright_k_blackright_index=p_blackright_k_blackright_index)
 
         # Ｋ
         (k_srcsq,
@@ -112,7 +112,7 @@ class EvaluationPkTable():
                 p_index=p_index)
 
         # Ｋ
-        black_k_move_obj = Move.from_src_dst_pro(
+        k_blackright_move_obj = Move.from_src_dst_pro(
                 srcloc=k_srcsq,
                 dstsq=k_dstsq,
                 # 玉に成りはありません
@@ -121,14 +121,14 @@ class EvaluationPkTable():
                 is_rotate=False)
 
         # Ｐ
-        black_p_move_obj = Move.from_src_dst_pro(
+        p_blackright_move_obj = Move.from_src_dst_pro(
                 srcloc=p_srcloc,
                 dstsq=p_dstsq,
                 promoted=p_promote,
                 # 先手のインデックスを渡されるので、回転して先手に合わせる必要はありません
                 is_rotate=False)
 
-        return (black_p_move_obj, black_k_move_obj)
+        return (p_blackright_move_obj, k_blackright_move_obj)
 
 
     def __init__(
@@ -214,16 +214,16 @@ class EvaluationPkTable():
     # 使ってない？
     def get_relation_exists_by_pk_moves(
             self,
-            p_black_move_obj,
-            k_black_move_obj):
+            p_blackright_move_obj,
+            k_blackright_move_obj):
         """玉と兵の指し手を受け取って、関係の有無を返します
 
         Parameters
         ----------
-        p_black_move_obj : Move
-            兵の指し手
-        k_black_move_obj : Move
-            玉の指し手
+        p_blackright_move_obj : Move
+            兵の指し手（先手視点、右辺使用）
+        k_blackright_move_obj : Move
+            玉の指し手（先手視点、右辺使用）
 
         Returns
         -------
@@ -232,13 +232,13 @@ class EvaluationPkTable():
         """
 
         # assert
-        if Usi.is_drop_by_srcloc(k_black_move_obj.srcloc):
-            raise ValueError(f"[evaluation pk table > get relation exists by pk moves > k] 玉の指し手で打なのはおかしい。 k_black_move_obj.srcloc_u:{Usi.srcloc_to_code(k_black_move_obj.srcloc)}  k_black_move_obj:{k_black_move_obj.dump()}")
+        if Usi.is_drop_by_srcloc(k_blackright_move_obj.srcloc):
+            raise ValueError(f"[evaluation pk table > get relation exists by pk moves > k] 玉の指し手で打なのはおかしい。 k_blackright_move_obj.srcloc_u:{Usi.srcloc_to_code(k_blackright_move_obj.srcloc)}  k_blackright_move_obj:{k_blackright_move_obj.dump()}")
 
         return self.get_relation_exists_by_index(
                 p_blackright_k_blackright_index=EvaluationPkTable.get_p_blackright_k_blackright_index(
-                        p_blackright_move_obj=p_black_move_obj,
-                        k_blackright_move_obj=k_black_move_obj))
+                        p_blackright_move_obj=p_blackright_move_obj,
+                        k_blackright_move_obj=k_blackright_move_obj))
 
 
     def get_relation_exists_by_index(
@@ -262,16 +262,16 @@ class EvaluationPkTable():
 
     def set_relation_exists_by_black_p_black_k_moves(
             self,
-            black_p_move_obj,
-            black_k_move_obj,
+            p_blackright_move_obj,
+            k_blackright_move_obj,
             bit):
         """玉の着手と兵の応手を受け取って、関係の有無を設定します
 
         Parameters
         ----------
-        black_p_move_obj : Move
+        p_blackright_move_obj : Move
             兵の着手（符号は先手の向き）
-        black_k_move_obj : Move
+        k_blackright_move_obj : Move
             玉の応手（符号は先手の向き）
         bit : int
             0 か 1
@@ -282,9 +282,9 @@ class EvaluationPkTable():
             変更が有ったか？
         """
         (is_changed, result_comment) = self._mm_table_obj.set_bit_by_index(
-                black_f_black_o_index=EvaluationPkTable.get_p_blackright_k_blackright_index(
-                        p_blackright_move_obj=black_p_move_obj,
-                        k_blackright_move_obj=black_k_move_obj),
+                f_blackright_o_blackright_index=EvaluationPkTable.get_p_blackright_k_blackright_index(
+                        p_blackright_move_obj=p_blackright_move_obj,
+                        k_blackright_move_obj=k_blackright_move_obj),
                 bit=bit)
 
         return (is_changed, result_comment)

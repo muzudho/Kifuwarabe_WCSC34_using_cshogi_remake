@@ -252,7 +252,7 @@ p2_blackright_move_obj:{p2_blackright_move_obj.as_usi:5}
             変更が有ったか？
         """
         (is_changed, result_comment) = self._mm_table_obj.set_bit_by_index(
-                black_f_black_o_index=EvaluationPpTable.get_blackright_p1_blackright_p2_index(
+                f_blackright_o_blackright_index=EvaluationPpTable.get_blackright_p1_blackright_p2_index(
                         p1_blackright_move_obj=p1_blackright_move_obj,
                         p2_blackright_move_obj=p2_blackright_move_obj),
                 bit=bit)
