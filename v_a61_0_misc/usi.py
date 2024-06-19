@@ -165,12 +165,19 @@ class Usi():
 
     @staticmethod
     def rotate_srcloc(srcloc):
+        """指し手を盤上で１８０°回転したときの符号に変換します。打はそのまま返します"""
         # 打はそのまま返す
         if Usi.is_drop_by_srcloc(srcloc):
             return srcloc
 
         # 盤上の升番号は、盤を１８０°回転したときの位置の番号を返す
         return 80 - srcloc
+
+
+    @staticmethod
+    def flip_file_th(file_th):
+        """筋を左右反転します"""
+        return 10 - file_th
 
 
     @staticmethod
@@ -248,7 +255,7 @@ class Usi():
 
         try:
             return clazz._srcloc_to_jsa[srcloc]
-        
+
         except KeyError as ex:
             print(f"[usi > srcloc to jsa] len(clazz._srcloc_to_jsa):{len(clazz._srcloc_to_jsa)}  ex:{ex}")
 
@@ -270,6 +277,23 @@ class Usi():
             0 から始まる段の番号
         """
         return file * 9 + rank
+
+
+    @staticmethod
+    def flip_srcloc(srcloc):
+        """指し手を盤上で左右反転したときの符号に変換します。打はそのまま返します"""
+        # 打はそのまま返す
+        if Usi.is_drop_by_srcloc(srcloc):
+            return srcloc
+
+        # 左右反転
+        (file_th, rank_th) = Usi.srcloc_to_file_th_rank_th(srcloc)
+
+        file_th = Usi.flip_file_th(file_th)
+
+        return Usi.file_rank_to_sq(
+                file=file_th - 1,
+                rank=rank_th - 1)
 
 
     @staticmethod

@@ -248,7 +248,8 @@ class Move():
             srcloc,
             dstsq,
             promoted,
-            is_rotate=False):
+            is_rotate=False,
+            is_flip=False):
         """初期化
 
         Parameters
@@ -261,10 +262,16 @@ class Move():
             成ったか？
         is_rotate : bool
             盤を１８０°回転させたときの指し手にするか？
+        is_flip : bool
+            盤を左右反転させたときの指し手にするか？
         """
         if is_rotate:
             srcloc = Usi.rotate_srcloc(srcloc)
             dstsq = Usi.rotate_srcloc(dstsq)
+
+        if is_flip:
+            srcloc = Usi.flip_srcloc(srcloc)
+            dstsq = Usi.flip_srcloc(dstsq)
 
         return Move(
                 srcloc=srcloc,
