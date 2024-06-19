@@ -24,10 +24,6 @@ class EvaluationKkTable():
             自玉の着手
         l_black_move_obj : Move
             敵玉の応手
-        shall_k_white_to_black : bool
-            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
-        shall_l_white_to_black : bool
-            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
         """
 
         # assert

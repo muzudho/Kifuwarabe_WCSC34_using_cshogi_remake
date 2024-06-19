@@ -214,11 +214,8 @@ class EvaluationPkTable():
     # 使ってない？
     def get_relation_exists_by_pk_moves(
             self,
-            # TODO ここは strict ではなく、 black にしてほしい
             p_black_move_obj,
-            k_black_move_obj,
-            shall_p_white_to_black,
-            shall_k_white_to_black):
+            k_black_move_obj):
         """玉と兵の指し手を受け取って、関係の有無を返します
 
         Parameters
@@ -227,10 +224,6 @@ class EvaluationPkTable():
             兵の指し手
         k_black_move_obj : Move
             玉の指し手
-        shall_p_white_to_black : bool
-            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
-        shall_k_white_to_black : bool
-            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
 
         Returns
         -------
