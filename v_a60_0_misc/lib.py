@@ -272,6 +272,28 @@ class Move():
                 promoted=promoted)
 
 
+    def from_move_obj(
+            strict_move_obj,
+            shall_white_to_black):
+        """変形
+
+        Parameters
+        ----------
+        strict_move_obj : Move
+            指し手
+        shall_white_to_black : bool
+            評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
+        """
+        if shall_white_to_black:
+            return Move.from_src_dst_pro(
+                    srcloc=strict_move_obj.srcloc,
+                    dstsq=strict_move_obj.dstsq,
+                    promoted=strict_move_obj.promoted,
+                    is_rotate=True)
+
+        return strict_move_obj
+
+
     def __init__(
             self,
             srcloc,
