@@ -11,27 +11,27 @@ class EvaluationPpTable():
 
     #get_index_of_pp_table
     @staticmethod
-    def get_black_p1_black_p2_index(
-            p1_black_move_obj,
-            p2_black_move_obj):
+    def get_blackright_p1_blackright_p2_index(
+            p1_blackright_move_obj,
+            p2_blackright_move_obj):
         """ＰＫ評価値テーブルのインデックスを算出
 
         Parameters
         ----------
-        p1_black_move_obj : Move
-            兵１の着手
-        p2_black_move_obj : Move
-            兵２の応手
+        p1_blackright_move_obj : Move
+            兵１の着手（先手視点、右辺使用）
+        p2_blackright_move_obj : Move
+            兵２の応手（先手視点、右辺使用）
         """
 
         try:
-            # 0 ～ 14_542_781 =                                                    0 ～ 3812 *                                     3813 +                                                   0 ～ 3812
-            pp_index         = EvaluationPMove.get_black_index_by_p_move(p1_black_move_obj) * EvaluationPMove.get_serial_number_size() + EvaluationPMove.get_black_index_by_p_move(p2_black_move_obj)
+            # 0 ～ 14_542_781 =                                                              0 ～ 3812 *                                     3813 +                                                             0 ～ 3812
+            pp_index         = EvaluationPMove.get_blackright_index_by_p_move(p1_blackright_move_obj) * EvaluationPMove.get_serial_number_size() + EvaluationPMove.get_blackright_index_by_p_move(p2_blackright_move_obj)
 
         except KeyError:
             print(f"""[evaluation pp table > get index of pp table] エラー
-p1_black_move_obj:{p1_black_move_obj.as_usi:5}
-p2_black_move_obj:{p2_black_move_obj.as_usi:5}
+p1_blackright_move_obj:{p1_blackright_move_obj.as_usi:5}
+p2_blackright_move_obj:{p2_blackright_move_obj.as_usi:5}
 """)
             raise
 
@@ -188,16 +188,16 @@ p2_black_move_obj:{p2_black_move_obj.as_usi:5}
     # 使ってない？
     def get_relation_exists_by_pp_moves(
             self,
-            p1_black_move_obj,
-            p2_black_move_obj):
+            p1_blackright_move_obj,
+            p2_blackright_move_obj):
         """兵と兵の指し手を受け取って、関係の有無を返します
 
         Parameters
         ----------
-        p1_black_move_obj : Move
-            兵１の指し手
-        p2_black_move_obj : Move
-            兵２の指し手
+        p1_blackright_move_obj : Move
+            兵１の指し手（先手視点、右辺使用）
+        p2_blackright_move_obj : Move
+            兵２の指し手（先手視点、右辺使用）
 
         Returns
         -------
@@ -205,9 +205,9 @@ p2_black_move_obj:{p2_black_move_obj.as_usi:5}
             0 or 1
         """
         return self.get_relation_exists_by_index(
-                black_k_black_p_index=EvaluationPpTable.get_black_p1_black_p2_index(
-                        p1_black_move_obj=p1_black_move_obj,
-                        p2_black_move_obj=p2_black_move_obj))
+                black_k_black_p_index=EvaluationPpTable.get_blackright_p1_blackright_p2_index(
+                        p1_blackright_move_obj=p1_blackright_move_obj,
+                        p2_blackright_move_obj=p2_blackright_move_obj))
 
 
     def get_relation_exists_by_index(
@@ -232,17 +232,17 @@ p2_black_move_obj:{p2_black_move_obj.as_usi:5}
     #set_relation_exists_by_pp_moves
     def set_relation_exists_by_black_p_black_p_moves(
             self,
-            p1_black_move_obj,
-            p2_black_move_obj,
+            p1_blackright_move_obj,
+            p2_blackright_move_obj,
             bit):
         """玉の着手と兵の応手を受け取って、関係の有無を設定します
 
         Parameters
         ----------
-        p1_black_move_obj : Move
-            兵１の着手（先手の符号）
-        p2_black_move_obj : Move
-            兵２の応手（先手の符号）
+        p1_blackright_move_obj : Move
+            兵１の着手（先手視点、右辺使用）
+        p2_blackright_move_obj : Move
+            兵２の応手（先手視点、右辺使用）
         bit : int
             0 か 1
 
@@ -252,28 +252,28 @@ p2_black_move_obj:{p2_black_move_obj.as_usi:5}
             変更が有ったか？
         """
         (is_changed, result_comment) = self._mm_table_obj.set_bit_by_index(
-                black_f_black_o_index=EvaluationPpTable.get_black_p1_black_p2_index(
-                        p1_black_move_obj=p1_black_move_obj,
-                        p2_black_move_obj=p2_black_move_obj),
+                black_f_black_o_index=EvaluationPpTable.get_blackright_p1_blackright_p2_index(
+                        p1_blackright_move_obj=p1_blackright_move_obj,
+                        p2_blackright_move_obj=p2_blackright_move_obj),
                 bit=bit)
 
         return (is_changed, result_comment)
 
 
     #select_pp_index_and_relation_exists
-    def select_black_p_black_p_index_and_relation_exists(
+    def select_blackright_p_blackright_p_index_and_relation_exists(
             self,
-            p1_black_move_obj,
-            p2_black_move_u_set):
+            p1_blackright_move_obj,
+            p2_blackright_move_u_set):
         """兵１の指し手と、兵２の応手のリストを受け取ると、すべての関係の有無を辞書に入れて返します
         ＰＰ評価値テーブル用
 
         Parameters
         ----------
-        p1_black_move_obj : Move
-            兵１の着手
+        p1_blackright_move_obj : Move
+            兵１の着手（先手視点、右辺使用）
         p2_black_move_u_set : List<str>
-            兵２の応手のリスト
+            兵２の応手のリスト（先手視点、右辺使用）
 
         Returns
         -------
@@ -284,14 +284,14 @@ p2_black_move_obj:{p2_black_move_obj.as_usi:5}
 
         relations = {}
 
-        for p2_black_move_u in p2_black_move_u_set:
-            black_p1_black_p2_index = EvaluationPpTable.get_black_p1_black_p2_index(
-                p1_black_move_obj=p1_black_move_obj,
-                p2_black_move_obj=Move.from_usi(p2_black_move_u))
+        for p2_blackright_move_u in p2_blackright_move_u_set:
+            blackright_p1_blackright_p2_index = EvaluationPpTable.get_blackright_p1_blackright_p2_index(
+                p1_blackright_move_obj=p1_blackright_move_obj,
+                p2_blackright_move_obj=Move.from_usi(p2_blackright_move_u))
 
             relation_bit = self.get_relation_exists_by_index(
-                    black_p1_black_p2_index=black_p1_black_p2_index)
+                    blackright_p1_blackright_p2_index=blackright_p1_blackright_p2_index)
 
-            relations[black_p1_black_p2_index] = relation_bit
+            relations[blackright_p1_blackright_p2_index] = relation_bit
 
         return relations

@@ -763,10 +763,10 @@ class Kifuwarabe():
         is_king_move = MoveHelper.is_king(k_sq, move_obj)
 
         # 着手と応手をキー、関係の有無を値とする辞書を作成します
-        (black_k_black_l_index_to_relation_exists_dictionary,
-         black_k_black_q_index_to_relation_exists_dictionary,
-         black_p_black_l_index_to_relation_exists_dictionary,
-         black_p_black_q_index_to_relation_exists_dictionary) = ChoiceBestMove.select_black_f_black_o_index_to_relation_exists(
+        (k_blackright_l_blackright_index_to_relation_exists_dictionary,
+         k_blackright_q_blackright_index_to_relation_exists_dictionary,
+         p_blackright_l_blackright_index_to_relation_exists_dictionary,
+         p_blackright_q_blackright_index_to_relation_exists_dictionary) = ChoiceBestMove.select_f_blackright_o_blackright_index_to_relation_exists(
                 strict_move_obj=Move.from_usi(move_u),
                 is_king_move=is_king_move,
                 board=self._board,
@@ -777,37 +777,37 @@ class Kifuwarabe():
         #
         if is_king_move:
             # ＫＬ
-            for black_k_black_l_index, relation_exists in black_k_black_l_index_to_relation_exists_dictionary.items():
+            for k_blackright_l_blackright_index, relation_exists in k_blackright_l_blackright_index_to_relation_exists_dictionary.items():
 
-                black_k_move_obj, black_l_move_obj = EvaluationKkTable.build_black_k_black_l_moves_by_black_k_black_l_index(
-                        black_k_black_l_index=black_k_black_l_index)
+                blackright_k_move_obj, blackright_l_move_obj = EvaluationKkTable.build_blackright_k_blackright_l_moves_by_kl_index(
+                        blackright_k_blackright_l_index=k_blackright_l_blackright_index)
 
-                print(f"  turn:{Turn.to_string(self._board.turn)}  black_k_black_l_index:{black_k_black_l_index:7}  K:{black_k_move_obj.as_usi:5}  L:{black_l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                print(f"  turn:{Turn.to_string(self._board.turn)}  k_blackright_l_blackright_index:{k_blackright_l_blackright_index:7}  K:{blackright_k_move_obj.as_usi:5}  L:{blackright_l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
             # ＫＱ
-            for black_k_black_q_index, relation_exists in black_k_black_q_index_to_relation_exists_dictionary.items():
+            for k_blackright_q_blackright_index, relation_exists in k_blackright_q_blackright_index_to_relation_exists_dictionary.items():
 
-                black_k_move_obj, black_q_move_obj = EvaluationKpTable.build_black_k_black_p_moves_by_black_k_black_p_index(
-                        black_k_black_p_index=black_k_black_q_index)
+                blackright_k_move_obj, black_q_move_obj = EvaluationKpTable.build_k_blackright_p_blackright_moves_by_kp_index(
+                        k_blackright_p_blackright_index=k_blackright_q_blackright_index)
 
-                print(f"  turn:{Turn.to_string(self._board.turn)}  black_k_black_q_index:{black_k_black_q_index:7}  K:{black_k_move_obj.as_usi:5}  Q:{black_q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                print(f"  turn:{Turn.to_string(self._board.turn)}  k_blackright_q_blackright_index:{k_blackright_q_blackright_index:7}  K:{blackright_k_move_obj.as_usi:5}  Q:{black_q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
         else:
             # ＰＬ
-            for black_p_black_l_index, relation_exists in black_p_black_l_index_to_relation_exists_dictionary.items():
+            for p_blackright_l_blackright_index, relation_exists in p_blackright_l_blackright_index_to_relation_exists_dictionary.items():
 
                 display_black_p_move_obj, display_black_l_move_obj = EvaluationPkTable.build_black_p_black_k_moves_by_black_p_black_k_index(
-                        black_p_black_k_index=black_p_black_l_index)
+                        black_p_black_k_index=p_blackright_l_blackright_index)
 
-                print(f"  turn:{Turn.to_string(self._board.turn)}  black_p_black_l_index:{black_p_black_l_index:7}  P:{display_black_p_move_obj.as_usi:5}  L:{display_black_l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                print(f"  turn:{Turn.to_string(self._board.turn)}  p_blackright_l_blackright_index:{p_blackright_l_blackright_index:7}  P:{display_black_p_move_obj.as_usi:5}  L:{display_black_l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
             # ＰＱ
-            for black_p_black_q_index, relation_exists in black_p_black_q_index_to_relation_exists_dictionary.items():
+            for p_blackright_q_blackright_index, relation_exists in p_blackright_q_blackright_index_to_relation_exists_dictionary.items():
 
                 display_black_p_move_obj, display_black_q_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
-                        black_p1_black_p2_index=black_p_black_q_index)
+                        black_p1_black_p2_index=p_blackright_q_blackright_index)
 
-                print(f"  turn:{Turn.to_string(self._board.turn)}  black_p_black_q_index:{black_p_black_q_index:7}  P:{display_black_p_move_obj.as_usi:5}  Q:{display_black_q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                print(f"  turn:{Turn.to_string(self._board.turn)}  p_blackright_q_blackright_index:{p_blackright_q_blackright_index:7}  P:{display_black_p_move_obj.as_usi:5}  Q:{display_black_q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
 
     def weaken(

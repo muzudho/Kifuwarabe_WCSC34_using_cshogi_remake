@@ -91,26 +91,28 @@ def test_kk():
     l_strict_move_obj_expected = Move.from_usi('5a5b')
     k_turn = cshogi.BLACK
 
-    k_black_move_obj = Move.from_move_obj(
+    k_blackright_move_obj = Move.from_move_obj(
             strict_move_obj=k_strict_move_obj_expected,
-            shall_white_to_black=False)
-    l_black_move_obj = Move.from_move_obj(
+            shall_white_to_black=False,
+            use_only_right_side=True)
+    l_blackright_move_obj = Move.from_move_obj(
             strict_move_obj=l_strict_move_obj_expected,
-            shall_white_to_black=True)
+            shall_white_to_black=True,
+            use_only_right_side=True)
 
-    black_k_black_l_index = EvaluationKkTable.get_black_k_black_l_index(
-            k_black_move_obj=k_black_move_obj,
-            l_black_move_obj=l_black_move_obj)
+    blackright_k_blackright_l_index = EvaluationKkTable.get_blackright_k_blackright_l_index(
+            k_blackright_move_obj=k_blackright_move_obj,
+            l_blackright_move_obj=l_blackright_move_obj)
 
-    (black_k_move_obj_actual,
-     black_l_move_obj_actual) = EvaluationKkTable.build_black_k_black_l_moves_by_black_k_black_l_index(
-            black_k_black_l_index=black_k_black_l_index)
+    (blackright_k_move_obj_actual,
+     blackright_l_move_obj_actual) = EvaluationKkTable.build_blackright_k_blackright_l_moves_by_kl_index(
+            blackright_k_blackright_l_index=blackright_k_blackright_l_index)
 
-    if k_strict_move_obj_expected.as_usi != black_k_move_obj_actual.as_usi:
-        raise ValueError(f"not match. k_turn:{Turn.to_string(k_turn)} K expected:`{k_strict_move_obj_expected.as_usi}`  actual:`{black_k_move_obj_actual.as_usi}`")
+    if k_strict_move_obj_expected.as_usi != blackright_k_move_obj_actual.as_usi:
+        raise ValueError(f"not match. k_turn:{Turn.to_string(k_turn)} K expected:`{k_strict_move_obj_expected.as_usi}`  actual:`{blackright_k_move_obj_actual.as_usi}`")
 
-    if l_strict_move_obj_expected.as_usi != black_l_move_obj_actual.as_usi:
-        raise ValueError(f"not match. k_turn:{Turn.to_string(k_turn)} L expected:`{l_strict_move_obj_expected.as_usi}`  actual:`{black_l_move_obj_actual.as_usi}`")
+    if l_strict_move_obj_expected.as_usi != blackright_l_move_obj_actual.as_usi:
+        raise ValueError(f"not match. k_turn:{Turn.to_string(k_turn)} L expected:`{l_strict_move_obj_expected.as_usi}`  actual:`{blackright_l_move_obj_actual.as_usi}`")
 
 
 def test_p():
@@ -119,13 +121,14 @@ def test_p():
         expected_p_move_u = '3h3i+'
         expected_p_move_obj = Move.from_usi(expected_p_move_u)
 
-        # 先手の向きに合わせる
-        p_black_move_obj = Move.from_move_obj(
+        # （先手視点、右辺使用）に合わせる
+        p_blackright_move_obj = Move.from_move_obj(
                 strict_move_obj=Move.from_usi(expected_p_move_u),
-                shall_white_to_black=True)
+                shall_white_to_black=True,
+                use_only_right_side=True)
 
-        p_index = EvaluationPMove.get_black_index_by_p_move(
-                p_black_move_obj=p_black_move_obj,
+        p_index = EvaluationPMove.get_blackright_index_by_p_move(
+                p_blackright_move_obj=p_blackright_move_obj,
                 ignore_error=True)
 
         if p_index == -1:

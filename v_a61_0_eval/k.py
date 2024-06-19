@@ -238,14 +238,14 @@ class EvaluationKMove():
     #get_index_of_k_move
     #get_index_by_k_move
     @staticmethod
-    def get_black_index_by_k_move(
-            k_black_move_obj):
+    def get_blackright_index_by_k_move(
+            k_blackright_move_obj):
         """玉の指し手を指定すると、玉の指し手のインデックスを返す。
 
         Parameters
         ----------
-        k_black_move_obj : Move
-            玉の指し手
+        k_blackright_move_obj : Move
+            玉の指し手（先手視点、右辺使用）
 
         Returns
         -------
@@ -253,11 +253,11 @@ class EvaluationKMove():
         """
 
         # assert
-        if Usi.is_drop_by_srcloc(k_black_move_obj.srcloc):
-            raise ValueError(f"[evaluation k move > get index by k move] 玉の指し手で打なのはおかしい。 k_black_move_obj.srcloc_u:{Usi.srcloc_to_code(k_black_move_obj.srcloc)}  k_black_move_obj:{k_black_move_obj.dump()}")
+        if Usi.is_drop_by_srcloc(k_blackright_move_obj.srcloc):
+            raise ValueError(f"[evaluation k move > get index by k move] 玉の指し手で打なのはおかしい。 k_blackright_move_obj.srcloc_u:{Usi.srcloc_to_code(k_blackright_move_obj.srcloc)}  k_blackright_move_obj:{k_blackright_move_obj.dump()}")
 
-        k_srcsq = Usi.srcloc_to_sq(k_black_move_obj.srcloc)
-        k_dstsq = k_black_move_obj.dstsq
+        k_srcsq = Usi.srcloc_to_sq(k_blackright_move_obj.srcloc)
+        k_dstsq = k_blackright_move_obj.dstsq
 
         # 玉は成らない
 
@@ -272,8 +272,8 @@ class EvaluationKMove():
             dstsq_to_index_dictionary = srcsq_to_dstsq_index_dictionary[k_srcsq]
 
         except KeyError as ex:
-            # k_srcsq error. k_black_move_obj.as_usi:S*3b  rotated:False  k_srcsq:None  src_masu:None  ex:None
-            print(f"[evaluation k move > get index by k move]  k_srcsq error. k_black_move_obj.as_usi:{k_black_move_obj.as_usi}  k_srcsq:{k_srcsq}  src_masu:{Usi.sq_to_jsa(k_srcsq)}  k_black_move_obj:{k_black_move_obj.dump()}  k_dstsq:{k_dstsq}  ex:{ex}")
+            # k_srcsq error. k_blackright_move_obj.as_usi:S*3b  rotated:False  k_srcsq:None  src_masu:None  ex:None
+            print(f"[evaluation k move > get index by k move]  k_srcsq error. k_blackright_move_obj.as_usi:{k_blackright_move_obj.as_usi}  k_srcsq:{k_srcsq}  src_masu:{Usi.sq_to_jsa(k_srcsq)}  k_blackright_move_obj:{k_blackright_move_obj.dump()}  k_dstsq:{k_dstsq}  ex:{ex}")
             raise
 
         #
@@ -285,12 +285,12 @@ class EvaluationKMove():
             k_index = dstsq_to_index_dictionary[k_dstsq]
 
         except KeyError as ex:
-            # k_black_move_obj.as_usi:5a5b  k_srcsq:36  dstsq:37
-            # k_black_move_obj.as_usi:5a4b  is_rotate:True  k_srcsq:44  dstsq:52  src_masu:59  dst_masu:68  ex:28
-            # k_black_move_obj.as_usi:6g4e  rotated:True  k_srcsq:29  k_dstsq:49  src_masu:43  dst_masu:65  ex:49
-            # k_black_move_obj.as_usi:8i6g  rotated:True  len(dstsq_to_index_dictionary):5  k_src_masu:21  k_dst_masu:43  k_srcsq:9  k_dstsq:29  ex:29
-            # [evaluation k move > get index by k move]  k_dstsq error. k_black_move_obj.as_usi:2h6h  rotated:True  len(dstsq_to_index_dictionary):8  k_src_masu:82  k_dst_masu:42  k_srcsq:64  k_dstsq:28  ex:28
-            print(f"[evaluation k move > get index by k move]  k_dstsq error. k_black_move_obj.as_usi:{k_black_move_obj.as_usi}  len(dstsq_to_index_dictionary):{len(dstsq_to_index_dictionary)}  k_src_masu:{Usi.sq_to_jsa(k_srcsq)}  k_dst_masu:{Usi.sq_to_jsa(k_dstsq)}  k_srcsq:{k_srcsq}  k_dstsq:{k_dstsq}  ex:{ex}")
+            # k_blackright_move_obj.as_usi:5a5b  k_srcsq:36  dstsq:37
+            # k_blackright_move_obj.as_usi:5a4b  is_rotate:True  k_srcsq:44  dstsq:52  src_masu:59  dst_masu:68  ex:28
+            # k_blackright_move_obj.as_usi:6g4e  rotated:True  k_srcsq:29  k_dstsq:49  src_masu:43  dst_masu:65  ex:49
+            # k_blackright_move_obj.as_usi:8i6g  rotated:True  len(dstsq_to_index_dictionary):5  k_src_masu:21  k_dst_masu:43  k_srcsq:9  k_dstsq:29  ex:29
+            # [evaluation k move > get index by k move]  k_dstsq error. k_blackright_move_obj.as_usi:2h6h  rotated:True  len(dstsq_to_index_dictionary):8  k_src_masu:82  k_dst_masu:42  k_srcsq:64  k_dstsq:28  ex:28
+            print(f"[evaluation k move > get index by k move]  k_dstsq error. k_blackright_move_obj.as_usi:{k_blackright_move_obj.as_usi}  len(dstsq_to_index_dictionary):{len(dstsq_to_index_dictionary)}  k_src_masu:{Usi.sq_to_jsa(k_srcsq)}  k_dst_masu:{Usi.sq_to_jsa(k_dstsq)}  k_srcsq:{k_srcsq}  k_dstsq:{k_dstsq}  ex:{ex}")
 
             # ダンプ
             i = 0

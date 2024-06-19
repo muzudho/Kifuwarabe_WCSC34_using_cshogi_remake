@@ -14,28 +14,28 @@ class EvaluationKkTable():
     #get_index_of_kk_table
     @staticmethod
     def get_black_k_black_l_index(
-            k_black_move_obj,
-            l_black_move_obj):
+            k_blackright_move_obj,
+            l_blackright_move_obj):
         """ＫＫ評価値テーブルのインデックスを算出
 
         Parameters
         ----------
-        k_black_move_obj : Move
-            自玉の着手
-        l_black_move_obj : Move
-            敵玉の応手
+        k_blackright_move_obj : Move
+            自玉の着手（先手視点、右辺使用）
+        l_blackright_move_obj : Move
+            敵玉の応手（先手視点、右辺使用）
         """
 
         # assert
-        if Usi.is_drop_by_srcloc(k_black_move_obj.srcloc):
-            raise ValueError(f"[evaluation kk table > get index of kk move > k] 玉の指し手で打なのはおかしい。 k_black_move_obj.srcloc_u:{Usi.srcloc_to_code(k_black_move_obj.srcloc)}  k_black_move_obj:{k_black_move_obj.dump()}")
+        if Usi.is_drop_by_srcloc(k_blackright_move_obj.srcloc):
+            raise ValueError(f"[evaluation kk table > get index of kk move > k] 玉の指し手で打なのはおかしい。 k_blackright_move_obj.srcloc_u:{Usi.srcloc_to_code(k_blackright_move_obj.srcloc)}  k_blackright_move_obj:{k_blackright_move_obj.dump()}")
 
         # assert
-        if Usi.is_drop_by_srcloc(l_black_move_obj.srcloc):
-            raise ValueError(f"[evaluation kk table > get index of kk move > l] 玉の指し手で打なのはおかしい。 l_move_obj.srcloc_u:{Usi.srcloc_to_code(l_black_move_obj.srcloc)}  l_black_move_obj:{l_black_move_obj.dump()}")
+        if Usi.is_drop_by_srcloc(l_blackright_move_obj.srcloc):
+            raise ValueError(f"[evaluation kk table > get index of kk move > l] 玉の指し手で打なのはおかしい。 l_move_obj.srcloc_u:{Usi.srcloc_to_code(l_blackright_move_obj.srcloc)}  l_blackright_move_obj:{l_blackright_move_obj.dump()}")
 
-        # 0 ～ 296_479 =                                                     0 ～ 543 *                                      544 +                                                   0 ～ 543
-        kk_index       = EvaluationKMove.get_black_index_by_k_move(k_black_move_obj) * EvaluationKMove.get_serial_number_size() + EvaluationKMove.get_black_index_by_k_move(l_black_move_obj)
+        # 0 ～ 296_479 =                                                               0 ～ 543 *                                      544 +                                                             0 ～ 543
+        kk_index       = EvaluationKMove.get_blackright_index_by_k_move(k_blackright_move_obj) * EvaluationKMove.get_serial_number_size() + EvaluationKMove.get_blackright_index_by_k_move(l_blackright_move_obj)
 
         # assert
         if EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size() <= kk_index:
@@ -47,27 +47,27 @@ class EvaluationKkTable():
     #destructure_kl_index
     #build_k_l_moves_by_kl_index
     @staticmethod
-    def build_black_k_black_l_moves_by_black_k_black_l_index(
-            black_k_black_l_index):
+    def build_blackright_k_blackright_l_moves_by_kl_index(
+            blackright_k_blackright_l_index):
         """ＫＬインデックス分解
 
         Parameter
         ---------
-        black_k_black_l_index : int
-            自玉と敵玉の関係の通しインデックス
+        blackright_k_blackright_l_index : int
+            自玉と敵玉の関係の通しインデックス（先手視点、右辺使用）
 
         Returns
         -------
-        - black_k_move_obj : Move
+        - blackright_k_move_obj : Move
             自玉の着手
-        - black_l_move_obj : Move
+        - blackright_l_move_obj : Move
             敵玉の応手
         """
 
         king_serial_number_size = EvaluationKMove.get_serial_number_size()
 
-        black_l_index = black_k_black_l_index % king_serial_number_size
-        black_k_index = black_k_black_l_index // king_serial_number_size
+        black_l_index = blackright_k_blackright_l_index % king_serial_number_size
+        black_k_index = blackright_k_blackright_l_index // king_serial_number_size
 
         # assert
         if EvaluationKMove.get_serial_number_size() <= black_l_index:
@@ -81,7 +81,7 @@ class EvaluationKkTable():
         (l_srcsq,
          l_dstsq) = EvaluationKMove.destructure_srcsq_dstsq_by_k_index(
                 k_index=black_l_index)
-        black_l_move_obj = Move.from_src_dst_pro(
+        blackright_l_move_obj = Move.from_src_dst_pro(
                 srcloc=l_srcsq,
                 dstsq=l_dstsq,
                 # 玉に成りはありません
@@ -93,7 +93,7 @@ class EvaluationKkTable():
         (k_srcsq,
          k_dstsq) = EvaluationKMove.destructure_srcsq_dstsq_by_k_index(
                 k_index=black_k_index)
-        black_k_move_obj = Move.from_src_dst_pro(
+        blackright_k_move_obj = Move.from_src_dst_pro(
                 srcloc=k_srcsq,
                 dstsq=k_dstsq,
                 # 玉に成りはありません
@@ -101,7 +101,7 @@ class EvaluationKkTable():
                 # 先手のインデックスが渡されるので、回転して先手にする必要はありません
                 is_rotate=False)
 
-        return (black_k_move_obj, black_l_move_obj)
+        return (blackright_k_move_obj, blackright_l_move_obj)
 
 
     def __init__(
@@ -187,7 +187,7 @@ class EvaluationKkTable():
 
     def get_relation_exists_by_index(
             self,
-            black_k_black_l_index):
+            k_blackright_l_blackright_index):
         """配列のインデックスを受け取って、関係の有無を返します
 
         Parameters
@@ -201,23 +201,23 @@ class EvaluationKkTable():
             0 or 1
         """
         return self._mm_table_obj.get_bit_by_index(
-                index=black_k_black_l_index)
+                index=k_blackright_l_blackright_index)
 
 
     #set_relation_exsits_by_kl_moves
     def set_relation_exsits_by_black_k_black_l_moves(
             self,
-            black_k_move_obj,
-            black_l_move_obj,
+            blackright_k_move_obj,
+            blackright_l_move_obj,
             bit):
         """自玉の着手と敵玉の応手を受け取って、関係の有無を設定します
 
         Parameters
         ----------
-        black_k_move_obj : Move
-            自玉の指し手
-        black_l_move_obj : Move
-            敵玉の指し手
+        blackright_k_move_obj : Move
+            自玉の指し手（先手視点、右辺使用）
+        blackright_l_move_obj : Move
+            敵玉の指し手（先手視点、右辺使用）
         bit : int
             0 か 1
 
@@ -230,17 +230,17 @@ class EvaluationKkTable():
         """
 
         # assert
-        if Usi.is_drop_by_srcloc(black_k_move_obj.srcloc):
-            raise ValueError(f"[evaluation kk table > set relation exists by kl moves > k] 玉の指し手で打なのはおかしい。 black_k_move_obj.srcloc_u:{Usi.srcloc_to_code(black_k_move_obj.srcloc)}  black_k_move_obj:{black_k_move_obj.dump()}")
+        if Usi.is_drop_by_srcloc(blackright_k_move_obj.srcloc):
+            raise ValueError(f"[evaluation kk table > set relation exists by kl moves > k] 玉の指し手で打なのはおかしい。 blackright_k_move_obj.srcloc_u:{Usi.srcloc_to_code(blackright_k_move_obj.srcloc)}  blackright_k_move_obj:{blackright_k_move_obj.dump()}")
 
         # assert
-        if Usi.is_drop_by_srcloc(black_l_move_obj.srcloc):
-            raise ValueError(f"[evaluation kk table > set relation exists by kl moves > l] 玉の指し手で打なのはおかしい。 black_l_move_obj.srcloc_u:{Usi.srcloc_to_code(black_l_move_obj.srcloc)}  black_l_move_obj:{black_l_move_obj.dump()}")
+        if Usi.is_drop_by_srcloc(blackright_l_move_obj.srcloc):
+            raise ValueError(f"[evaluation kk table > set relation exists by kl moves > l] 玉の指し手で打なのはおかしい。 black_l_move_obj.srcloc_u:{Usi.srcloc_to_code(blackright_l_move_obj.srcloc)}  black_l_move_obj:{blackright_l_move_obj.dump()}")
 
         (is_changed, result_comment) = self._mm_table_obj.set_bit_by_index(
                 black_f_black_o_index=EvaluationKkTable.get_black_k_black_l_index(
-                        k_black_move_obj=black_k_move_obj,
-                        l_black_move_obj=black_l_move_obj),
+                        k_blackright_move_obj=blackright_k_move_obj,
+                        l_blackright_move_obj=blackright_l_move_obj),
                 bit=bit)
 
         return (is_changed, result_comment)
@@ -248,19 +248,19 @@ class EvaluationKkTable():
 
     #create_relation_exists_dictionary_by_k_move_and_l_moves
     #select_kl_index_and_relation_exists
-    def select_black_k_black_l_index_and_relation_exists(
+    def select_blackright_k_blackright_l_index_and_relation_exists(
             self,
-            k_black_move_obj,
-            l_black_move_u_set):
+            k_blackright_move_obj,
+            l_blackright_move_u_set):
         """自玉の指し手と、敵玉の応手のリストを受け取ると、すべての関係の有無を辞書に入れて返します
         ＫＫ評価値テーブル用
 
         Parameters
         ----------
-        k_black_move_obj : Move
-            自玉の着手
-        l_black_move_u_set : List<str>
-            敵玉の応手のリスト
+        k_blackright_move_obj : Move
+            自玉の着手（先手視点、右辺使用）
+        l_blackright_move_u_set : List<str>
+            敵玉の応手のリスト（先手視点、右辺使用）
 
         Returns
         -------
@@ -271,17 +271,17 @@ class EvaluationKkTable():
 
         relations = {}
 
-        for l_black_move_u in l_black_move_u_set:
+        for l_blackright_move_u in l_blackright_move_u_set:
 
-            l_black_move_obj = Move.from_usi(l_black_move_u)
+            l_blackright_move_obj = Move.from_usi(l_blackright_move_u)
 
-            black_k_black_l_index = EvaluationKkTable.get_black_k_black_l_index(
-                    k_black_move_obj=k_black_move_obj,
-                    l_black_move_obj=l_black_move_obj)
+            k_blackright_l_blackright_index = EvaluationKkTable.get_black_k_black_l_index(
+                    k_blackright_move_obj=k_blackright_move_obj,
+                    l_blackright_move_obj=l_blackright_move_obj)
 
             relation_bit = self.get_relation_exists_by_index(
-                    black_k_black_l_index=black_k_black_l_index)
+                    k_blackright_l_blackright_index=k_blackright_l_blackright_index)
 
-            relations[black_k_black_l_index] = relation_bit
+            relations[k_blackright_l_blackright_index] = relation_bit
 
         return relations

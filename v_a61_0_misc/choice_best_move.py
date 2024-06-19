@@ -18,7 +18,7 @@ class ChoiceBestMove():
 
     #select_fo_index_to_relation_exists
     @staticmethod
-    def select_black_f_black_o_index_to_relation_exists(
+    def select_f_blackright_o_blackright_index_to_relation_exists(
             strict_move_obj,
             is_king_move,
             board,
@@ -38,13 +38,13 @@ class ChoiceBestMove():
 
         Returns
         -------
-        black_k_black_l_index_to_relation_exists_dic
+        blackright_k_blackright_l_index_to_relation_exists_dic
             自玉の着手と、敵玉の応手の関係の有無を格納した辞書
-        black_black_k_black_q_index_to_relation_exists_dic
+        blackright_k_blackright_q_index_to_relation_exists_dic
             自玉の着手と、敵兵の応手の関係の有無を格納した辞書
-        black_p_black_l_index_to_relation_exists_dic
+        blackright_p_blackright_l_index_to_relation_exists_dic
             自兵の着手と、敵玉の応手の関係の有無を格納した辞書
-        black_p_black_q_index_to_relation_exists_dic
+        blackright_p_blackright_q_index_to_relation_exists_dic
             自兵の着手と、敵兵の応手の関係の有無を格納した辞書
         """
 
@@ -58,27 +58,31 @@ class ChoiceBestMove():
                 board=board,
                 strict_move_obj=strict_move_obj)
 
-        # 先手視点に変更
-        black_move_obj = Move.from_move_obj(
+        # （先手視点，右辺使用）に変更
+        blackright_move_obj = Move.from_move_obj(
                 strict_move_obj=strict_move_obj,
                 # 先手の指し手になるよう調整します
-                shall_white_to_black=board.turn==cshogi.WHITE)
+                shall_white_to_black=board.turn==cshogi.WHITE,
+                # 指し手の元位置が、右辺を使うように左右反転します
+                use_only_right_side=True)
 
-        # 先手視点に変更
-        l_black_move_u_set = set()
+        # （先手視点，右辺使用）に変更
+        l_blackright_move_u_set = set()
         for l_strict_move_u in l_strict_move_u_set:
-            l_black_move_u_set.add(Move.from_move_obj(
+            l_blackright_move_u_set.add(Move.from_move_obj(
                     strict_move_obj=Move.from_usi(l_strict_move_u),
                     # 先手の指し手になるよう調整します
-                    shall_white_to_black=board.turn==cshogi.WHITE).as_usi)
+                    shall_white_to_black=board.turn==cshogi.WHITE,
+                    use_only_right_side=True).as_usi)
 
-        # 先手視点に変更
-        q_black_move_u_set = set()
+        # （先手視点，右辺使用）に変更
+        q_blackright_move_u_set = set()
         for q_strict_move_u in q_strict_move_u_set:
-            q_black_move_u_set.add(Move.from_move_obj(
+            q_blackright_move_u_set.add(Move.from_move_obj(
                     strict_move_obj=Move.from_usi(q_strict_move_u),
                     # 先手の指し手になるよう調整します
-                    shall_white_to_black=board.turn==cshogi.BLACK).as_usi)
+                    shall_white_to_black=board.turn==cshogi.BLACK,
+                    use_only_right_side=True).as_usi)
 
         if is_king_move:
 
@@ -87,34 +91,34 @@ class ChoiceBestMove():
             #
 
             # 自玉の着手と、敵玉の応手の一覧から、ＫＬテーブルのインデックスと、関係の有無を格納した辞書を作成
-            black_k_black_l_index_to_relation_exists_dic = kifuwarabe.evaluation_kl_table_obj_array[Turn.to_index(board.turn)].select_black_k_black_l_index_and_relation_exists(
-                    k_black_move_obj=black_move_obj,
-                    l_black_move_u_set=l_black_move_u_set)
+            blackright_k_blackright_l_index_to_relation_exists_dic = kifuwarabe.evaluation_kl_table_obj_array[Turn.to_index(board.turn)].select_blackright_k_blackright_l_index_and_relation_exists(
+                    k_blackright_move_obj=blackright_move_obj,
+                    l_blackright_move_u_set=l_blackright_move_u_set)
 
             # assert
-            for black_k_black_l_index, relation_exists in black_k_black_l_index_to_relation_exists_dic.items():
-                assert_black_k_move_obj, assert_black_l_move_obj = EvaluationKkTable.build_black_k_black_l_moves_by_black_k_black_l_index(
-                        black_k_black_l_index=black_k_black_l_index)
+            for blackright_k_black_l_index, relation_exists in blackright_k_blackright_l_index_to_relation_exists_dic.items():
+                assert_blackright_k_move_obj, assert_blackright_l_move_obj = EvaluationKkTable.build_blackright_k_blackright_l_moves_by_kl_index(
+                        blackright_k_blackright_l_index=blackright_k_black_l_index)
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                 if not is_white:
-                    if assert_black_k_move_obj.as_usi != strict_move_obj.as_usi:
+                    if assert_blackright_k_move_obj.as_usi != strict_move_obj.as_usi:
                         print(board)
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > kl] 着手が変わっているエラー
                                            手番（Ｋ）:{Turn.to_string(board.turn)}
                                       元の指し手（Ｋ）:{strict_move_obj.as_usi:5}
-１回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{assert_black_k_move_obj.as_usi:5}
+１回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{assert_blackright_k_move_obj.as_usi:5}
 """)
 
                 # 着手が後手なら、１８０°回転させるので、インデックスは変わる
                 else:
-                    if assert_black_k_move_obj.as_usi != move_rot_obj.as_usi:
+                    if assert_blackright_k_move_obj.as_usi != move_rot_obj.as_usi:
                         print(board)
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > kl] 指し手を先手の向きに変えて復元できなかったエラー
 is_white     :{is_white}
-strict_move_u:{strict_move_obj.as_usi    :5} black_p_move_u:{assert_black_k_move_obj.as_usi:5}
+strict_move_u:{strict_move_obj.as_usi    :5} black_p_move_u:{assert_blackright_k_move_obj.as_usi:5}
 move_rot_u   :{move_rot_obj.as_usi:5}
-              {''                 :5} black_l_move_u:{assert_black_l_move_obj.as_usi:5}
+              {''                 :5} black_l_move_u:{assert_blackright_l_move_obj.as_usi:5}
 """)
 
             #
@@ -122,38 +126,38 @@ move_rot_u   :{move_rot_obj.as_usi:5}
             #
 
             # 自玉の着手と、敵兵の応手の一覧から、ＫＱテーブルのインデックスと、関係の有無を格納した辞書を作成
-            black_k_black_q_index_to_relation_exists_dic = kifuwarabe.evaluation_kq_table_obj_array[Turn.to_index(board.turn)].select_black_k_black_p_index_and_relation_exists(
-                    k_black_move_obj=black_move_obj,
-                    p_black_move_u_set=q_black_move_u_set)
+            blackright_k_blackright_q_index_to_relation_exists_dic = kifuwarabe.evaluation_kq_table_obj_array[Turn.to_index(board.turn)].select_blackright_k_blackright_p_index_and_relation_exists(
+                    k_black_move_obj=blackright_move_obj,
+                    p_black_move_u_set=q_blackright_move_u_set)
 
             # assert
-            for black_k_black_q_index, relation_exists in black_k_black_q_index_to_relation_exists_dic.items():
-                assert_black_k_move_obj, assert_black_q_move_obj = EvaluationKpTable.build_black_k_black_p_moves_by_black_k_black_p_index(
-                        black_k_black_p_index=black_k_black_q_index)
+            for k_blackright_q_blackright_index, relation_exists in blackright_k_blackright_q_index_to_relation_exists_dic.items():
+                assert_blackright_k_move_obj, assert_q_blackright_move_obj = EvaluationKpTable.build_k_blackright_p_blackright_moves_by_kp_index(
+                        k_blackright_p_blackright_index=k_blackright_q_blackright_index)
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                 if not is_white:
-                    if assert_black_k_move_obj.as_usi != strict_move_obj.as_usi:
+                    if assert_blackright_k_move_obj.as_usi != strict_move_obj.as_usi:
                         print(board)
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > kq] 着手が変わっているエラー
                                            手番（Ｋ）:{Turn.to_string(board.turn)}
                                       元の指し手（Ｋ）:{strict_move_obj.as_usi:5}
-１回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{assert_black_k_move_obj.as_usi:5}
+１回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{assert_blackright_k_move_obj.as_usi:5}
 """)
 
                 # 着手が後手なら、１８０°回転させるので、インデックスは変わる
                 else:
-                    if assert_black_k_move_obj.as_usi != move_rot_obj.as_usi:
+                    if assert_blackright_k_move_obj.as_usi != move_rot_obj.as_usi:
                         print(board)
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > kq] 指し手を先手の向きに変えて復元できなかったエラー
 is_white     :{is_white}
-strict_move_u:{strict_move_obj.as_usi    :5} black_p_move_u:{assert_black_k_move_obj.as_usi:5}
+strict_move_u:{strict_move_obj.as_usi    :5} black_p_move_u:{assert_blackright_k_move_obj.as_usi:5}
 move_rot_u   :{move_rot_obj.as_usi       :5}
-              {''                        :5} black_l_move_u:{assert_black_q_move_obj.as_usi:5}
+              {''                        :5} black_l_move_u:{assert_q_blackright_move_obj.as_usi:5}
 """)
 
-            return (black_k_black_l_index_to_relation_exists_dic,
-                    black_k_black_q_index_to_relation_exists_dic,
+            return (blackright_k_blackright_l_index_to_relation_exists_dic,
+                    blackright_k_blackright_q_index_to_relation_exists_dic,
                     None,
                     None)
 
@@ -164,47 +168,47 @@ move_rot_u   :{move_rot_obj.as_usi       :5}
             #
 
             # 自兵の着手と、敵玉の応手の一覧から、ＰＬテーブルのインデックスと、関係の有無を格納した辞書を作成
-            black_p_black_l_index_to_relation_exists_dic = kifuwarabe.evaluation_pl_table_obj_array[Turn.to_index(board.turn)].select_black_p_black_k_index_and_relation_exists(
-                    p_black_move_obj=black_move_obj,
-                    k_black_move_u_set=l_black_move_u_set)
+            p_blackright_l_blackright_index_to_relation_exists_dic = kifuwarabe.evaluation_pl_table_obj_array[Turn.to_index(board.turn)].select_black_p_black_k_index_and_relation_exists(
+                    p_black_move_obj=blackright_move_obj,
+                    k_black_move_u_set=l_blackright_move_u_set)
 
             # assert
-            for black_p_black_l_index, relation_exists in black_p_black_l_index_to_relation_exists_dic.items():
-                assert_black_p_move_obj, assert_black_l_move_obj = EvaluationPkTable.build_black_p_black_k_moves_by_black_p_black_k_index(
-                        black_p_black_k_index=black_p_black_l_index)
+            for p_blackright_l_blackright_index, relation_exists in p_blackright_l_blackright_index_to_relation_exists_dic.items():
+                assert_p_blackright_move_obj, assert_blackright_l_move_obj = EvaluationPkTable.build_black_p_black_k_moves_by_black_p_black_k_index(
+                        black_p_black_k_index=p_blackright_l_blackright_index)
 
                 check_black_p_black_l_index = EvaluationPkTable.get_black_p_black_k_index(
-                        p_black_move_obj=assert_black_p_move_obj,
-                        k_black_move_obj=assert_black_l_move_obj)
+                        p_black_move_obj=assert_p_blackright_move_obj,
+                        k_black_move_obj=assert_blackright_l_move_obj)
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                 if not is_white:
-                    if black_p_black_l_index != check_black_p_black_l_index:
+                    if p_blackright_l_blackright_index != check_black_p_black_l_index:
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pl] インデックスから指し手を復元し、さらにインデックスに圧縮すると、元のインデックスに復元しなかったエラー
-                   black_p_black_l_index:{        black_p_black_l_index:10}
+                   p_blackright_l_blackright_index:{        p_blackright_l_blackright_index:10}
 check_black_p_black_l_index:{check_black_p_black_l_index  :10}
-                   p_move_u:{assert_black_p_move_obj.as_usi:5}
-                   l_move_u:{assert_black_l_move_obj.as_usi:5}
+                   p_move_u:{assert_p_blackright_move_obj.as_usi:5}
+                   l_move_u:{assert_blackright_l_move_obj.as_usi:5}
 """)
                     else:
 #                        print(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pl] インデックスから指し手を復元し、さらにインデックスに圧縮すると、元のインデックスに復元できた。Ok
-#                   black_p_black_l_index:{        black_p_black_l_index:10}
+#                   p_blackright_l_blackright_index:{        p_blackright_l_blackright_index:10}
 #check_black_p_black_l_index:{check_black_p_black_l_index  :10}
-#                   p_move_u:{assert_black_p_move_obj.as_usi:5}
-#                   l_move_u:{assert_black_l_move_obj.as_usi:5}
+#                   p_move_u:{assert_p_blackright_move_obj.as_usi:5}
+#                   l_move_u:{assert_blackright_l_move_obj.as_usi:5}
 #""")
                         pass
 
                 # 着手が後手なら、１８０°回転させるので、インデックスは変わる
                 else:
 
-                    if assert_black_p_move_obj.as_usi != move_rot_obj.as_usi:
+                    if assert_p_blackright_move_obj.as_usi != move_rot_obj.as_usi:
                         print(board)
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pl] 指し手を先手の向きに変えて復元できなかったエラー
 is_white     :{is_white}
-strict_move_u:{strict_move_obj.as_usi:5} black_p_move_u:{assert_black_p_move_obj.as_usi:5}
+strict_move_u:{strict_move_obj.as_usi:5} black_p_move_u:{assert_p_blackright_move_obj.as_usi:5}
 move_rot_u   :{move_rot_obj.as_usi   :5}
-              {''                    :5} black_l_move_u:{assert_black_l_move_obj.as_usi:5}
+              {''                    :5} black_l_move_u:{assert_blackright_l_move_obj.as_usi:5}
 """)
 
             #
@@ -212,55 +216,55 @@ move_rot_u   :{move_rot_obj.as_usi   :5}
             #
 
             # 自兵の着手と、敵兵の応手の一覧から、ＰＱテーブルのインデックスと、関係の有無を格納した辞書を作成
-            black_p_black_q_index_to_relation_exists_dic = kifuwarabe.evaluation_pq_table_obj_array[Turn.to_index(board.turn)].select_black_p_black_p_index_and_relation_exists(
-                    p1_black_move_obj=black_move_obj,
-                    p2_black_move_u_set=q_black_move_u_set)
+            p_blackright_q_blackright_index_to_relation_exists_dic = kifuwarabe.evaluation_pq_table_obj_array[Turn.to_index(board.turn)].select_blackright_p_blackright_p_index_and_relation_exists(
+                    p1_blackright_move_obj=blackright_move_obj,
+                    p2_blackright_move_u_set=q_blackright_move_u_set)
 
             # assert
-            for black_p_black_q_index, relation_exists in black_p_black_q_index_to_relation_exists_dic.items():
-                assert_black_p_move_obj, assert_black_q_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
-                        black_p1_black_p2_index=black_p_black_q_index)
+            for blackright_p_black_q_index, relation_exists in p_blackright_q_blackright_index_to_relation_exists_dic.items():
+                assert_p_blackright_move_obj, assert_q_blackright_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
+                        black_p1_black_p2_index=blackright_p_black_q_index)
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                 if not is_white:
-                    if assert_black_p_move_obj.as_usi != strict_move_obj.as_usi:
+                    if assert_p_blackright_move_obj.as_usi != strict_move_obj.as_usi:
                         print(board)
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pq] 着手が変わっているエラー
 is_white  :{is_white}
                                            手番（Ｐ）:{Turn.to_string(board.turn)}
                                       元の指し手（Ｐ）:{strict_move_obj.as_usi:5}
-１回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_black_p_move_obj.as_usi:5}
+１回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_p_blackright_move_obj.as_usi:5}
 """)
 
                 # 着手が後手なら、１８０°回転させるので、インデックスは変わる
                 else:
-                    if assert_black_p_move_obj.as_usi != move_rot_obj.as_usi:
+                    if assert_p_blackright_move_obj.as_usi != move_rot_obj.as_usi:
                         print(board)
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > select fo index to relation exests > pq] 指し手を先手の向きに変えて復元できなかったエラー
 is_white     :{is_white}
-strict_move_u:{strict_move_obj.as_usi:5} black_p_move_u:{assert_black_p_move_obj.as_usi:5}
+strict_move_u:{strict_move_obj.as_usi:5} black_p_move_u:{assert_p_blackright_move_obj.as_usi:5}
 move_rot_u   :{move_rot_obj.as_usi   :5}
-              {''                    :5} black_l_move_u:{assert_black_q_move_obj.as_usi:5}
+              {''                    :5} black_l_move_u:{assert_q_blackright_move_obj.as_usi:5}
 """)
 
             return (None,
                     None,
-                    black_p_black_l_index_to_relation_exists_dic,
-                    black_p_black_q_index_to_relation_exists_dic)
+                    p_blackright_l_blackright_index_to_relation_exists_dic,
+                    p_blackright_q_blackright_index_to_relation_exists_dic)
 
 
     @staticmethod
     def get_number_of_connection_for_kl_kq(
-            black_k_black_l_index_to_relation_exists_dictionary,
-            black_k_black_q_index_to_relation_exists_dictionary,
+            k_blackright_l_blackright_index_to_relation_exists_dictionary,
+            k_blackright_q_blackright_index_to_relation_exists_dictionary,
             is_debug=False):
         """ＫＬとＫＱの関係が有るものの数
 
         Parameters
         ----------
-        black_k_black_l_index_to_relation_exists_dictionary : dict
+        k_blackright_l_blackright_index_to_relation_exists_dictionary : dict
             ＫＬ
-        black_k_black_q_index_to_relation_exists_dictionary : dict
+        k_blackright_q_blackright_index_to_relation_exists_dictionary : dict
             ＫＱ
         is_debug : bool
             デバッグモードか？
@@ -268,46 +272,46 @@ move_rot_u   :{move_rot_obj.as_usi   :5}
         number_of_connection = 0
 
         # ＫＬ
-        for relation_exists in black_k_black_l_index_to_relation_exists_dictionary.values():
+        for relation_exists in k_blackright_l_blackright_index_to_relation_exists_dictionary.values():
             if relation_exists == 1:
                 number_of_connection += 1
 
         # ＫＱ
-        for relation_exists in black_k_black_q_index_to_relation_exists_dictionary.values():
+        for relation_exists in k_blackright_q_blackright_index_to_relation_exists_dictionary.values():
             if relation_exists == 1:
                 number_of_connection += 1
 
         # デバッグ表示
         if is_debug:
             # ＫＬ
-            for black_k_black_l_index, relation_exists in black_k_black_l_index_to_relation_exists_dictionary.items():
+            for k_blackright_l_blackright_index, relation_exists in k_blackright_l_blackright_index_to_relation_exists_dictionary.items():
                 if DebugPlan.get_number_of_connection_for_kl_kq:
-                    black_k_move_obj, black_l_move_obj = EvaluationKkTable.build_black_k_black_l_moves_by_black_k_black_l_index(
-                            black_k_black_l_index=black_k_black_l_index)
-                    print(f"[{datetime.datetime.now()}] [get number of connection for kl kq > kl]  black_k_black_l_index:{black_k_black_l_index:7}  K:{black_k_move_obj.as_usi:5}  L:{black_l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                    black_k_move_obj, black_l_move_obj = EvaluationKkTable.build_blackright_k_blackright_l_moves_by_kl_index(
+                            blackright_k_blackright_l_index=k_blackright_l_blackright_index)
+                    print(f"[{datetime.datetime.now()}] [get number of connection for kl kq > kl]  k_blackright_l_blackright_index:{k_blackright_l_blackright_index:7}  K:{black_k_move_obj.as_usi:5}  L:{black_l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
             # ＫＱ
-            for black_k_black_q_index, relation_exists in black_k_black_q_index_to_relation_exists_dictionary.items():
+            for k_blackright_q_blackright_index, relation_exists in k_blackright_q_blackright_index_to_relation_exists_dictionary.items():
                 if DebugPlan.get_number_of_connection_for_kl_kq:
-                    black_k_move_obj, black_q_move_obj = EvaluationKpTable.build_black_k_black_p_moves_by_black_k_black_p_index(
-                            black_k_black_p_index=black_k_black_q_index)
-                    print(f"[{datetime.datetime.now()}] [get number of connection for kl kq > kq]  black_k_black_q_index:{black_k_black_q_index:7}  K:{black_k_move_obj.as_usi:5}  Q:{black_q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                    black_k_move_obj, black_q_move_obj = EvaluationKpTable.build_k_blackright_p_blackright_moves_by_kp_index(
+                            k_blackright_p_blackright_index=k_blackright_q_blackright_index)
+                    print(f"[{datetime.datetime.now()}] [get number of connection for kl kq > kq]  k_blackright_q_blackright_index:{k_blackright_q_blackright_index:7}  K:{black_k_move_obj.as_usi:5}  Q:{black_q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
         return number_of_connection
 
 
     @staticmethod
     def get_number_of_connection_for_pl_pq(
-            black_p_black_l_index_to_relation_exists_dictionary,
-            black_p_black_q_index_to_relation_exists_dictionary,
+            p_blackright_l_blackright_index_to_relation_exists_dictionary,
+            p_blackright_q_blackright_index_to_relation_exists_dictionary,
             is_debug):
         """ＰＬとＰＱの関係が有りのものの数
 
         Parameters
         ----------
-        black_p_black_l_index_to_relation_exists_dictionary : dict
+        p_blackright_l_blackright_index_to_relation_exists_dictionary : dict
             ＫＬ
-        black_p_black_q_index_to_relation_exists_dictionary
+        p_blackright_q_blackright_index_to_relation_exists_dictionary
             ＫＱ
         is_debug : bool
             デバッグモードか？
@@ -315,30 +319,30 @@ move_rot_u   :{move_rot_obj.as_usi   :5}
         number_of_connection = 0
 
         # ＰＬ
-        for relation_exists in black_p_black_l_index_to_relation_exists_dictionary.values():
+        for relation_exists in p_blackright_l_blackright_index_to_relation_exists_dictionary.values():
             if relation_exists == 1:
                 number_of_connection += 1
 
         # ＰＱ
-        for relation_exists in black_p_black_q_index_to_relation_exists_dictionary.values():
+        for relation_exists in p_blackright_q_blackright_index_to_relation_exists_dictionary.values():
             if relation_exists == 1:
                 number_of_connection += 1
 
         # デバッグ表示
         if is_debug:
             # ＰＬ
-            for black_p_black_l_index, relation_exists in black_p_black_l_index_to_relation_exists_dictionary.items():
+            for p_blackright_l_blackright_index, relation_exists in p_blackright_l_blackright_index_to_relation_exists_dictionary.items():
                 if is_debug and DebugPlan.get_number_of_connection_for_pl_pq:
                     black_p_move_obj, black_l_move_obj = EvaluationPkTable.build_black_p_black_k_moves_by_black_p_black_k_index(
-                            black_p_black_k_index=black_p_black_l_index)
-                    print(f"[{datetime.datetime.now()}] [get number of connection for pl pq > pl]  black_p_black_l_index:{black_p_black_l_index:7}  P:{black_p_move_obj.as_usi:5}  L:{black_l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                            black_p_black_k_index=p_blackright_l_blackright_index)
+                    print(f"[{datetime.datetime.now()}] [get number of connection for pl pq > pl]  p_blackright_l_blackright_index:{p_blackright_l_blackright_index:7}  P:{black_p_move_obj.as_usi:5}  L:{black_l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
             # ＰＱ
-            for black_p_black_q_index, relation_exists in black_p_black_q_index_to_relation_exists_dictionary.items():
+            for p_blackright_q_blackright_index, relation_exists in p_blackright_q_blackright_index_to_relation_exists_dictionary.items():
                 if is_debug and DebugPlan.get_number_of_connection_for_pl_pq:
                     black_p_move_obj, black_q_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
-                            black_p1_black_p2_index=black_p_black_q_index)
-                    print(f"[{datetime.datetime.now()}] [get number of connection for pl pq > pq]  black_p_black_q_index:{black_p_black_q_index:7}  P:{black_p_move_obj.as_usi:5}  Q:{black_q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
+                            black_p1_black_p2_index=p_blackright_q_blackright_index)
+                    print(f"[{datetime.datetime.now()}] [get number of connection for pl pq > pq]  p_blackright_q_blackright_index:{p_blackright_q_blackright_index:7}  P:{black_p_move_obj.as_usi:5}  Q:{black_q_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
         return number_of_connection
 
@@ -361,8 +365,8 @@ move_rot_u   :{move_rot_obj.as_usi   :5}
 
         Returns
         -------
-        - black_f_black_l_index_to_relation_exists_dictionary
-        - black_f_black_q_index_to_relation_exists_dictionary
+        - p_blackright_l_blackright_index_to_relation_exists_dictionary
+        - p_blackright_q_blackright_index_to_relation_exists_dictionary
         - is_king_move
         - positive_of_relation
         - total_of_relation
@@ -379,74 +383,74 @@ move_rot_u   :{move_rot_obj.as_usi   :5}
 
             # １つの着手には、０～複数の着手がある木構造をしています。
             # その木構造のパスをキーとし、そのパスが持つ有無のビット値を値とする辞書を作成します
-            (black_k_black_l_index_to_relation_exists_dictionary,
-             black_k_black_q_index_to_relation_exists_dictionary,
+            (k_blackright_l_blackright_index_to_relation_exists_dictionary,
+             k_blackright_q_blackright_index_to_relation_exists_dictionary,
              _,
-             _) = ChoiceBestMove.select_black_f_black_o_index_to_relation_exists(
+             _) = ChoiceBestMove.select_f_blackright_o_blackright_index_to_relation_exists(
                     strict_move_obj=strict_move_obj,
                     is_king_move=is_king_move,
                     board=kifuwarabe.board,
                     kifuwarabe=kifuwarabe)
 
             # assert
-            for black_k_black_l_index, relation_exists in black_k_black_l_index_to_relation_exists_dictionary.items():
-                assert_black_k_move_obj, assert_black_l_move_obj = EvaluationKkTable.build_black_k_black_l_moves_by_black_k_black_l_index(
-                        black_k_black_l_index=black_k_black_l_index)
+            for k_blackright_l_blackright_index, relation_exists in k_blackright_l_blackright_index_to_relation_exists_dictionary.items():
+                assert_blackright_k_move_obj, assert_blackright_l_move_obj = EvaluationKkTable.build_blackright_k_blackright_l_moves_by_kl_index(
+                        blackright_k_blackright_l_index=k_blackright_l_blackright_index)
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                 if kifuwarabe.board.turn==cshogi.BLACK:
-                    if assert_black_k_move_obj.as_usi != strict_move_obj.as_usi:
+                    if assert_blackright_k_move_obj.as_usi != strict_move_obj.as_usi:
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > kl] 着手が変わっているエラー
                                            手番（Ｋ）:{Turn.to_string(kifuwarabe.board.turn)}
                                       元の指し手（Ｋ）:{strict_move_obj.as_usi:5}
-１回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{assert_black_k_move_obj.as_usi:5}
+１回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{assert_blackright_k_move_obj.as_usi:5}
 """)
 
                 # 着手が後手なら、１８０°回転させるので、インデックスは変わる
                 else:
-                    if assert_black_k_move_obj.rotate().as_usi != strict_move_obj.as_usi:
+                    if assert_blackright_k_move_obj.rotate().as_usi != strict_move_obj.as_usi:
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > kl] 指し手を先手の向きに変えて復元できなかったエラー
                                       元の指し手（Ｋ）:{strict_move_obj.as_usi:5}
                                            手番（Ｋ）:{Turn.to_string(kifuwarabe.board.turn)}
-１回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{assert_black_k_move_obj.rotate().as_usi:5}
+１回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{assert_blackright_k_move_obj.rotate().as_usi:5}
 """)
 
 
             # assert
-            for black_k_black_q_index, relation_exists in black_k_black_q_index_to_relation_exists_dictionary.items():
-                assert_black_k_move_obj, assert_black_q_move_obj = EvaluationKpTable.build_black_k_black_p_moves_by_black_k_black_p_index(
-                        black_k_black_p_index=black_k_black_q_index)
+            for k_blackright_q_blackright_index, relation_exists in k_blackright_q_blackright_index_to_relation_exists_dictionary.items():
+                assert_blackright_k_move_obj, assert_q_blackright_move_obj = EvaluationKpTable.build_k_blackright_p_blackright_moves_by_kp_index(
+                        k_blackright_p_blackright_index=k_blackright_q_blackright_index)
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                 if kifuwarabe.board.turn==cshogi.BLACK:
-                    if assert_black_k_move_obj.as_usi != strict_move_obj.as_usi:
+                    if assert_blackright_k_move_obj.as_usi != strict_move_obj.as_usi:
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > kq] 着手が変わっているエラー
                                            手番（Ｋ）:{Turn.to_string(kifuwarabe.board.turn)}
                                       元の指し手（Ｋ）:{strict_move_obj.as_usi:5}
-１回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{assert_black_k_move_obj.as_usi:5}
+１回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{assert_blackright_k_move_obj.as_usi:5}
 """)
 
                 # 着手が後手なら、１８０°回転させるので、インデックスは変わる
                 else:
-                    if assert_black_k_move_obj.rotate().as_usi != strict_move_obj.as_usi:
+                    if assert_blackright_k_move_obj.rotate().as_usi != strict_move_obj.as_usi:
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > kq] 指し手を先手の向きに変えて復元できなかったエラー
                                            手番（Ｋ）:{Turn.to_string(kifuwarabe.board.turn)}
                                       元の指し手（Ｋ）:{strict_move_obj.as_usi:5}
-１回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{assert_black_k_move_obj.rotate().as_usi:5}
+１回インデックスに変換し、インデックスから指し手を復元（Ｋ）:{assert_blackright_k_move_obj.rotate().as_usi:5}
 """)
 
             # ＫＬとＫＱの関係数
-            total_of_relation = len(black_k_black_l_index_to_relation_exists_dictionary) + len(black_k_black_q_index_to_relation_exists_dictionary)
-            #print(f"[{datetime.datetime.now()}] [get summary > kl and kq]   total_of_relation:{total_of_relation}  =  len(black_k_black_l_index_to_relation_exists_dictionary):{len(black_k_black_l_index_to_relation_exists_dictionary)}  +  len(black_k_black_q_index_to_relation_exists_dictionary):{len(black_k_black_q_index_to_relation_exists_dictionary)}")
+            total_of_relation = len(k_blackright_l_blackright_index_to_relation_exists_dictionary) + len(k_blackright_q_blackright_index_to_relation_exists_dictionary)
+            #print(f"[{datetime.datetime.now()}] [get summary > kl and kq]   total_of_relation:{total_of_relation}  =  len(k_blackright_l_blackright_index_to_relation_exists_dictionary):{len(k_blackright_l_blackright_index_to_relation_exists_dictionary)}  +  len(k_blackright_q_blackright_index_to_relation_exists_dictionary):{len(k_blackright_q_blackright_index_to_relation_exists_dictionary)}")
 
             # ＫＬとＫＱの関係が有りのものの数
             positive_of_relation = ChoiceBestMove.get_number_of_connection_for_kl_kq(
-                    black_k_black_l_index_to_relation_exists_dictionary,
-                    black_k_black_q_index_to_relation_exists_dictionary,
+                    k_blackright_l_blackright_index_to_relation_exists_dictionary,
+                    k_blackright_q_blackright_index_to_relation_exists_dictionary,
                     is_debug=is_debug)
 
-            return (black_k_black_l_index_to_relation_exists_dictionary,
-                    black_k_black_q_index_to_relation_exists_dictionary,
+            return (k_blackright_l_blackright_index_to_relation_exists_dictionary,
+                    k_blackright_q_blackright_index_to_relation_exists_dictionary,
                     is_king_move,
                     positive_of_relation,
                     total_of_relation)
@@ -457,72 +461,72 @@ move_rot_u   :{move_rot_obj.as_usi   :5}
             # その木構造のパスをキーとし、そのパスが持つ有無のビット値を値とする辞書を作成します
             (_,
              _,
-             black_p_black_l_index_to_relation_exists_dictionary,
-             black_p_black_q_index_to_relation_exists_dictionary) = ChoiceBestMove.select_black_f_black_o_index_to_relation_exists(
+             p_blackright_l_blackright_index_to_relation_exists_dictionary,
+             p_blackright_q_blackright_index_to_relation_exists_dictionary) = ChoiceBestMove.select_f_blackright_o_blackright_index_to_relation_exists(
                     strict_move_obj=strict_move_obj,
                     is_king_move=is_king_move,
                     board=kifuwarabe.board,
                     kifuwarabe=kifuwarabe)
 
             # assert
-            for black_p_black_l_index, relation_exists in black_p_black_l_index_to_relation_exists_dictionary.items():
-                assert_black_p_move_obj, assert_black_l_move_obj = EvaluationPkTable.build_black_p_black_k_moves_by_black_p_black_k_index(
-                        black_p_black_k_index=black_p_black_l_index)
+            for p_blackright_l_blackright_index, relation_exists in p_blackright_l_blackright_index_to_relation_exists_dictionary.items():
+                assert_p_blackright_move_obj, assert_blackright_l_move_obj = EvaluationPkTable.build_black_p_black_k_moves_by_black_p_black_k_index(
+                        black_p_black_k_index=p_blackright_l_blackright_index)
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                 if kifuwarabe.board.turn==cshogi.BLACK:
-                    if assert_black_p_move_obj.as_usi != strict_move_obj.as_usi:
+                    if assert_p_blackright_move_obj.as_usi != strict_move_obj.as_usi:
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > pl] 着手が変わっているエラー
                                            手番（Ｐ）:{Turn.to_string(kifuwarabe.board.turn)}
                                       元の指し手（Ｐ）:{strict_move_obj.as_usi:5}
-１回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_black_p_move_obj.as_usi:5}
+１回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_p_blackright_move_obj.as_usi:5}
 """)
 
                 # 着手が後手なら、１８０°回転させるので、インデックスは変わる
                 else:
-                    if assert_black_p_move_obj.rotate().as_usi != strict_move_obj.as_usi:
+                    if assert_p_blackright_move_obj.rotate().as_usi != strict_move_obj.as_usi:
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > pl] 指し手を先手の向きに変えて復元できなかったエラー
                                       元の指し手（Ｐ）:{strict_move_obj.as_usi:5}
                                            手番（Ｐ）:{Turn.to_string(kifuwarabe.board.turn)}
-１回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_black_p_move_obj.rotate().as_usi:5}
+１回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_p_blackright_move_obj.rotate().as_usi:5}
 """)
 
             # assert
-            for black_p_black_q_index, relation_exists in black_p_black_q_index_to_relation_exists_dictionary.items():
-                assert_black_p_move_obj, assert_black_q_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
-                        black_p1_black_p2_index=black_p_black_q_index)
+            for p_blackright_q_blackright_index, relation_exists in p_blackright_q_blackright_index_to_relation_exists_dictionary.items():
+                assert_p_blackright_move_obj, assert_q_blackright_move_obj = EvaluationPpTable.build_black_p1_black_p2_moves_by_black_p1_black_p2_index(
+                        black_p1_black_p2_index=p_blackright_q_blackright_index)
 
                 # 着手が先手なら、１８０°回転させないので、インデックスは変わらない
                 if kifuwarabe.board.turn==cshogi.BLACK:
-                    if assert_black_p_move_obj.as_usi != strict_move_obj.as_usi:
+                    if assert_p_blackright_move_obj.as_usi != strict_move_obj.as_usi:
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > pq] 着手が変わっているエラー
                                            手番（Ｐ）:{Turn.to_string(kifuwarabe.board.turn)}
                                       元の指し手（Ｐ）:{strict_move_obj.as_usi:5}
-１回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_black_p_move_obj.as_usi:5}
+１回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_p_blackright_move_obj.as_usi:5}
 """)
 
                 # 着手が後手なら、１８０°回転させるので、インデックスは変わる
                 else:
-                    if assert_black_p_move_obj.rotate().as_usi != strict_move_obj.as_usi:
+                    if assert_p_blackright_move_obj.rotate().as_usi != strict_move_obj.as_usi:
                         raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > pq] 指し手を先手の向きに変えて復元できなかったエラー
                                       元の指し手（Ｐ）:{strict_move_obj.as_usi:5}
                                            手番（Ｐ）:{Turn.to_string(kifuwarabe.board.turn)}
-１回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_black_p_move_obj.rotate().as_usi:5}
+１回インデックスに変換し、インデックスから指し手を復元（Ｐ）:{assert_p_blackright_move_obj.rotate().as_usi:5}
 """)
 
 
             # ＰＬとＰＱの関係数
-            total_of_relation = len(black_p_black_l_index_to_relation_exists_dictionary) + len(black_p_black_q_index_to_relation_exists_dictionary)
-            #print(f"[{datetime.datetime.now()}] [get summary > pl and pq]  total_of_relation:{total_of_relation}  =  len(black_p_black_l_index_to_relation_exists_dictionary):{len(black_p_black_l_index_to_relation_exists_dictionary)}  +  len(black_p_black_q_index_to_relation_exists_dictionary):{len(black_p_black_q_index_to_relation_exists_dictionary)}")
+            total_of_relation = len(p_blackright_l_blackright_index_to_relation_exists_dictionary) + len(p_blackright_q_blackright_index_to_relation_exists_dictionary)
+            #print(f"[{datetime.datetime.now()}] [get summary > pl and pq]  total_of_relation:{total_of_relation}  =  len(p_blackright_l_blackright_index_to_relation_exists_dictionary):{len(p_blackright_l_blackright_index_to_relation_exists_dictionary)}  +  len(p_blackright_q_blackright_index_to_relation_exists_dictionary):{len(p_blackright_q_blackright_index_to_relation_exists_dictionarydictionary)}")
 
             # ＰＬとＰＱの関係が有りのものの数
             positive_of_relation = ChoiceBestMove.get_number_of_connection_for_pl_pq(
-                    black_p_black_l_index_to_relation_exists_dictionary,
-                    black_p_black_q_index_to_relation_exists_dictionary,
+                    p_blackright_l_blackright_index_to_relation_exists_dictionary,
+                    p_blackright_q_blackright_index_to_relation_exists_dictionary,
                     is_debug=is_debug)
 
-            return (black_p_black_l_index_to_relation_exists_dictionary,
-                    black_p_black_q_index_to_relation_exists_dictionary,
+            return (p_blackright_l_blackright_index_to_relation_exists_dictionary,
+                    p_blackright_q_blackright_index_to_relation_exists_dictionary,
                     is_king_move,
                     positive_of_relation,
                     total_of_relation)
