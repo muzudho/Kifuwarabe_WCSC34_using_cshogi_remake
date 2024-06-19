@@ -729,7 +729,7 @@ class Kifuwarabe():
         # ランク付けされた指し手一覧（好手、悪手）
         # ----------------------------------
         #
-        ranked_strict_move_u_set_list = ChoiceBestMove.select_ranked_strict_f_move_u_set_facade(
+        ranked_strict_move_u_set_list = ChoiceBestMove.select_ranked_f_strict_move_u_set_facade(
                 legal_moves=list(self._board.legal_moves),
                 kifuwarabe=self,
                 is_debug=is_debug)
@@ -779,8 +779,8 @@ class Kifuwarabe():
             # ＫＬ
             for k_blackright_l_blackright_index, relation_exists in k_blackright_l_blackright_index_to_relation_exists_dictionary.items():
 
-                blackright_k_move_obj, blackright_l_move_obj = EvaluationKkTable.build_blackright_k_blackright_l_moves_by_kl_index(
-                        blackright_k_blackright_l_index=k_blackright_l_blackright_index)
+                blackright_k_move_obj, blackright_l_move_obj = EvaluationKkTable.build_k_blackright_l_blackright_moves_by_kl_index(
+                        k_blackright_l_blackright_index=k_blackright_l_blackright_index)
 
                 print(f"  turn:{Turn.to_string(self._board.turn)}  k_blackright_l_blackright_index:{k_blackright_l_blackright_index:7}  K:{blackright_k_move_obj.as_usi:5}  L:{blackright_l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 

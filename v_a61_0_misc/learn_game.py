@@ -278,7 +278,7 @@ class LearnGame():
         # 階位（ｔｉｅｒ）付けされた指し手一覧
         # -------------------------------
         #
-        tiered_strict_move_u_set_list = ChoiceBestMove.select_ranked_strict_f_move_u_set_facade(
+        tiered_strict_move_u_set_list = ChoiceBestMove.select_ranked_f_strict_move_u_set_facade(
                 legal_moves=list(self._board.legal_moves),
                 kifuwarabe=self._kifuwarabe,
                 is_debug=self._is_debug)

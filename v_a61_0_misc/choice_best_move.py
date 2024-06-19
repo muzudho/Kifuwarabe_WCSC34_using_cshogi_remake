@@ -51,7 +51,6 @@ class ChoiceBestMove():
         # assert
         # 着手は後手か？
         is_white = board.turn == cshogi.WHITE
-        move_rot_obj = f_strict_move_obj.rotate()
 
         # 応手の一覧を作成
         l_strict_move_u_set, q_strict_move_u_set = BoardHelper.create_counter_move_u_set(
@@ -91,14 +90,14 @@ class ChoiceBestMove():
             #
 
             # 自玉の着手と、敵玉の応手の一覧から、ＫＬテーブルのインデックスと、関係の有無を格納した辞書を作成
-            k_blackright_l_blackright_index_to_relation_exists_dic = kifuwarabe.evaluation_kl_table_obj_array[Turn.to_index(board.turn)].select_blackright_k_blackright_l_index_and_relation_exists(
+            k_blackright_l_blackright_index_to_relation_exists_dic = kifuwarabe.evaluation_kl_table_obj_array[Turn.to_index(board.turn)].select_k_blackright_l_blackright_index_and_relation_exists(
                     k_blackright_move_obj=f_blackright_move_obj,
                     l_blackright_move_u_set=l_blackright_move_u_set)
 
             # assert
-            for blackright_k_black_l_index, relation_exists in k_blackright_l_blackright_index_to_relation_exists_dic.items():
-                assert_k_blackright_move_obj, assert_l_blackright_move_obj = EvaluationKkTable.build_blackright_k_blackright_l_moves_by_kl_index(
-                        blackright_k_blackright_l_index=blackright_k_black_l_index)
+            for k_blackright_l_blackright_index, relation_exists in k_blackright_l_blackright_index_to_relation_exists_dic.items():
+                assert_k_blackright_move_obj, assert_l_blackright_move_obj = EvaluationKkTable.build_k_blackright_l_blackright_moves_by_kl_index(
+                        k_blackright_l_blackright_index=k_blackright_l_blackright_index)
 
                 if assert_k_blackright_move_obj.as_usi != f_blackright_move_obj.as_usi:
                     print(board)
@@ -228,8 +227,8 @@ is_white  :{is_white}
             # ＫＬ
             for k_blackright_l_blackright_index, relation_exists in k_blackright_l_blackright_index_to_relation_exists_dictionary.items():
                 if DebugPlan.get_number_of_connection_for_kl_kq:
-                    black_k_move_obj, black_l_move_obj = EvaluationKkTable.build_blackright_k_blackright_l_moves_by_kl_index(
-                            blackright_k_blackright_l_index=k_blackright_l_blackright_index)
+                    black_k_move_obj, black_l_move_obj = EvaluationKkTable.build_k_blackright_l_blackright_moves_by_kl_index(
+                            k_blackright_l_blackright_index=k_blackright_l_blackright_index)
                     print(f"[{datetime.datetime.now()}] [get number of connection for kl kq > kl]  k_blackright_l_blackright_index:{k_blackright_l_blackright_index:7}  K:{black_k_move_obj.as_usi:5}  L:{black_l_move_obj.as_usi:5}  relation_exists:{relation_exists}")
 
             # ＫＱ
@@ -336,8 +335,8 @@ is_white  :{is_white}
 
             # assert
             for k_blackright_l_blackright_index, relation_exists in k_blackright_l_blackright_index_to_relation_exists_dictionary.items():
-                assert_k_blackright_move_obj, assert_l_blackright_move_obj = EvaluationKkTable.build_blackright_k_blackright_l_moves_by_kl_index(
-                        blackright_k_blackright_l_index=k_blackright_l_blackright_index)
+                assert_k_blackright_move_obj, assert_l_blackright_move_obj = EvaluationKkTable.build_k_blackright_l_blackright_moves_by_kl_index(
+                        k_blackright_l_blackright_index=k_blackright_l_blackright_index)
 
                 f_blackright_move_obj = Move.from_move_obj(
                         f_strict_move_obj=f_strict_move_obj,
@@ -411,6 +410,7 @@ is_white  :{is_white}
                         # 着手が後手なら反転
                         shall_white_to_black=kifuwarabe.board.turn==cshogi.WHITE,
                         use_only_right_side=True)
+                
                 if assert_p_blackright_move_obj.as_usi != f_blackright_move_obj.as_usi:
                     raise ValueError(f"""[{datetime.datetime.now()}] [choice best move > pl] 着手が変わっているエラー
                                            手番（Ｐ）:{Turn.to_string(kifuwarabe.board.turn)}
@@ -456,7 +456,7 @@ is_white  :{is_white}
 
 
     @staticmethod
-    def select_ranked_strict_f_move_u_set_facade(
+    def select_ranked_f_strict_move_u_set_facade(
             legal_moves,
             kifuwarabe,
             is_debug=False):
@@ -484,7 +484,7 @@ is_white  :{is_white}
             ranked_strict_move_u_set_list.append(set())
 
         # デバッグ表示
-        if is_debug and DebugPlan.select_ranked_strict_f_move_u_set_facade:
+        if is_debug and DebugPlan.select_ranked_f_strict_move_u_set_facade:
             print(f"[choice best move]  kifuwarabe.tier_resolution:{kifuwarabe.tier_resolution}")
 
         for strict_move_id in legal_moves:
@@ -521,12 +521,12 @@ is_white  :{is_white}
             target_strict_move_u_set.add(strict_move_u)
 
             # デバッグ表示
-            if is_debug and DebugPlan.select_ranked_strict_f_move_u_set_facade:
+            if is_debug and DebugPlan.select_ranked_f_strict_move_u_set_facade:
                 print(f"[choice best move]  strict_move_u:{strict_move_u}  policy_rate:{policy_rate}  ranking_th:{ranking_th}  positive_of_relation:{positive_of_relation}  total_of_relation:{total_of_relation}")
 
 
         # デバッグ表示
-        if is_debug and DebugPlan.select_ranked_strict_f_move_u_set_facade:
+        if is_debug and DebugPlan.select_ranked_f_strict_move_u_set_facade:
 
             for tier_th in range(0, kifuwarabe.tier_resolution):
 
@@ -558,7 +558,7 @@ is_white  :{is_white}
         """
 
         # ランク付けされた指し手一覧
-        ranked_strict_move_u_set_list = ChoiceBestMove.select_ranked_strict_f_move_u_set_facade(
+        ranked_strict_move_u_set_list = ChoiceBestMove.select_ranked_f_strict_move_u_set_facade(
                 legal_moves=legal_moves,
                 kifuwarabe=kifuwarabe,
                 is_debug=is_debug)

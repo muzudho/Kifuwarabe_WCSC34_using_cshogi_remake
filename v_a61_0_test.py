@@ -100,13 +100,13 @@ def test_kk():
             shall_white_to_black=True,
             use_only_right_side=True)
 
-    blackright_k_blackright_l_index = EvaluationKkTable.get_blackright_k_blackright_l_index(
+    k_blackright_l_blackright_index = EvaluationKkTable.get_blackright_k_blackright_l_index(
             k_blackright_move_obj=k_blackright_move_obj,
             l_blackright_move_obj=l_blackright_move_obj)
 
     (blackright_k_move_obj_actual,
-     blackright_l_move_obj_actual) = EvaluationKkTable.build_blackright_k_blackright_l_moves_by_kl_index(
-            blackright_k_blackright_l_index=blackright_k_blackright_l_index)
+     blackright_l_move_obj_actual) = EvaluationKkTable.build_k_blackright_l_blackright_moves_by_kl_index(
+            k_blackright_l_blackright_index=k_blackright_l_blackright_index)
 
     if k_strict_move_obj_expected.as_usi != blackright_k_move_obj_actual.as_usi:
         raise ValueError(f"not match. k_turn:{Turn.to_string(k_turn)} K expected:`{k_strict_move_obj_expected.as_usi}`  actual:`{blackright_k_move_obj_actual.as_usi}`")

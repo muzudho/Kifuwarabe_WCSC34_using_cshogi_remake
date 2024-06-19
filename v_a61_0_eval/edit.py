@@ -78,8 +78,8 @@ class EvaluationEdit():
             # ＫＬ
             #
             for black_f_black_l_index, relation_exists in black_f_black_l_index_to_relation_exists_dictionary.items():
-                assert_k_blackright_move_obj, assert_l_blackright_move_obj = EvaluationKkTable.build_blackright_k_blackright_l_moves_by_kl_index(
-                        blackright_k_blackright_l_index=black_f_black_l_index)
+                assert_k_blackright_move_obj, assert_l_blackright_move_obj = EvaluationKkTable.build_k_blackright_l_blackright_moves_by_kl_index(
+                        k_blackright_l_blackright_index=black_f_black_l_index)
 
                 # 着手が先手なら、１８０°回転させない
                 if self._kifuwarabe.board.turn==cshogi.BLACK:
@@ -228,8 +228,8 @@ class EvaluationEdit():
             # ＫＬ
             #
             for target_black_f_black_l_index in target_black_f_black_l_index_list:
-                black_k_move_obj, black_l_move_obj = EvaluationKkTable.build_blackright_k_blackright_l_moves_by_kl_index(
-                        blackright_k_blackright_l_index=target_black_f_black_l_index)
+                black_k_move_obj, black_l_move_obj = EvaluationKkTable.build_k_blackright_l_blackright_moves_by_kl_index(
+                        k_blackright_l_blackright_index=target_black_f_black_l_index)
 
                 # assert
                 if Usi.is_drop_by_srcloc(black_k_move_obj.srcloc):
@@ -502,8 +502,8 @@ class EvaluationEdit():
             # ＫＬ
             #
             for black_f_black_l_index, relation_exists in black_f_black_l_index_to_relation_exists_dictionary.items():
-                assert_k_blackright_move_obj, assert_l_blackright_move_obj = EvaluationKkTable.build_blackright_k_blackright_l_moves_by_kl_index(
-                        blackright_k_blackright_l_index=black_f_black_l_index)
+                assert_k_blackright_move_obj, assert_l_blackright_move_obj = EvaluationKkTable.build_k_blackright_l_blackright_moves_by_kl_index(
+                        k_blackright_l_blackright_index=black_f_black_l_index)
 
                 # 着手が先手なら、１８０°回転させない
                 if self._kifuwarabe.board.turn==cshogi.BLACK:
@@ -655,8 +655,8 @@ class EvaluationEdit():
             # ＫＬ
             #
             for target_black_f_black_l_index in target_black_f_black_l_index_list:
-                black_k_move_obj, black_l_move_obj = EvaluationKkTable.build_blackright_k_blackright_l_moves_by_kl_index(
-                        blackright_k_blackright_l_index=target_black_f_black_l_index)
+                black_k_move_obj, black_l_move_obj = EvaluationKkTable.build_k_blackright_l_blackright_moves_by_kl_index(
+                        k_blackright_l_blackright_index=target_black_f_black_l_index)
 
                 # assert
                 if Usi.is_drop_by_srcloc(black_k_move_obj.srcloc):

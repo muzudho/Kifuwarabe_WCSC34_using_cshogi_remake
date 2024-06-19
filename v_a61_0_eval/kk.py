@@ -47,13 +47,13 @@ class EvaluationKkTable():
     #destructure_kl_index
     #build_k_l_moves_by_kl_index
     @staticmethod
-    def build_blackright_k_blackright_l_moves_by_kl_index(
-            blackright_k_blackright_l_index):
+    def build_k_blackright_l_blackright_moves_by_kl_index(
+            k_blackright_l_blackright_index):
         """ＫＬインデックス分解
 
         Parameter
         ---------
-        blackright_k_blackright_l_index : int
+        k_blackright_l_blackright_index : int
             自玉と敵玉の関係の通しインデックス（先手視点、右辺使用）
 
         Returns
@@ -66,8 +66,8 @@ class EvaluationKkTable():
 
         king_serial_number_size = EvaluationKMove.get_serial_number_size()
 
-        black_l_index = blackright_k_blackright_l_index % king_serial_number_size
-        black_k_index = blackright_k_blackright_l_index // king_serial_number_size
+        black_l_index = k_blackright_l_blackright_index % king_serial_number_size
+        black_k_index = k_blackright_l_blackright_index // king_serial_number_size
 
         # assert
         if EvaluationKMove.get_serial_number_size() <= black_l_index:
@@ -248,7 +248,7 @@ class EvaluationKkTable():
 
     #create_relation_exists_dictionary_by_k_move_and_l_moves
     #select_kl_index_and_relation_exists
-    def select_blackright_k_blackright_l_index_and_relation_exists(
+    def select_k_blackright_l_blackright_index_and_relation_exists(
             self,
             k_blackright_move_obj,
             l_blackright_move_u_set):

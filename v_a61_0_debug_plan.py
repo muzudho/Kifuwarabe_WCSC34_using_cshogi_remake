@@ -28,7 +28,7 @@ class DebugPlan():
     #####
     # S #
     #####
-    select_ranked_strict_f_move_u_set_facade = False
+    select_ranked_f_strict_move_u_set_facade = False
 
     _select_fo_move_u_and_policy_dictionary_no1 = False
 
