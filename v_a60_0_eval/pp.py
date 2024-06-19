@@ -12,6 +12,7 @@ class EvaluationPpTable():
     #get_index_of_pp_table
     @staticmethod
     def get_black_p1_black_p2_index(
+            # TODO ここは strict ではなく、 black にしてほしい
             p1_move_obj,
             p2_move_obj,
             shall_p1_white_to_black,

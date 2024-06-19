@@ -91,11 +91,16 @@ def test_kk():
     l_strict_move_obj_expected = Move.from_usi('5a5b')
     k_turn = cshogi.BLACK
 
+    k_black_move_obj = Move.from_move_obj(
+            strict_move_obj=k_strict_move_obj_expected,
+            shall_white_to_black=False)
+    l_black_move_obj = Move.from_move_obj(
+            strict_move_obj=l_strict_move_obj_expected,
+            shall_white_to_black=True)
+
     black_k_black_l_index = EvaluationKkTable.get_black_k_black_l_index(
-            k_move_obj=k_strict_move_obj_expected,
-            l_move_obj=l_strict_move_obj_expected,
-            shall_k_white_to_black=k_turn==cshogi.WHITE,
-            shall_l_white_to_black=k_turn==cshogi.BLACK)
+            k_black_move_obj=k_black_move_obj,
+            l_black_move_obj=l_black_move_obj)
 
     (black_k_move_obj_actual,
      black_l_move_obj_actual) = EvaluationKkTable.build_black_k_black_l_moves_by_black_k_black_l_index(

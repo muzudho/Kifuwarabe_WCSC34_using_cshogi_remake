@@ -15,6 +15,7 @@ class EvaluationPkTable():
     #get_index_of_pk_table
     @staticmethod
     def get_black_p_black_k_index(
+            # TODO ここは strict ではなく、 black にしてほしい
             p_move_obj,
             k_move_obj,
             shall_p_white_to_black,

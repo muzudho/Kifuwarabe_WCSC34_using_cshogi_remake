@@ -14,18 +14,15 @@ class EvaluationKkTable():
     #get_index_of_kk_table
     @staticmethod
     def get_black_k_black_l_index(
-            # TODO ここは strict ではなく、 black にしてほしい
-            k_move_obj,
-            l_move_obj,
-            shall_k_white_to_black,
-            shall_l_white_to_black):
+            k_black_move_obj,
+            l_black_move_obj):
         """ＫＫ評価値テーブルのインデックスを算出
 
         Parameters
         ----------
-        k_move_obj : Move
+        k_black_move_obj : Move
             自玉の着手
-        l_move_obj : Move
+        l_black_move_obj : Move
             敵玉の応手
         shall_k_white_to_black : bool
             評価値テーブルは先手用しかないので、後手なら指し手を１８０°回転させて先手の向きに合わせるか？
@@ -34,15 +31,15 @@ class EvaluationKkTable():
         """
 
         # assert
-        if Usi.is_drop_by_srcloc(k_move_obj.srcloc):
-            raise ValueError(f"[evaluation kk table > get index of kk move > k] 玉の指し手で打なのはおかしい。 k_move_obj.srcloc_u:{Usi.srcloc_to_code(k_move_obj.srcloc)}  k_move_obj:{k_move_obj.dump()}")
+        if Usi.is_drop_by_srcloc(k_black_move_obj.srcloc):
+            raise ValueError(f"[evaluation kk table > get index of kk move > k] 玉の指し手で打なのはおかしい。 k_black_move_obj.srcloc_u:{Usi.srcloc_to_code(k_black_move_obj.srcloc)}  k_black_move_obj:{k_black_move_obj.dump()}")
 
         # assert
-        if Usi.is_drop_by_srcloc(l_move_obj.srcloc):
-            raise ValueError(f"[evaluation kk table > get index of kk move > l] 玉の指し手で打なのはおかしい。 l_move_obj.srcloc_u:{Usi.srcloc_to_code(l_move_obj.srcloc)}  l_move_obj:{l_move_obj.dump()}")
+        if Usi.is_drop_by_srcloc(l_black_move_obj.srcloc):
+            raise ValueError(f"[evaluation kk table > get index of kk move > l] 玉の指し手で打なのはおかしい。 l_move_obj.srcloc_u:{Usi.srcloc_to_code(l_black_move_obj.srcloc)}  l_black_move_obj:{l_black_move_obj.dump()}")
 
-        # 0 ～ 296_479 =                                                                       0 ～ 543 *                                      544 +                                                                     0 ～ 543
-        kk_index       = EvaluationKMove.get_black_index_by_k_move(k_move_obj, shall_k_white_to_black) * EvaluationKMove.get_serial_number_size() + EvaluationKMove.get_black_index_by_k_move(l_move_obj, shall_l_white_to_black)
+        # 0 ～ 296_479 =                                                            0 ～ 543 *                                      544 +                                                          0 ～ 543
+        kk_index       = EvaluationKMove.get_black_index_by_k_move(k_black_move_obj, False) * EvaluationKMove.get_serial_number_size() + EvaluationKMove.get_black_index_by_k_move(l_black_move_obj, False)
 
         # assert
         if EvaluationKMove.get_serial_number_size() * EvaluationKMove.get_serial_number_size() <= kk_index:
@@ -246,11 +243,8 @@ class EvaluationKkTable():
 
         (is_changed, result_comment) = self._mm_table_obj.set_bit_by_index(
                 black_f_black_o_index=EvaluationKkTable.get_black_k_black_l_index(
-                        k_move_obj=black_k_move_obj,
-                        l_move_obj=black_l_move_obj,
-                        # 両方先手のインデックスなので、これ以上変更しません
-                        shall_k_white_to_black=False,
-                        shall_l_white_to_black=False),
+                        k_black_move_obj=black_k_move_obj,
+                        l_black_move_obj=black_l_move_obj),
                 bit=bit)
 
         return (is_changed, result_comment)
@@ -288,12 +282,17 @@ class EvaluationKkTable():
 
         relations = {}
 
+        k_black_move_obj = Move.from_move_obj(
+                strict_move_obj=k_strict_move_obj,
+                shall_white_to_black=shall_k_white_to_black)
+        l_black_move_obj = Move.from_move_obj(
+                strict_move_obj=Move.from_usi(l_strict_move_u),
+                shall_white_to_black=shall_l_white_to_black)
+
         for l_strict_move_u in l_strict_move_u_set:
             black_k_black_l_index = EvaluationKkTable.get_black_k_black_l_index(
-                    k_move_obj=k_strict_move_obj,
-                    l_move_obj=Move.from_usi(l_strict_move_u),
-                    shall_k_white_to_black=shall_k_white_to_black,
-                    shall_l_white_to_black=shall_l_white_to_black)
+                    k_black_move_obj=k_black_move_obj,
+                    l_black_move_obj=l_black_move_obj)
 
             relation_bit = self.get_relation_exists_by_index(
                     black_k_black_l_index=black_k_black_l_index)
