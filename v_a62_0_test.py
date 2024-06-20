@@ -28,62 +28,116 @@ def test_k():
         #
 
         #
-        # 元マス・先マス to インデックス
+        # 元マス・先マスを渡して、インデックスを返す関数
         #
-        for srcsq in range(0,81):
-            dstsq_to_index_dictionary = srcsq_to_dstsq_index_dictionary[srcsq]
-
-            #   - １マスが３桁の文字列の表
-            #   - 元マス
-            label_table_for_serial_index = ['   '] * 81
-            label_table_for_src_dst = ['   '] * 81
-
-            label_table_for_serial_index[srcsq] = 'you'
-            label_table_for_src_dst[srcsq] = 'you'
-
-            for dstsq, serial_index in dstsq_to_index_dictionary.items():
-                label_table_for_serial_index[dstsq] = f'{serial_index:3}'
-                label_table_for_src_dst[dstsq] = f'{dstsq:3}'
-
-            # 表示
-            f.write(f"""src_masu:{Usi.sq_to_jsa(srcsq):2}
-src と dst                              通しインデックス
-{DebugHelper.stringify_double_3characters_boards(label_table_for_src_dst, label_table_for_serial_index)}
+        #   （先手視点、右辺のみ使用）
+        #
+        f.write(f"""\
+#
+#  元マス・先マスを渡して、インデックスを返す関数
+#
+#       （先手視点、右辺使用）
+#
 """)
 
-        #
-        # インデックス to 元マス・先マス
-        #
+        for src_file in range(0,5):
+            for src_rank in range(0,9):
+                srcsq = Usi.file_rank_to_sq(
+                        file=src_file,
+                        rank=src_rank)
 
-        previous_srcsq = -1
+                dstsq_to_index_dictionary = srcsq_to_dstsq_index_dictionary[srcsq]
 
-        for serial_index in range(0, EvaluationKMove.get_serial_number_size()):
-            (srcsq, dstsq) = index_to_srcsq_dstsq_dictionary[serial_index]
+                #   - １マスが３桁の文字列の表
+                #   - 元マス
+                label_table_for_serial_index = ['   '] * 81
+                label_table_for_src_dst = ['   '] * 81
 
-            print(f"(src_masu:{Usi.sq_to_jsa(srcsq):2}, dst_masu:{Usi.sq_to_jsa(dstsq):2}) = dictionary[ serial_index:{serial_index:3} ]")
+                label_table_for_serial_index[srcsq] = 'you'
+                label_table_for_src_dst[srcsq] = 'you'
 
-            if previous_srcsq != srcsq:
+                for dstsq, serial_index in dstsq_to_index_dictionary.items():
+                    label_table_for_serial_index[dstsq] = f'{serial_index:3}'
+                    label_table_for_src_dst[dstsq] = f'{dstsq:3}'
 
-                if previous_srcsq != -1:
-                    # 表示
-                    f.write(f"""src_masu:{Usi.sq_to_jsa(srcsq):2}
-通しインデックス                           src と dst
+                # 出力
+                f.write(f"""src_masu:{Usi.sq_to_jsa(srcsq):2}
+通しインデックス                          src と dst
 {DebugHelper.stringify_double_3characters_boards(label_table_for_serial_index, label_table_for_src_dst)}
 """)
 
 
-                #   - １マスが３桁の文字列の表
-                #   - 元マス
-                label_table_for_src_dst = ['   '] * 81
-                label_table_for_src_dst[srcsq] = 'you'
+        #
+        # インデックスを渡して、元マス・先マスを返す関数
+        #
+        #       （先手視点、右辺使用）
+        #
+        f.write(f"""\
+#
+# インデックスを渡して、元マス・先マスを返す関数
+#
+#       （先手視点、右辺使用）
+#
+""")
 
-                label_table_for_serial_index = ['   '] * 81
+        def init_table():
+            return (['   '] * 81,
+                    ['   '] * 81)
+
+        def flush_table(
+                label_table_for_src_dst,
+                label_table_for_serial_index,
+                previous_srcsq):
+            f.write(f"""src_masu:{Usi.sq_to_jsa(previous_srcsq):2}
+通しインデックス                           src と dst
+{DebugHelper.stringify_double_3characters_boards(label_table_for_serial_index, label_table_for_src_dst)}
+""")
+            (label_table_for_src_dst,
+             label_table_for_serial_index) = init_table()
+
+            return (label_table_for_src_dst,
+                    label_table_for_serial_index)
+
+        previous_srcsq = -1
+
+        (label_table_for_src_dst,
+         label_table_for_serial_index) = init_table()
+
+        for serial_index in range(0, EvaluationKMove.get_serial_number_size()):
+            (srcsq, dstsq) = index_to_srcsq_dstsq_dictionary[serial_index]
+
+            # 初回
+            if previous_srcsq == -1:
+                label_table_for_src_dst[srcsq] = 'you'
                 label_table_for_serial_index[srcsq] = 'you'
 
+            # srcsq が変わったら、 srcsq が変わる前のものをフラッシュ
+            elif previous_srcsq != srcsq:
+                print(f"flush  previous_srcmasu:{Usi.sq_to_jsa(previous_srcsq)}  srcmasu:{Usi.sq_to_jsa(srcsq)}")
+                (label_table_for_src_dst,
+                 label_table_for_serial_index) = flush_table(
+                        label_table_for_src_dst,
+                        label_table_for_serial_index,
+                        previous_srcsq)
+
+                label_table_for_src_dst[srcsq] = 'you'
+                label_table_for_serial_index[srcsq] = 'you'
+
+            print(f"(src_masu:{Usi.sq_to_jsa(srcsq):2}, dst_masu:{Usi.sq_to_jsa(dstsq):2}) = dictionary[ serial_index:{serial_index:3} ]")
+
+            # 対象マスを追加
             label_table_for_src_dst[dstsq] = f'{dstsq:3}'
             label_table_for_serial_index[dstsq] = f'{serial_index:3}'
 
             previous_srcsq = srcsq
+
+        # 残りがある想定で、フラッシュ
+        print(f"flush_rest  previous_srcmasu:{Usi.sq_to_jsa(previous_srcsq)}  srcmasu:{Usi.sq_to_jsa(srcsq)}")
+        (label_table_for_src_dst,
+            label_table_for_serial_index) = flush_table(
+                label_table_for_src_dst,
+                label_table_for_serial_index,
+                previous_srcsq)
 
 
 def test_kk():

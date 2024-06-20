@@ -96,12 +96,30 @@ class EvaluationKMove():
     """マスの通し番号を渡すと、元マスと移動先マスを返す入れ子の辞書"""
 
 
+    def get_serial_number_size():
+        """玉の指し手の数
+
+        Returns
+        -------
+        - int
+            盤面全体使用の場合 544。
+            右辺のみ使用の場合 305。
+        """
+        #return 544
+        return 305
+
+
     @classmethod
     def get_srcsq_to_dstsq_index_dictionary_tuple(clazz):
         """元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します。
         初回アクセス時はテーブル生成に時間がかかります
 
         玉に打は無いので、 srcsq です。 srcloc ではありません
+
+        Returns
+        -------
+        (clazz._src_to_dst_index_dictionary,
+         clazz._index_to_src_dst_dictionary)
         """
 
         # 未生成なら生成（重い処理は１回だけ）
@@ -123,116 +141,112 @@ class EvaluationKMove():
             effect_serial_index = 0
 
             #
-            # 移動元マス（１一～９九）
+            # 元マス・先マスを渡して、インデックスを返す関数
             #
-            for srcsq in range(0,81):
+            #   （先手視点、右辺のみ使用）
+            #
+            for src_file in range(0,5): #range(1,10)
+                for src_rank in range(0,9):
+                    # 移動元マス番号
+                    srcsq = Usi.file_rank_to_sq(
+                            file=src_file,
+                            rank=src_rank)
 
-                dstsq_to_index_dictionary = dict()
-                clazz._src_to_dst_index_dictionary[srcsq] = dstsq_to_index_dictionary
+                    dstsq_to_index_dictionary = dict()
+                    clazz._src_to_dst_index_dictionary[srcsq] = dstsq_to_index_dictionary
 
-                # 利きのマスの集合
-                dstsq_set = set()
+                    # 利きのマスの集合
+                    dstsq_set = set()
 
-                # 元マスの座標
-                (src_file,
-                src_rank) = Usi.sq_to_file_rank(srcsq)
+                    #
+                    # 絶対マス番号を作成
+                    #
 
-                #
-                # 絶対マス番号を作成
-                #
+                    # 右上
+                    dst_file = src_file + right_file
+                    dst_rank = src_rank + top_rank
+                    if 0 <= dst_file and 0 <= dst_rank:
+                        dstsq_set.add(Usi.file_rank_to_sq(
+                                file=dst_file,
+                                rank=dst_rank))
 
-                # 右上
-                dst_file = src_file + right_file
-                dst_rank = src_rank + top_rank
-                if 0 <= dst_file and 0 <= dst_rank:
-                    dstsq_set.add(Usi.file_rank_to_sq(
-                            file=dst_file,
-                            rank=dst_rank))
+                    # 右
+                    dst_file = src_file + right_file
+                    dst_rank = src_rank
+                    if 0 <= dst_file:
+                        dstsq_set.add(Usi.file_rank_to_sq(
+                                file=dst_file,
+                                rank=dst_rank))
 
-                # 右
-                dst_file = src_file + right_file
-                dst_rank = src_rank
-                if 0 <= dst_file:
-                    dstsq_set.add(Usi.file_rank_to_sq(
-                            file=dst_file,
-                            rank=dst_rank))
+                    # 右下
+                    dst_file = src_file + right_file
+                    dst_rank = src_rank + bottom_rank
+                    if 0 <= dst_file and dst_rank < 9:
+                        dstsq_set.add(Usi.file_rank_to_sq(
+                                file=dst_file,
+                                rank=dst_rank))
 
-                # 右下
-                dst_file = src_file + right_file
-                dst_rank = src_rank + bottom_rank
-                if 0 <= dst_file and dst_rank < 9:
-                    dstsq_set.add(Usi.file_rank_to_sq(
-                            file=dst_file,
-                            rank=dst_rank))
+                    # 上
+                    dst_file = src_file
+                    dst_rank = src_rank + top_rank
+                    if 0 <= dst_rank:
+                        dstsq_set.add(Usi.file_rank_to_sq(
+                                file=dst_file,
+                                rank=dst_rank))
 
-                # 上
-                dst_file = src_file
-                dst_rank = src_rank + top_rank
-                if 0 <= dst_rank:
-                    dstsq_set.add(Usi.file_rank_to_sq(
-                            file=dst_file,
-                            rank=dst_rank))
+                    # 下
+                    dst_file = src_file
+                    dst_rank = src_rank + bottom_rank
+                    if dst_rank < 9:
+                        dstsq_set.add(Usi.file_rank_to_sq(
+                                file=dst_file,
+                                rank=dst_rank))
 
-                # 下
-                dst_file = src_file
-                dst_rank = src_rank + bottom_rank
-                if dst_rank < 9:
-                    dstsq_set.add(Usi.file_rank_to_sq(
-                            file=dst_file,
-                            rank=dst_rank))
+                    # 左上
+                    dst_file = src_file + left_file
+                    dst_rank = src_rank + top_rank
+                    if dst_file < 9 and 0 <= dst_rank:
+                        dstsq_set.add(Usi.file_rank_to_sq(
+                                file=dst_file,
+                                rank=dst_rank))
 
-                # 左上
-                dst_file = src_file + left_file
-                dst_rank = src_rank + top_rank
-                if dst_file < 9 and 0 <= dst_rank:
-                    dstsq_set.add(Usi.file_rank_to_sq(
-                            file=dst_file,
-                            rank=dst_rank))
+                    # 左
+                    dst_file = src_file + left_file
+                    dst_rank = src_rank
+                    if dst_file < 9:
+                        dstsq_set.add(Usi.file_rank_to_sq(
+                                file=dst_file,
+                                rank=dst_rank))
 
-                # 左
-                dst_file = src_file + left_file
-                dst_rank = src_rank
-                if dst_file < 9:
-                    dstsq_set.add(Usi.file_rank_to_sq(
-                            file=dst_file,
-                            rank=dst_rank))
+                    # 左下
+                    dst_file = src_file + left_file
+                    dst_rank = src_rank + bottom_rank
+                    if dst_file < 9 and dst_rank < 9:
+                        dstsq_set.add(Usi.file_rank_to_sq(
+                                file=dst_file,
+                                rank=dst_rank))
 
-                # 左下
-                dst_file = src_file + left_file
-                dst_rank = src_rank + bottom_rank
-                if dst_file < 9 and dst_rank < 9:
-                    dstsq_set.add(Usi.file_rank_to_sq(
-                            file=dst_file,
-                            rank=dst_rank))
+                    #
+                    # マス番号を昇順に並べ替える
+                    #
+                    dstsq_list = sorted(list(dstsq_set))
 
-                #
-                # マス番号を昇順に並べ替える
-                #
-                dstsq_list = sorted(list(dstsq_set))
+                    #
+                    # インデックスに対して、元位置・先位置を振っていく
+                    #
+                    for dstsq in dstsq_list:
+                        print(f"""[evaluation k move > get srcsq to dstsq index dictionary tuple]
+    [元マス・先マスの関係に対して、インデックスを振っていく]  srcsq:{srcsq}  dstsq:{dstsq}  effect_serial_index:{effect_serial_index}
+    [インデックスに対して、元マス・先マスを振っていく     ]  effect_serial_index:{effect_serial_index}  srcsq:{srcsq}  dstsq:{dstsq}
+""")
 
-                #
-                # 左表の利きのマスに、通し番号を振っていく
-                #
-                for dstsq in dstsq_list:
-                    #print(f"[昇順] dstsq={dstsq}")
+                        dstsq_to_index_dictionary[dstsq] = effect_serial_index
+                        clazz._index_to_src_dst_dictionary[effect_serial_index] = (srcsq, dstsq)
 
-                    dstsq_to_index_dictionary[dstsq] = effect_serial_index
-                    clazz._index_to_src_dst_dictionary[effect_serial_index] = (srcsq, dstsq)
-
-                    effect_serial_index += 1
+                        effect_serial_index += 1
 
 
         return (clazz._src_to_dst_index_dictionary, clazz._index_to_src_dst_dictionary)
-
-
-    def get_serial_number_size():
-        """玉の指し手の数
-
-        Returns
-        -------
-        - int
-        """
-        return 544
 
 
     #get_index_of_k_move
