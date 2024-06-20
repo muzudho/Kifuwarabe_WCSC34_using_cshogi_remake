@@ -235,10 +235,10 @@ class EvaluationKMove():
                     # インデックスに対して、元位置・先位置を振っていく
                     #
                     for dstsq in dstsq_list:
-                        print(f"""[evaluation k move > get srcsq to dstsq index dictionary tuple]
-    [元マス・先マスの関係に対して、インデックスを振っていく]  srcsq:{srcsq}  dstsq:{dstsq}  effect_serial_index:{effect_serial_index}
-    [インデックスに対して、元マス・先マスを振っていく     ]  effect_serial_index:{effect_serial_index}  srcsq:{srcsq}  dstsq:{dstsq}
-""")
+                        #                        print(f"""[evaluation k move > get srcsq to dstsq index dictionary tuple]
+                        #    [元マス・先マスの関係に対して、インデックスを振っていく]  srcsq:{srcsq}  dstsq:{dstsq}  effect_serial_index:{effect_serial_index}
+                        #    [インデックスに対して、元マス・先マスを振っていく     ]  effect_serial_index:{effect_serial_index}  srcsq:{srcsq}  dstsq:{dstsq}
+                        #""")
 
                         dstsq_to_index_dictionary[dstsq] = effect_serial_index
                         clazz._index_to_src_dst_dictionary[effect_serial_index] = (srcsq, dstsq)
