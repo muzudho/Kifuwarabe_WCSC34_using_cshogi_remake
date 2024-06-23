@@ -34,7 +34,7 @@ class EvaluationKkTable():
         if Usi.is_drop_by_srcloc(l_blackright_move_obj.srcloc):
             raise ValueError(f"[evaluation kk table > get index of kk move > l] 玉の指し手で打なのはおかしい。 l_move_obj.srcloc_u:{Usi.srcloc_to_code(l_blackright_move_obj.srcloc)}  l_blackright_move_obj:{l_blackright_move_obj.dump()}")
 
-        # 0 ～ 296_479                  =                                                               0 ～ 543 *                                      305 +                                                             0 ～ 543
+        # 0 ～ 93_329                   =                                                               0 ～ 304 *                                      305 +                                                             0 ～ 304
         k_blackright_l_blackright_index = EvaluationKMove.get_blackright_index_by_k_move(k_blackright_move_obj) * EvaluationKMove.get_serial_number_size() + EvaluationKMove.get_blackright_index_by_k_move(l_blackright_move_obj)
 
         # assert

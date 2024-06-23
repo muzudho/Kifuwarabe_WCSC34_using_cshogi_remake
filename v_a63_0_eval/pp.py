@@ -25,7 +25,7 @@ class EvaluationPpTable():
         """
 
         try:
-            # 0 ～ 14_542_781 =                                                              0 ～ 3812 *                                     3813 +                                                             0 ～ 3812
+            # 0 ～ 5_586_131 =                                                              0 ～ 2362 *                                     2363 +                                                             0 ～ 2362
             pp_index         = EvaluationPMove.get_blackright_index_by_p_move(p1_blackright_move_obj) * EvaluationPMove.get_serial_number_size() + EvaluationPMove.get_blackright_index_by_p_move(p2_blackright_move_obj)
 
         except KeyError:

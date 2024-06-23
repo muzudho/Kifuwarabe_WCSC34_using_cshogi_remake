@@ -124,6 +124,21 @@ class EvaluationPMove():
     """通しインデックスを渡すと、移動元、移動先、成りか、を返す辞書"""
 
 
+    @staticmethod
+    def get_serial_number_size():
+        """兵の指し手の数
+
+        Returns
+        -------
+        - int
+        """
+        # 右辺のみ使用
+        return 2363
+
+        # 全面使用
+        #return 3813
+
+
     @classmethod
     def get_src_lists_to_dstsq_blackright_index_dictionary_tuple(clazz):
 
@@ -359,16 +374,6 @@ class EvaluationPMove():
                 clazz._srcsq_to_dstsq_to_blackright_index_for_psi_dictionary,
                 clazz._srcdrop_to_dstsq_blackright_index,
                 clazz._blackright_index_to_srcloc_dstsq_promotion_dictionary)
-
-
-    def get_serial_number_size():
-        """兵の指し手の数
-
-        Returns
-        -------
-        - int
-        """
-        return 3813
 
 
     #get_index_by_p_move
