@@ -110,7 +110,7 @@ class EvaluationKMove():
 
 
     @classmethod
-    def get_srcsq_to_dstsq_index_dictionary_tuple(clazz):
+    def get_srcsq_to_dstsq_blackright_index_dictionary_tuple(clazz):
         """元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します。
         初回アクセス時はテーブル生成に時間がかかります
 
@@ -145,7 +145,7 @@ class EvaluationKMove():
             #
             #   （先手視点、右辺のみ使用）
             #
-            for src_file in range(0,5): #range(1,10)
+            for src_file in range(0,5):
                 for src_rank in range(0,9):
                     # 移動元マス番号
                     srcsq = Usi.file_rank_to_sq(
@@ -276,7 +276,7 @@ class EvaluationKMove():
         # 玉は成らない
 
         # 元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します
-        (srcsq_to_dstsq_index_dictionary, _) = EvaluationKMove.get_srcsq_to_dstsq_index_dictionary_tuple()
+        (srcsq_to_dstsq_index_dictionary, _) = EvaluationKMove.get_srcsq_to_dstsq_blackright_index_dictionary_tuple()
 
         #
         # unwrap
@@ -339,7 +339,7 @@ class EvaluationKMove():
             移動先マスの番号
         """
         # マスの通し番号を渡すと、元マスと移動先マスを返す入れ子の辞書を返します
-        (_, index_to_srcsq_dstsq_dictionary) = EvaluationKMove.get_srcsq_to_dstsq_index_dictionary_tuple()
+        (_, index_to_srcsq_dstsq_dictionary) = EvaluationKMove.get_srcsq_to_dstsq_blackright_index_dictionary_tuple()
 
         (srcsq, dstsq) = index_to_srcsq_dstsq_dictionary[k_index]
 

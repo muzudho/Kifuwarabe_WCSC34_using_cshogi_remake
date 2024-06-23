@@ -111,41 +111,44 @@ class EvaluationPMove():
     👆　このマッピングは８１マス分あり、要素数も１種類ではない
     """
 
-    _srcsq_to_dstsq_to_index_for_npsi_dictionary = None
+    _srcsq_to_dstsq_to_blackright_index_for_npsi_dictionary = None
     """先手成らず（no promote）　通しインデックス（serial index）"""
 
-    _srcsq_to_dstsq_to_index_for_psi_dictionary = None
+    _srcsq_to_dstsq_to_blackright_index_for_psi_dictionary = None
     """先手成り（promote）　通しインデックス（serial index）"""
 
-    _srcdrop_to_dstsq_index = None
+    _srcdrop_to_dstsq_blackright_index = None
     """先手持ち駒 to （移動先 to 通し番号）"""
 
-    _index_to_srcloc_dstsq_promotion_dictionary = None
+    _blackright_index_to_srcloc_dstsq_promotion_dictionary = None
     """通しインデックスを渡すと、移動元、移動先、成りか、を返す辞書"""
 
 
     @classmethod
-    def get_src_lists_to_dstsq_index_dictionary_tuple(clazz):
+    def get_src_lists_to_dstsq_blackright_index_dictionary_tuple(clazz):
 
         # 未生成なら生成（重い処理は１回だけ）
-        if clazz._srcsq_to_dstsq_to_index_for_npsi_dictionary == None:
+        if clazz._srcsq_to_dstsq_to_blackright_index_for_npsi_dictionary == None:
             # 先手成らず（no promote）　通しインデックス（serial index）
-            clazz._srcsq_to_dstsq_to_index_for_npsi_dictionary = dict()
+            clazz._srcsq_to_dstsq_to_blackright_index_for_npsi_dictionary = dict()
 
             # 先手成り（promote）　通しインデックス（serial index）
-            clazz._srcsq_to_dstsq_to_index_for_psi_dictionary = dict()
+            clazz._srcsq_to_dstsq_to_blackright_index_for_psi_dictionary = dict()
 
             # 持ち駒 to （移動先 to 通し番号）
-            clazz._srcdrop_to_dstsq_index = dict()
+            clazz._srcdrop_to_dstsq_blackright_index = dict()
 
             # 通しインデックスを渡すと、移動元、移動先、成りか、を返す辞書
-            clazz._index_to_srcloc_dstsq_promotion_dictionary = dict()
+            clazz._blackright_index_to_srcloc_dstsq_promotion_dictionary = dict()
 
             # 通しのインデックス
             effect_index = 0
 
             # 範囲外チェックを行いたいので、ループカウンタ―は sq ではなく file と rank の２重ループにする
-            for src_file in range(0,9):
+            #
+            #   （先手視点、右辺のみ使用）
+            #
+            for src_file in range(0,5):
                 for src_rank in range(0,9):
                     srcsq = Usi.file_rank_to_sq(
                             file=src_file,
@@ -154,8 +157,8 @@ class EvaluationPMove():
                     dstsq_to_index_for_npsi_dictionary = dict()
                     dstsq_to_index_for_b_dictionary = dict()
 
-                    clazz._srcsq_to_dstsq_to_index_for_npsi_dictionary[srcsq] = dstsq_to_index_for_npsi_dictionary
-                    clazz._srcsq_to_dstsq_to_index_for_psi_dictionary[srcsq] = dstsq_to_index_for_b_dictionary
+                    clazz._srcsq_to_dstsq_to_blackright_index_for_npsi_dictionary[srcsq] = dstsq_to_index_for_npsi_dictionary
+                    clazz._srcsq_to_dstsq_to_blackright_index_for_psi_dictionary[srcsq] = dstsq_to_index_for_b_dictionary
 
                     # 成らないことができる移動先
                     no_pro_dstsq_set = set()
@@ -313,12 +316,12 @@ class EvaluationPMove():
 
                     for dstsq in no_pro_dstsq_list:
                         dstsq_to_index_for_npsi_dictionary[dstsq] = effect_index
-                        clazz._index_to_srcloc_dstsq_promotion_dictionary[effect_index] = (srcsq, dstsq, False)
+                        clazz._blackright_index_to_srcloc_dstsq_promotion_dictionary[effect_index] = (srcsq, dstsq, False)
                         effect_index += 1
 
                     for dstsq in pro_dstsq_list:
                         dstsq_to_index_for_b_dictionary[dstsq] = effect_index
-                        clazz._index_to_srcloc_dstsq_promotion_dictionary[effect_index] = (srcsq, dstsq, True)
+                        clazz._blackright_index_to_srcloc_dstsq_promotion_dictionary[effect_index] = (srcsq, dstsq, True)
                         effect_index += 1
 
 
@@ -329,7 +332,7 @@ class EvaluationPMove():
                 #
                 dstsq_to_index = dict()
 
-                clazz._srcdrop_to_dstsq_index[Usi.code_to_srcloc(drop_str)] = dstsq_to_index
+                clazz._srcdrop_to_dstsq_blackright_index[Usi.code_to_srcloc(drop_str)] = dstsq_to_index
 
                 if drop_str == 'N*':
                     min_rank = 2
@@ -349,13 +352,13 @@ class EvaluationPMove():
 
                         # 格納
                         dstsq_to_index[dstsq] = effect_index
-                        clazz._index_to_srcloc_dstsq_promotion_dictionary[effect_index] = (Usi.code_to_srcloc(drop_str), dstsq, False)
+                        clazz._blackright_index_to_srcloc_dstsq_promotion_dictionary[effect_index] = (Usi.code_to_srcloc(drop_str), dstsq, False)
                         effect_index += 1
 
-        return (clazz._srcsq_to_dstsq_to_index_for_npsi_dictionary,
-                clazz._srcsq_to_dstsq_to_index_for_psi_dictionary,
-                clazz._srcdrop_to_dstsq_index,
-                clazz._index_to_srcloc_dstsq_promotion_dictionary)
+        return (clazz._srcsq_to_dstsq_to_blackright_index_for_npsi_dictionary,
+                clazz._srcsq_to_dstsq_to_blackright_index_for_psi_dictionary,
+                clazz._srcdrop_to_dstsq_blackright_index,
+                clazz._blackright_index_to_srcloc_dstsq_promotion_dictionary)
 
 
     def get_serial_number_size():
@@ -391,16 +394,16 @@ class EvaluationPMove():
         p_dstsq = p_blackright_move_obj.dstsq
 
         # 元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します
-        (srcsq_to_dstsq_to_index_for_npsi_dictionary,
-         srcsq_to_dstsq_to_index_for_psi_dictionary,
-         srcdrop_to_dstsq_index,
-         index_to_srcloc_dstsq_promotion_dictionary) = EvaluationPMove.get_src_lists_to_dstsq_index_dictionary_tuple()
+        (srcsq_to_dstsq_to_blackright_index_for_npsi_dictionary,
+         srcsq_to_dstsq_to_blackright_index_for_psi_dictionary,
+         srcdrop_to_dstsq_blackright_index,
+         blackright_index_to_srcloc_dstsq_promotion_dictionary) = EvaluationPMove.get_src_lists_to_dstsq_blackright_index_dictionary_tuple()
 
 
         # 打つ手
         if Usi.is_drop_by_srcloc(p_srcloc):
             try:
-                dstsq_to_index_dictionary = srcdrop_to_dstsq_index[p_srcloc]
+                dstsq_to_index_dictionary = srcdrop_to_dstsq_blackright_index[p_srcloc]
 
             except KeyError as ex:
                 print(f"[evaluation p move > get index by p move > 打つ手] p_blackright_move_obj.as_usi:{p_blackright_move_obj.as_usi}  P srcloc_u:{Usi.srcloc_to_code(p_srcloc)}  p_src_masu:{Usi.srcloc_to_jsa(p_srcloc)}  成:{p_blackright_move_obj.promoted}  ex:{ex}")
@@ -426,7 +429,7 @@ class EvaluationPMove():
             p_srcsq = p_srcloc
 
             try:
-                dstsq_to_index_dictionary = srcsq_to_dstsq_to_index_for_psi_dictionary[p_srcsq]
+                dstsq_to_index_dictionary = srcsq_to_dstsq_to_blackright_index_for_psi_dictionary[p_srcsq]
 
             except KeyError as ex:
                 print(f"[evaluation p move > get index by p move > 成る手1] p_blackright_move_obj.as_usi:{p_blackright_move_obj.as_usi}  P srcloc_u:{Usi.srcloc_to_code(p_srcloc)}  p_src_masu:{Usi.srcloc_to_jsa(p_srcsq)}  成:{p_blackright_move_obj.promoted}  ex:{ex}")
@@ -476,7 +479,7 @@ class EvaluationPMove():
             p_srcsq = p_srcloc
 
             try:
-                dstsq_to_index_dictionary = srcsq_to_dstsq_to_index_for_npsi_dictionary[p_srcsq]
+                dstsq_to_index_dictionary = srcsq_to_dstsq_to_blackright_index_for_npsi_dictionary[p_srcsq]
 
             except KeyError as ex:
                 print(f"[evaluation p move > get index by p move > 成らない手] p_blackright_move_obj.as_usi:{p_blackright_move_obj.as_usi}  P srcloc_u:{Usi.srcloc_to_code(p_srcloc)}  p_src_masu:{Usi.srcloc_to_jsa(p_srcsq)}  成:{p_blackright_move_obj.promoted}  ex:{ex}")
@@ -516,12 +519,12 @@ class EvaluationPMove():
 
     @staticmethod
     def destructure_srcloc_dstsq_promoted_by_p_index(
-            p_index):
+            p_blackright_index):
         """Ｐインデックス分解
 
         Parameter
         ---------
-        p_index : int
+        p_blackright_index : int
             兵の指し手のインデックス
 
         Returns
@@ -534,14 +537,14 @@ class EvaluationPMove():
             成る手か？
         """
         # マスの通し番号を渡すと、元マスと移動先マスを返す入れ子の辞書を返します
-        (srcsq_to_dstsq_to_index_for_npsi_dictionary,
-         srcsq_to_dstsq_to_index_for_psi_dictionary,
-         srcdrop_to_dstsq_index,
-         index_to_srcloc_dstsq_promotion_dictionary) = EvaluationPMove.get_src_lists_to_dstsq_index_dictionary_tuple()
+        (srcsq_to_dstsq_to_blackright_index_for_npsi_dictionary,
+         srcsq_to_dstsq_to_blackright_index_for_psi_dictionary,
+         srcdrop_to_dstsq_blackright_index,
+         blackright_index_to_srcloc_dstsq_promotion_dictionary) = EvaluationPMove.get_src_lists_to_dstsq_blackright_index_dictionary_tuple()
 
         (srcloc,
          dstsq,
-         promoted) = index_to_srcloc_dstsq_promotion_dictionary[p_index]
+         promoted) = blackright_index_to_srcloc_dstsq_promotion_dictionary[p_blackright_index]
 
         # assert: srcloc は数だ
         temp = srcloc + 1

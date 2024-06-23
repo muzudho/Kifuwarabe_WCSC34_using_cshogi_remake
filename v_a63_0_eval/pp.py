@@ -64,25 +64,25 @@ p2_blackright_move_obj:{p2_blackright_move_obj.as_usi:5}
 
         rest = p1_blackright_p2_blackright_index
 
-        p2_index = rest % EvaluationPMove.get_serial_number_size()
+        p2_blackright_index = rest % EvaluationPMove.get_serial_number_size()
         rest //= EvaluationPMove.get_serial_number_size()
 
-        p1_index = rest % EvaluationPMove.get_serial_number_size()
+        p1_blackright_index = rest % EvaluationPMove.get_serial_number_size()
 
         # assert
-        if EvaluationPMove.get_serial_number_size() <= p2_index:
-            raise ValueError(f"p2_index:{p2_index} out of range {EvaluationPMove.get_serial_number_size()}")
+        if EvaluationPMove.get_serial_number_size() <= p2_blackright_index:
+            raise ValueError(f"p2_blackright_index:{p2_blackright_index} out of range {EvaluationPMove.get_serial_number_size()}")
 
         # assert
-        if EvaluationPMove.get_serial_number_size() <= p1_index:
-            raise ValueError(f"p1_index:{p1_index} out of range {EvaluationPMove.get_serial_number_size()}")
+        if EvaluationPMove.get_serial_number_size() <= p1_blackright_index:
+            raise ValueError(f"p1_blackright_index:{p1_blackright_index} out of range {EvaluationPMove.get_serial_number_size()}")
 
 
         # Ｐ２
         (p2_srcloc,
          p2_dstsq,
          p2_promote) = EvaluationPMove.destructure_srcloc_dstsq_promoted_by_p_index(
-                p_index=p2_index)
+                p_blackright_index=p2_blackright_index)
         p2_blackright_move_obj = Move.from_src_dst_pro(
                 srcloc=p2_srcloc,
                 dstsq=p2_dstsq,
@@ -94,7 +94,7 @@ p2_blackright_move_obj:{p2_blackright_move_obj.as_usi:5}
         (p1_srcloc,
          p1_dstsq,
          p1_promote) = EvaluationPMove.destructure_srcloc_dstsq_promoted_by_p_index(
-                p_index=p1_index)
+                p_blackright_index=p1_blackright_index)
         p1_blackright_move_obj = Move.from_src_dst_pro(
                 srcloc=p1_srcloc,
                 dstsq=p1_dstsq,

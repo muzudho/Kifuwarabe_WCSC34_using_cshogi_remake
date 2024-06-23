@@ -14,7 +14,7 @@ from     v_a63_0_misc.usi import Usi
 
 def test_k():
     # 元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します
-    (srcsq_to_dstsq_index_dictionary, index_to_srcsq_dstsq_dictionary) = EvaluationKMove.get_srcsq_to_dstsq_index_dictionary_tuple()
+    (srcsq_to_dstsq_index_dictionary, index_to_srcsq_dstsq_dictionary) = EvaluationKMove.get_srcsq_to_dstsq_blackright_index_dictionary_tuple()
 
     base_name = "test_eval_k.log"
     print(f"please read `{base_name}` file")
@@ -172,37 +172,46 @@ def test_kk():
 def test_p():
     def test_p_3h3ip():
         """後手の歩を９段目に突いて成る"""
-        expected_p_move_u = '3h3i+'
-        expected_p_move_obj = Move.from_usi(expected_p_move_u)
+        # 本来の指し手
+        strict_p_move_u = '3h3i+'
+        strict_p_move_obj = Move.from_usi(strict_p_move_u)
+
+        # 期待する（先手視点、右辺使用）の指し手
+        expected_p_blackright_move_u = '3b3a+'
+        expected_p_blackright_move_obj = Move.from_usi(expected_p_blackright_move_u)
 
         # （先手視点、右辺使用）に合わせる
         p_blackright_move_obj = Move.from_move_obj(
-                f_strict_move_obj=Move.from_usi(expected_p_move_u),
+                f_strict_move_obj=strict_p_move_obj,
                 shall_white_to_black=True,
                 use_only_right_side=True)
 
-        p_index = EvaluationPMove.get_blackright_index_by_p_move(
+        p_blackright_index = EvaluationPMove.get_blackright_index_by_p_move(
                 p_blackright_move_obj=p_blackright_move_obj,
                 ignore_error=True)
 
-        if p_index == -1:
+        if p_blackright_index == -1:
             return
 
-        shall_p_white_to_black = True
-
         # Ｐ
-        (p_srcloc,
-        p_dstsq,
+        (p_blackright_srcloc,
+        p_blackright_dstsq,
         p_promote) = EvaluationPMove.destructure_srcloc_dstsq_promoted_by_p_index(
-                p_index=p_index)
-        actual_p_move_obj = Move.from_src_dst_pro(
-                srcloc=p_srcloc,
-                dstsq=p_dstsq,
-                promoted=p_promote,
-                is_rotate=shall_p_white_to_black)
+                p_blackright_index=p_blackright_index)
 
-        if expected_p_move_obj.as_usi != actual_p_move_obj.as_usi:
-            raise ValueError(f'unexpected error. move_obj expected P:`{expected_p_move_obj.as_usi}`  actual P:`{actual_p_move_obj.as_usi}`')
+        actual_p_blackright_move_obj = Move.from_src_dst_pro(
+                srcloc=p_blackright_srcloc,
+                dstsq=p_blackright_dstsq,
+                promoted=p_promote,
+                # 既に（先手視点、右辺使用）なので回転させません
+                is_rotate=False)
+
+        if expected_p_blackright_move_obj.as_usi != actual_p_blackright_move_obj.as_usi:
+            raise ValueError(f"""unexpected error.
+expected_p_blackright_move_obj:`{expected_p_blackright_move_obj.as_usi}`
+p_blackright_move_obj_u       :`{p_blackright_move_obj.as_usi}`
+actual_p_blackright_move_obj  :`{actual_p_blackright_move_obj.as_usi}`
+""")
 
     test_p_3h3ip()
 
@@ -210,10 +219,10 @@ def test_p():
     #
     # 元マスと移動先マスを渡すと、マスの通し番号を返す入れ子の辞書を返します
     #
-    (srcsq_to_dstsq_to_index_for_npsi_dictionary,
-     srcsq_to_dstsq_to_index_for_psi_dictionary,
-     srcdrop_to_dstsq_index,
-     index_to_srcsq_dstsq_promotion_dictionary) = EvaluationPMove.get_src_lists_to_dstsq_index_dictionary_tuple()
+    (srcsq_to_dstsq_to_blackright_index_for_npsi_dictionary,
+     srcsq_to_dstsq_to_blackright_index_for_psi_dictionary,
+     srcdrop_to_dstsq_blackright_index,
+     index_to_srcsq_dstsq_promotion_dictionary) = EvaluationPMove.get_src_lists_to_dstsq_blackright_index_dictionary_tuple()
 
     base_name = "test_eval_p.log"
     print(f"please read `{base_name}` file")
@@ -227,39 +236,47 @@ def test_p():
         #
 
         #
-        # 元マス・先マス to インデックス
+        # 元マス・先マスを渡して、インデックスを返す関数
         #
-        for srcsq in range(0,81):
-            dstsq_to_index_for_npsi_dictionary = srcsq_to_dstsq_to_index_for_npsi_dictionary[srcsq]
-            dstsq_to_index_for_b_dictionary = srcsq_to_dstsq_to_index_for_psi_dictionary[srcsq]
+        #   （先手視点、右辺のみ使用）
+        #
+        for src_file in range(0,5):
+            for src_rank in range(0,9):
+                # 移動元マス番号
+                srcsq = Usi.file_rank_to_sq(
+                        file=src_file,
+                        rank=src_rank)
 
-            # 成らない指し手（no promote）の各マス　値：通しインデックス（serial index）
-            label_table_for_npsi = ["    "] * 81
+                dstsq_to_index_for_npsi_dictionary = srcsq_to_dstsq_to_blackright_index_for_npsi_dictionary[srcsq]
+                dstsq_to_index_for_b_dictionary = srcsq_to_dstsq_to_blackright_index_for_psi_dictionary[srcsq]
 
-            # 成る指し手（promote）の各マス　値：通しインデックス
-            label_table_for_psi = ["    "] * 81
+                # 成らない指し手（no promote）の各マス　値：通しインデックス（serial index）
+                label_table_for_npsi = ["    "] * 81
 
-            # 成らない指し手の各マス　値：絶対マス番号（sq）
-            label_table_for_npsq = ["    "] * 81
+                # 成る指し手（promote）の各マス　値：通しインデックス
+                label_table_for_psi = ["    "] * 81
 
-            # 成る指し手の各マス　値：絶対マス番号
-            label_table_for_psq = ["    "] * 81
+                # 成らない指し手の各マス　値：絶対マス番号（sq）
+                label_table_for_npsq = ["    "] * 81
 
-            label_table_for_npsi[srcsq] = " you"
-            label_table_for_psi[srcsq] = " you"
-            label_table_for_npsq[srcsq] = " you"
-            label_table_for_psq[srcsq] = " you"
+                # 成る指し手の各マス　値：絶対マス番号
+                label_table_for_psq = ["    "] * 81
 
-            for dstsq, effect_index in dstsq_to_index_for_npsi_dictionary.items():
-                label_table_for_npsi[dstsq] = f"{effect_index:4}"
-                label_table_for_npsq[dstsq] = f"{dstsq:4}"
+                label_table_for_npsi[srcsq] = " you"
+                label_table_for_psi[srcsq] = " you"
+                label_table_for_npsq[srcsq] = " you"
+                label_table_for_psq[srcsq] = " you"
 
-            for dstsq, effect_index in dstsq_to_index_for_b_dictionary.items():
-                label_table_for_psi[dstsq] = f"{effect_index:4}"
-                label_table_for_psq[dstsq] = f"{dstsq:4}"
+                for dstsq, effect_index in dstsq_to_index_for_npsi_dictionary.items():
+                    label_table_for_npsi[dstsq] = f"{effect_index:4}"
+                    label_table_for_npsq[dstsq] = f"{dstsq:4}"
+
+                for dstsq, effect_index in dstsq_to_index_for_b_dictionary.items():
+                    label_table_for_psi[dstsq] = f"{effect_index:4}"
+                    label_table_for_psq[dstsq] = f"{dstsq:4}"
 
 
-            f.write(f"""src_masu:{Usi.sq_to_jsa(srcsq)}
+                f.write(f"""src_masu:{Usi.sq_to_jsa(srcsq)}
 先手成らず  通しインデックス                             先手成らず  絶対マス                                   先手成り  通しインデックス                               先手成り  絶対マス
 {DebugHelper.stringify_quadruple_4characters_board(
         a=label_table_for_npsi,
@@ -275,7 +292,7 @@ def test_p():
         #
         for drop_code in ['R*', 'B*', 'G*', 'S*', 'N*', 'L*', 'P*']:
             srcdrop = Usi.code_to_srcloc(drop_code)
-            dstsq_to_index_dictionary = srcdrop_to_dstsq_index[srcdrop]
+            dstsq_to_index_dictionary = srcdrop_to_dstsq_blackright_index[srcdrop]
 
             label_table_for_drop = ['    '] * 81
 

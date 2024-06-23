@@ -80,7 +80,7 @@ class EvaluationKpTable():
         ((p_srcloc,
          p_dstsq,
          p_promote)) = EvaluationPMove.destructure_srcloc_dstsq_promoted_by_p_index(
-                p_index=p_index)
+                p_blackright_index=p_index)
         p_blackright_move_obj = Move.from_src_dst_pro(
                 srcloc=p_srcloc,
                 dstsq=p_dstsq,
