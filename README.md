@@ -2,6 +2,15 @@
 
 WCSC34 のきふわらべの作り直し
 
+
+# 動作テスト
+
+```shell
+# 将棋エンジンを起動直後
+selfmatch
+```
+
+
 # 仕様（Specification）
 
 v_a53_0 版から、 `src_sq` は `srcsq` に改名し、値は 0～80 の整数または None とする。  

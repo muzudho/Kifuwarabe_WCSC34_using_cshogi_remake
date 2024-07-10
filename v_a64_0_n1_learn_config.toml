@@ -1,0 +1,11 @@
+# 学習率（learn_rate）
+#
+#   この将棋エンジンでは、評価値テーブルの編集対象の数を、間引いて残す率です。
+#   小さくするほど、１つの棋譜から学ぶ箇所が減って、やっつけになります。
+#   分子（numerator）と分母（denominator）を整数で書いてください
+#
+learn_rate.numerator = 1
+learn_rate.denominator = 10
+
+# 短手数の詰めチェックモードでの指し継ぎ手数
+short_mate_mode.relay_move_number = 7
