@@ -265,24 +265,30 @@ class Move():
         use_only_right_side : bool
             移動元マスを盤の１筋～５筋だけ使うように指し手を揃えるか？
         """
+
+        # 盤を先後回転させるなら
         if is_rotate:
             srcloc = Usi.rotate_srcloc(srcloc)
             dstsq = Usi.rotate_srcloc(dstsq)
 
+        # 盤を左右対称として扱って、左辺を省略し、右辺だけ使うなら
         if use_only_right_side:
-            # 打でないなら
-            if not Usi.is_drop_by_srcloc(srcloc):
-                (file_th, rank_th) = Usi.srcloc_to_file_th_rank_th(srcloc)
-
-                if 5 < file_th:
-                    srcloc = Usi.flip_srcloc(srcloc)
-                    dstsq = Usi.flip_srcloc(dstsq)
+            (src_on_board, src_file_th, src_rank_th) = Usi.srcloc_to_file_th_rank_th(srcloc)
 
             # 打なら
-            else:
-                (file_th, rank_th) = Usi.srcloc_to_file_th_rank_th(dstsq)
+            if not src_on_board:
+                (dst_on_board, dst_file_th, dst_rank_th) = Usi.srcloc_to_file_th_rank_th(dstsq)
 
-                if 5 < file_th:
+                # 左辺に打ったら、左右反転
+                if 5 < dst_file_th:
+                    dstsq = Usi.flip_srcloc(dstsq)
+
+            # 打でないなら
+            else:
+
+                # 左辺の駒を動かしたら、左右反転
+                if 5 < src_file_th:
+                    srcloc = Usi.flip_srcloc(srcloc)
                     dstsq = Usi.flip_srcloc(dstsq)
 
         return Move(

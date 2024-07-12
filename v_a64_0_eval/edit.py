@@ -30,6 +30,40 @@ class EvaluationEdit():
         self._kifuwarabe=kifuwarabe
 
 
+    @staticmethod
+    def let_change_amount(f_blackright_move_obj):
+        """評価値テーブルの変更したセル数を算出
+
+        Parameters
+        ----------
+        f_blackright_move_obj : Move
+            着手点
+
+        Returns
+        -------
+        change_amount
+            変更量
+        """
+        # 盤の５筋以外の筋は、左右対称のとき、左辺と右辺の２か所に効くので、変化量は２倍
+        (src_on_board, src_file_th, src_rank_th) = Usi.srcloc_to_file_th_rank_th(f_blackright_move_obj.srcloc)
+        if src_on_board:
+            if src_file_th == 5:
+                change_amount = 1
+            else:
+                change_amount = 2
+
+        # 打なら
+        else:
+            (dst_on_board, dst_file_th, dst_rank_th) = Usi.srcloc_to_file_th_rank_th(f_blackright_move_obj.dstsq)
+
+            if dst_file_th == 5:
+                change_amount = 1
+            else:
+                change_amount = 2
+
+        return change_amount
+
+
     def weaken(
             self,
             move_u,
@@ -247,6 +281,7 @@ class EvaluationEdit():
                 if is_debug and DebugPlan.evaluation_edit_weaken:
                     print(f"[{datetime.datetime.now()}] [weaken > kl] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  kl_index:{target_black_f_black_l_index:7}  K:{k_blackright_move_obj.as_usi:5}  L:{black_l_move_obj.as_usi:5}  remove relation")
 
+                # 評価値のフラグを１つ倒す
                 (is_changed_temp, result_comment) = self._kifuwarabe._evaluation_kl_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exsits_by_black_k_black_l_moves(
                         k_blackright_move_obj=k_blackright_move_obj,
                         l_blackright_move_obj=black_l_move_obj,
@@ -256,7 +291,12 @@ class EvaluationEdit():
 
                 if is_changed_temp:
                     is_changed = True
-                    rest -= 1
+
+                    # 評価値テーブルの変更したセル数
+                    change_amount = EvaluationEdit.let_change_amount(k_blackright_move_obj)
+
+                    rest -= change_amount
+
                 else:
                     assert_failed_to_change += 1
 
@@ -283,6 +323,7 @@ class EvaluationEdit():
                 if is_debug and DebugPlan.evaluation_edit_weaken:
                     print(f"[{datetime.datetime.now()}] [weaken > kq] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  kq_index:{target_black_f_black_q_index:7}  K:{k_blackright_move_obj.as_usi:5}  Q:{black_q_move_obj.as_usi:5}  remove relation")
 
+                # 評価値のフラグを１つ倒す
                 is_changed_temp = self._kifuwarabe._evaluation_kq_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exists_by_black_k_black_p_moves(
                         k_blackright_move_obj=k_blackright_move_obj,
                         p_blackright_move_obj=black_q_move_obj,
@@ -292,7 +333,12 @@ class EvaluationEdit():
 
                 if is_changed_temp:
                     is_changed = True
-                    rest -= 1
+
+                    # 評価値テーブルの変更したセル数
+                    change_amount = EvaluationEdit.let_change_amount(k_blackright_move_obj)
+
+                    rest -= change_amount
+
                 else:
                     assert_failed_to_change += 1
 
@@ -366,16 +412,22 @@ class EvaluationEdit():
                 if is_debug and DebugPlan.evaluation_edit_weaken:
                     print(f"[{datetime.datetime.now()}] [weaken > pl] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  pl_index:{target_black_f_black_l_index:7}  P:{p_blackright_move_obj.as_usi:5}  L:{black_l_move_obj.as_usi:5}  remove relation")
 
+                # 評価値のフラグを１つ倒す
                 is_changed_temp = self._kifuwarabe._evaluation_pl_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exists_by_black_p_black_k_moves(
                         p_blackright_move_obj=p_blackright_move_obj,
                         k_blackright_move_obj=black_l_move_obj,
-                        bit=1)
+                        bit=0)
 
                 assert_challenge += 1
 
                 if is_changed_temp:
                     is_changed = True
-                    rest -= 1
+
+                    # 評価値テーブルの変更したセル数
+                    change_amount = EvaluationEdit.let_change_amount(p_blackright_move_obj)
+
+                    rest -= change_amount
+
                 else:
                     assert_failed_to_change += 1
 
@@ -403,6 +455,7 @@ class EvaluationEdit():
                 if is_debug and DebugPlan.evaluation_edit_weaken:
                     print(f"[{datetime.datetime.now()}] [weaken > pq] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  pq_index:{target_black_f_black_q_index:7}  P:{p_blackright_move_obj.as_usi:5}  Q:{black_q_move_obj.as_usi:5}  remove relation")
 
+                # 評価値のフラグを１つ倒す
                 is_changed_temp = self._kifuwarabe._evaluation_pq_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exists_by_black_p_black_p_moves(
                         p1_blackright_move_obj=p_blackright_move_obj,
                         p2_blackright_move_obj=black_q_move_obj,
@@ -412,7 +465,12 @@ class EvaluationEdit():
 
                 if is_changed_temp:
                     is_changed = True
-                    rest -= 1
+
+                    # 評価値テーブルの変更したセル数
+                    change_amount = EvaluationEdit.let_change_amount(p_blackright_move_obj)
+
+                    rest -= change_amount
+
                 else:
                     assert_failed_to_change += 1
 
@@ -642,6 +700,7 @@ class EvaluationEdit():
                 if is_debug and DebugPlan.evaluation_edit_strengthen:
                     print(f"[{datetime.datetime.now()}] [strengthen > kl] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  kl_index:{target_black_f_black_l_index:7}  K:{k_blackright_move_obj.as_usi:5}  L:{black_l_move_obj.as_usi:5}  remove relation")
 
+                # 評価値のフラグを１つ立てる
                 (is_changed_temp, result_comment) = self._kifuwarabe._evaluation_kl_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exsits_by_black_k_black_l_moves(
                         k_blackright_move_obj=k_blackright_move_obj,
                         l_blackright_move_obj=black_l_move_obj,
@@ -651,7 +710,12 @@ class EvaluationEdit():
 
                 if is_changed_temp:
                     is_changed = True
-                    rest -= 1
+
+                    # 評価値テーブルの変更したセル数
+                    change_amount = EvaluationEdit.let_change_amount(k_blackright_move_obj)
+
+                    rest -= change_amount
+
                 else:
                     assert_failed_to_change += 1
 
@@ -678,6 +742,7 @@ class EvaluationEdit():
                 if is_debug and DebugPlan.evaluation_edit_strengthen:
                     print(f"[{datetime.datetime.now()}] [strengthen > kq] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  kq_index:{target_black_f_black_q_index:7}  K:{k_blackright_move_obj.as_usi:5}  Q:{black_q_move_obj.as_usi:5}  remove relation")
 
+                # 評価値のフラグを１つ立てる
                 is_changed_temp = self._kifuwarabe._evaluation_kq_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exists_by_black_k_black_p_moves(
                         k_blackright_move_obj=k_blackright_move_obj,
                         p_blackright_move_obj=black_q_move_obj,
@@ -687,7 +752,12 @@ class EvaluationEdit():
 
                 if is_changed_temp:
                     is_changed = True
-                    rest -= 1
+
+                    # 評価値テーブルの変更したセル数
+                    change_amount = EvaluationEdit.let_change_amount(k_blackright_move_obj)
+
+                    rest -= change_amount
+
                 else:
                     assert_failed_to_change += 1
 
@@ -778,6 +848,7 @@ class EvaluationEdit():
                 if is_debug and DebugPlan.evaluation_edit_strengthen:
                     print(f"[{datetime.datetime.now()}] [strengthen > pl] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  pl_index:{target_black_f_black_l_index:7}  P:{p_blackright_move_obj.as_usi:5}  L:{black_l_move_obj.as_usi:5}  remove relation")
 
+                # 評価値のフラグを１つ立てる
                 is_changed_temp = self._kifuwarabe._evaluation_pl_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exists_by_black_p_black_k_moves(
                         p_blackright_move_obj=p_blackright_move_obj,
                         k_blackright_move_obj=black_l_move_obj,
@@ -787,7 +858,12 @@ class EvaluationEdit():
 
                 if is_changed_temp:
                     is_changed = True
-                    rest -= 1
+
+                    # 評価値テーブルの変更したセル数
+                    change_amount = EvaluationEdit.let_change_amount(p_blackright_move_obj)
+
+                    rest -= change_amount
+
                 else:
                     assert_failed_to_change += 1
 
@@ -815,6 +891,7 @@ class EvaluationEdit():
                 if is_debug and DebugPlan.evaluation_edit_strengthen:
                     print(f"[{datetime.datetime.now()}] [strengthen > pq] turn:{Turn.to_string(self._kifuwarabe.board.turn)}  pq_index:{target_black_f_black_q_index:7}  P:{p_blackright_move_obj.as_usi:5}  Q:{black_q_move_obj.as_usi:5}  remove relation")
 
+                # 評価値のフラグを１つ立てる
                 is_changed_temp = self._kifuwarabe._evaluation_pq_table_obj_array[Turn.to_index(self._kifuwarabe.board.turn)].set_relation_exists_by_black_p_black_p_moves(
                         p1_blackright_move_obj=p_blackright_move_obj,
                         p2_blackright_move_obj=black_q_move_obj,
@@ -824,7 +901,12 @@ class EvaluationEdit():
 
                 if is_changed_temp:
                     is_changed = True
-                    rest -= 1
+
+                    # 評価値テーブルの変更したセル数
+                    change_amount = EvaluationEdit.let_change_amount(p_blackright_move_obj)
+
+                    rest -= change_amount
+
                 else:
                     assert_failed_to_change += 1
 

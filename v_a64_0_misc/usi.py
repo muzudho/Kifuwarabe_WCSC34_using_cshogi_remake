@@ -141,11 +141,29 @@ class Usi():
 
     @staticmethod
     def srcloc_to_file_th_rank_th(srcloc):
-        """元位置番号を渡すと、 1 から始まる筋番号と、 1 から始まる段番号のタプルを返します"""
-        if Usi.is_drop_by_srcloc(srcloc):
-            raise ValueError("[usi > srcloc to file_th rank th] 打はマス番号に変換できません")
+        """元位置番号を渡すと、 1 から始まる筋番号と、 1 から始まる段番号のタプルを返します。
+        打はマス番号に変換できません
 
-        return Usi.sq_to_file_th_rank_th(sq=srcloc)
+        Parameters
+        ----------
+        srcloc : int
+            元位置番号
+
+        Returns
+        -------
+        on_board : bool
+            盤上の指し手だった（打ではなかった）。筋と段を取得できます
+        src_file : int
+            元位置の筋
+        src_rank : int
+            元位置の段
+        """
+        if Usi.is_drop_by_srcloc(srcloc):
+            #raise ValueError("[usi > srcloc to file_th rank th] 打はマス番号に変換できません")
+            return False, None, None
+
+        (src_file, src_rank) = Usi.sq_to_file_th_rank_th(sq=srcloc)
+        return True, src_file, src_rank
 
 
     @staticmethod
@@ -282,13 +300,14 @@ class Usi():
     @staticmethod
     def flip_srcloc(srcloc):
         """指し手を盤上で左右反転したときの符号に変換します。打はそのまま返します"""
+
+        (on_board, file_th, rank_th) = Usi.srcloc_to_file_th_rank_th(srcloc)
+
         # 打はそのまま返す
-        if Usi.is_drop_by_srcloc(srcloc):
+        if not on_board:
             return srcloc
 
         # 左右反転
-        (file_th, rank_th) = Usi.srcloc_to_file_th_rank_th(srcloc)
-
         file_th = Usi.flip_file_th(file_th)
 
         return Usi.file_rank_to_sq(
