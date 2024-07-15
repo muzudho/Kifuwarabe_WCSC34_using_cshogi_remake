@@ -27,6 +27,12 @@ pip install cshogi
 python main.py
 ```
 
+そして、適当に 📄 `*.py` ファイルを開く。  
+
+![Pythonインタープリターの選択](./docs/res/202407__vscode__15-2358--python-o1o1o0.png)  
+
+👆 VS Code が使う Pythonインタープリターを Anaconda のものにしてください。それで動かなかったら、動くものにしてください  
+
 
 ## 将棋所にエンジン登録する方法
 
