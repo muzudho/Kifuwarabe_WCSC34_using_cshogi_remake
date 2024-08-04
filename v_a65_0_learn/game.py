@@ -7,7 +7,6 @@ from v_a65_0_misc.choice_best_move import ChoiceBestMove
 from v_a65_0_misc.lib import Turn, BoardHelper
 
 
-#LearnGame
 class LearnGame():
     """学習部
 
@@ -420,18 +419,8 @@ class LearnGame():
                                 log_progress(f"[ ] 勝った方が、{move_number_between_end_and_problem}手詰めを逃したが、プレイアウト用の手数上限のせいなので無視")
 
                     else:
-                        if is_short_mate_mode:
-                            log_progress(f"[ ] 短手数の詰めチェック中。プレイアウト用の手数上限で勝ちを逃しても無視")
-
-                        else:
-                            # プレイアウトの上限手数は、実際に詰めた手数より長く取ってあるか？
-                            if move_number_between_end_and_problem < move_number_of_end_of_playout:
-                                shall_1_weaken_2_strongthen = 2
-                                log_progress(f"[▲UP▲] 負けた方が、{move_number_between_end_and_problem}手詰めを、プレイアウト用の手数上限まで逃げ切った")
-
-                            # FIXME 攻め手がヘボ手なら、いくらでも逃げ切れるが
-                            else:
-                                log_progress(f"[ ] 負けた方が、{move_number_between_end_and_problem}手詰めを逃げ切ったが、プレイアウト用の手数上限のせいなので無視")
+                        # 攻め手がヘボ手なら、いくらでも逃げ切れる。評価の上限は無し
+                        log_progress(f"[ ] 受け手が逃げ切ったが、攻め手がヘボ手ならいくらでも逃げ切れる。評価の上限なし")
 
                 else:
                     # ノーカウント

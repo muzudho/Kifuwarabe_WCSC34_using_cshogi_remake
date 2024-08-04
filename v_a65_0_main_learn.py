@@ -6,8 +6,8 @@ import random
 # python v_a65_0_main_learn.py
 from     v_a65_0 import Kifuwarabe, engine_version_str
 from     v_a65_0_misc.game_result_document import GameResultDocument
-from     v_a65_0_misc.learn_game import LearnGame
-from     v_a65_0_misc.learn_config_document import LearnConfigDocument
+from     v_a65_0_learn.game import LearnGame
+from     v_a65_0_learn.config_document import LearnConfigDocument
 
 
 class LearningFramework():
