@@ -5,7 +5,7 @@ from v_a65_0_eval.k import EvaluationKMove
 from v_a65_0_eval.lib import EvaluationLib
 from v_a65_0_eval.p import EvaluationPMove
 from v_a65_0_misc.lib import FileName, Turn, Move, EvalutionMmTable
-from v_a65_0_misc.usi import Usi
+from v_a65_0_misc.sub_usi import SubUsi
 
 
 class EvaluationPkTable():
@@ -232,8 +232,8 @@ class EvaluationPkTable():
         """
 
         # assert
-        if Usi.is_drop_by_srcloc(k_blackright_move_obj.srcloc):
-            raise ValueError(f"[evaluation pk table > get relation exists by pk moves > k] 玉の指し手で打なのはおかしい。 k_blackright_move_obj.srcloc_u:{Usi.srcloc_to_code(k_blackright_move_obj.srcloc)}  k_blackright_move_obj:{k_blackright_move_obj.dump()}")
+        if SubUsi.is_drop_by_srcloc(k_blackright_move_obj.srcloc):
+            raise ValueError(f"[evaluation pk table > get relation exists by pk moves > k] 玉の指し手で打なのはおかしい。 k_blackright_move_obj.srcloc_u:{SubUsi.srcloc_to_code(k_blackright_move_obj.srcloc)}  k_blackright_move_obj:{k_blackright_move_obj.dump()}")
 
         return self.get_relation_exists_by_index(
                 p_blackright_k_blackright_index=EvaluationPkTable.get_p_blackright_k_blackright_index(

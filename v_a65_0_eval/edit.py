@@ -10,7 +10,7 @@ from v_a65_0_eval.pk import EvaluationPkTable
 from v_a65_0_eval.pp import EvaluationPpTable
 from v_a65_0_misc.choice_best_move import ChoiceBestMove
 from v_a65_0_misc.lib import Turn, Move
-from v_a65_0_misc.usi import Usi
+from v_a65_0_misc.sub_usi import SubUsi
 
 
 class EvaluationEdit():
@@ -45,7 +45,7 @@ class EvaluationEdit():
             変更量
         """
         # 盤の５筋以外の筋は、左右対称のとき、左辺と右辺の２か所に効くので、変化量は２倍
-        (src_on_board, src_file_th, src_rank_th) = Usi.srcloc_to_file_th_rank_th(f_blackright_move_obj.srcloc)
+        (src_on_board, src_file_th, src_rank_th) = SubUsi.srcloc_to_file_th_rank_th(f_blackright_move_obj.srcloc)
         if src_on_board:
             if src_file_th == 5:
                 change_amount = 1
@@ -54,7 +54,7 @@ class EvaluationEdit():
 
         # 打なら
         else:
-            (dst_on_board, dst_file_th, dst_rank_th) = Usi.srcloc_to_file_th_rank_th(f_blackright_move_obj.dstsq)
+            (dst_on_board, dst_file_th, dst_rank_th) = SubUsi.srcloc_to_file_th_rank_th(f_blackright_move_obj.dstsq)
 
             if dst_file_th == 5:
                 change_amount = 1
@@ -258,12 +258,12 @@ class EvaluationEdit():
                         k_blackright_l_blackright_index=target_black_f_black_l_index)
 
                 # assert
-                if Usi.is_drop_by_srcloc(k_blackright_move_obj.srcloc):
-                    raise ValueError(f"[evaluation edit > weaken > k] 玉の指し手で打なのはおかしい。 k_blackright_move_obj.srcloc_u:{Usi.srcloc_to_code(k_blackright_move_obj.srcloc)}  k_blackright_move_obj:{k_blackright_move_obj.dump()}")
+                if SubUsi.is_drop_by_srcloc(k_blackright_move_obj.srcloc):
+                    raise ValueError(f"[evaluation edit > weaken > k] 玉の指し手で打なのはおかしい。 k_blackright_move_obj.srcloc_u:{SubUsi.srcloc_to_code(k_blackright_move_obj.srcloc)}  k_blackright_move_obj:{k_blackright_move_obj.dump()}")
 
                 # assert
-                if Usi.is_drop_by_srcloc(black_l_move_obj.srcloc):
-                    raise ValueError(f"[evaluation edit > weaken > l] 玉の指し手で打なのはおかしい。 black_l_move_obj.srcloc_u:{Usi.srcloc_to_code(black_l_move_obj.srcloc)}  black_l_move_obj:{black_l_move_obj.dump()}")
+                if SubUsi.is_drop_by_srcloc(black_l_move_obj.srcloc):
+                    raise ValueError(f"[evaluation edit > weaken > l] 玉の指し手で打なのはおかしい。 black_l_move_obj.srcloc_u:{SubUsi.srcloc_to_code(black_l_move_obj.srcloc)}  black_l_move_obj:{black_l_move_obj.dump()}")
 
                 f_blackright_move_obj = Move.from_move_obj(
                         f_strict_move_obj=move_obj,
@@ -677,12 +677,12 @@ class EvaluationEdit():
                         k_blackright_l_blackright_index=target_black_f_black_l_index)
 
                 # assert
-                if Usi.is_drop_by_srcloc(k_blackright_move_obj.srcloc):
-                    raise ValueError(f"[evaluation edit > strengthen > k] 玉の指し手で打なのはおかしい。 k_blackright_move_obj.srcloc_u:{Usi.srcloc_to_code(k_blackright_move_obj.srcloc)}  k_blackright_move_obj:{k_blackright_move_obj.dump()}")
+                if SubUsi.is_drop_by_srcloc(k_blackright_move_obj.srcloc):
+                    raise ValueError(f"[evaluation edit > strengthen > k] 玉の指し手で打なのはおかしい。 k_blackright_move_obj.srcloc_u:{SubUsi.srcloc_to_code(k_blackright_move_obj.srcloc)}  k_blackright_move_obj:{k_blackright_move_obj.dump()}")
 
                 # assert
-                if Usi.is_drop_by_srcloc(black_l_move_obj.srcloc):
-                    raise ValueError(f"[evaluation edit > strengthen > l] 玉の指し手で打なのはおかしい。 black_l_move_obj.srcloc_u:{Usi.srcloc_to_code(black_l_move_obj.srcloc)}  black_l_move_obj:{black_l_move_obj.dump()}")
+                if SubUsi.is_drop_by_srcloc(black_l_move_obj.srcloc):
+                    raise ValueError(f"[evaluation edit > strengthen > l] 玉の指し手で打なのはおかしい。 black_l_move_obj.srcloc_u:{SubUsi.srcloc_to_code(black_l_move_obj.srcloc)}  black_l_move_obj:{black_l_move_obj.dump()}")
 
                 f_blackright_move_obj = Move.from_move_obj(
                         f_strict_move_obj=move_obj,

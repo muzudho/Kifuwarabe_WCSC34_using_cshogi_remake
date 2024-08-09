@@ -1,5 +1,5 @@
-class Usi():
-    """ＵＳＩプロトコル"""
+class SubUsi():
+    """ＵＳＩプロトコルのサブルーチン"""
 
 
     _rank_th_num_to_alphabet = {
@@ -54,7 +54,7 @@ class Usi():
     def sq_to_code(clazz, sq):
         """マス番号から、ＵＳＩ形式の符号の先頭２文字へ変換します"""
         (file_th,
-         rank_th) = Usi.sq_to_file_th_rank_th(sq)
+         rank_th) = SubUsi.sq_to_file_th_rank_th(sq)
         return f"{file_th}{clazz._rank_th_num_to_alphabet[rank_th]}"
 
 
@@ -158,11 +158,11 @@ class Usi():
         src_rank : int
             元位置の段
         """
-        if Usi.is_drop_by_srcloc(srcloc):
+        if SubUsi.is_drop_by_srcloc(srcloc):
             #raise ValueError("[usi > srcloc to file_th rank th] 打はマス番号に変換できません")
             return False, None, None
 
-        (src_file, src_rank) = Usi.sq_to_file_th_rank_th(sq=srcloc)
+        (src_file, src_rank) = SubUsi.sq_to_file_th_rank_th(sq=srcloc)
         return True, src_file, src_rank
 
 
@@ -175,7 +175,7 @@ class Usi():
         sq : int
             マス番号。 0～80
         """
-        if Usi.is_drop_by_srcloc(srcloc):
+        if SubUsi.is_drop_by_srcloc(srcloc):
             raise ValueError("[usi > srcloc to sq] 打はマス番号に変換できません")
 
         return srcloc
@@ -185,7 +185,7 @@ class Usi():
     def rotate_srcloc(srcloc):
         """指し手を盤上で１８０°回転したときの符号に変換します。打はそのまま返します"""
         # 打はそのまま返す
-        if Usi.is_drop_by_srcloc(srcloc):
+        if SubUsi.is_drop_by_srcloc(srcloc):
             return srcloc
 
         # 盤上の升番号は、盤を１８０°回転したときの位置の番号を返す
@@ -221,7 +221,7 @@ class Usi():
         """
 
         (file_th,
-         rank_th) = Usi.sq_to_file_th_rank_th(sq)
+         rank_th) = SubUsi.sq_to_file_th_rank_th(sq)
 
         return 10 * file_th + rank_th
 
@@ -254,7 +254,7 @@ class Usi():
 
             # 盤上のマス
             for sq in range(0,81):
-                jsa_str = Usi.sq_to_jsa(sq)
+                jsa_str = SubUsi.sq_to_jsa(sq)
                 clazz._srcloc_to_jsa[sq] = jsa_str
                 #print(f"[usi > srcloc to jsa] sq:{sq}  jsa_str:{jsa_str}")
 
@@ -301,16 +301,16 @@ class Usi():
     def flip_srcloc(srcloc):
         """指し手を盤上で左右反転したときの符号に変換します。打はそのまま返します"""
 
-        (on_board, file_th, rank_th) = Usi.srcloc_to_file_th_rank_th(srcloc)
+        (on_board, file_th, rank_th) = SubUsi.srcloc_to_file_th_rank_th(srcloc)
 
         # 打はそのまま返す
         if not on_board:
             return srcloc
 
         # 左右反転
-        file_th = Usi.flip_file_th(file_th)
+        file_th = SubUsi.flip_file_th(file_th)
 
-        return Usi.file_rank_to_sq(
+        return SubUsi.file_rank_to_sq(
                 file=file_th - 1,
                 rank=rank_th - 1)
 
@@ -335,4 +335,4 @@ class Usi():
         file = jsa_sq // 10 - 1
         rank = jsa_sq % 10 - 1
 
-        return Usi.file_rank_to_sq(file, rank)
+        return SubUsi.file_rank_to_sq(file, rank)

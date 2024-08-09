@@ -1,4 +1,4 @@
-from v_a65_0_misc.usi import Usi
+from v_a65_0_misc.sub_usi import SubUsi
 
 
 class EvaluationPMove():
@@ -165,7 +165,7 @@ class EvaluationPMove():
             #
             for src_file in range(0,5):
                 for src_rank in range(0,9):
-                    srcsq = Usi.file_rank_to_sq(
+                    srcsq = SubUsi.file_rank_to_sq(
                             file=src_file,
                             rank=src_rank)
 
@@ -190,7 +190,7 @@ class EvaluationPMove():
                         # 上
                         next_rank = src_rank-delta_rank
                         if 0 <= next_rank:
-                            dstsq = Usi.file_rank_to_sq(
+                            dstsq = SubUsi.file_rank_to_sq(
                                     file=src_file,
                                     rank=next_rank)
                             no_pro_dstsq_set.add(dstsq)
@@ -202,7 +202,7 @@ class EvaluationPMove():
                         # 下
                         next_rank = src_rank+delta_rank
                         if next_rank < 9:
-                            dstsq = Usi.file_rank_to_sq(
+                            dstsq = SubUsi.file_rank_to_sq(
                                     file=src_file,
                                     rank=next_rank)
                             no_pro_dstsq_set.add(dstsq)
@@ -216,7 +216,7 @@ class EvaluationPMove():
                         # 右
                         next_file = src_file-delta_file
                         if 0 <= next_file:
-                            dstsq = Usi.file_rank_to_sq(
+                            dstsq = SubUsi.file_rank_to_sq(
                                     file=next_file,
                                     rank=src_rank)
                             no_pro_dstsq_set.add(dstsq)
@@ -228,7 +228,7 @@ class EvaluationPMove():
                         # 左
                         next_file = src_file+delta_file
                         if next_file < 9:
-                            dstsq = Usi.file_rank_to_sq(
+                            dstsq = SubUsi.file_rank_to_sq(
                                     file=next_file,
                                     rank=src_rank)
                             no_pro_dstsq_set.add(dstsq)
@@ -245,7 +245,7 @@ class EvaluationPMove():
                         next_file = src_file-delta
                         next_rank = src_rank-delta
                         if 0 <= next_file and 0 <= next_rank:
-                            dstsq = Usi.file_rank_to_sq(
+                            dstsq = SubUsi.file_rank_to_sq(
                                     file=next_file,
                                     rank=next_rank)
                             no_pro_dstsq_set.add(dstsq)
@@ -258,7 +258,7 @@ class EvaluationPMove():
                         next_file = src_file-delta
                         next_rank = src_rank+delta
                         if 0 <= next_file and next_rank < 9:
-                            dstsq = Usi.file_rank_to_sq(
+                            dstsq = SubUsi.file_rank_to_sq(
                                     file=next_file,
                                     rank=next_rank)
                             no_pro_dstsq_set.add(dstsq)
@@ -271,7 +271,7 @@ class EvaluationPMove():
                         next_file = src_file+delta
                         next_rank = src_rank-delta
                         if next_file < 9 and 0 <= next_rank:
-                            dstsq = Usi.file_rank_to_sq(
+                            dstsq = SubUsi.file_rank_to_sq(
                                     file=next_file,
                                     rank=next_rank)
                             no_pro_dstsq_set.add(dstsq)
@@ -284,7 +284,7 @@ class EvaluationPMove():
                         next_file = src_file+delta
                         next_rank = src_rank+delta
                         if next_file < 9 and next_rank < 9:
-                            dstsq = Usi.file_rank_to_sq(
+                            dstsq = SubUsi.file_rank_to_sq(
                                     file=next_file,
                                     rank=next_rank)
                             no_pro_dstsq_set.add(dstsq)
@@ -301,7 +301,7 @@ class EvaluationPMove():
                     next_file = src_file-1
                     next_rank = src_rank-2
                     if 0 <= next_file and 0 <= next_rank:
-                        dstsq = Usi.file_rank_to_sq(
+                        dstsq = SubUsi.file_rank_to_sq(
                                 file=next_file,
                                 rank=next_rank)
                         no_pro_dstsq_set.add(dstsq)
@@ -314,7 +314,7 @@ class EvaluationPMove():
                     next_file = src_file+1
                     next_rank = src_rank-2
                     if next_file < 9 and 0 <= next_rank:
-                        dstsq = Usi.file_rank_to_sq(
+                        dstsq = SubUsi.file_rank_to_sq(
                                 file=next_file,
                                 rank=next_rank)
                         no_pro_dstsq_set.add(dstsq)
@@ -347,7 +347,7 @@ class EvaluationPMove():
                 #
                 dstsq_to_index = dict()
 
-                clazz._srcdrop_to_dstsq_blackright_index[Usi.code_to_srcloc(drop_str)] = dstsq_to_index
+                clazz._srcdrop_to_dstsq_blackright_index[SubUsi.code_to_srcloc(drop_str)] = dstsq_to_index
 
                 if drop_str == 'N*':
                     min_rank = 2
@@ -361,13 +361,13 @@ class EvaluationPMove():
 
                 for dst_file in range(0,9):
                     for dst_rank in range(min_rank,9):
-                        dstsq = Usi.file_rank_to_sq(
+                        dstsq = SubUsi.file_rank_to_sq(
                                 file=dst_file,
                                 rank=dst_rank)
 
                         # 格納
                         dstsq_to_index[dstsq] = effect_index
-                        clazz._blackright_index_to_srcloc_dstsq_promotion_dictionary[effect_index] = (Usi.code_to_srcloc(drop_str), dstsq, False)
+                        clazz._blackright_index_to_srcloc_dstsq_promotion_dictionary[effect_index] = (SubUsi.code_to_srcloc(drop_str), dstsq, False)
                         effect_index += 1
 
         return (clazz._srcsq_to_dstsq_to_blackright_index_for_npsi_dictionary,
@@ -406,12 +406,12 @@ class EvaluationPMove():
 
 
         # 打つ手
-        if Usi.is_drop_by_srcloc(p_srcloc):
+        if SubUsi.is_drop_by_srcloc(p_srcloc):
             try:
                 dstsq_to_index_dictionary = srcdrop_to_dstsq_blackright_index[p_srcloc]
 
             except KeyError as ex:
-                print(f"[evaluation p move > get index by p move > 打つ手] p_blackright_move_obj.as_usi:{p_blackright_move_obj.as_usi}  P srcloc_u:{Usi.srcloc_to_code(p_srcloc)}  p_src_masu:{Usi.srcloc_to_jsa(p_srcloc)}  成:{p_blackright_move_obj.promoted}  ex:{ex}")
+                print(f"[evaluation p move > get index by p move > 打つ手] p_blackright_move_obj.as_usi:{p_blackright_move_obj.as_usi}  P srcloc_u:{SubUsi.srcloc_to_code(p_srcloc)}  p_src_masu:{SubUsi.srcloc_to_jsa(p_srcloc)}  成:{p_blackright_move_obj.promoted}  ex:{ex}")
 
                 if ignore_error:
                     return -1
@@ -422,7 +422,7 @@ class EvaluationPMove():
                 p_index = dstsq_to_index_dictionary[p_dstsq]
 
             except KeyError as ex:
-                print(f"[evaluation p move > get index by p move > 打つ手] p_blackright_move_obj.as_usi:{p_blackright_move_obj.as_usi}  P srcloc_u:{Usi.srcloc_to_code(p_srcloc)}  p_src_masu:{Usi.srcloc_to_jsa(p_srcloc)}  成:{p_blackright_move_obj.promoted}  p_dst_masu:{Usi.sq_to_jsa(p_dstsq)}  ex:{ex}")
+                print(f"[evaluation p move > get index by p move > 打つ手] p_blackright_move_obj.as_usi:{p_blackright_move_obj.as_usi}  P srcloc_u:{SubUsi.srcloc_to_code(p_srcloc)}  p_src_masu:{SubUsi.srcloc_to_jsa(p_srcloc)}  成:{p_blackright_move_obj.promoted}  p_dst_masu:{SubUsi.sq_to_jsa(p_dstsq)}  ex:{ex}")
 
                 if ignore_error:
                     return -1
@@ -437,7 +437,7 @@ class EvaluationPMove():
                 dstsq_to_index_dictionary = srcsq_to_dstsq_to_blackright_index_for_psi_dictionary[p_srcsq]
 
             except KeyError as ex:
-                print(f"[evaluation p move > get index by p move > 成る手1] p_blackright_move_obj.as_usi:{p_blackright_move_obj.as_usi}  P srcloc_u:{Usi.srcloc_to_code(p_srcloc)}  p_src_masu:{Usi.srcloc_to_jsa(p_srcsq)}  成:{p_blackright_move_obj.promoted}  ex:{ex}")
+                print(f"[evaluation p move > get index by p move > 成る手1] p_blackright_move_obj.as_usi:{p_blackright_move_obj.as_usi}  P srcloc_u:{SubUsi.srcloc_to_code(p_srcloc)}  p_src_masu:{SubUsi.srcloc_to_jsa(p_srcsq)}  成:{p_blackright_move_obj.promoted}  ex:{ex}")
 
                 if ignore_error:
                     return -1
@@ -466,13 +466,13 @@ class EvaluationPMove():
 
                 # 配列Ｂのインデックス `6` （符号で言うと `7a`）は存在しない要素を指定しています。この配列Ｂは、配列Ａの 15 （符号で言うと `7b`）要素に入っていたものです。この探索は、兵の指し手 `3h3i+` を調べているところでした   ex:6
                 print(f"""[evaluation p move > get index by p move > 成る手2]
-兵の指し手（先手視点、右辺使用） `{p_blackright_move_obj.as_usi}` を調べていたところ、移動元マス `{Usi.sq_to_jsa(p_srcsq)}` から、移動先マス `{Usi.sq_to_jsa(p_dstsq)}` へ指す動作が、配列の要素に含まれていませんでした  ex:{ex}
+兵の指し手（先手視点、右辺使用） `{p_blackright_move_obj.as_usi}` を調べていたところ、移動元マス `{SubUsi.sq_to_jsa(p_srcsq)}` から、移動先マス `{SubUsi.sq_to_jsa(p_dstsq)}` へ指す動作が、配列の要素に含まれていませんでした  ex:{ex}
 """)
 
                 # debug
-                print(f"    p_srcmasu:{Usi.sq_to_jsa(p_srcsq):2}")
+                print(f"    p_srcmasu:{SubUsi.sq_to_jsa(p_srcsq):2}")
                 for p_dstsq, p_index in dstsq_to_index_dictionary.items():
-                    print(f"    p_dstmasu:{Usi.sq_to_jsa(p_dstsq):2}  p_index:{p_index:5}")
+                    print(f"    p_dstmasu:{SubUsi.sq_to_jsa(p_dstsq):2}  p_index:{p_index:5}")
 
                 if ignore_error:
                     return -1
@@ -487,7 +487,7 @@ class EvaluationPMove():
                 dstsq_to_index_dictionary = srcsq_to_dstsq_to_blackright_index_for_npsi_dictionary[p_srcsq]
 
             except KeyError as ex:
-                print(f"[evaluation p move > get index by p move > 成らない手] p_blackright_move_obj.as_usi:{p_blackright_move_obj.as_usi}  P srcloc_u:{Usi.srcloc_to_code(p_srcloc)}  p_src_masu:{Usi.srcloc_to_jsa(p_srcsq)}  成:{p_blackright_move_obj.promoted}  ex:{ex}")
+                print(f"[evaluation p move > get index by p move > 成らない手] p_blackright_move_obj.as_usi:{p_blackright_move_obj.as_usi}  P srcloc_u:{SubUsi.srcloc_to_code(p_srcloc)}  p_src_masu:{SubUsi.srcloc_to_jsa(p_srcsq)}  成:{p_blackright_move_obj.promoted}  ex:{ex}")
 
                 if ignore_error:
                     return -1
@@ -503,12 +503,12 @@ class EvaluationPMove():
                 # 配列Ｂのインデックス `26` （符号で言うと `9c`）は存在しない要素を指定しています。この配列Ｂは、配列Ａの 7 （符号で言うと `8a`）要素に入っていたものです。この探索は、兵の指し手 `2i1g` を調べているところでした  ex:26
                 # 配列Ｂのインデックス `59` （符号で言うと `7f`）は存在しない要素を指定しています。この配列Ｂは、配列Ａの 66 （符号で言うと `8d`）要素に入っていたものです。この探索は、兵の指し手 `8d7f` を調べているところでした  ex:59
                 print(f"""[evaluation p move > get index by p move > 成らない手]
-兵の指し手（先手視点、右辺使用） `{p_blackright_move_obj.as_usi}` を調べていたところ、移動元マス `{Usi.sq_to_jsa(p_srcsq)}` から、移動先マス `{Usi.sq_to_jsa(p_dstsq)}` ）へ指す動作が、配列の要素に含まれていませんでした  ex:{ex}""")
+兵の指し手（先手視点、右辺使用） `{p_blackright_move_obj.as_usi}` を調べていたところ、移動元マス `{SubUsi.sq_to_jsa(p_srcsq)}` から、移動先マス `{SubUsi.sq_to_jsa(p_dstsq)}` ）へ指す動作が、配列の要素に含まれていませんでした  ex:{ex}""")
 
                 # debug
-                print(f"    p_srcmasu:{Usi.sq_to_jsa(p_srcsq):2}")
+                print(f"    p_srcmasu:{SubUsi.sq_to_jsa(p_srcsq):2}")
                 for p_dstsq, p_index in dstsq_to_index_dictionary.items():
-                    print(f"    p_dstmasu:{Usi.sq_to_jsa(p_dstsq):2}  p_index:{p_index:5}")
+                    print(f"    p_dstmasu:{SubUsi.sq_to_jsa(p_dstsq):2}  p_index:{p_index:5}")
 
                 if ignore_error:
                     return -1

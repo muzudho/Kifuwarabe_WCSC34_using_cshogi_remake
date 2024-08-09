@@ -560,7 +560,7 @@ class Kifuwarabe():
                 kifuwarabe=self,
                 is_debug=is_debug)
 
-        print(f"info depth 0 seldepth 0 time 1 nodes 0 score cp 0 string I'm random move")
+        print(f"info depth 0 seldepth 0 time 1 nodes 0 score cp 0 string I'm feeling luckey!")
         print(f'bestmove {best_move_str}', flush=True)
 
 

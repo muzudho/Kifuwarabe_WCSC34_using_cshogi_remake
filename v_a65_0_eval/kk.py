@@ -4,7 +4,7 @@ import datetime
 from v_a65_0_eval.lib import EvaluationLib
 from v_a65_0_eval.k import EvaluationKMove
 from v_a65_0_misc.lib import FileName, Turn, Move, EvalutionMmTable
-from v_a65_0_misc.usi import Usi
+from v_a65_0_misc.sub_usi import SubUsi
 
 
 class EvaluationKkTable():
@@ -27,12 +27,12 @@ class EvaluationKkTable():
         """
 
         # assert
-        if Usi.is_drop_by_srcloc(k_blackright_move_obj.srcloc):
-            raise ValueError(f"[evaluation kk table > get index of kk move > k] 玉の指し手で打なのはおかしい。 k_blackright_move_obj.srcloc_u:{Usi.srcloc_to_code(k_blackright_move_obj.srcloc)}  k_blackright_move_obj:{k_blackright_move_obj.dump()}")
+        if SubUsi.is_drop_by_srcloc(k_blackright_move_obj.srcloc):
+            raise ValueError(f"[evaluation kk table > get index of kk move > k] 玉の指し手で打なのはおかしい。 k_blackright_move_obj.srcloc_u:{SubUsi.srcloc_to_code(k_blackright_move_obj.srcloc)}  k_blackright_move_obj:{k_blackright_move_obj.dump()}")
 
         # assert
-        if Usi.is_drop_by_srcloc(l_blackright_move_obj.srcloc):
-            raise ValueError(f"[evaluation kk table > get index of kk move > l] 玉の指し手で打なのはおかしい。 l_move_obj.srcloc_u:{Usi.srcloc_to_code(l_blackright_move_obj.srcloc)}  l_blackright_move_obj:{l_blackright_move_obj.dump()}")
+        if SubUsi.is_drop_by_srcloc(l_blackright_move_obj.srcloc):
+            raise ValueError(f"[evaluation kk table > get index of kk move > l] 玉の指し手で打なのはおかしい。 l_move_obj.srcloc_u:{SubUsi.srcloc_to_code(l_blackright_move_obj.srcloc)}  l_blackright_move_obj:{l_blackright_move_obj.dump()}")
 
         # 0 ～ 93_329                   =                                                               0 ～ 304 *                                      305 +                                                             0 ～ 304
         k_blackright_l_blackright_index = EvaluationKMove.get_blackright_index_by_k_move(k_blackright_move_obj) * EvaluationKMove.get_serial_number_size() + EvaluationKMove.get_blackright_index_by_k_move(l_blackright_move_obj)
@@ -230,12 +230,12 @@ class EvaluationKkTable():
         """
 
         # assert
-        if Usi.is_drop_by_srcloc(k_blackright_move_obj.srcloc):
-            raise ValueError(f"[evaluation kk table > set relation exists by kl moves > k] 玉の指し手で打なのはおかしい。 k_blackright_move_obj.srcloc_u:{Usi.srcloc_to_code(k_blackright_move_obj.srcloc)}  k_blackright_move_obj:{k_blackright_move_obj.dump()}")
+        if SubUsi.is_drop_by_srcloc(k_blackright_move_obj.srcloc):
+            raise ValueError(f"[evaluation kk table > set relation exists by kl moves > k] 玉の指し手で打なのはおかしい。 k_blackright_move_obj.srcloc_u:{SubUsi.srcloc_to_code(k_blackright_move_obj.srcloc)}  k_blackright_move_obj:{k_blackright_move_obj.dump()}")
 
         # assert
-        if Usi.is_drop_by_srcloc(l_blackright_move_obj.srcloc):
-            raise ValueError(f"[evaluation kk table > set relation exists by kl moves > l] 玉の指し手で打なのはおかしい。 black_l_move_obj.srcloc_u:{Usi.srcloc_to_code(l_blackright_move_obj.srcloc)}  black_l_move_obj:{l_blackright_move_obj.dump()}")
+        if SubUsi.is_drop_by_srcloc(l_blackright_move_obj.srcloc):
+            raise ValueError(f"[evaluation kk table > set relation exists by kl moves > l] 玉の指し手で打なのはおかしい。 black_l_move_obj.srcloc_u:{SubUsi.srcloc_to_code(l_blackright_move_obj.srcloc)}  black_l_move_obj:{l_blackright_move_obj.dump()}")
 
         (is_changed, result_comment) = self._mm_table_obj.set_bit_by_index(
                 f_blackright_o_blackright_index=EvaluationKkTable.get_black_k_black_l_index(

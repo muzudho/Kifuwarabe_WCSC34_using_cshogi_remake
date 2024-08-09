@@ -9,7 +9,7 @@ from     v_a65_0_eval.pk import EvaluationPkTable
 from     v_a65_0_misc.bit_ope import BitOpe
 from     v_a65_0_misc.debug import DebugHelper
 from     v_a65_0_misc.lib import Turn, Move
-from     v_a65_0_misc.usi import Usi
+from     v_a65_0_misc.sub_usi import SubUsi
 
 
 def test_k():
@@ -42,7 +42,7 @@ def test_k():
 
         for src_file in range(0,5):
             for src_rank in range(0,9):
-                srcsq = Usi.file_rank_to_sq(
+                srcsq = SubUsi.file_rank_to_sq(
                         file=src_file,
                         rank=src_rank)
 
@@ -61,7 +61,7 @@ def test_k():
                     label_table_for_src_dst[dstsq] = f'{dstsq:3}'
 
                 # 出力
-                f.write(f"""src_masu:{Usi.sq_to_jsa(srcsq):2}
+                f.write(f"""src_masu:{SubUsi.sq_to_jsa(srcsq):2}
 通しインデックス                          src と dst
 {DebugHelper.stringify_double_3characters_boards(label_table_for_serial_index, label_table_for_src_dst)}
 """)
@@ -88,7 +88,7 @@ def test_k():
                 label_table_for_src_dst,
                 label_table_for_serial_index,
                 previous_srcsq):
-            f.write(f"""src_masu:{Usi.sq_to_jsa(previous_srcsq):2}
+            f.write(f"""src_masu:{SubUsi.sq_to_jsa(previous_srcsq):2}
 通しインデックス                           src と dst
 {DebugHelper.stringify_double_3characters_boards(label_table_for_serial_index, label_table_for_src_dst)}
 """)
@@ -113,7 +113,7 @@ def test_k():
 
             # srcsq が変わったら、 srcsq が変わる前のものをフラッシュ
             elif previous_srcsq != srcsq:
-                print(f"flush  previous_srcmasu:{Usi.sq_to_jsa(previous_srcsq)}  srcmasu:{Usi.sq_to_jsa(srcsq)}")
+                print(f"flush  previous_srcmasu:{SubUsi.sq_to_jsa(previous_srcsq)}  srcmasu:{SubUsi.sq_to_jsa(srcsq)}")
                 (label_table_for_src_dst,
                  label_table_for_serial_index) = flush_table(
                         label_table_for_src_dst,
@@ -123,7 +123,7 @@ def test_k():
                 label_table_for_src_dst[srcsq] = 'you'
                 label_table_for_serial_index[srcsq] = 'you'
 
-            print(f"(src_masu:{Usi.sq_to_jsa(srcsq):2}, dst_masu:{Usi.sq_to_jsa(dstsq):2}) = dictionary[ serial_index:{serial_index:3} ]")
+            print(f"(src_masu:{SubUsi.sq_to_jsa(srcsq):2}, dst_masu:{SubUsi.sq_to_jsa(dstsq):2}) = dictionary[ serial_index:{serial_index:3} ]")
 
             # 対象マスを追加
             label_table_for_src_dst[dstsq] = f'{dstsq:3}'
@@ -132,7 +132,7 @@ def test_k():
             previous_srcsq = srcsq
 
         # 残りがある想定で、フラッシュ
-        print(f"flush_rest  previous_srcmasu:{Usi.sq_to_jsa(previous_srcsq)}  srcmasu:{Usi.sq_to_jsa(srcsq)}")
+        print(f"flush_rest  previous_srcmasu:{SubUsi.sq_to_jsa(previous_srcsq)}  srcmasu:{SubUsi.sq_to_jsa(srcsq)}")
         (label_table_for_src_dst,
             label_table_for_serial_index) = flush_table(
                 label_table_for_src_dst,
@@ -243,7 +243,7 @@ actual_p_blackright_move_obj  :`{actual_p_blackright_move_obj.as_usi}`
         for src_file in range(0,5):
             for src_rank in range(0,9):
                 # 移動元マス番号
-                srcsq = Usi.file_rank_to_sq(
+                srcsq = SubUsi.file_rank_to_sq(
                         file=src_file,
                         rank=src_rank)
 
@@ -276,7 +276,7 @@ actual_p_blackright_move_obj  :`{actual_p_blackright_move_obj.as_usi}`
                     label_table_for_psq[dstsq] = f"{dstsq:4}"
 
 
-                f.write(f"""src_masu:{Usi.sq_to_jsa(srcsq)}
+                f.write(f"""src_masu:{SubUsi.sq_to_jsa(srcsq)}
 先手成らず  通しインデックス                             先手成らず  絶対マス                                   先手成り  通しインデックス                               先手成り  絶対マス
 {DebugHelper.stringify_quadruple_4characters_board(
         a=label_table_for_npsi,
@@ -291,7 +291,7 @@ actual_p_blackright_move_obj  :`{actual_p_blackright_move_obj.as_usi}`
         #   - 打は SFEN では駒種類毎に分かれている。 R*, B*, G*, S*, N*, L*, P*
         #
         for drop_code in ['R*', 'B*', 'G*', 'S*', 'N*', 'L*', 'P*']:
-            srcdrop = Usi.code_to_srcloc(drop_code)
+            srcdrop = SubUsi.code_to_srcloc(drop_code)
             dstsq_to_index_dictionary = srcdrop_to_dstsq_blackright_index[srcdrop]
 
             label_table_for_drop = ['    '] * 81
@@ -414,8 +414,8 @@ def test_lib():
         raise ValueError(f'unexpected error. move_obj.promoted expected:True  actual:`{move_obj.promoted}`')
 
     move_obj = Move.from_src_dst_pro(
-            srcloc=Usi.jsa_to_sq(38),
-            dstsq=Usi.jsa_to_sq(39),
+            srcloc=SubUsi.jsa_to_sq(38),
+            dstsq=SubUsi.jsa_to_sq(39),
             promoted=True)
 
     if move_obj.as_usi != expected_move_u:
@@ -429,23 +429,23 @@ def test_move_rotate():
     # １８０°回転
     srcloc_u = "1g"
     expected_rot_srcloc_u = "9c"
-    srcloc = Usi.code_to_srcloc(srcloc_u)
+    srcloc = SubUsi.code_to_srcloc(srcloc_u)
 
-    actual = Usi.srcloc_to_code(srcloc)
+    actual = SubUsi.srcloc_to_code(srcloc)
     if srcloc_u != actual:
         raise ValueError(f"[test move rotate]  expected:{srcloc_u}  actual:{actual}")
 
-    rot_srcloc = Usi.rotate_srcloc(srcloc)
-    actual = Usi.srcloc_to_code(rot_srcloc)
+    rot_srcloc = SubUsi.rotate_srcloc(srcloc)
+    actual = SubUsi.srcloc_to_code(rot_srcloc)
     if expected_rot_srcloc_u != actual:
         raise ValueError(f"[test move rotate]  expected:{expected_rot_srcloc_u}  actual:{actual}")
 
     # １８０°回転
     dstsq_u = "1g"
     expected_rot_dstsq_u = "9c"
-    dstsq = Usi.srcloc_to_sq(Usi.code_to_srcloc(dstsq_u))
-    rot_dstsq = Usi.rotate_srcloc(dstsq)
-    actual = Usi.srcloc_to_code(rot_dstsq)
+    dstsq = SubUsi.srcloc_to_sq(SubUsi.code_to_srcloc(dstsq_u))
+    rot_dstsq = SubUsi.rotate_srcloc(dstsq)
+    actual = SubUsi.srcloc_to_code(rot_dstsq)
 
     if expected_rot_dstsq_u != actual:
         raise ValueError(f"[test move rotate]  expected:{expected_rot_dstsq_u}  actual:{actual}")

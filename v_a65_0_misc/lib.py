@@ -2,7 +2,7 @@ import cshogi
 import datetime
 
 from v_a65_0_misc.bit_ope import BitOpe
-from v_a65_0_misc.usi import Usi
+from v_a65_0_misc.sub_usi import SubUsi
 from v_a65_0_debug_plan import DebugPlan
 
 
@@ -223,11 +223,11 @@ class Move():
         """
 
         # 移動元番号
-        srcloc = Usi.code_to_srcloc(
+        srcloc = SubUsi.code_to_srcloc(
                 code=move_as_usi[0: 2])
 
         # 移動先オブジェクト生成
-        dstsq = Usi.srcloc_to_sq(Usi.code_to_srcloc(
+        dstsq = SubUsi.srcloc_to_sq(SubUsi.code_to_srcloc(
                 code=move_as_usi[2: 4]))
 
         #
@@ -268,28 +268,28 @@ class Move():
 
         # 盤を先後回転させるなら
         if is_rotate:
-            srcloc = Usi.rotate_srcloc(srcloc)
-            dstsq = Usi.rotate_srcloc(dstsq)
+            srcloc = SubUsi.rotate_srcloc(srcloc)
+            dstsq = SubUsi.rotate_srcloc(dstsq)
 
         # 盤を左右対称として扱って、左辺を省略し、右辺だけ使うなら
         if use_only_right_side:
-            (src_on_board, src_file_th, src_rank_th) = Usi.srcloc_to_file_th_rank_th(srcloc)
+            (src_on_board, src_file_th, src_rank_th) = SubUsi.srcloc_to_file_th_rank_th(srcloc)
 
             # 打なら
             if not src_on_board:
-                (dst_on_board, dst_file_th, dst_rank_th) = Usi.srcloc_to_file_th_rank_th(dstsq)
+                (dst_on_board, dst_file_th, dst_rank_th) = SubUsi.srcloc_to_file_th_rank_th(dstsq)
 
                 # 左辺に打ったら、左右反転
                 if 5 < dst_file_th:
-                    dstsq = Usi.flip_srcloc(dstsq)
+                    dstsq = SubUsi.flip_srcloc(dstsq)
 
             # 打でないなら
             else:
 
                 # 左辺の駒を動かしたら、左右反転
                 if 5 < src_file_th:
-                    srcloc = Usi.flip_srcloc(srcloc)
-                    dstsq = Usi.flip_srcloc(dstsq)
+                    srcloc = SubUsi.flip_srcloc(srcloc)
+                    dstsq = SubUsi.flip_srcloc(dstsq)
 
         return Move(
                 srcloc=srcloc,
@@ -345,7 +345,7 @@ class Move():
 
 
     def dump(self):
-        return f"as_usi:{self.as_usi}  srcloc_jsa:{Usi.srcloc_to_jsa(self._srcloc)}  dstmasu:{Usi.srcloc_to_jsa(self._dstsq)}  promoted:{self._promoted}"
+        return f"as_usi:{self.as_usi}  srcloc_jsa:{SubUsi.srcloc_to_jsa(self._srcloc)}  dstmasu:{SubUsi.srcloc_to_jsa(self._dstsq)}  promoted:{self._promoted}"
 
 
     @property
@@ -371,13 +371,13 @@ class Move():
         """USI形式の指し手の符号。
         "7g7f" や "3d3c+"、 "R*5e" のような文字列を想定。 "resign" のような文字列は想定外
         """
-        return f"{Usi.srcloc_to_code(self.srcloc)}{Usi.sq_to_code(self.dstsq)}{Usi.promotion_to_code(self.promoted)}"
+        return f"{SubUsi.srcloc_to_code(self.srcloc)}{SubUsi.sq_to_code(self.dstsq)}{SubUsi.promotion_to_code(self.promoted)}"
 
 
     def rotate(self):
         """盤を１８０°回転させたときの指し手を返します"""
-        rot_srcloc = Usi.rotate_srcloc(self.srcloc)
-        rot_dstsq = Usi.rotate_srcloc(self._dstsq)
+        rot_srcloc = SubUsi.rotate_srcloc(self.srcloc)
+        rot_dstsq = SubUsi.rotate_srcloc(self._dstsq)
 
         return Move(
                 srcloc=rot_srcloc,
@@ -397,7 +397,7 @@ class MoveHelper():
 
         # 自玉の指し手か？（打なら None なので False）
         #print(f"［自玉の指し手か？］ move_u: {move_obj.as_usi}, srcloc:{move_obj.srcloc}, k_sq: {k_sq}, board.turn: {board.turn}")
-        if Usi.is_drop_by_srcloc(move_obj.srcloc):
+        if SubUsi.is_drop_by_srcloc(move_obj.srcloc):
             return False
 
         return move_obj.srcloc == k_sq
@@ -539,7 +539,7 @@ class MoveListHelper():
         k_sq = BoardHelper.get_king_square(board)
 
         if is_debug and DebugPlan.create_k_and_p_legal_moves():
-            print(f"[{datetime.datetime.now()}] [create k and p legal moves]  k_masu:{Usi.sq_to_jsa(k_sq)}")
+            print(f"[{datetime.datetime.now()}] [create k and p legal moves]  k_masu:{SubUsi.sq_to_jsa(k_sq)}")
 
         # USIプロトコルでの符号表記に変換
         k_moves_u = []

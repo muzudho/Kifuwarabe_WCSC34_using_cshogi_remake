@@ -1,4 +1,4 @@
-from v_a65_0_misc.usi import Usi
+from v_a65_0_misc.sub_usi import SubUsi
 
 
 class EvaluationKMove():
@@ -148,7 +148,7 @@ class EvaluationKMove():
             for src_file in range(0,5):
                 for src_rank in range(0,9):
                     # 移動元マス番号
-                    srcsq = Usi.file_rank_to_sq(
+                    srcsq = SubUsi.file_rank_to_sq(
                             file=src_file,
                             rank=src_rank)
 
@@ -166,7 +166,7 @@ class EvaluationKMove():
                     dst_file = src_file + right_file
                     dst_rank = src_rank + top_rank
                     if 0 <= dst_file and 0 <= dst_rank:
-                        dstsq_set.add(Usi.file_rank_to_sq(
+                        dstsq_set.add(SubUsi.file_rank_to_sq(
                                 file=dst_file,
                                 rank=dst_rank))
 
@@ -174,7 +174,7 @@ class EvaluationKMove():
                     dst_file = src_file + right_file
                     dst_rank = src_rank
                     if 0 <= dst_file:
-                        dstsq_set.add(Usi.file_rank_to_sq(
+                        dstsq_set.add(SubUsi.file_rank_to_sq(
                                 file=dst_file,
                                 rank=dst_rank))
 
@@ -182,7 +182,7 @@ class EvaluationKMove():
                     dst_file = src_file + right_file
                     dst_rank = src_rank + bottom_rank
                     if 0 <= dst_file and dst_rank < 9:
-                        dstsq_set.add(Usi.file_rank_to_sq(
+                        dstsq_set.add(SubUsi.file_rank_to_sq(
                                 file=dst_file,
                                 rank=dst_rank))
 
@@ -190,7 +190,7 @@ class EvaluationKMove():
                     dst_file = src_file
                     dst_rank = src_rank + top_rank
                     if 0 <= dst_rank:
-                        dstsq_set.add(Usi.file_rank_to_sq(
+                        dstsq_set.add(SubUsi.file_rank_to_sq(
                                 file=dst_file,
                                 rank=dst_rank))
 
@@ -198,7 +198,7 @@ class EvaluationKMove():
                     dst_file = src_file
                     dst_rank = src_rank + bottom_rank
                     if dst_rank < 9:
-                        dstsq_set.add(Usi.file_rank_to_sq(
+                        dstsq_set.add(SubUsi.file_rank_to_sq(
                                 file=dst_file,
                                 rank=dst_rank))
 
@@ -206,7 +206,7 @@ class EvaluationKMove():
                     dst_file = src_file + left_file
                     dst_rank = src_rank + top_rank
                     if dst_file < 9 and 0 <= dst_rank:
-                        dstsq_set.add(Usi.file_rank_to_sq(
+                        dstsq_set.add(SubUsi.file_rank_to_sq(
                                 file=dst_file,
                                 rank=dst_rank))
 
@@ -214,7 +214,7 @@ class EvaluationKMove():
                     dst_file = src_file + left_file
                     dst_rank = src_rank
                     if dst_file < 9:
-                        dstsq_set.add(Usi.file_rank_to_sq(
+                        dstsq_set.add(SubUsi.file_rank_to_sq(
                                 file=dst_file,
                                 rank=dst_rank))
 
@@ -222,7 +222,7 @@ class EvaluationKMove():
                     dst_file = src_file + left_file
                     dst_rank = src_rank + bottom_rank
                     if dst_file < 9 and dst_rank < 9:
-                        dstsq_set.add(Usi.file_rank_to_sq(
+                        dstsq_set.add(SubUsi.file_rank_to_sq(
                                 file=dst_file,
                                 rank=dst_rank))
 
@@ -267,10 +267,10 @@ class EvaluationKMove():
         """
 
         # assert
-        if Usi.is_drop_by_srcloc(k_blackright_move_obj.srcloc):
-            raise ValueError(f"[evaluation k move > get index by k move] 玉の指し手で打なのはおかしい。 k_blackright_move_obj.srcloc_u:{Usi.srcloc_to_code(k_blackright_move_obj.srcloc)}  k_blackright_move_obj:{k_blackright_move_obj.dump()}")
+        if SubUsi.is_drop_by_srcloc(k_blackright_move_obj.srcloc):
+            raise ValueError(f"[evaluation k move > get index by k move] 玉の指し手で打なのはおかしい。 k_blackright_move_obj.srcloc_u:{SubUsi.srcloc_to_code(k_blackright_move_obj.srcloc)}  k_blackright_move_obj:{k_blackright_move_obj.dump()}")
 
-        k_srcsq = Usi.srcloc_to_sq(k_blackright_move_obj.srcloc)
+        k_srcsq = SubUsi.srcloc_to_sq(k_blackright_move_obj.srcloc)
         k_dstsq = k_blackright_move_obj.dstsq
 
         # 玉は成らない
@@ -287,7 +287,7 @@ class EvaluationKMove():
 
         except KeyError as ex:
             # k_srcsq error. k_blackright_move_obj.as_usi:S*3b  rotated:False  k_srcsq:None  src_masu:None  ex:None
-            print(f"[evaluation k move > get index by k move]  k_srcsq error. k_blackright_move_obj.as_usi:{k_blackright_move_obj.as_usi}  k_srcsq:{k_srcsq}  src_masu:{Usi.sq_to_jsa(k_srcsq)}  k_blackright_move_obj:{k_blackright_move_obj.dump()}  k_dstsq:{k_dstsq}  ex:{ex}")
+            print(f"[evaluation k move > get index by k move]  k_srcsq error. k_blackright_move_obj.as_usi:{k_blackright_move_obj.as_usi}  k_srcsq:{k_srcsq}  src_masu:{SubUsi.sq_to_jsa(k_srcsq)}  k_blackright_move_obj:{k_blackright_move_obj.dump()}  k_dstsq:{k_dstsq}  ex:{ex}")
             raise
 
         #
@@ -304,12 +304,12 @@ class EvaluationKMove():
             # k_blackright_move_obj.as_usi:6g4e  rotated:True  k_srcsq:29  k_dstsq:49  src_masu:43  dst_masu:65  ex:49
             # k_blackright_move_obj.as_usi:8i6g  rotated:True  len(dstsq_to_index_dictionary):5  k_src_masu:21  k_dst_masu:43  k_srcsq:9  k_dstsq:29  ex:29
             # [evaluation k move > get index by k move]  k_dstsq error. k_blackright_move_obj.as_usi:2h6h  rotated:True  len(dstsq_to_index_dictionary):8  k_src_masu:82  k_dst_masu:42  k_srcsq:64  k_dstsq:28  ex:28
-            print(f"[evaluation k move > get index by k move]  k_dstsq error. k_blackright_move_obj.as_usi:{k_blackright_move_obj.as_usi}  len(dstsq_to_index_dictionary):{len(dstsq_to_index_dictionary)}  k_src_masu:{Usi.sq_to_jsa(k_srcsq)}  k_dst_masu:{Usi.sq_to_jsa(k_dstsq)}  k_srcsq:{k_srcsq}  k_dstsq:{k_dstsq}  ex:{ex}")
+            print(f"[evaluation k move > get index by k move]  k_dstsq error. k_blackright_move_obj.as_usi:{k_blackright_move_obj.as_usi}  len(dstsq_to_index_dictionary):{len(dstsq_to_index_dictionary)}  k_src_masu:{SubUsi.sq_to_jsa(k_srcsq)}  k_dst_masu:{SubUsi.sq_to_jsa(k_dstsq)}  k_srcsq:{k_srcsq}  k_dstsq:{k_dstsq}  ex:{ex}")
 
             # ダンプ
             i = 0
             for k_dstsq, k_index in dstsq_to_index_dictionary.items():
-                print(f"[evaluation k move > get index by k move]  ({i:2})  k_dstsq:{k_dstsq}  k_dst_masu:{Usi.sq_to_jsa(k_dstsq)}  k_index:{k_index}")
+                print(f"[evaluation k move > get index by k move]  ({i:2})  k_dstsq:{k_dstsq}  k_dst_masu:{SubUsi.sq_to_jsa(k_dstsq)}  k_index:{k_index}")
                 i += 1
 
             raise
